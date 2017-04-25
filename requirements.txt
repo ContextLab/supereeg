@@ -1,0 +1,6 @@
+nose
+sphinx
+numpy
+pandas
+scipy
+hypertools
