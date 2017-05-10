@@ -19,8 +19,9 @@ class Brain(object):
     session : Pandas Series
         Samples x 1 array containing session identifiers
 
-    sample_rate : float
-        Sample rate of the data
+    sample_rates : float or list of floats
+        Sample rate of the data. If different over multiple sessions, this is a
+        list
 
     meta : dict
         Optional dict containing whatever you want
@@ -40,10 +41,18 @@ class Brain(object):
     session_labels : list
         Label for each session
 
+    kurtosis : list of floats
+        1 by number of electrode list containing kurtosis for each electrode
+
     Methods
     ----------
 
-    ???
+    get_data : function
+        takes brain object and returns data
+
+    remove_elecs : function
+        takes brain object and returns brain object with electrodes and locations
+        exceeding some threshold removed
 
     Returns
     ----------
@@ -54,3 +63,17 @@ class Brain(object):
     """
 
     def __init__(self):
+
+    def get_data(self):
+        """
+        Gets data from brain object
+        """
+        return self.data.as_matrix()
+
+    def remove_elecs(self, measure='kurtosis', threshold=10):
+        """
+        Gets data from brain object
+        """
+        if measure is 'kurtosis':
+            pass
+            # remove kurtotic elecs and return data object
