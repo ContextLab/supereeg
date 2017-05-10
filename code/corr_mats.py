@@ -30,18 +30,19 @@ def main(fname):
 
     # check if full location matrix exists
     if not os.path.isfile(os.path.join(corr_dir, 'sub_corr_' + file_name + '.npz')):
-        if not os.path.isfile(os.path.join(get_parent_dir(os.getcwd()), loc_name)):
-            full_locs = np.empty(shape=[0, 3])
-            files = glob.glob(os.path.join(os.path.dirname(fname),'*.npz'))  ## need to replace this - not sure if what should be in here
-            for i in files:
-                try:
-                    data = np.load(i, mmap_mode='r')
-                    tempR = tal2mni(data['R'])
-                    full_locs = np.append(full_locs, tempR, axis=0)
-                except:
-                    pass
-            unique_full_locs = np.vstack(set(map(tuple, full_locs)))
-            np.save(os.path.join(get_parent_dir(os.getcwd()), loc_name), unique_full_locs[unique_full_locs[:, 0].argsort(),])
+        #### we are using a different set of locations, downsampled from a standard brain - this would be to create it from the union of all electrodes
+        # if not os.path.isfile(os.path.join(get_parent_dir(os.getcwd()), loc_name)):
+        #     full_locs = np.empty(shape=[0, 3])
+        #     files = glob.glob(os.path.join(os.path.dirname(fname),'*.npz'))  ## need to replace this - not sure if what should be in here
+        #     for i in files:
+        #         try:
+        #             data = np.load(i, mmap_mode='r')
+        #             tempR = tal2mni(data['R'])
+        #             full_locs = np.append(full_locs, tempR, axis=0)
+        #         except:
+        #             pass
+        #     unique_full_locs = np.vstack(set(map(tuple, full_locs)))
+        #     np.save(os.path.join(get_parent_dir(os.getcwd()), loc_name), unique_full_locs[unique_full_locs[:, 0].argsort(),])
 
         ## create subject correlation matrix
         C_subj = corrmat(fname)
