@@ -739,4 +739,3 @@ def normalize_Y(Y_matrix):
     added = mat.repmat(0.5 + np.arange(Y.shape[1]), Y.shape[0], 1)
     Y = Y + added
     return pd.DataFrame(Y)
-

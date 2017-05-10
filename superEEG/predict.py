@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from . import helpers
 
+
 # CHANGE THIS TO ACCEPT NUMPY ARRAY
-def corrmat(fname):
+def corrmat(bo):
     """
     Function that calculates the average subject level correlation matrix for filename across session
 
@@ -23,13 +24,8 @@ def corrmat(fname):
 
 
     """
-    def aggregate(prev, next):
-        return np.sum(np.concatenate((prev[:, :, np.newaxis], next[:, :, np.newaxis]), axis=2), axis=2)
-
-    def zcorr(x):
-        return r2z(1 - squareform(pdist(x.T, 'correlation')))
-
-    summed_zcorrs = apply_by_file_index(fname, zcorr, aggregate)
+    
+    summed_zcorrs = apply_by_file_index(bo, zcorr, aggregate)
     n = n_files(fname)
 
     return z2r(summed_zcorrs / n)
