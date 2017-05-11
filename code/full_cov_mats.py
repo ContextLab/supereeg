@@ -4,7 +4,7 @@ import numpy as np
 import glob
 import os
 from stats import rbf, good_chans, expand_corrmat, expand_matrix
-from plot import compare_matrices
+# from plot import compare_matrices
 from bookkeeping import get_rows, get_grand_parent_dir, get_parent_dir
 from scipy.spatial.distance import squareform as squareform
 import sys
@@ -15,10 +15,13 @@ import multiprocessing
 ## input: full path to file name, radius, kurtosis threshold
 
 def main(fname, r, k_thresh):
+    ## kurtosis pass union of electrode of locations
     #k_loc_name = 'R_full_k_' + str(k_thresh) + '_MNI.npy'
-    ## the downsampled locations is still huge, so I downsampled to 10mm to run as a test:
+    ## downsampled locations with 5mm resolution:
     # loc_name = 'R_full_MNI.npy'
+    ## downsampled locations with 30mm resolution for sample data test:
     loc_name = 'R_small_MNI.npy'
+
     ## create file name
     file_name = os.path.splitext(os.path.basename(fname))[0]
     ## existing directories:
@@ -30,11 +33,11 @@ def main(fname, r, k_thresh):
     if not os.path.isdir(cor_fig_dir):
         os.mkdir(cor_fig_dir)
 
-    full_dir = os.path.join(get_grand_parent_dir(os.getcwd()), 'full_matrices_Rstd')
+    full_dir = os.path.join(get_grand_parent_dir(os.getcwd()), 'full_matrices')
     if not os.path.isdir(full_dir):
         os.mkdir(full_dir)
 
-    # check if full location matrix (that pass specified threshold) exists
+    ## check if expanded subject level correlation matrix exists
     if not os.path.isfile(os.path.join(full_dir, 'full_matrix_' + file_name + '_k' + str(k_thresh) + '_r' + str(r) + '.npz')):
         #### we are using a different set of locations, downsampled from a standard brain - this would be to create it from the union of all electrodes passing kthresh
         # if not os.path.isfile(os.path.join(get_parent_dir(os.getcwd()), k_loc_name)):
@@ -74,11 +77,20 @@ def main(fname, r, k_thresh):
                 #### create weights matrix
                 RBF_weights = rbf(R_full, R_K_subj, r)
                 #### compile all pairs of coordidnates - loop over R_full matrix (lower triangle)
+                # inputs = [(x, y) for x in range(R_full.shape[0]) for y in range(x)]
+                # num_cores = multiprocessing.cpu_count()
+                # #### can't have the delayed(expand_corrmat) in a function
+                # results = Parallel(n_jobs=num_cores)(
+                #     delayed(expand_corrmat)(coord, R_K_subj, RBF_weights, C_K_subj) for coord in inputs)
+
+                ### try distributed further:
+
                 inputs = [(x, y) for x in range(R_full.shape[0]) for y in range(x)]
                 num_cores = multiprocessing.cpu_count()
                 #### can't have the delayed(expand_corrmat) in a function
                 results = Parallel(n_jobs=num_cores)(
                     delayed(expand_corrmat)(coord, R_K_subj, RBF_weights, C_K_subj) for coord in inputs)
+
                 #### this expands the list from the mulitprocessor output  - the lower triangle of the matrix
                 C_expand = expand_matrix(results, R_full)
                 C_est = squareform(C_expand, checks=False)
