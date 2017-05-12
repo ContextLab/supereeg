@@ -9,7 +9,10 @@ import sys
 
 
 def main(fname):
-    loc_name = 'R_full_MNI.npy'
+    ## downsampled locations with 5mm resolution:
+    # loc_name = 'R_full_MNI.npy'
+    ## downsampled locations with 30mm resolution for sample data test:
+    loc_name = 'R_small_MNI.npy'
 
     ## create file name
     file_name = os.path.splitext(os.path.basename(fname))[0]
@@ -19,7 +22,6 @@ def main(fname):
     if not os.path.isdir(corr_dir):
         os.mkdir(corr_dir)
 
-
     fig_dir = os.path.join(get_grand_parent_dir(os.getcwd()), 'figs')
     if not os.path.isdir(fig_dir):
         os.mkdir(fig_dir)
@@ -28,7 +30,7 @@ def main(fname):
     if not os.path.isdir(cor_fig_dir):
         os.mkdir(cor_fig_dir)
 
-    # check if full location matrix exists
+    # check if subject level correlation matrix exists
     if not os.path.isfile(os.path.join(corr_dir, 'sub_corr_' + file_name + '.npz')):
         #### we are using a different set of locations, downsampled from a standard brain - this would be to create it from the union of all electrodes
         # if not os.path.isfile(os.path.join(get_parent_dir(os.getcwd()), loc_name)):
