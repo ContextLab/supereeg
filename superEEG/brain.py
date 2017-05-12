@@ -10,13 +10,13 @@ class Brain(object):
     Parameters
     ----------
 
-    data : Pandas DataFrame
+    data : 2d numpy array or list of lists
         Samples x electrodes df containing the EEG data
 
-    locs : Panadas DataFrame
+    locs : 1d numpy array or list
         MNI coordinate (x,y,z) by electrode df containing electrode locations
 
-    session : Pandas Series
+    session : 1d numpy array or list
         Samples x 1 array containing session identifiers
 
     sample_rates : float or list of floats
@@ -28,6 +28,22 @@ class Brain(object):
 
     Attributes
     ----------
+
+    data : Pandas DataFrame
+        Samples x electrodes df containing the EEG data
+
+    locs : Pandas DataFrame
+        MNI coordinate (x,y,z) by electrode df containing electrode locations
+
+    session : num or str
+        Samples x 1 array containing session identifiers
+
+    sample_rates : float or list of floats
+        Sample rate of the data. If different over multiple sessions, this is a
+        list
+
+    meta : dict
+        Optional dict containing whatever you want
 
     n_elecs : int
         Number of electrodes
@@ -63,6 +79,7 @@ class Brain(object):
     """
 
     def __init__(self):
+        pass
 
     def get_data(self):
         """
