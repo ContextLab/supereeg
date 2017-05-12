@@ -1,13 +1,13 @@
 import superEEG
 
 # print default context
-print(superEEG.__context__)
+print(superEEG.context)
 
 # change context to preset cluster default
 superEEG.set_context('cluster')
 
 # print updated context
-print(superEEG.__context__)
+print(superEEG.context)
 
 # change context to custom dict
 google_cluster = {
@@ -16,4 +16,4 @@ google_cluster = {
     'memory' : 3000000000,
 }
 superEEG.set_context(google_cluster)
-print(superEEG.__context__)
+print(superEEG.context)
