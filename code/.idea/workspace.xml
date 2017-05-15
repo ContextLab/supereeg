@@ -30,11 +30,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="full_cov_mats.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="full_cov_mats.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/full_cov_mats.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="593">
-              <caret line="111" column="0" selection-start-line="111" selection-start-column="0" selection-end-line="111" selection-end-column="0" />
+            <state relative-caret-position="420">
+              <caret line="28" column="50" selection-start-line="28" selection-start-column="50" selection-end-line="28" selection-end-column="50" />
               <folding>
                 <element signature="e#23#41#0" expanded="true" />
               </folding>
@@ -42,10 +42,20 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="compile_ful_cov_mats.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="parallel.py" pinned="false" current-in-tab="false">
+        <entry file="file:///Library/Python/2.7/site-packages/joblib/parallel.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="222">
+              <caret line="721" column="0" selection-start-line="721" selection-start-column="0" selection-end-line="721" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="compile_ful_cov_mats.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/compile_ful_cov_mats.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="338">
+            <state relative-caret-position="638">
               <caret line="58" column="34" selection-start-line="58" selection-start-column="34" selection-end-line="58" selection-end-column="34" />
               <folding>
                 <element signature="e#23#41#0" expanded="true" />
@@ -87,8 +97,8 @@
       <file leaf-file-name="stats.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/stats.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="585">
-              <caret line="565" column="39" selection-start-line="565" selection-start-column="39" selection-end-line="565" selection-end-column="39" />
+            <state relative-caret-position="495">
+              <caret line="33" column="67" selection-start-line="0" selection-start-column="0" selection-end-line="741" selection-end-column="0" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -111,8 +121,8 @@
       <file leaf-file-name="bookkeeping.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/bookkeeping.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="548">
-              <caret line="261" column="45" selection-start-line="261" selection-start-column="45" selection-end-line="261" selection-end-column="45" />
+            <state relative-caret-position="510">
+              <caret line="38" column="32" selection-start-line="38" selection-start-column="32" selection-end-line="38" selection-end-column="32" />
               <folding />
             </state>
           </provider>
@@ -133,9 +143,9 @@
         <option value="$PROJECT_DIR$/corr_mats.py" />
         <option value="$PROJECT_DIR$/timeseries.py" />
         <option value="$PROJECT_DIR$/average_matrix.py" />
+        <option value="$PROJECT_DIR$/compile_ful_cov_mats.py" />
         <option value="$PROJECT_DIR$/bookkeeping.py" />
         <option value="$PROJECT_DIR$/full_cov_mats.py" />
-        <option value="$PROJECT_DIR$/compile_ful_cov_mats.py" />
       </list>
     </option>
   </component>
@@ -195,7 +205,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/corr_mats.py" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
   </component>
   <component name="RunManager" selected="Python.full_cov_mats">
     <configuration default="false" name="corr_mats" type="PythonConfigurationType" factoryName="Python" temporary="true">
@@ -430,9 +440,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1737" y="-340" width="1683" height="1227" extended-state="0" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24123588" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24123588" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.39896372" sideWeight="0.15626857" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -491,8 +501,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/full_cov_mats.py</url>
-          <line>98</line>
+          <line>96</line>
           <option name="timeStamp" value="28" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/full_cov_mats.py</url>
+          <line>75</line>
+          <option name="timeStamp" value="29" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
@@ -505,7 +520,7 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="29" />
+      <option name="time" value="30" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -592,14 +607,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="488">
-          <caret line="1579" column="0" selection-start-line="1579" selection-start-column="0" selection-end-line="1579" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/corr_mats.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="165">
@@ -608,38 +615,54 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/stats.py">
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="585">
-          <caret line="565" column="39" selection-start-line="565" selection-start-column="39" selection-end-line="565" selection-end-column="39" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bookkeeping.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="548">
-          <caret line="261" column="45" selection-start-line="261" selection-start-column="45" selection-end-line="261" selection-end-column="45" />
+        <state relative-caret-position="683">
+          <caret line="1579" column="0" selection-start-line="1579" selection-start-column="0" selection-end-line="1579" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/full_cov_mats.py">
+    <entry file="file://$PROJECT_DIR$/compile_ful_cov_mats.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="593">
-          <caret line="111" column="0" selection-start-line="111" selection-start-column="0" selection-end-line="111" selection-end-column="0" />
+        <state relative-caret-position="638">
+          <caret line="58" column="34" selection-start-line="58" selection-start-column="34" selection-end-line="58" selection-end-column="34" />
           <folding>
             <element signature="e#23#41#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/compile_ful_cov_mats.py">
+    <entry file="file:///Library/Python/2.7/site-packages/joblib/parallel.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="338">
-          <caret line="58" column="34" selection-start-line="58" selection-start-column="34" selection-end-line="58" selection-end-column="34" />
+        <state relative-caret-position="222">
+          <caret line="721" column="0" selection-start-line="721" selection-start-column="0" selection-end-line="721" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bookkeeping.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="38" column="32" selection-start-line="38" selection-start-column="32" selection-end-line="38" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/stats.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="495">
+          <caret line="33" column="67" selection-start-line="0" selection-start-column="0" selection-end-line="741" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/full_cov_mats.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="420">
+          <caret line="28" column="50" selection-start-line="28" selection-start-column="50" selection-end-line="28" selection-end-column="50" />
           <folding>
             <element signature="e#23#41#0" expanded="true" />
           </folding>

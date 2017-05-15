@@ -259,6 +259,6 @@ def slice_list(input, size):
     return result
 
 
-def partition_jobs(matrix_width, n_chunks=4):
+def partition_jobs(matrix_width, n_chunks=500):
     idxs = np.array([(x, y) for x in range(matrix_width) for y in range(x)])
     return np.array_split(idxs, n_chunks)

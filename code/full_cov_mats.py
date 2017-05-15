@@ -4,9 +4,7 @@ import numpy as np
 import glob
 import os
 from stats import rbf, good_chans, expand_corrmat, expand_matrix
-# from plot import compare_matrices
 from bookkeeping import get_rows, get_grand_parent_dir, get_parent_dir, slice_list, partition_jobs
-from scipy.spatial.distance import squareform as squareform
 import sys
 from joblib import Parallel, delayed
 import multiprocessing
@@ -18,9 +16,9 @@ def main(fname, r, k_thresh, matrix_chunk):
     ## kurtosis pass union of electrode of locations
     #k_loc_name = 'R_full_k_' + str(k_thresh) + '_MNI.npy'
     ## downsampled locations with 5mm resolution:
-    # loc_name = 'R_full_MNI.npy'
+    loc_name = 'R_full_MNI.npy'
     ## downsampled locations with 30mm resolution for sample data test:
-    loc_name = 'R_small_MNI.npy'
+    # loc_name = 'R_small_MNI.npy'
 
     ## create file name
     file_name = os.path.splitext(os.path.basename(fname))[0]
@@ -33,7 +31,7 @@ def main(fname, r, k_thresh, matrix_chunk):
     if not os.path.isdir(cor_fig_dir):
         os.mkdir(cor_fig_dir)
 
-    full_dir = os.path.join(get_grand_parent_dir(os.getcwd()), 'full_matrices')
+    full_dir = os.path.join(get_grand_parent_dir(os.getcwd()), 'full_matrices_Rstd')
     if not os.path.isdir(full_dir):
         os.mkdir(full_dir)
 
@@ -77,14 +75,14 @@ def main(fname, r, k_thresh, matrix_chunk):
                 #### create weights matrix
                 RBF_weights = rbf(R_full, R_K_subj, r)
                 #### compile all pairs of coordidnates - loop over R_full matrix (lower triangle)
-                inputs = [(x, y) for x in range(R_full.shape[0]) for y in range(x)]
-                num_cores = multiprocessing.cpu_count()
-                #### can't have the delayed(expand_corrmat) in a function
-                results = Parallel(n_jobs=num_cores)(
-                    delayed(expand_corrmat)(coord, R_K_subj, RBF_weights, C_K_subj) for coord in inputs)
-                outfile = os.path.join(full_dir, file_name + '_k' + str(k_thresh) + '_r' + str(
-                    r) + '_all')
-                np.save(outfile, results)
+                # inputs = [(x, y) for x in range(R_full.shape[0]) for y in range(x)]
+                # num_cores = multiprocessing.cpu_count()
+                # #### can't have the delayed(expand_corrmat) in a function
+                # results = Parallel(n_jobs=num_cores)(
+                #     delayed(expand_corrmat)(coord, R_K_subj, RBF_weights, C_K_subj) for coord in inputs)
+                # outfile = os.path.join(full_dir, file_name + '_k' + str(k_thresh) + '_r' + str(
+                #     r) + '_all')
+                # np.save(outfile, results)
                 ### try distributed by rows:
                 # sliced_up = slice_list(range(R_full.shape[0]), 4)
                 # #m_slice = np.logspace(3, 0, 30, dtype='int')
@@ -93,13 +91,15 @@ def main(fname, r, k_thresh, matrix_chunk):
 
                 ### slice list of coordinates in a number of sublists (this shouldn't be hardcoded) and index a slice according to matrix_chunk
                 #### this step on my computer takes about 20GB and 12 minutes for a full matrix width of 20,000
-                # sliced_up = slice_list([(x, y) for x in range(R_full.shape[0]) for y in range(x)], 10)[int(matrix_chunk)]
+                sliced_up = slice_list([(x, y) for x in range(R_full.shape[0]) for y in range(x)], 5000)[int(matrix_chunk)]
 
                 ### With andy's help, partition_jobs
                 num_cores = multiprocessing.cpu_count()
                 #### can't have the delayed(expand_corrmat) in a function
+                # results = Parallel(n_jobs=num_cores)(
+                #     delayed(expand_corrmat)(coord, R_K_subj, RBF_weights, C_K_subj) for coord in partition_jobs(R_full.shape[0])[int(matrix_chunk)])
                 results = Parallel(n_jobs=num_cores)(
-                    delayed(expand_corrmat)(coord, R_K_subj, RBF_weights, C_K_subj) for coord in partition_jobs(R_full.shape[0])[int(matrix_chunk)])
+                    delayed(expand_corrmat)(coord, R_K_subj, RBF_weights, C_K_subj) for coord in sliced_up)
                 outfile = os.path.join(full_dir, file_name + '_k' + str(k_thresh) + '_r' + str(r)+ '_pooled_matrix_' + matrix_chunk.rjust(5,'0'))
                 np.save(outfile, results)
 
