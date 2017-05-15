@@ -1,6 +1,7 @@
 import superEEG
-import numpy as np
 
+# load example data
 bo = superEEG.load_example_data()
 
+# check out the bo
 bo.info()
