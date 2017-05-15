@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
+
 import pandas as pd
+import time
+import os
+import numpy as np
+import pickle
 
 class Brain(object):
     """
@@ -35,8 +40,9 @@ class Brain(object):
     locs : Pandas DataFrame
         MNI coordinate (x,y,z) by electrode df containing electrode locations
 
-    session : num or str
-        Samples x 1 array containing session identifiers
+    sessions : num, str or list
+        Samples x 1 array containing session identifiers.  If a singleton is passed,
+         a single session will be created.
 
     sample_rates : float or list of floats
         Sample rate of the data. If different over multiple sessions, this is a
@@ -64,11 +70,14 @@ class Brain(object):
     ----------
 
     get_data : function
-        takes brain object and returns data
+        Takes brain object and returns data
 
     remove_elecs : function
-        takes brain object and returns brain object with electrodes and locations
+        Takes brain object and returns brain object with electrodes and locations
         exceeding some threshold removed
+
+    save : function
+        Saves brain object
 
     Returns
     ----------
@@ -78,8 +87,47 @@ class Brain(object):
 
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, data=None, locs=None, sessions=None, sample_rate=None, meta=None):
+
+        # convert data to df
+        self.data = pd.DataFrame(data)
+
+        # locs
+        self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
+
+        # session
+        if isinstance(sessions, str) or isinstance(sessions, int):
+            self.sessions = [session for i in range(self.data.shape[0])]
+        else:
+            self.sessions = sessions
+
+        # sample rate
+        if isinstance(sample_rate, list):
+            self.sample_rate = sample_rate
+        elif isinstance(sessions, list):
+            self.sample_rate = [sample_rate for s in range(sessions)]
+        else:
+            self.sample_rate = [sample_rate]
+
+        # meta
+        self.meta = meta
+
+        # compute attrs
+        self.n_elecs = self.data.shape[1]
+        self.n_secs = self.data.shape[0]/self.sample_rate[0][0][0]
+        self.date_created = time.strftime("%c")
+
+    # methods
+
+    def info(self):
+        """
+        Print info about the brain object
+        """
+        print('Number of electrodes: ' + str(self.n_elecs))
+        print('Recording time in seconds: ' + str(self.n_secs))
+        print('Number of sessions: ' + str(1))
+        print('Date created: ' + str(self.date_created))
+        print('Meta data: ' + str(self.meta))
 
     def get_data(self):
         """
@@ -93,4 +141,11 @@ class Brain(object):
         """
         if measure is 'kurtosis':
             pass
-            # remove kurtotic elecs and return data object
+
+    def save(self, filepath):
+        """
+        Save a pickled brain, mwahahaha
+        """
+        with open(filepath + '.bo', 'wb') as f:
+            pickle.dump(self, f)
+            print('pickle saved.')
