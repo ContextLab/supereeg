@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-from . import helpers
+#from . import helpers
+import helpers
+from _helpers.stats import *
 
 
 # CHANGE THIS TO ACCEPT NUMPY ARRAY
@@ -24,11 +26,17 @@ def corrmat(bo):
 
 
     """
+    def aggregate(prev, next):
+        return np.sum(np.concatenate((prev[:, :, np.newaxis], next[:, :, np.newaxis]), axis=2), axis=2)
+
+    def zcorr(x):
+        return r2z(1 - squareform(pdist(x.T, 'correlation')))
     
     summed_zcorrs = apply_by_file_index(bo, zcorr, aggregate)
-    n = n_files(fname)
+    n = n_files(bo)
 
     return z2r(summed_zcorrs / n)
+
 
 def predict(bo, model=None):
     """
@@ -71,3 +79,4 @@ def predict(bo, model=None):
     # timeseries reconstruction
 
     return bo_p
+
