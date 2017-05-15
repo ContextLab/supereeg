@@ -5,7 +5,7 @@ import glob
 import os
 from stats import rbf, good_chans, expand_corrmat, expand_matrix
 # from plot import compare_matrices
-from bookkeeping import get_rows, get_grand_parent_dir, get_parent_dir
+from bookkeeping import get_rows, get_grand_parent_dir, get_parent_dir, slice_list
 from scipy.spatial.distance import squareform as squareform
 import sys
 from joblib import Parallel, delayed
@@ -14,7 +14,7 @@ import multiprocessing
 
 ## input: full path to file name, radius, kurtosis threshold
 
-def main(fname, r, k_thresh):
+def main(fname, r, k_thresh, matrix_chunk):
     ## kurtosis pass union of electrode of locations
     #k_loc_name = 'R_full_k_' + str(k_thresh) + '_MNI.npy'
     ## downsampled locations with 5mm resolution:
@@ -77,30 +77,24 @@ def main(fname, r, k_thresh):
                 #### create weights matrix
                 RBF_weights = rbf(R_full, R_K_subj, r)
                 #### compile all pairs of coordidnates - loop over R_full matrix (lower triangle)
-                # inputs = [(x, y) for x in range(R_full.shape[0]) for y in range(x)]
-                # num_cores = multiprocessing.cpu_count()
-                # #### can't have the delayed(expand_corrmat) in a function
-                # results = Parallel(n_jobs=num_cores)(
-                #     delayed(expand_corrmat)(coord, R_K_subj, RBF_weights, C_K_subj) for coord in inputs)
-
-                ### try distributed further:
-
                 inputs = [(x, y) for x in range(R_full.shape[0]) for y in range(x)]
                 num_cores = multiprocessing.cpu_count()
                 #### can't have the delayed(expand_corrmat) in a function
                 results = Parallel(n_jobs=num_cores)(
                     delayed(expand_corrmat)(coord, R_K_subj, RBF_weights, C_K_subj) for coord in inputs)
+                outfile = os.path.join(full_dir, file_name + '_k' + str(k_thresh) + '_r' + str(
+                    r) + '_all')
+                np.save(outfile, results)
+                ### try distributed further:
+                sliced_up = slice_list(range(R_full.shape[0]), 4)
+                inputs = [(x, y) for x in range(np.min(sliced_up[int(matrix_chunk)]),np.max(sliced_up[int(matrix_chunk)])+1, 1) for y in range(x)]
+                num_cores = multiprocessing.cpu_count()
+                #### can't have the delayed(expand_corrmat) in a function
+                results = Parallel(n_jobs=num_cores)(
+                    delayed(expand_corrmat)(coord, R_K_subj, RBF_weights, C_K_subj) for coord in inputs)
+                outfile = os.path.join(full_dir, file_name + '_k' + str(k_thresh) + '_r' + str(r)+ '_pooled_matrix_' + matrix_chunk)
+                np.save(outfile, results)
 
-                #### this expands the list from the mulitprocessor output  - the lower triangle of the matrix
-                C_expand = expand_matrix(results, R_full)
-                C_est = squareform(C_expand, checks=False)
-                outfile = os.path.join(full_dir, 'full_matrix_' + file_name + '_k' + str(k_thresh) + '_r' + str(r))
-                np.savez(outfile + '.npz', C_est=C_est)
-                # sub_inds = get_rows(R_full, R_K_subj)
-                # C_est_sub = C_expand[sub_inds, :][:, sub_inds]
-                # outfile = os.path.join(cor_fig_dir, 'sub_cov_' + file_name + '_r_' + str(r) + '.png')
-                # C_K_subj[np.isnan(C_K_subj)] = 0
-                # compare_matrices(C_K_subj + np.eye(C_K_subj.shape[0]), C_est_sub, outfile, ('Observed' + file_name, 'Estimated' + file_name))
             else:
                 print("not enough electrodes pass k = " + str(k_thresh))
     else:
@@ -109,4 +103,4 @@ def main(fname, r, k_thresh):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2], sys.argv[3])
+    main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
