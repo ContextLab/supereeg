@@ -232,13 +232,16 @@ def slice_list(input, size):
 
         Parameters
         ----------
-        directory : str
-            Path to files
+        input : list
+            List of number
+
+        size : int
+            Number of slices
 
         Returns
         ----------
-        results : str
-            Path for two directories up
+        results : list of list
+            Divided lists
 
         """
     input_size = len(input)
@@ -254,3 +257,8 @@ def slice_list(input, size):
             result[i].append(iterator.next())
             remain -= 1
     return result
+
+
+def partition_jobs(matrix_width, n_chunks=4):
+    idxs = np.array([(x, y) for x in range(matrix_width) for y in range(x)])
+    return np.array_split(idxs, n_chunks)

@@ -39,11 +39,13 @@ def main(fname, r, k_thresh):
     ## check if expanded subject level correlation matrix exists
     if not os.path.isfile(os.path.join(full_dir, 'full_matrix_' + file_name + '_k' + str(k_thresh) + '_r' + str(r) + '.npz')):
         R_full = np.load(os.path.join(get_parent_dir(os.getcwd()), loc_name))
-        ### to compare previous pooling method and new matrix division:
+
+        ### to compare previous pooling method and new matrix division, this won't scale to cluster:
         data_all = np.load(os.path.join(full_dir, file_name + '_k' + str(k_thresh) + '_r' + str(
                     r) + '_all.npy'))
         C_expand_old = expand_matrix(data_all, R_full)
 
+        ###
         files = glob.glob(os.path.join(full_dir, '*.npy'))
         results = []
         count = 0
