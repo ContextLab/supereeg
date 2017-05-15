@@ -5,14 +5,14 @@ import glob
 import os
 from stats import rbf, good_chans, expand_corrmat, expand_matrix
 # from plot import compare_matrices
-from bookkeeping import get_rows, get_grand_parent_dir, get_parent_dir, slice_list
+from bookkeeping import get_rows, get_grand_parent_dir, get_parent_dir, slice_list, partition_jobs
 from scipy.spatial.distance import squareform as squareform
 import sys
 from joblib import Parallel, delayed
 import multiprocessing
 
 
-## input: full path to file name, radius, kurtosis threshold
+## input: full path to file name, radius, kurtosis threshold, and number of matrix divisions
 
 def main(fname, r, k_thresh, matrix_chunk):
     ## kurtosis pass union of electrode of locations
@@ -85,14 +85,22 @@ def main(fname, r, k_thresh, matrix_chunk):
                 outfile = os.path.join(full_dir, file_name + '_k' + str(k_thresh) + '_r' + str(
                     r) + '_all')
                 np.save(outfile, results)
-                ### try distributed further:
-                sliced_up = slice_list(range(R_full.shape[0]), 4)
-                inputs = [(x, y) for x in range(np.min(sliced_up[int(matrix_chunk)]),np.max(sliced_up[int(matrix_chunk)])+1, 1) for y in range(x)]
+                ### try distributed by rows:
+                # sliced_up = slice_list(range(R_full.shape[0]), 4)
+                # #m_slice = np.logspace(3, 0, 30, dtype='int')
+                # inputs = [(x, y) for x in range(np.min(sliced_up[int(matrix_chunk)]),np.max(sliced_up[int(matrix_chunk)])+1, 1) for y in range(x)]
+
+
+                ### slice list of coordinates in a number of sublists (this shouldn't be hardcoded) and index a slice according to matrix_chunk
+                #### this step on my computer takes about 20GB and 12 minutes for a full matrix width of 20,000
+                # sliced_up = slice_list([(x, y) for x in range(R_full.shape[0]) for y in range(x)], 10)[int(matrix_chunk)]
+
+                ### With andy's help, partition_jobs
                 num_cores = multiprocessing.cpu_count()
                 #### can't have the delayed(expand_corrmat) in a function
                 results = Parallel(n_jobs=num_cores)(
-                    delayed(expand_corrmat)(coord, R_K_subj, RBF_weights, C_K_subj) for coord in inputs)
-                outfile = os.path.join(full_dir, file_name + '_k' + str(k_thresh) + '_r' + str(r)+ '_pooled_matrix_' + matrix_chunk)
+                    delayed(expand_corrmat)(coord, R_K_subj, RBF_weights, C_K_subj) for coord in partition_jobs(R_full.shape[0])[int(matrix_chunk)])
+                outfile = os.path.join(full_dir, file_name + '_k' + str(k_thresh) + '_r' + str(r)+ '_pooled_matrix_' + matrix_chunk.rjust(5,'0'))
                 np.save(outfile, results)
 
             else:
