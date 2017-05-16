@@ -25,18 +25,17 @@ def predict(bo, model=None):
         New brain data object with missing electrode locations filled in
 
     """
-
-    # if model is None:
-    #
-    #     assert type(bo) is list, "To calculate the model, you need more than 1 brain object"
-
+    
     # get subject-specific covariance matrix
-    x = get_corrmat(data)
+    c = get_corrmat(bo)
 
     # get full covmats
-    x_e = expand_corrmat(x)
+    cx = expand_corrmat(c)
 
     # timeseries reconstruction
-    x_r = infer_activity(xe)
+    cxi = infer_activity(cx)
 
-    return x_r
+    # create new bo with inferred activity
+    boi = Brain(data=cxi, locs=None)
+
+    return boi

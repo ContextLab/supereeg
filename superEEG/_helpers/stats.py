@@ -10,9 +10,7 @@ import os
 from scipy import linalg
 from sklearn.decomposition import PCA
 
-
-
-def apply_by_file_index(bo, xform, aggregator, field='Y'):
+def apply_by_file_index(bo, xform, aggregator):
 
     """
     Session dependent function application and aggregation
@@ -40,21 +38,22 @@ def apply_by_file_index(bo, xform, aggregator, field='Y'):
 
     """
 
-    file_inds = np.unique(bo.sessions)
+    for session in bo.sessions.unique():
+        results = aggregator([xform(bo[session, :])
 
-    results = []
-    for i in file_inds:
-        if np.shape(bo.sessions)[1] == 1:
-            fname_labels = bo.sessions.T
-        else:
-            fname_labels = bo.sessions
-        next_inds = np.where(fname_labels == i)[1]
-        next_vals = xform(bo.field[next_inds, :])
-        if len(results) == 0:
-            results = next_vals
-        else:
-            results = aggregator(results, next_vals)
-    return results
+    # results = []
+    # for i in file_inds:
+    #     if np.shape(bo.sessions)[1] == 1:
+    #         fname_labels = bo.sessions.T
+    #     else:
+    #         fname_labels = bo.sessions
+    #     next_inds = np.where(fname_labels == i)[1]
+    #     next_vals = xform(bo.field[next_inds, :])
+    #     if len(results) == 0:
+    #         results = next_vals
+    #     else:
+    #         results = aggregator(results, next_vals)
+    # return results
 
 
 def n_files(fname):

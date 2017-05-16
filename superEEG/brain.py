@@ -40,7 +40,7 @@ class Brain(object):
     locs : Pandas DataFrame
         MNI coordinate (x,y,z) by electrode df containing electrode locations
 
-    sessions : num, str or list
+    sessions : Pandas Series
         Samples x 1 array containing session identifiers.  If a singleton is passed,
          a single session will be created.
 
@@ -97,9 +97,9 @@ class Brain(object):
 
         # session
         if isinstance(sessions, str) or isinstance(sessions, int):
-            self.sessions = [session for i in range(self.data.shape[0])]
+            self.sessions = pd.Series([session for i in range(self.data.shape[0])])
         else:
-            self.sessions = sessions
+            self.sessions = pd.Series(sessions)
 
         # sample rate
         if isinstance(sample_rate, list):
