@@ -57,9 +57,9 @@ def main(fname, r, k_thresh, matrix_chunk):
 
         ## load subject's electrodes
         sub_data = np.load(os.path.join(corr_dir, 'sub_corr_' + file_name + '.npz'))
-        R_subj = sub_data['R_subj']
-        C_subj = sub_data['C_subj']
-        K_subj = sub_data['K_subj']
+        R_subj = sub_data['R_subj'] # electrode locations
+        C_subj = sub_data['C_subj'] # subject data
+        K_subj = sub_data['K_subj'] # kurtosis - 1 by n_elecs
         R_full = np.load(os.path.join(get_parent_dir(os.getcwd()), loc_name))
         # R_K_full = np.load(os.path.join(get_parent_dir(os.getcwd()), k_loc_name))
 
@@ -73,7 +73,7 @@ def main(fname, r, k_thresh, matrix_chunk):
                 # C_expand = expand_corrmat(R_full, R_K_subj, C_K_subj, float(r))
                 ######### to use parallelize forloop:
                 #### create weights matrix
-                RBF_weights = rbf(R_full, R_K_subj, r)
+                RBF_weights = rbf(R_full, R_K_subj, r) # 3 by number of good channels 
                 #### compile all pairs of coordidnates - loop over R_full matrix (lower triangle)
                 # inputs = [(x, y) for x in range(R_full.shape[0]) for y in range(x)]
                 # num_cores = multiprocessing.cpu_count()

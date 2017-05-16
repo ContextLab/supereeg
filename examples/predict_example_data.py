@@ -3,7 +3,9 @@ import superEEG
 # load example data
 bo = superEEG.load_example_data()
 
-# debug predict.py
-sub_corrmat = superEEG.predict(bo)
+# load example model
+model = superEEG.load_example_model()
+print(model.locs)
 
-print(sub_corrmat)
+# debug predict.py
+sub_corrmat = superEEG.predict(bo, model=model)
