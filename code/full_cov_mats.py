@@ -12,7 +12,7 @@ import multiprocessing
 
 ## input: full path to file name, radius, kurtosis threshold, and number of matrix divisions
 
-def main(fname, r, k_thresh, matrix_chunk):
+def main(fname, matrix_chunk, r, k_thresh):
     ## kurtosis pass union of electrode of locations
     #k_loc_name = 'R_full_k_' + str(k_thresh) + '_MNI.npy'
     ## downsampled locations with 5mm resolution:
@@ -36,7 +36,7 @@ def main(fname, r, k_thresh, matrix_chunk):
         os.mkdir(full_dir)
 
     ## check if expanded subject level correlation matrix exists
-    if not os.path.isfile(os.path.join(full_dir, 'full_matrix_' + file_name + '_k' + str(k_thresh) + '_r' + str(r) + '.npz')):
+    if not os.path.isfile(os.path.join(full_dir, file_name + '_k' + str(k_thresh) + '_r' + str(r)+ '_pooled_matrix_' + matrix_chunk.rjust(5,'0') + '.npy')):
         #### we are using a different set of locations, downsampled from a standard brain - this would be to create it from the union of all electrodes passing kthresh
         # if not os.path.isfile(os.path.join(get_parent_dir(os.getcwd()), k_loc_name)):
         #     k_full_locs = np.empty(shape=[0, 3])
@@ -106,7 +106,7 @@ def main(fname, r, k_thresh, matrix_chunk):
             else:
                 print("not enough electrodes pass k = " + str(k_thresh))
     else:
-        print('full_matrix_' + file_name + '_k' + str(k_thresh) + '_r' + str(r), 'exists')
+        print(file_name + '_k' + str(k_thresh) + '_r' + str(r)+ '_pooled_matrix_' + matrix_chunk.rjust(5,'0'), 'exists')
 
 
 
