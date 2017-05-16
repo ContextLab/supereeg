@@ -31,7 +31,7 @@ def corrmat(bo):
 
     def zcorr(x):
         return r2z(1 - squareform(pdist(x.T, 'correlation')))
-    
+
     summed_zcorrs = apply_by_file_index(bo, zcorr, aggregate)
     n = n_files(bo)
 
@@ -61,22 +61,17 @@ def predict(bo, model=None):
 
     """
 
-    # get data from brain obect
-    data = bo.get_data()
+    # if model is None:
+    #
+    #     assert type(bo) is list, "To calculate the model, you need more than 1 brain object"
 
-    if model is None:
+    # get subject-specific covariance matrix
+    x = get_corrmat(data)
 
-        assert type(bo) is list, "To calculate the model, you need more than 1 brain object"
-
-        # get subject-specific covariance matrix
-        sub_corrmat = corrmat(data)
-
-        # get full covmats - NOT NECESSARY?
-
-        # average across all - NOT NECESSARY?
-            # model = result of this computation
+    # get full covmats
+    x_e = expand_corrmat(x)
 
     # timeseries reconstruction
+    x_r = infer_activity(xe)
 
-    return bo_p
-
+    return x_r
