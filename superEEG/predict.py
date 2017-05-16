@@ -30,7 +30,7 @@ def predict(bo, model=None):
     c = get_corrmat(bo)
 
     # # get full correlation matrix
-    weights = rbf(model.locs, bo.locs, 20)
+    weights = rbf(model.locs, bo.locs)
     # cx = expand_corrmat(c)
     #
     # # timeseries reconstruction
