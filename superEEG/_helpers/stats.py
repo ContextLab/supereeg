@@ -112,7 +112,7 @@ def kurt_vals(fname):
     return apply_by_file_index(fname, kurtosis, aggregate, field='Y')
 
 
-def get_corrmat(fname):
+def get_corrmat(bo):
     """
     Function that calculates the average subject level correlation matrix for filename across session
 
@@ -139,7 +139,7 @@ def get_corrmat(fname):
     def zcorr(x):
         return r2z(1 - squareform(pdist(x.T, 'correlation')))
 
-    summed_zcorrs = apply_by_file_index(fname, zcorr, aggregate)
+    summed_zcorrs = apply_by_file_index(bo, zcorr, aggregate)
     n = n_files(fname)
 
     return z2r(summed_zcorrs / n)
