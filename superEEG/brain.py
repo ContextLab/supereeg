@@ -95,11 +95,12 @@ class Brain(object):
         # locs
         self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
+        print(sessions.shape)
         # session
         if isinstance(sessions, str) or isinstance(sessions, int):
             self.sessions = pd.Series([session for i in range(self.data.shape[0])])
         else:
-            self.sessions = pd.Series(sessions)
+            self.sessions = pd.Series(sessions.ravel())
 
         # sample rate
         if isinstance(sample_rate, list):

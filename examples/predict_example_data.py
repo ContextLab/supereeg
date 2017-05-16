@@ -4,5 +4,6 @@ import superEEG
 bo = superEEG.load_example_data()
 
 # debug predict.py
+sub_corrmat = superEEG.predict(bo)
 
-sub_cormat = superEEG.corrmat(bo)
+print(sub_corrmat)

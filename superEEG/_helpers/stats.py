@@ -1,3 +1,4 @@
+from __future__ import division
 import numpy as np
 import numpy.matlib as mat
 from scipy.stats import kurtosis, zscore
@@ -17,19 +18,14 @@ def apply_by_file_index(bo, xform, aggregator):
 
     Parameters
     ----------
-    fname : Data matrix (npz file)
-        The data to be analyzed.
-        Filename containing fields:
-            Y - time series
-            R - electrode locations
-            fname_labels - session number
-            sample_rate - sampling rate
+    bo : Brain object
+        Contains data
 
     xform : function
         The function to apply to the data matrix from each filename
 
     aggregator: function
-        Tunction for aggregating results across multiple iterations
+        Function for aggregating results across multiple iterations
 
     Returns
     ----------
@@ -38,22 +34,13 @@ def apply_by_file_index(bo, xform, aggregator):
 
     """
 
-    for session in bo.sessions.unique():
-        results = aggregator([xform(bo[session, :])
+    for idx, session in enumerate(bo.sessions.unique()):
+        if idx is 0:
+            results = xform(bo.get_data()[bo.sessions==session, :])
+        else:
+            results = aggregator(results, xform(bo.get_data()[bo.sessions==session, :]))
 
-    # results = []
-    # for i in file_inds:
-    #     if np.shape(bo.sessions)[1] == 1:
-    #         fname_labels = bo.sessions.T
-    #     else:
-    #         fname_labels = bo.sessions
-    #     next_inds = np.where(fname_labels == i)[1]
-    #     next_vals = xform(bo.field[next_inds, :])
-    #     if len(results) == 0:
-    #         results = next_vals
-    #     else:
-    #         results = aggregator(results, next_vals)
-    # return results
+    return results
 
 
 def n_files(fname):
@@ -132,16 +119,15 @@ def get_corrmat(bo):
 
 
     """
-    def aggregate(prev, next):
-        return np.sum(np.concatenate((prev[:, :, np.newaxis], next[:, :, np.newaxis]), axis=2), axis=2)
+    def aggregate(p, n):
+        return p+n
 
     def zcorr(x):
         return r2z(1 - squareform(pdist(x.T, 'correlation')))
 
     summed_zcorrs = apply_by_file_index(bo, zcorr, aggregate)
-    n = n_files(fname)
 
-    return z2r(summed_zcorrs / n)
+    return z2r(summed_zcorrs / len(bo.sessions.unique()))
 
 
 def time_by_file_index_chunked(fname, ave_data, known_inds, unknown_inds, electrode_ind, k_flat_removed, electrode, time_series, field='Y'):
