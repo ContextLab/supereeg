@@ -19,13 +19,16 @@ class Model(object):
         Optional dict containing whatever you want
     """
 
-    def __init__(self, data=None, locs=None, meta={}):
+    def __init__(self, data=None, locs=None, n_subs=None, meta={}):
 
         # convert data to df
         self.data = pd.DataFrame(data)
 
         # locs
         self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
+
+        # number of subjects
+        self.n_subs = n_subs
 
         # meta
         self.meta = meta

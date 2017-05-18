@@ -19,5 +19,6 @@ def load_example_model():
 
     with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/R_small_MNI.npy', 'rb') as handle:
         locs = np.load(handle)
+        data = np.random.rand(len(locs), len(locs))
 
-    return Model(data=None, locs=locs)
+    return Model(data=data, locs=locs, n_subs=67)

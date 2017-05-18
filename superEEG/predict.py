@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-#from . import helpers
-import helpers
-from _helpers.stats import *
+from ._helpers.stats import *
+from .brain import Brain
 
 def predict(bo, model=None):
     """
@@ -27,18 +26,28 @@ def predict(bo, model=None):
     """
 
     # get subject-specific correlation matrix
-    corrmat = get_corrmat(bo)
+    sub_corrmat = get_corrmat(bo)
 
     # get rbf weights
-    weights = rbf(model.locs, bo.locs)
+    sub_rbf_weights = rbf(pd.concat([model.locs,bo.locs]), bo.locs)
 
-    #  get full correlation matrix
-    corrmat_x = get_full_corrmat(corrmat, weights)
+    #  get subject expanded correlation matrix
+    sub_corrmat_x = get_expanded_corrmat(sub_corrmat, sub_rbf_weights)
+
+    # expanded rbf weights
+    model_rbf_weights = rbf(pd.concat([model.locs,bo.locs]), model.locs)
+
+    # get model expanded corrlation matrix
+    model_corrmat_x = get_expanded_corrmat(model.data.as_matrix(), model_rbf_weights)
+
+    # add in new subj data
+    model_corrmat_x = ((model_corrmat_x*model.n_subs)+sub_corrmat_x)/model.n_subs+1
 
     # timeseries reconstruction
-    # cxi = infer_activity(cx)
+    reconstructed = reconstruct_activity(bo, model_corrmat_x)
 
     # # create new bo with inferred activity
-    # boi = Brain(data=cxi, locs=None)
+    reconstructed_bo = Brain(data=reconstructed, locs=pd.concat([model.locs,bo.locs]),
+                sessions=bo.sessions, sample_rate=bo.sample_rate)
 
-    return corrmat_x
+    return reconstructed_bo

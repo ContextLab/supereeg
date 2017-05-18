@@ -561,7 +561,7 @@ def compute_coord(coord, weights, Z):
 
     return k / w
 
-def get_full_corrmat(C, weights):
+def get_expanded_corrmat(C, weights):
     """
     Gets full correlation matrix
 
@@ -592,8 +592,14 @@ def get_full_corrmat(C, weights):
 
     return expand_matrix(results, weights)
 
-
-
+def reconstruct_activity(bo, K):
+    """
+    """
+    s = K.shape[0]-bo.locs.shape[0]
+    Kba = K[:s,s:]
+    Kaa = K[s:,s:]
+    Y = bo.get_data()
+    return np.squeeze(np.dot(np.dot(Kba, np.linalg.pinv(Kaa)), Y.T).T)
 
 def expand_matrix(output_list, R_full):
     """

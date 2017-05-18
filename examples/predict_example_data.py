@@ -14,6 +14,7 @@ model locations.
 # License: MIT
 
 import superEEG
+import seaborn as sns
 
 # load example data
 bo = superEEG.load_example_data()
@@ -25,4 +26,6 @@ bo.remove_elecs(measure='kurtosis', threshold=10)
 model = superEEG.load_example_model()
 
 # debug predict.py
-p_bo = superEEG.predict(bo, model=model)
+reconstructed_bo = superEEG.predict(bo, model=model)
+
+reconstructed_bo.info()
