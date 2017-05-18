@@ -96,7 +96,6 @@ class Brain(object):
         # locs
         self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
-        print(sessions.shape)
         # session
         if isinstance(sessions, str) or isinstance(sessions, int):
             self.sessions = pd.Series([session for i in range(self.data.shape[0])])
