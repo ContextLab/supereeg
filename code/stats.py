@@ -528,22 +528,22 @@ def uniquerows(x):
 
     return x[idx]
 
-def expand_corrmat(coord, R_sub, RBF_weights, C_sub):
+def expand_corrmat(coord, R_sub, RBF_weights, sub_corrmat):
     """
     This function calculates the RBF weights for each coordinate in the R_full matrix - results are then pooled
 
     Parameters
     ----------
-    coord : ndarray
+    full_coord : tuple
         Matrix index coordinate pair - looped over each in R_full outside this function
 
-    R_sub : ndarray
+    sub_coords : n x 3 Pandas DataFrame where n is the number of elecs for a given subject
         Subject's coordinates - R_subj
 
-    RBF_weights : ndarray
+    RBF_weights : len(full_coords) x len(sub_coords) numpy array
         Weights matrix calculated using rbf function - (len(R_subj)xlen(R_subj)) matrix
 
-    C_sub : ndarray
+    sub_corrmat : len(sub_coords) x len(sub_coords) numpy array
         Subject level correlation matrix - (len(R_subj)xlen(R_subj)) matrix
 
     Returns
@@ -554,12 +554,56 @@ def expand_corrmat(coord, R_sub, RBF_weights, C_sub):
     """
     weighted_sum = 0
     sum_of_weights = 0
-    for h in range(R_sub.shape[0]):
+
+    # for each subject coord index
+    for h in range(sub_coords.shape[0]):
+
+        # for the length of each subject coord index
         for j in range(h):
-            next_weight = RBF_weights[coord[0], h] * RBF_weights[coord[1], j]
-            weighted_sum += r2z(C_sub[h, j]) * next_weight
-            sum_of_weights += next_weight
+
+            # get the RBF weight for a given coordinate
+            weight = RBF_weights[full_coord[0], h] * RBF_weights[full_coord[1], j]
+
+            # multiply a sub_corrmat value by the RBF weight
+            weighted_sum += r2z(sub_corrmat[h, j]) * weight
+
+            # sum of all weights
+            sum_of_weights += weight
+
     return z2r(weighted_sum / sum_of_weights)
+
+# def expand_corrmat(coord, R_sub, RBF_weights, C_sub):
+#     """
+#     This function calculates the RBF weights for each coordinate in the R_full matrix - results are then pooled
+#
+#     Parameters
+#     ----------
+#     coord : ndarray
+#         Matrix index coordinate pair - looped over each in R_full outside this function
+#
+#     R_sub : ndarray
+#         Subject's coordinates - R_subj
+#
+#     RBF_weights : ndarray
+#         Weights matrix calculated using rbf function - (len(R_subj)xlen(R_subj)) matrix
+#
+#     C_sub : ndarray
+#         Subject level correlation matrix - (len(R_subj)xlen(R_subj)) matrix
+#
+#     Returns
+#     ----------
+#     results : ndarray
+#         RBF-weighted average at coord (index in full matrix) - results are pooled
+#
+#     """
+#     weighted_sum = 0
+#     sum_of_weights = 0
+#     for h in range(R_sub.shape[0]):
+#         for j in range(h):
+#             next_weight = RBF_weights[coord[0], h] * RBF_weights[coord[1], j]
+#             weighted_sum += r2z(C_sub[h, j]) * next_weight
+#             sum_of_weights += next_weight
+#     return z2r(weighted_sum / sum_of_weights)
 
 
 

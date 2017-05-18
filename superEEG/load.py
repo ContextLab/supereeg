@@ -2,6 +2,7 @@ import numpy as np
 import os
 from .brain import Brain
 from .model import Model
+from ._helpers.stats import tal2mni
 
 def load_example_data():
 
@@ -10,7 +11,7 @@ def load_example_data():
         data = f['Y']
         sample_rate = f['samplerate']
         sessions = f['fname_labels']
-        locs = f['R']
+        locs = tal2mni(f['R'])
 
     return Brain(data=data, locs=locs, sessions=sessions, sample_rate=sample_rate)
 

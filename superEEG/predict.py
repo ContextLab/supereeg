@@ -27,16 +27,18 @@ def predict(bo, model=None):
     """
 
     # get subject-specific correlation matrix
-    c = get_corrmat(bo)
+    corrmat = get_corrmat(bo)
 
-    # # get full correlation matrix
+    # get rbf weights
     weights = rbf(model.locs, bo.locs)
-    # cx = expand_corrmat(c)
-    #
-    # # timeseries reconstruction
+
+    #  get full correlation matrix
+    corrmat_x = get_full_corrmat(corrmat, weights)
+
+    # timeseries reconstruction
     # cxi = infer_activity(cx)
-    #
+
     # # create new bo with inferred activity
     # boi = Brain(data=cxi, locs=None)
 
-    return weights
+    return corrmat_x

@@ -10,6 +10,8 @@ import pandas as pd
 import os
 from scipy import linalg
 from sklearn.decomposition import PCA
+from joblib import Parallel, delayed
+import multiprocessing
 
 def apply_by_file_index(bo, xform, aggregator):
 
@@ -71,7 +73,7 @@ def n_files(fname):
     return n
 
 
-def kurt_vals(fname):
+def kurt_vals(bo):
     """
     Function that calculates maximum kurtosis values for each channel
 
@@ -95,7 +97,7 @@ def kurt_vals(fname):
     def aggregate(prev, next):
         return np.max(np.vstack((prev, next)), axis=0)
 
-    return apply_by_file_index(fname, kurtosis, aggregate, field='Y')
+    return apply_by_file_index(bo, kurtosis, aggregate)
 
 
 def get_corrmat(bo):
@@ -512,38 +514,84 @@ def uniquerows(x):
 
     return x[idx]
 
-def expand_corrmat(coord, R_sub, RBF_weights, C_sub):
+# def expand_corrmat(coord, R_sub, RBF_weights, C_sub):
+#     """
+#     This function calculates the RBF weights for each coordinate in the R_full matrix - results are then pooled
+#
+#     Parameters
+#     ----------
+#     coord : ndarray
+#         Matrix index coordinate pair - looped over each in R_full outside this function
+#
+#     R_sub : ndarray
+#         Subject's coordinates - R_subj
+#
+#     RBF_weights : ndarray
+#         Weights matrix calculated using rbf function - (len(R_subj)xlen(R_subj)) matrix
+#
+#     C_sub : ndarray
+#         Subject level correlation matrix - (len(R_subj)xlen(R_subj)) matrix
+#
+#     Returns
+#     ----------
+#     results : ndarray
+#         RBF-weighted average at coord (index in full matrix) - results are pooled
+#
+#     """
+#     xweights = weights[x, :]
+#     yweights = weights[y, :]
+#     next_weights = np.outer(xweights, yweights)
+#     next_weights = next_weights - np.triu(next_weights)
+#
+#     w = np.sum(next_weights)
+#     k = np.sum(Z * next_weights)
+#
+#     return k / w
+
+def compute_coord(coord, weights, Z):
+
+    xweights = weights[coord[0], :]
+    yweights = weights[coord[1], :]
+
+    next_weights = np.outer(xweights, yweights)
+    next_weights = next_weights - np.triu(next_weights)
+
+    w = np.sum(next_weights)
+    k = np.sum(Z * next_weights)
+
+    return k / w
+
+def get_full_corrmat(C, weights):
     """
-    This function calculates the RBF weights for each coordinate in the R_full matrix - results are then pooled
+    Gets full correlation matrix
 
     Parameters
     ----------
-    coord : ndarray
-        Matrix index coordinate pair - looped over each in R_full outside this function
+    bo : Brain data object
+        Contains subject data, locs, other info
 
-    R_sub : ndarray
-        Subject's coordinates - R_subj
+    corrmat : len(n_elecs) x len(n_elecs) Numpy array
+        Subject's correlation matrix
 
-    RBF_weights : ndarray
+    weights : len()
         Weights matrix calculated using rbf function - (len(R_subj)xlen(R_subj)) matrix
 
     C_sub : ndarray
         Subject level correlation matrix - (len(R_subj)xlen(R_subj)) matrix
 
-    Returns
-    ----------
-    results : ndarray
-        RBF-weighted average at coord (index in full matrix) - results are pooled
-
     """
-    weighted_sum = 0
-    sum_of_weights = 0
-    for h in range(R_sub.shape[0]):
-        for j in range(h):
-            next_weight = RBF_weights[coord[0], h] * RBF_weights[coord[1], j]
-            weighted_sum += r2z(C_sub[h, j]) * next_weight
-            sum_of_weights += next_weight
-    return z2r(weighted_sum / sum_of_weights)
+
+    # slice and dice
+    sliced_up = [(x, y) for x in range(weights.shape[0]) for y in range(x)]
+
+    Z = r2z(C)
+    Z[np.isnan(Z)] = 0
+
+    results = Parallel(n_jobs=multiprocessing.cpu_count())(
+        delayed(compute_coord)(coord, weights, Z) for coord in sliced_up)
+
+    return expand_matrix(results, weights)
+
 
 
 

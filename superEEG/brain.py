@@ -5,6 +5,7 @@ import time
 import os
 import numpy as np
 import pickle
+from ._helpers.stats import kurt_vals
 
 class Brain(object):
     """
@@ -118,6 +119,9 @@ class Brain(object):
         self.n_secs = self.data.shape[0]/self.sample_rate[0][0][0]
         self.date_created = time.strftime("%c")
 
+        # add methods
+        self.remove_elecs = self.remove_elecs
+
     # methods
 
     def info(self):
@@ -141,7 +145,12 @@ class Brain(object):
         Gets data from brain object
         """
         if measure is 'kurtosis':
-            pass
+            vals = kurt_vals(self)
+            thresh_bool = vals > threshold
+            self.data = self.data.loc[:, ~thresh_bool]
+            self.locs = self.locs.loc[~thresh_bool]
+            self.n_elecs = self.data.shape[1]
+        return self
 
     def save(self, filepath):
         """
