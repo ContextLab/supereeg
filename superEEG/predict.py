@@ -44,7 +44,7 @@ def predict(bo, model=None):
     model_corrmat_x = ((model_corrmat_x * model.n_subs) + sub_corrmat_x) / model.n_subs+1
 
     # timeseries reconstruction
-    reconstructed = reconstruct_activity_tf(bo, model_corrmat_x)
+    reconstructed = reconstruct_activity(bo, model_corrmat_x)
 
     # # create new bo with inferred activity
     reconstructed_bo = Brain(data=reconstructed, locs=pd.concat([model.locs, bo.locs]),
