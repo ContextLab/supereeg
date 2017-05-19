@@ -26,6 +26,6 @@ bo.remove_elecs(measure='kurtosis', threshold=10)
 model = superEEG.load_example_model()
 
 # debug predict.py
-reconstructed_bo = superEEG.predict(bo, model=model)
+reconstructed_bo = superEEG.predict(bo, model=model, tf=True)
 
 reconstructed_bo.info()

@@ -201,9 +201,57 @@ def compute_coord(coord, weights, Z):
     next_weights = next_weights - np.triu(next_weights)
 
     w = np.sum(next_weights)
-    k = np.sum(Z * next_weights)
 
-    return k / w
+    if w > 0:
+        return np.sum(Z * next_weights) / w
+    else:
+        return 0
+
+def compute_coord_tf(coord, weights, Z, sess):
+
+    xweights = weights[coord[0], :].reshape([weights.shape[1],1])
+    yweights = weights[coord[1], :].reshape([weights.shape[1],1])
+
+    next_weights = tf.matrix_band_part(tf.matmul(xweights, yweights.T), -1, 0)
+
+    w = tf.reduce_sum(next_weights)
+    k = tf.reduce_sum(tf.matmul(tf.constant(Z),next_weights))
+
+    result = k / w
+
+    return sess.run(result)
+
+def get_expanded_corrmat_tf(C, weights):
+    """
+    Gets full correlation matrix
+
+    Parameters
+    ----------
+    bo : Brain data object
+        Contains subject data, locs, other info
+
+    corrmat : len(n_elecs) x len(n_elecs) Numpy array
+        Subject's correlation matrix
+
+    weights : len()
+        Weights matrix calculated using rbf function - (len(R_subj)xlen(R_subj)) matrix
+
+    C_sub : ndarray
+        Subject level correlation matrix - (len(R_subj)xlen(R_subj)) matrix
+
+    """
+
+    # slice and dice
+    sliced_up = [(x, y) for x in range(weights.shape[0]) for y in range(x)]
+
+    Z = r2z(C)
+    Z[np.isnan(Z)] = 0
+
+    sess = tf.Session()
+
+    results = [compute_coord_tf(coord, weights, Z, sess) for coord in sliced_up]
+
+    return expand_matrix(results, weights)
 
 def get_expanded_corrmat(C, weights):
     """
@@ -250,11 +298,11 @@ def reconstruct_activity_tf(bo, K):
     Reconstruct activity using tensorflow
     """
     s = K.shape[0]-bo.locs.shape[0]
-    result = tf.matmul(tf.matmul(np.float32(K[:s,s:]),
-                        tf.matrix_inverse(np.float32(K[s:,s:]))),
-                        np.float32(bo.get_data()).T)
+    result = tf.matmul(tf.matmul(tf.constant(K[:s,s:], dtype='float32'),
+                        tf.matrix_inverse(tf.constant(K[s:,s:], dtype='float32'))),
+                        tf.constant(bo.get_data().T, dtype='float32'))
     sess = tf.Session()
-    return sess.run(result)
+    return sess.run(result).T
 
 def round_it(locs, places):
     """
