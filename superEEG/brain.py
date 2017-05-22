@@ -72,11 +72,10 @@ class Brain(object):
     kurtosis : list of floats
         1 by number of electrode list containing kurtosis for each electrode
 
-
     Returns
     ----------
 
-    bo : Brain data object
+    bo : superEEG.Brain instance
         Instance of Brain data object containing subject data
 
     """
@@ -111,10 +110,9 @@ class Brain(object):
         self.n_secs = self.data.shape[0]/self.sample_rate[0][0][0]
         self.date_created = time.strftime("%c")
 
-        # add methods
+        # compute kurtosis
         self.kurtosis = kurt_vals(self)
 
-    # methods
     def info(self):
         """
         Print info about the brain object
@@ -127,7 +125,7 @@ class Brain(object):
 
     def get_data(self):
         """
-        Gets data from brain object
+        Returns data as numpy array
         """
         return self.data.as_matrix()
 

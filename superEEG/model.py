@@ -44,12 +44,6 @@ class Model(object):
     meta : dict
         Optional dict containing whatever you want
 
-    Methods
-    ----------
-
-    plot : function
-        Plots model as a heatmap
-
     Returns
     ----------
     model : superEEG.Model instance
@@ -71,16 +65,18 @@ class Model(object):
         # meta
         self.meta = meta
 
-    def predict(self, bo, tf=False, kthreshold=10):
+    def predict(self, bo, threshold=10, tf=False):
         """
-        Takes a brain object and a 'full' covariance model, fills in all
-        electrode timeseries for all missing locations and returns the new brain object
+        Infers timeseries from unknown locations given a brain object.
 
         Parameters
         ----------
 
-        bo : Brain data object or a list of Brain objects
+        bo : superEEG.Brain
             The brain data object that you want to predict
+
+        threshold : float
+            Threshold to remove bad electrodes based on kurtosis
 
         tf : bool
             If True, uses Tensorflow (default is False).
@@ -94,7 +90,7 @@ class Model(object):
         """
 
         # filter bad electrodes
-        bo = filter_elecs(bo, measure='kurtosis', threshold=kthreshold)
+        bo = filter_elecs(bo, measure='kurtosis', threshold=threshold)
 
         # get subject-specific correlation matrix
         sub_corrmat = get_corrmat(bo)
@@ -121,14 +117,14 @@ class Model(object):
             reconstructed = reconstruct_activity(bo, model_corrmat_x)
 
         # # create new bo with inferred activity
-        reconstructed_bo = Brain(data=reconstructed, locs=self.locs,
+        bo_p = Brain(data=reconstructed, locs=self.locs,
                     sessions=bo.sessions, sample_rate=bo.sample_rate)
 
-        return reconstructed_bo
+        return bo_p
 
     def plot(self):
         """
-        Plot the superEEG model
+        Plot the superEEG model as a heatmap
         """
         sns.heatmap(self.data, xticklabels=False, yticklabels=False)
         sns.plt.title('SuperEEG Model, N=' + str(self.n_subs))

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 =============================
-Predict unknown location
+Predict timeseries at unknown locations
 =============================
 
 In this example, we load in a single subject example, load a model, and predict
