@@ -9,14 +9,45 @@ class Model(object):
     Parameters
     ----------
 
-    data : 2d numpy array
-        electrodes x electrodes correlation matrix
+    data : numpy.ndarray
+        Electrodes x electrodes correlation matrix
 
-    locs : 1d numpy array or list
+    locs : numpy.ndarray
         MNI coordinate (x,y,z) by number of electrode df containing electrode locations
+
+    n_subs : int
+        Number of subjects used to create model
 
     meta : dict
         Optional dict containing whatever you want
+
+
+    Attributes
+    ----------
+
+    data : pandas.DataFrame
+        Electrodes x electrodes correlation matrix
+
+    locs : pandas.DataFrame
+        MNI coordinate (x,y,z) by number of electrode df containing electrode locations
+
+    n_subs : int
+        Number of subjects used to create model
+
+    meta : dict
+        Optional dict containing whatever you want
+
+    Methods
+    ----------
+
+    plot : function
+        Plots model as a heatmap
+
+    Returns
+    ----------
+    model : superEEG.Model instance
+        A model that can be used to infer timeseries from unknown locations
+
     """
 
     def __init__(self, data=None, locs=None, n_subs=None, meta={}):
