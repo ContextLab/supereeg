@@ -3,8 +3,13 @@ import seaborn as sns
 
 class Model(object):
     """
-    Class containing superEEG model and associated locations
+    superEEG model and associated locations
 
+    This class holds your superEEG model.  To create an instance, you need a model
+    (an electrode x electrode correlation matrix), electrode locations in MNI
+    space, and the number of subjects used to create the model.  Additionally,
+    you can include a meta dictionary with any other information that you want
+    to save with the model.
 
     Parameters
     ----------
