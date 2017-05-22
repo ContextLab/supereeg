@@ -1,4 +1,4 @@
-![SuperEEG logo](images/SuperEEG.png)
+![SuperEEG logo](images/superEEG.png)
 
 <h2>Overview</h2>
 
