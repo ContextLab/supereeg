@@ -11,7 +11,12 @@ class Brain(object):
     """
     Brain data object for the superEEG package
 
-    Details about the Brain object.
+    A brain data object contains a single iEEG subject. To create one, at minimum
+    you need data (samples by electrodes), location coordinates in MNI space and
+    the sample rate of the data. Additionally, you can include a session id. If
+    included, all analyses will be performed within session and then aggregated
+    across sessions.  You can also include a meta dict, which can contain any
+    other information that might be useful (subject id, recording params, etc).
 
     Parameters
     ----------
@@ -67,18 +72,6 @@ class Brain(object):
     kurtosis : list of floats
         1 by number of electrode list containing kurtosis for each electrode
 
-    Methods
-    ----------
-
-    get_data : function
-        Returns data as a Numpy array
-
-    remove_elecs : function
-        Returns brain object with electrodes and locations exceeding some
-        threshold removed
-
-    save : function
-        Saves brain object
 
     Returns
     ----------
