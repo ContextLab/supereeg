@@ -29,26 +29,6 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we load in a single subject example, remove electrodes that exceed a kurtosis ...">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_predict_example_data_thumb.png
-
-        :ref:`sphx_glr_auto_examples_predict_example_data.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/predict_example_data
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="SuperEEG will run in different ways depending your computing environment. To change the computi...">
 
 .. only:: html
@@ -66,6 +46,26 @@ Gallery of Examples
    :hidden:
 
    /auto_examples/set_context
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we load in a single subject example, remove electrodes that exceed a kurtosis ...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_predict_example_data_thumb.png
+
+        :ref:`sphx_glr_auto_examples_predict_example_data.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/predict_example_data
 .. raw:: html
 
     <div style='clear:both'></div>

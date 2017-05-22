@@ -24,5 +24,8 @@ bo.remove_elecs(measure='kurtosis', threshold=10)
 # load example model
 model = superEEG.load_example_model()
 
-# debug predict.py
-p_bo = superEEG.predict(bo, model=model)
+# fill in the missing timeseries data
+reconstructed_bo = superEEG.predict(bo, model=model)
+
+# print out info on new brain object
+reconstructed_bo.info()

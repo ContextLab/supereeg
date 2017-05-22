@@ -16,13 +16,13 @@ class Brain(object):
     Parameters
     ----------
 
-    data : 2d numpy array or list of lists
-        Samples x electrodes df containing the EEG data
+    data : numpy.ndarray
+        Samples x electrodes array containing the EEG data
 
-    locs : 1d numpy array or list
-        MNI coordinate (x,y,z) by electrode df containing electrode locations
+    locs : numpy.ndarray
+        MNI coordinate (x,y,z) by electrode array containing electrode locations
 
-    session : 1d numpy array or list
+    session : numpy.ndarray
         Samples x 1 array containing session identifiers
 
     sample_rates : float or list of floats
@@ -36,7 +36,7 @@ class Brain(object):
     ----------
 
     data : Pandas DataFrame
-        Samples x electrodes df containing the EEG data
+        Samples x electrodes dataframe containing the EEG data
 
     locs : Pandas DataFrame
         MNI coordinate (x,y,z) by electrode df containing electrode locations
@@ -71,11 +71,11 @@ class Brain(object):
     ----------
 
     get_data : function
-        Takes brain object and returns data
+        Returns data as a Numpy array
 
     remove_elecs : function
-        Takes brain object and returns brain object with electrodes and locations
-        exceeding some threshold removed
+        Returns brain object with electrodes and locations exceeding some
+        threshold removed
 
     save : function
         Saves brain object
@@ -83,7 +83,7 @@ class Brain(object):
     Returns
     ----------
 
-    brain : Brain data object
+    bo : Brain data object
         Instance of Brain data object containing subject data
 
     """
@@ -157,4 +157,4 @@ class Brain(object):
         """
         with open(filepath + '.bo', 'wb') as f:
             pickle.dump(self, f)
-            print('pickle saved.')
+            print('Brain object saved.')
