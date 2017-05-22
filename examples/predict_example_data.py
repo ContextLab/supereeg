@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 =============================
-Predict a dataset
+Predict unknown location
 =============================
 
 In this example, we load in a single subject example, remove electrodes that exceed

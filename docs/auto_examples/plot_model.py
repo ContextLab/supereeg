@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 =============================
-Loading data
+Load and plot a model
 =============================
 
-Here, we load an example dataset and then print out some information about it.
+Here we load the example model, and then plot it.
 
 """
 
@@ -14,8 +14,8 @@ Here, we load an example dataset and then print out some information about it.
 # import
 import superEEG
 
-# load example data
-bo = superEEG.load_example_data()
+# load the model
+model = superEEG.load_example_model()
 
-# check out the bo
-bo.info()
+# plot it
+model.plot()
