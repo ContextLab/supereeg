@@ -67,5 +67,6 @@ class Model(object):
         self.plot = self.plot
 
     def plot(self):
-        sns.heatmap(self.data)
+        sns.heatmap(self.data, xticklabels=False, yticklabels=False)
+        sns.plt.title('SuperEEG Model, N=' + str(self.n_subs))
         sns.plt.show()
