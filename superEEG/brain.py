@@ -112,7 +112,7 @@ class Brain(object):
         self.date_created = time.strftime("%c")
 
         # add methods
-        self.remove_elecs = self.remove_elecs
+        self.kurtosis = kurt_vals(self)
 
     # methods
 
@@ -131,18 +131,6 @@ class Brain(object):
         Gets data from brain object
         """
         return self.data.as_matrix()
-
-    def remove_elecs(self, measure='kurtosis', threshold=10):
-        """
-        Gets data from brain object
-        """
-        if measure is 'kurtosis':
-            vals = kurt_vals(self)
-            thresh_bool = vals > threshold
-            self.data = self.data.loc[:, ~thresh_bool]
-            self.locs = self.locs.loc[~thresh_bool]
-            self.n_elecs = self.data.shape[1]
-        return self
 
     def save(self, filepath):
         """

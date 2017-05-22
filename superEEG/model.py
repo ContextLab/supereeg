@@ -76,7 +76,7 @@ class Model(object):
         self.predict = self.predict
 
 
-    def predict(self, bo, tf=False):
+    def predict(self, bo, tf=False, kthreshold=10):
         """
         Takes a brain object and a 'full' covariance model, fills in all
         electrode timeseries for all missing locations and returns the new brain object
@@ -97,6 +97,9 @@ class Model(object):
             New brain data object with missing electrode locations filled in
 
         """
+
+        # filter bad electrodes
+        bo = filter_elecs(bo, measure='kurtosis', threshold=kthreshold)
 
         # get subject-specific correlation matrix
         sub_corrmat = get_corrmat(bo)

@@ -18,9 +18,6 @@ import superEEG as se
 # load example data
 bo = se.load('example_data')
 
-# remove elecs that exceed some threshold
-bo.remove_elecs(measure='kurtosis', threshold=10)
-
 # load example model
 model = se.load('example_model')
 

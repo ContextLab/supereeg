@@ -1,4 +1,7 @@
 from __future__ import division
+import multiprocessing
+import copy
+import os
 import numpy as np
 import numpy.matlib as mat
 from scipy.stats import kurtosis, zscore
@@ -7,12 +10,9 @@ from scipy.spatial.distance import cdist
 from scipy.spatial.distance import squareform
 from sklearn.neighbors import NearestNeighbors
 import pandas as pd
-import os
 from scipy import linalg
 from sklearn.decomposition import PCA
 from joblib import Parallel, delayed
-import multiprocessing
-
 import tensorflow as tf
 
 def apply_by_file_index(bo, xform, aggregator):
@@ -351,3 +351,14 @@ def expand_matrix(output_list, R_full):
     C_full[np.tril_indices(R_full.shape[0], -1)] = output_array
     ### expand to full matrix
     return C_full + C_full.T + np.eye(C_full.shape[0])
+
+def filter_elecs(bo, measure='kurtosis', threshold=10):
+    """
+    Filter bad electrodes
+    """
+    thresh_bool = bo.kurtosis > threshold
+    nbo = copy.copy(bo)
+    nbo.data = bo.data.loc[:, ~thresh_bool]
+    nbo.locs = bo.locs.loc[~thresh_bool]
+    nbo.n_elecs = bo.data.shape[1]
+    return nbo
