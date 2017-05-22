@@ -4,9 +4,8 @@
 Predict unknown location
 =============================
 
-In this example, we load in a single subject example, remove electrodes that exceed
-a kurtosis threshold (in place), load a model, and predict activity at all
-model locations.
+In this example, we load in a single subject example, load a model, and predict
+activity at all model locations.
 
 """
 

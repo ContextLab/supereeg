@@ -126,7 +126,7 @@ class Model(object):
             reconstructed = reconstruct_activity(bo, model_corrmat_x)
 
         # # create new bo with inferred activity
-        reconstructed_bo = Brain(data=reconstructed, locs=pd.concat([self.locs, bo.locs]),
+        reconstructed_bo = Brain(data=reconstructed, locs=self.locs,
                     sessions=bo.sessions, sample_rate=bo.sample_rate)
 
         return reconstructed_bo
