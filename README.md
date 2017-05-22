@@ -1,4 +1,4 @@
-![SuperEEG logo](images/SuperEEG_Logo_small.png)
+![SuperEEG logo](images/SuperEEG.png)
 
 <h2>Overview</h2>
 
@@ -103,7 +103,6 @@ The preferred way to contribute to quail is to fork the main repository on GitHu
 <h2>Testing</h2>
 
 <!-- [![Build Status](https://travis-ci.com/ContextLab/quail.svg?token=hxjzzuVkr2GZrDkPGN5n&branch=master) -->
-
 
 To test supereeg, install pytest (`pip install pytest`) and run `pytest` in the quail folder
 
