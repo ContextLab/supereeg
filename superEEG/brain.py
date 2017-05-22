@@ -114,28 +114,27 @@ class Brain(object):
         # add methods
         self.kurtosis = kurt_vals(self)
 
-    # methods
+        # methods
+        def info(self):
+            """
+            Print info about the brain object
+            """
+            print('Number of electrodes: ' + str(self.n_elecs))
+            print('Recording time in seconds: ' + str(self.n_secs))
+            print('Number of sessions: ' + str(1))
+            print('Date created: ' + str(self.date_created))
+            print('Meta data: ' + str(self.meta))
 
-    def info(self):
-        """
-        Print info about the brain object
-        """
-        print('Number of electrodes: ' + str(self.n_elecs))
-        print('Recording time in seconds: ' + str(self.n_secs))
-        print('Number of sessions: ' + str(1))
-        print('Date created: ' + str(self.date_created))
-        print('Meta data: ' + str(self.meta))
+        def get_data(self):
+            """
+            Gets data from brain object
+            """
+            return self.data.as_matrix()
 
-    def get_data(self):
-        """
-        Gets data from brain object
-        """
-        return self.data.as_matrix()
-
-    def save(self, filepath):
-        """
-        Save a pickled brain, mwahahaha
-        """
-        with open(filepath + '.bo', 'wb') as f:
-            pickle.dump(self, f)
-            print('Brain object saved.')
+        def save(self, filepath):
+            """
+            Save a pickled brain, mwahahaha
+            """
+            with open(filepath + '.bo', 'wb') as f:
+                pickle.dump(self, f)
+                print('Brain object saved.')

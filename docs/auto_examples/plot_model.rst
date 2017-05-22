@@ -27,15 +27,15 @@ Here we load the example model, and then plot it.
     # License: MIT
 
     # import
-    import superEEG
+    import superEEG as se
 
     # load the model
-    model = superEEG.load_example_model()
+    model = se.load('example_model')
 
     # plot it
     model.plot()
 
-**Total running time of the script:** ( 0 minutes  0.114 seconds)
+**Total running time of the script:** ( 0 minutes  0.113 seconds)
 
 
 

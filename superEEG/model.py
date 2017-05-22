@@ -76,65 +76,65 @@ class Model(object):
         self.predict = self.predict
 
 
-    def predict(self, bo, tf=False, kthreshold=10):
-        """
-        Takes a brain object and a 'full' covariance model, fills in all
-        electrode timeseries for all missing locations and returns the new brain object
+        def predict(self, bo, tf=False, kthreshold=10):
+            """
+            Takes a brain object and a 'full' covariance model, fills in all
+            electrode timeseries for all missing locations and returns the new brain object
 
-        Parameters
-        ----------
+            Parameters
+            ----------
 
-        bo : Brain data object or a list of Brain objects
-            The brain data object that you want to predict
+            bo : Brain data object or a list of Brain objects
+                The brain data object that you want to predict
 
-        tf : bool
-            If True, uses Tensorflow (default is False).
+            tf : bool
+                If True, uses Tensorflow (default is False).
 
-        Returns
-        ----------
+            Returns
+            ----------
 
-        bo_p : Brain data object
-            New brain data object with missing electrode locations filled in
+            bo_p : Brain data object
+                New brain data object with missing electrode locations filled in
 
-        """
+            """
 
-        # filter bad electrodes
-        bo = filter_elecs(bo, measure='kurtosis', threshold=kthreshold)
+            # filter bad electrodes
+            bo = filter_elecs(bo, measure='kurtosis', threshold=kthreshold)
 
-        # get subject-specific correlation matrix
-        sub_corrmat = get_corrmat(bo)
+            # get subject-specific correlation matrix
+            sub_corrmat = get_corrmat(bo)
 
-        # get rbf weights
-        sub_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), bo.locs)
+            # get rbf weights
+            sub_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), bo.locs)
 
-        #  get subject expanded correlation matrix
-        sub_corrmat_x = get_expanded_corrmat(sub_corrmat, sub_rbf_weights)
+            #  get subject expanded correlation matrix
+            sub_corrmat_x = get_expanded_corrmat(sub_corrmat, sub_rbf_weights)
 
-        # expanded rbf weights
-        model_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), self.locs)
+            # expanded rbf weights
+            model_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), self.locs)
 
-        # get model expanded corrlation matrix
-        model_corrmat_x = get_expanded_corrmat(self.data.as_matrix(), model_rbf_weights)
+            # get model expanded corrlation matrix
+            model_corrmat_x = get_expanded_corrmat(self.data.as_matrix(), model_rbf_weights)
 
-        # add in new subj data
-        model_corrmat_x = ((model_corrmat_x * self.n_subs) + sub_corrmat_x) / self.n_subs+1
+            # add in new subj data
+            model_corrmat_x = ((model_corrmat_x * self.n_subs) + sub_corrmat_x) / self.n_subs+1
 
-        # timeseries reconstruction
-        if tf:
-            reconstructed = reconstruct_activity_tf(bo, model_corrmat_x)
-        else:
-            reconstructed = reconstruct_activity(bo, model_corrmat_x)
+            # timeseries reconstruction
+            if tf:
+                reconstructed = reconstruct_activity_tf(bo, model_corrmat_x)
+            else:
+                reconstructed = reconstruct_activity(bo, model_corrmat_x)
 
-        # # create new bo with inferred activity
-        reconstructed_bo = Brain(data=reconstructed, locs=self.locs,
-                    sessions=bo.sessions, sample_rate=bo.sample_rate)
+            # # create new bo with inferred activity
+            reconstructed_bo = Brain(data=reconstructed, locs=self.locs,
+                        sessions=bo.sessions, sample_rate=bo.sample_rate)
 
-        return reconstructed_bo
+            return reconstructed_bo
 
-    def plot(self):
-        """
-        Plot the superEEG model
-        """
-        sns.heatmap(self.data, xticklabels=False, yticklabels=False)
-        sns.plt.title('SuperEEG Model, N=' + str(self.n_subs))
-        sns.plt.show()
+        def plot(self):
+            """
+            Plot the superEEG model
+            """
+            sns.heatmap(self.data, xticklabels=False, yticklabels=False)
+            sns.plt.title('SuperEEG Model, N=' + str(self.n_subs))
+            sns.plt.show()

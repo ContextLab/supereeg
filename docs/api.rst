@@ -24,19 +24,3 @@ Model data object
   :toctree:
 
   Model
-
-Predict
-------------------
-
-.. autosummary::
-  :toctree:
-
-  predict
-
-Plot
-------------------
-
-.. autosummary::
-  :toctree:
-
-  plot

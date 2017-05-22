@@ -13,16 +13,16 @@ single, cluster or define your own custom computing environment.
 # Code source: Andrew Heusser & Lucy Owen
 # License: MIT
 
-import superEEG
+import superEEG as se
 
 # print default context
-print(superEEG.context)
+print(se.context)
 
 # change context to preset cluster default
-superEEG.set_context('cluster')
+se.set_context('cluster')
 
 # print updated context
-print(superEEG.context)
+print(se.context)
 
 # change context to custom dict
 google = {
@@ -30,5 +30,5 @@ google = {
     'nodes' : 1000,
     'memory' : 300,
 }
-superEEG.set_context(google)
-print(superEEG.context)
+se.set_context(google)
+print(se.context)

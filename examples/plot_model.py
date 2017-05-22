@@ -15,7 +15,7 @@ Here we load the example model, and then plot it.
 import superEEG as se
 
 # load the model
-bo = se.load('example_model')
+model = se.load('example_model')
 
 # plot it
 model.plot()
