@@ -9,6 +9,8 @@ import pandas as pd
 import os
 from scipy import linalg
 from sklearn.decomposition import PCA
+from joblib import Parallel, delayed
+import multiprocessing
 
 
 
@@ -739,3 +741,17 @@ def normalize_Y(Y_matrix):
     added = mat.repmat(0.5 + np.arange(Y.shape[1]), Y.shape[0], 1)
     Y = Y + added
     return pd.DataFrame(Y)
+
+def compute_coord(coord, weights, Z):
+
+    xweights = weights[coord[0], :]
+    yweights = weights[coord[1], :]
+
+    next_weights = np.outer(xweights, yweights)
+    next_weights = next_weights - np.triu(next_weights)
+
+    w = np.sum(next_weights)
+    k = np.sum(Z * next_weights)
+
+    return z2r(k / w)
+

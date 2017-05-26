@@ -541,3 +541,79 @@ def flatten_arrays(array_of_arrays):
         for item in sublist:
             flattened_array.append(item)
     return flattened_array
+
+
+############# For Loop Way ######################################
+#### compile all pairs of coordidnates - loop over R_full matrix (lower triangle)
+inputs = [(x, y) for x in range(R_full.shape[0]) for y in range(x)]
+num_cores = multiprocessing.cpu_count()
+#### can't have the delayed(expand_corrmat) in a function
+results = Parallel(n_jobs=num_cores)(
+    delayed(expand_corrmat)(coord, R_K_subj, RBF_weights, C_K_subj) for coord in inputs)
+outfile = os.path.join(full_dir, file_name + '_k' + str(k_thresh) + '_r' + str(
+    r) + '_for_loop')
+np.save(outfile, results)
+
+temp = expand_matrix(results, R_full)
+fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2, sharex='col', sharey='row')
+sb.heatmap(temp, ax=ax1)
+
+############## Sliced For Loop Way ####################################
+### slice list of coordinates in a number of sublists (this shouldn't be hardcoded) and index a slice according to matrix_chunk
+#### this step on my computer takes about 20GB and 12 minutes for a full matrix width of 20,000
+sliced_up = slice_list([(x, y) for x in range(R_full.shape[0]) for y in range(x)], 4)[int(matrix_chunk)]
+### With andy's help, partition_jobs
+num_cores = multiprocessing.cpu_count()
+#### can't have the delayed(expand_corrmat) in a function
+# results = Parallel(n_jobs=num_cores)(
+#     delayed(expand_corrmat)(coord, R_K_subj, RBF_weights, C_K_subj) for coord in partition_jobs(R_full.shape[0])[int(matrix_chunk)])
+results = Parallel(n_jobs=num_cores)(
+    delayed(expand_corrmat)(coord, R_K_subj, RBF_weights, C_K_subj) for coord in sliced_up)
+outfile = os.path.join(full_dir,
+                       file_name + '_k' + str(k_thresh) + '_r' + str(r) + '_pooled_matrix_' + matrix_chunk.rjust(5,
+                                                                                                                 '0'))
+np.save(outfile, results)
+############# Linear Algebra Way ####################################
+## attempt 1:
+z_c = r2z(C_K_subj)
+z_c[np.isnan(z_c)] = 0
+C_w = np.dot(RBF_weights, z_c)
+weighted_corr_matrix = np.dot(C_w, RBF_weights.T)
+WTW = np.dot(RBF_weights, RBF_weights.T)
+temp1 = z2r(weighted_corr_matrix / WTW)
+sb.heatmap(temp1, ax=ax2)
+WTW = np.sum(np.dot(RBF_weights, RBF_weights.T))
+temp2 = z2r(weighted_corr_matrix / WTW)
+sb.heatmap(temp2, ax=ax3)
+
+## attempt 2:
+z_c = r2z(C_K_subj)
+z_c[np.isnan(z_c)] = 0
+C_w = np.dot(RBF_weights, z_c)
+weighted_corr_matrix = np.dot(C_w, C_w.T)
+WTW = np.dot(RBF_weights, RBF_weights.T)
+temp2 = z2r(weighted_corr_matrix / WTW)
+sb.heatmap(temp2, ax=ax3)
+
+## attempt 3:
+tupper = np.triu(r2z(C_K_subj))
+tupper[np.isnan(tupper)] = 0
+C_w = np.dot(RBF_weights, tupper)
+# weighted_corr_matrix = np.dot(C_w, RBF_weights.T)
+weighted_corr_matrix = np.dot(C_w, C_w.T)
+WTW = np.dot(RBF_weights, RBF_weights.T)
+temp3 = z2r(weighted_corr_matrix / WTW)
+sb.heatmap(temp3, ax=ax4)
+
+## attempt 4:
+tupper = np.triu(r2z(C_K_subj))
+tupper[np.isnan(tupper)] = 0
+C_w = np.dot(RBF_weights, tupper)
+# weighted_corr_matrix = np.dot(C_w, RBF_weights.T)
+weighted_corr_matrix = np.dot(C_w, RBF_weights.T)
+WTW = np.dot(RBF_weights, RBF_weights.T)
+temp4 = z2r(weighted_corr_matrix / WTW)
+sb.heatmap(temp4, ax=ax5)
+
+DF = pd.DataFrame({'temp': np.ravel(temp), 'temp1': np.ravel(temp1), 'temp2': np.ravel(temp2),
+                   'temp3': np.ravel(temp3)})
