@@ -10,6 +10,10 @@ import os
 from scipy import linalg
 from sklearn.decomposition import PCA
 
+#
+# def prettify():
+#     sns.despine()
+#     plt.tight_layout()
 
 ######## from full cov mats ########################
 ##### try linear algebra way ##############

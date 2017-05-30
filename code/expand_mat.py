@@ -30,20 +30,16 @@ def main(fname, r, k_thresh):
 
     ## check if cor_fig and full directories exist
 
-    full_dir = os.path.join(get_grand_parent_dir(os.getcwd()), 'full_matrices_jeremy')
+    full_dir = os.path.join(get_grand_parent_dir(os.getcwd()), 'full_matrices_model')
     if not os.path.isdir(full_dir):
         os.mkdir(full_dir)
 
-    comp_fig_dir = os.path.join(fig_dir, 'compare_matrices')
-    if not os.path.isdir(comp_fig_dir):
-        os.mkdir(comp_fig_dir)
-
-    full_compiled_dir = os.path.join(get_grand_parent_dir(os.getcwd()), 'full_matrices_compiled')
-    if not os.path.isdir(full_compiled_dir):
-        os.mkdir(full_compiled_dir)
+    mod_fig_dir = os.path.join(fig_dir, 'model_matrices')
+    if not os.path.isdir(mod_fig_dir):
+        os.mkdir(mod_fig_dir)
 
     ## check if expanded subject level correlation matrix exists
-    if not os.path.isfile(os.path.join(full_dir, file_name + '_k' + str(k_thresh) + '_r' + str(r)+ 'full_matrix' + '.npz')):
+    if not os.path.isfile(os.path.join(full_dir, file_name + '_k' + str(k_thresh) + '_r' + str(r)+ '_full_matrix' + '.npz')):
 
         ## load subject's electrodes
         sub_data = np.load(os.path.join(corr_dir, 'sub_corr_' + file_name + '.npz'))
@@ -62,24 +58,24 @@ def main(fname, r, k_thresh):
                 C_K_subj[np.eye(C_K_subj.shape[0]) == 1] = 0
                 K,W= expand_corrmat_j(RBF_weights, C_K_subj)
                 C_expand = K/W
-                outfile = os.path.join(comp_fig_dir, 'full_matrix_' + file_name + '_r_' + str(r) + '.png')
+                outfile = os.path.join(mod_fig_dir, 'full_matrix_' + file_name + '_r_' + str(r) + '.png')
                 plot_cov(C_expand, outfile=outfile)
                 C_est = squareform(C_expand, checks=False)
                 outfile = os.path.join(full_dir,
-                                       file_name + '_k' + str(k_thresh) + '_r' + str(r)+ 'full_matrix')
+                                       file_name + '_k' + str(k_thresh) + '_r' + str(r)+ '_full_matrix')
                 np.savez(outfile + '.npz', C_est=C_est)
                 ### compare the expanded correlation matrix, but indexed by nearest locations - should match well
                 nearest_inds = np.argmin(cdist(R_full, R_K_subj, metric='sqeuclidean'), axis=0)
                 parsed_C = C_expand[nearest_inds, :][:, nearest_inds]
                 parsed_C = parsed_C + np.eye(parsed_C.shape[0])
-                outfile = os.path.join(comp_fig_dir, 'sub_matrix_compare_' + file_name + '_r_' + str(r) + '.png')
+                outfile = os.path.join(mod_fig_dir, 'sub_matrix_compare_' + file_name + '_r_' + str(r) + '.png')
                 compare_matrices(parsed_C, C_K_subj + np.eye(C_K_subj.shape[0]), outfile,
                                  ('Parsed_matrix' + file_name, 'Comparison' + file_name))
 
             else:
                 print("not enough electrodes pass k = " + str(k_thresh))
     else:
-        print(file_name + '_k' + str(k_thresh) + '_r' + str(r)+ 'full_matrix', 'exists')
+        print(file_name + '_k' + str(k_thresh) + '_r' + str(r)+ '_full_matrix', 'exists')
 
 
 

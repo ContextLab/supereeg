@@ -66,11 +66,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="compile_ful_cov_mats.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="compile_ful_cov_mats.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/compile_ful_cov_mats.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="360">
-              <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="43" selection-end-column="35" />
+            <state relative-caret-position="305">
+              <caret line="106" column="90" selection-start-line="106" selection-start-column="90" selection-end-line="106" selection-end-column="90" />
               <folding>
                 <element signature="e#23#41#0" expanded="true" />
               </folding>
@@ -78,25 +78,23 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="expand_mat.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="junk.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/junk.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="165">
+              <caret line="21" column="35" selection-start-line="21" selection-start-column="35" selection-end-line="21" selection-end-column="35" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="expand_mat.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/expand_mat.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="375">
-              <caret line="77" column="0" selection-start-line="77" selection-start-column="0" selection-end-line="77" selection-end-column="0" />
+            <state relative-caret-position="435">
+              <caret line="77" column="89" selection-start-line="77" selection-start-column="89" selection-end-line="77" selection-end-column="89" />
               <folding>
                 <element signature="e#23#41#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="gif.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/gif.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="365">
-              <caret line="66" column="0" selection-start-line="66" selection-start-column="0" selection-end-line="66" selection-end-column="0" />
-              <folding>
-                <element signature="e#1#39#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -149,18 +147,18 @@
         <option value="$PROJECT_DIR$/corr_mats.py" />
         <option value="$PROJECT_DIR$/timeseries.py" />
         <option value="$PROJECT_DIR$/average_matrix.py" />
-        <option value="$PROJECT_DIR$/junk.py" />
         <option value="$PROJECT_DIR$/bookkeeping.py" />
-        <option value="$PROJECT_DIR$/compile_ful_cov_mats.py" />
         <option value="$PROJECT_DIR$/full_cov_mats.py" />
         <option value="$PROJECT_DIR$/stats.py" />
         <option value="$PROJECT_DIR$/expand_mat.py" />
+        <option value="$PROJECT_DIR$/junk.py" />
+        <option value="$PROJECT_DIR$/compile_ful_cov_mats.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1680" />
-    <option name="y" value="-420" />
+    <option name="x" value="1717" />
+    <option name="y" value="-30" />
     <option name="width" value="1680" />
     <option name="height" value="1027" />
   </component>
@@ -199,7 +197,7 @@
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="RunManager" selected="Python.expand_mat">
+  <component name="RunManager" selected="Python.compile_ful_cov_mats">
     <configuration default="false" name="corr_mats" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -264,7 +262,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="code" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/expand_mat.py" />
-      <option name="PARAMETERS" value="$USER_HOME$/Desktop/analysis/npz/CH012.npz 20 10" />
+      <option name="PARAMETERS" value="$USER_HOME$/Desktop/analysis/npz/BW001.npz 20 10" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
     </configuration>
@@ -428,8 +426,8 @@
     </list>
     <recent_temporary>
       <list size="4">
-        <item index="0" class="java.lang.String" itemvalue="Python.expand_mat" />
-        <item index="1" class="java.lang.String" itemvalue="Python.compile_ful_cov_mats" />
+        <item index="0" class="java.lang.String" itemvalue="Python.compile_ful_cov_mats" />
+        <item index="1" class="java.lang.String" itemvalue="Python.expand_mat" />
         <item index="2" class="java.lang.String" itemvalue="Python.corr_mats" />
         <item index="3" class="java.lang.String" itemvalue="Python.average_matrix" />
       </list>
@@ -449,8 +447,8 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1680" y="-420" width="1680" height="1027" extended-state="0" />
-    <editor active="true" />
+    <frame x="1717" y="-30" width="1680" height="1027" extended-state="0" />
+    <editor active="false" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24166666" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -461,7 +459,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.480167" sideWeight="0.79702383" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.480167" sideWeight="0.79702383" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -520,17 +518,17 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/compile_ful_cov_mats.py</url>
-          <line>98</line>
+          <line>101</line>
           <option name="timeStamp" value="63" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/compile_ful_cov_mats.py</url>
-          <line>89</line>
+          <line>92</line>
           <option name="timeStamp" value="64" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/compile_ful_cov_mats.py</url>
-          <line>101</line>
+          <line>104</line>
           <option name="timeStamp" value="65" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -540,13 +538,23 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/expand_mat.py</url>
-          <line>76</line>
+          <line>72</line>
           <option name="timeStamp" value="71" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/expand_mat.py</url>
-          <line>73</line>
+          <line>69</line>
           <option name="timeStamp" value="72" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/compile_ful_cov_mats.py</url>
+          <line>57</line>
+          <option name="timeStamp" value="73" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/compile_ful_cov_mats.py</url>
+          <line>60</line>
+          <option name="timeStamp" value="74" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
@@ -559,7 +567,7 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="73" />
+      <option name="time" value="75" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -720,16 +728,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/junk.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-650">
-          <caret line="489" column="49" selection-start-line="489" selection-start-column="49" selection-end-line="489" selection-end-column="49" />
-          <folding>
-            <element signature="e#0#18#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/plt_corrs.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="375">
@@ -775,16 +773,6 @@
         <state relative-caret-position="375">
           <caret line="33" column="58" selection-start-line="33" selection-start-column="36" selection-end-line="33" selection-end-column="58" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/compile_ful_cov_mats.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="43" selection-end-column="35" />
-          <folding>
-            <element signature="e#23#41#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -834,10 +822,28 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/junk.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="21" column="35" selection-start-line="21" selection-start-column="35" selection-end-line="21" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/expand_mat.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="375">
-          <caret line="77" column="0" selection-start-line="77" selection-start-column="0" selection-end-line="77" selection-end-column="0" />
+        <state relative-caret-position="435">
+          <caret line="77" column="89" selection-start-line="77" selection-start-column="89" selection-end-line="77" selection-end-column="89" />
+          <folding>
+            <element signature="e#23#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/compile_ful_cov_mats.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="305">
+          <caret line="106" column="90" selection-start-line="106" selection-start-column="90" selection-end-line="106" selection-end-column="90" />
           <folding>
             <element signature="e#23#41#0" expanded="true" />
           </folding>

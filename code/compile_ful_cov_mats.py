@@ -20,9 +20,9 @@ def main(fname, r, k_thresh, total_chunks):
     ## kurtosis pass union of electrode of locations
     #k_loc_name = 'R_full_k_' + str(k_thresh) + '_MNI.npy'
     ## downsampled locations with 5mm resolution:
-    #loc_name = 'R_full_MNI.npy'
+    loc_name = 'R_full_MNI.npy'
     ## downsampled locations with 30mm resolution for sample data test:
-    loc_name = 'R_small_MNI.npy'
+    #loc_name = 'R_small_MNI.npy'
 
     ## create file name
     file_name = os.path.splitext(os.path.basename(fname))[0]
@@ -55,12 +55,15 @@ def main(fname, r, k_thresh, total_chunks):
         K_subj = sub_data['K_subj'] # kurtosis - 1 by n_elecs
         R_K_subj, C_K_subj = good_chans(K_subj, R_subj, k_thresh, C=C_subj)
 
+        def key_func(x):
+            return os.path.split(x)[-1]
         ###
-        files = glob.glob(os.path.join(full_dir, '*.npy'))
+        files = sorted(glob.glob(os.path.join(full_dir, '*.npy')), key=key_func)
         results = []
         count = 0
         chunk = []
         for i in files:
+            print i
             matrix_variables = (file_name + '_k' + str(k_thresh) + '_r' + str(r)+ '_pooled_matrix_')
             match = re.search(matrix_variables, i)
             if match:
