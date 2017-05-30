@@ -3,14 +3,12 @@
 import numpy as np
 import glob
 import os
-from stats import rbf, good_chans, expand_corrmat, expand_matrix, r2z, z2r, compute_coord
+from stats import rbf, good_chans, expand_corrmat, expand_matrix, r2z, z2r, compute_coord, expand_corrmat_j
 from bookkeeping import get_rows, get_grand_parent_dir, get_parent_dir, slice_list, partition_jobs
 import sys
 from joblib import Parallel, delayed
 import multiprocessing
-import seaborn as sb
-import matplotlib.pylab as plt
-import pandas as pd
+
 
 
 ## input: full path to file name, radius, kurtosis threshold, and number of matrix divisions
@@ -19,9 +17,9 @@ def main(fname, matrix_chunk, r, k_thresh, total_chunks):
     ## kurtosis pass union of electrode of locations
     #k_loc_name = 'R_full_k_' + str(k_thresh) + '_MNI.npy'
     ## downsampled locations with 5mm resolution:
-    # loc_name = 'R_full_MNI.npy'
+    loc_name = 'R_full_MNI.npy'
     ## downsampled locations with 30mm resolution for sample data test:
-    loc_name = 'R_small_MNI.npy'
+    #loc_name = 'R_small_MNI.npy'
 
     ## create file name
     file_name = os.path.splitext(os.path.basename(fname))[0]
@@ -46,7 +44,6 @@ def main(fname, matrix_chunk, r, k_thresh, total_chunks):
         K_subj = sub_data['K_subj'] # kurtosis - 1 by n_elecs
         R_full = np.load(os.path.join(get_parent_dir(os.getcwd()), loc_name))
         # R_K_full = np.load(os.path.join(get_parent_dir(os.getcwd()), k_loc_name))
-        R_full = R_full[R_full[:, 0].argsort(),]
         # index R_subj and C_subj with K_subj
         R_K_subj, C_K_subj= good_chans(K_subj, R_subj, k_thresh, C = C_subj)
 
@@ -55,15 +52,15 @@ def main(fname, matrix_chunk, r, k_thresh, total_chunks):
             if R_K_subj.shape[0] > 1:
                 RBF_weights = rbf(R_full, R_K_subj, r) # 3 by number of good channels
 
-                sliced_up = slice_list([(x, y) for x in range(RBF_weights.shape[0]) for y in range(x)], int(total_chunks))[int(matrix_chunk)]
-
-                Z = r2z(C_K_subj)
-                Z[np.isnan(Z)] = 0
-                results = Parallel(n_jobs=multiprocessing.cpu_count())(
-                    delayed(compute_coord)(coord, RBF_weights, Z) for coord in sliced_up)
-                outfile = os.path.join(full_dir, file_name + '_k' + str(k_thresh) + '_r' + str(r)+ '_pooled_matrix_' + matrix_chunk.rjust(5,'0'))
-                np.save(outfile, results)
-
+                # sliced_up = slice_list([(x, y) for x in range(RBF_weights.shape[0]) for y in range(x)], int(total_chunks))[int(matrix_chunk)]
+                #
+                # Z = r2z(C_K_subj)
+                # Z[np.isnan(Z)] = 0
+                # results = Parallel(n_jobs=multiprocessing.cpu_count())(
+                #     delayed(compute_coord)(coord, RBF_weights, Z) for coord in sliced_up)
+                # outfile = os.path.join(full_dir, file_name + '_k' + str(k_thresh) + '_r' + str(r)+ '_pooled_matrix_' + matrix_chunk.rjust(5,'0'))
+                # np.save(outfile, results)
+                expand_corrmat_j(RBF_weights, C_K_subj)
 
             else:
                 print("not enough electrodes pass k = " + str(k_thresh))

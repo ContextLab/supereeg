@@ -280,6 +280,10 @@ def pca_describe_var(fname, k_inds, field='Y'):
     return results.groupby(['session', 'comp_num'])[['PCA']].mean().reset_index()
 
 
+def find_nearest(n_by_3_Locs, nearest_n):
+    nbrs = NearestNeighbors(n_neighbors=nearest_n, algorithm='ball_tree').fit(n_by_3_Locs)
+    distances, indices = nbrs.kneighbors(n_by_3_Locs)
+    return indices
 
 def nearest_neighbors_corr(fname, k_inds, Yfield='Y', Rfield='R'):
     """
@@ -305,11 +309,6 @@ def nearest_neighbors_corr(fname, k_inds, Yfield='Y', Rfield='R'):
 
 
     """
-
-    def find_nearest(n_by_3_Locs, nearest_n):
-        nbrs = NearestNeighbors(n_neighbors=nearest_n, algorithm='ball_tree').fit(n_by_3_Locs)
-        distances, indices = nbrs.kneighbors(n_by_3_Locs)
-        return indices
 
     data = np.load(fname, mmap_mode='r')
     file_inds = np.unique(data['fname_labels'])
@@ -755,3 +754,22 @@ def compute_coord(coord, weights, Z):
 
     return z2r(k / w)
 
+
+def expand_corrmat_j(weights, C):
+    n = weights.shape[0]
+    K = np.zeros([n, n])
+    W = np.zeros([n, n])
+
+    Z = r2z(C)
+    for x in range(n):
+        xweights = weights[x, :]
+        for y in range(x):
+            yweights = weights[y, :]
+
+            next_weights = np.outer(xweights, yweights)
+            next_weights = next_weights - np.triu(next_weights)
+
+            W[x, y] = np.sum(next_weights)
+            K[x, y] = np.sum(Z * next_weights)
+
+    return K + K.T, W + W.T

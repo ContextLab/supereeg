@@ -262,3 +262,36 @@ def slice_list(input, size):
 def partition_jobs(matrix_width, n_chunks=500):
     idxs = np.array([(x, y) for x in range(matrix_width) for y in range(x)])
     return np.array_split(idxs, n_chunks)
+
+def get_nearest_rows(all_locations, subj_locations):
+    """
+        This function indexes a the closest location to the subject's electrode locations in the full array of electrode locations
+
+        Parameters
+        ----------
+        all_locations : ndarray
+            Full array of electrode locations
+
+        subj_locations : ndarray
+            Array of subject's electrode locations
+
+        Returns
+        ----------
+        results : list
+            Indexs for subject electrodes in the full array of electrodes
+
+        """
+    if subj_locations.ndim == 1:
+        subj_locations = subj_locations.reshape(1, 3)
+    inds = np.full([1, subj_locations.shape[0]], np.nan)
+    for i in range(subj_locations.shape[0]):
+        possible_locations = np.ones([all_locations.shape[0], 1])
+        try:
+            for c in range(all_locations.shape[1]):
+                possible_locations[all_locations[:, c] != subj_locations[i, c], :] = 0
+            inds[0, i] = np.where(possible_locations == 1)[0][0]
+        except:
+            pass
+    inds = inds[~np.isnan(inds)]
+    return map(int, inds)
+
