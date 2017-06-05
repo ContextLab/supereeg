@@ -189,6 +189,36 @@ def alter_avemat(Average_matrix, Subj_matrix):
     C_est[np.where(np.isnan(C_est))] = 0
     return (summed_matrix - (C_est + np.eye(C_est.shape[0]))) / count_removed
 
+def alter_model(Average_matrix, Subj_matrix):
+    """
+        Removes one subject's full correlation matrix from the average correlation matrix
+
+        Parameters
+        ----------
+        Average_matrix : npz file
+            npz file contains the fields:
+                average_matrix : the average full correlation matrix for all subjects (n)
+                n : number of full correlation matrices that contributed to average matrix
+
+        Subj_matrix : list
+            Subject's squareformed full correlation matrix
+
+        Returns
+        ----------
+        results : ndarray
+            Average matrix with one subject's data removed
+
+        """
+    summed_matrix = Average_matrix['matrix_sum']
+    summed_weights = Average_matrix['weights_sum']
+    C_est = Subj_matrix['C_est']
+    C_weights = ~np.isnan(C_est)
+    removed_matrix = summed_matrix - C_est
+    removed_weights = summed_weights - C_weights
+
+    return squareform(removed_matrix/removed_weights, checks=False)
+
+
 def get_parent_dir(directory):
     """
         Gives path to one directory up

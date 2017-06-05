@@ -474,7 +474,7 @@ def good_chans(k, R, k_thresh, *args, **kwargs):
         k_flat = np.squeeze(np.where(k < int(k_thresh)))
         R = R[k_flat, :]
         C = C[k_flat, :][:, k_flat]
-        return R, C
+        return R, C, k_flat
 
     k_flat = np.squeeze(np.where(k < int(k_thresh)))
     R = R[k_flat, :]

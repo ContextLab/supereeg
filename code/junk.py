@@ -621,3 +621,13 @@ sb.heatmap(temp4, ax=ax5)
 
 DF = pd.DataFrame({'temp': np.ravel(temp), 'temp1': np.ravel(temp1), 'temp2': np.ravel(temp2),
                    'temp3': np.ravel(temp3)})
+
+
+# eng = matlab.engine.start_matlab()
+# eng.create_supereeg_interpmap_time('gif_df.mat', 1)
+# gif_files = glob.glob(os.path.join(gif_dir, 'gif_frame_t_*'))
+# for g in gif_files:
+#     gif_name = os.path.splitext(os.path.basename(g))[0]
+#     outfile = os.path.join(gif_png_dir, str(gif_name)+'.png')
+#     ni_plt.plot_glass_brain(g, display_mode='lyrz', cmap='gray',threshold = 0, plot_abs=False, colorbar='True',
+#                          output_file=outfile)

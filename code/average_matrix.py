@@ -4,23 +4,22 @@ import numpy as np
 import glob
 import os
 import sys
-from scipy.spatial.distance import squareform
 from bookkeeping import get_grand_parent_dir
-from stats import z2r, r2z
 import re
 
 ## input for this: directory for full correlation matrices, r and k_thresh
 def main(r, k_thresh):
-	full_dir = os.path.join(get_grand_parent_dir(os.getcwd()), 'full_matrices')
+	full_dir = os.path.join(get_grand_parent_dir(os.getcwd()), 'full_matrices_model')
 
-	average_dir = os.path.join(get_grand_parent_dir(os.getcwd()), 'ave_matrices')
+	average_dir = os.path.join(get_grand_parent_dir(os.getcwd()), 'ave_model')
 	if not os.path.isdir(average_dir):
 		os.mkdir(average_dir)
 
-	if not os.path.isfile(os.path.join(average_dir, 'average_full_matrix_k_' + str(k_thresh) + '_r_' + str(r) + '.npz')):
+	if not os.path.isfile(os.path.join(average_dir, 'average_model_k_' + str(k_thresh) + '_r_' + str(r) + '.npz')):
 		files = glob.glob(os.path.join(full_dir, '*.npz'))
 		print(files)
 		results = []
+		weights = []
 		count = 0
 		for i in files:
 			matrix_variables = str('k' + str(k_thresh) + '_r' + str(r))
@@ -28,19 +27,21 @@ def main(r, k_thresh):
 			if match:
 				count += 1
 				data = np.load(i, mmap_mode='r')
-				C_est = squareform(data['C_est'], checks=False)
-				C_est[np.where(np.isnan(C_est))] = 0
-				C_exp = r2z(C_est)
-				next_mat = C_exp
+				#C_est = squareform(data['C_est'], checks=False)
+				next_mat = data['C_est']
+				next_weights = ~np.isnan(data['C_est'])
 				if np.shape(results)[0] == 0:
 					results = next_mat
+					weights = next_weights.astype(int)
 				else:
-					results = results + next_mat
+					results = np.nansum(np.dstack((results, next_mat)),2)
+					weights = weights + next_weights.astype(int)
 			else:
 				pass
-		average_matrix = z2r(results /count) + np.eye(np.shape(results)[0])
-		outfile = os.path.join(average_dir, 'average_full_matrix_k_' + str(k_thresh) + '_r_' + str(r) + '.npz')
-		np.savez(outfile, average_matrix=average_matrix, n=count)
+		#average_matrix = z2r(results /weights) + np.eye(np.shape(results)[0])
+		outfile = os.path.join(average_dir, 'average_model_k_' + str(k_thresh) + '_r_' + str(r) + '.npz')
+		### save out r - once new matrix is added, need to convert back to z
+		np.savez(outfile, matrix_sum=results, weights_sum = weights, n=count)
 	else:
 		print('average_full_matrix_k_' + str(k_thresh) + '_r_' + str(r) + '.npz', 'exists')
 

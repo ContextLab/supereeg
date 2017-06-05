@@ -49,7 +49,7 @@ def main(fname, r, k_thresh):
         R_full = np.load(os.path.join(get_parent_dir(os.getcwd()), loc_name))
         # R_K_full = np.load(os.path.join(get_parent_dir(os.getcwd()), k_loc_name))
         # index R_subj and C_subj with K_subj
-        R_K_subj, C_K_subj= good_chans(K_subj, R_subj, k_thresh, C = C_subj)
+        R_K_subj, C_K_subj, k_flat = good_chans(K_subj, R_subj, k_thresh, C = C_subj)
 
         ## check that atleast 2 electrodes pass kurtosis test
         if not R_K_subj == []:
