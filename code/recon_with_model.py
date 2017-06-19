@@ -5,13 +5,15 @@ import pandas as pd
 import glob
 import scipy.io
 import os
-from stats import rbf, good_chans, expand_corrmat, expand_matrix, r2z, z2r, expand_corrmat_j, compute_coord
+from stats import rbf, good_chans, expand_corrmat, expand_matrix, r2z, z2r, expand_corrmat_j, expand_corrmat_parsed, compute_coord
 from bookkeeping import get_rows, get_grand_parent_dir, get_parent_dir, known_unknown, slice_list
 import sys
 from scipy.stats import zscore
 from scipy.spatial.distance import squareform as squareform
 from joblib import Parallel, delayed
 import multiprocessing
+import seaborn as sb
+
 
 
 
@@ -67,14 +69,25 @@ def main(fname, matrix_chunk, r, k_thresh, total_chunks):
                     mmap_mode='r')
                 ## remove subject's full correlation from the average matrix
                 Ave_mat = squareform(Ave_data['matrix_sum'].flatten()/Ave_data['weights_sum'], checks= False)
-
-                ## expand the altered average matrix to the new full set of locations (R_full + R_K_subj)
-                RBF_weights = rbf(Full_locs, R_full, r) # 3 by number of good channels
-                sliced_up = slice_list([(x, y) for x in range(RBF_weights.shape[0]) for y in range(x)], int(total_chunks))[int(matrix_chunk)]
-
                 Ave_mat[np.eye(Ave_mat.shape[0]) == 1] = 0
                 Ave_mat[np.where(np.isnan(Ave_mat))] = 0
+                ## expand the altered average matrix to the new full set of locations (R_full + R_K_subj)
+                RBF_weights = rbf(Full_locs, R_full, r) # 3 by number of good channels
+
+                #### to test if the same expanding:
+                K,W= expand_corrmat_j(RBF_weights, Ave_mat)
+                Ave_expand = K/W
+                Kp, Wp = expand_corrmat_parsed(RBF_weights, Ave_mat)
+                Ave_expand_p = Kp / Wp
+                Kpr, Wpr = expand_corrmat_parsed(RBF_weights, Ave_mat, mode='predict')
+                Ave_expand_predict = Kpr / Wpr
+
+
+                known_inds, unknown_inds = known_unknown(Full_locs, R_K_subj)
+
+                sliced_up = slice_list([(x, y) for x in range(RBF_weights.shape[0]) for y in range(x)], int(total_chunks))[int(matrix_chunk)]
                 results = Parallel(n_jobs=multiprocessing.cpu_count())(delayed(compute_coord)(coord, RBF_weights, Ave_mat) for coord in sliced_up)
+
                 outfile = os.path.join(gif_dir, file_name + '_k' + str(k_thresh) + '_r' + str(r)+ '_pooled_matrix_' + matrix_chunk.rjust(5,'0'))
                 np.save(outfile, results)
 

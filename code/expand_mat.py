@@ -58,11 +58,8 @@ def main(fname, r, k_thresh):
                 C_K_subj[np.eye(C_K_subj.shape[0]) == 1] = 0
                 K,W= expand_corrmat_j(RBF_weights, C_K_subj)
                 C_expand = K/W
-                Kp, Wp = expand_corrmat_parsed(RBF_weights, C_K_subj)
-                C_expand_p = Kp / Wp
                 outfile = os.path.join(mod_fig_dir, 'full_matrix_' + file_name + '_r_' + str(r) + '.png')
                 plot_cov(C_expand, outfile=outfile)
-                plot_cov(C_expand_p, outfile=outfile)
 
                 C_est = squareform(C_expand, checks=False)
                 outfile = os.path.join(full_dir,
