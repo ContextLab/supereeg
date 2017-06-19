@@ -5,18 +5,20 @@ import pandas as pd
 import glob
 import scipy.io
 import os
-from stats import rbf, good_chans, expand_corrmat, expand_matrix, r2z, z2r, expand_corrmat_j
-from bookkeeping import get_rows, get_grand_parent_dir, get_parent_dir, known_unknown
+from stats import rbf, good_chans, expand_corrmat, expand_matrix, r2z, z2r, expand_corrmat_j, compute_coord
+from bookkeeping import get_rows, get_grand_parent_dir, get_parent_dir, known_unknown, slice_list
 import sys
 from scipy.stats import zscore
 from scipy.spatial.distance import squareform as squareform
+from joblib import Parallel, delayed
+import multiprocessing
 
 
 
 
 ## input: full path to file name, radius, kurtosis threshold, and number of matrix divisions
 
-def main(fname, r, k_thresh):
+def main(fname, matrix_chunk, r, k_thresh, total_chunks):
 
     lower_time_gif = 0
     upper_time_gif = 10
@@ -33,7 +35,6 @@ def main(fname, r, k_thresh):
     ## create file name
     file_name = os.path.splitext(os.path.basename(fname))[0]
     ## existing directories:
-    npz_data = np.load(fname, mmap_mode='r')
     corr_dir = os.path.join(get_grand_parent_dir(os.getcwd()), 'corr_matrices')
 
     gif_dir = os.path.join(get_grand_parent_dir(os.getcwd()), 'gif_'+ file_name +'_' + str(lower_time_gif)+ '_' + str(upper_time_gif))
@@ -42,7 +43,7 @@ def main(fname, r, k_thresh):
 
 
     ## check if expanded subject level correlation matrix exists
-    if not os.path.isfile(os.path.join(gif_dir, 'gif'+ file_name +'_' + str(lower_time_gif)+ '_' + str(upper_time_gif) + '.mat')):
+    if not os.path.isfile(os.path.join(gif_dir, file_name + '_k' + str(k_thresh) + '_r' + str(r) + '_pooled_matrix_' + matrix_chunk.rjust(5, '0') + '.npy')):
 
         ## load subject's correlation matrix and electrodes
         sub_data = np.load(os.path.join(corr_dir, 'sub_corr_' + file_name + '.npz'))
@@ -69,26 +70,20 @@ def main(fname, r, k_thresh):
 
                 ## expand the altered average matrix to the new full set of locations (R_full + R_K_subj)
                 RBF_weights = rbf(Full_locs, R_full, r) # 3 by number of good channels
+                sliced_up = slice_list([(x, y) for x in range(RBF_weights.shape[0]) for y in range(x)], int(total_chunks))[int(matrix_chunk)]
+
                 Ave_mat[np.eye(Ave_mat.shape[0]) == 1] = 0
                 Ave_mat[np.where(np.isnan(Ave_mat))] = 0
-                K_ave,W_ave= expand_corrmat_j(RBF_weights, Ave_mat)
-                Ave_expand = z2r(K_ave / W_ave)
-                Ave_expand[np.where(np.isnan(Ave_expand))] = 1
+                results = Parallel(n_jobs=multiprocessing.cpu_count())(delayed(compute_coord)(coord, RBF_weights, Ave_mat) for coord in sliced_up)
+                outfile = os.path.join(gif_dir, file_name + '_k' + str(k_thresh) + '_r' + str(r)+ '_pooled_matrix_' + matrix_chunk.rjust(5,'0'))
+                np.save(outfile, results)
 
-                ## reconstruct
-                known_inds, unknown_inds = known_unknown(Full_locs, R_subj)
-                unknown_timeseries = np.squeeze(np.dot(
-                    np.dot(Ave_expand[unknown_inds, :][:, known_inds], np.linalg.pinv(Ave_expand[known_inds, :][:, known_inds])),
-                    zscore(npz_data['Y'][range(lower_time_gif, upper_time_gif), :])[:, k_flat].T).T)
-                unknown_df = pd.DataFrame(unknown_timeseries.T, index=unknown_inds)
-                outfile = os.path.join(gif_dir, 'gif_df.mat')
-                scipy.io.savemat(outfile, {'Y_recon': unknown_df, 'R': R_full})
             else:
                 print("not enough electrodes pass k = " + str(k_thresh))
     else:
-        print('gif exists')
+        print(file_name + '_k' + str(k_thresh) + '_r' + str(r) + '_pooled_matrix_' + matrix_chunk.rjust(5, '0'), 'exists')
 
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2], sys.argv[3])
+    main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])

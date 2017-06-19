@@ -3,7 +3,7 @@
 import numpy as np
 import glob
 import os
-from stats import rbf, good_chans, expand_corrmat, expand_matrix, r2z, z2r, compute_coord, expand_corrmat_j
+from stats import rbf, good_chans, expand_corrmat_j, expand_corrmat_parsed
 from bookkeeping import get_rows, get_grand_parent_dir, get_parent_dir, slice_list, partition_jobs
 import sys
 from scipy.spatial.distance import squareform as squareform
@@ -58,8 +58,12 @@ def main(fname, r, k_thresh):
                 C_K_subj[np.eye(C_K_subj.shape[0]) == 1] = 0
                 K,W= expand_corrmat_j(RBF_weights, C_K_subj)
                 C_expand = K/W
+                Kp, Wp = expand_corrmat_parsed(RBF_weights, C_K_subj)
+                C_expand_p = Kp / Wp
                 outfile = os.path.join(mod_fig_dir, 'full_matrix_' + file_name + '_r_' + str(r) + '.png')
                 plot_cov(C_expand, outfile=outfile)
+                plot_cov(C_expand_p, outfile=outfile)
+
                 C_est = squareform(C_expand, checks=False)
                 outfile = os.path.join(full_dir,
                                        file_name + '_k' + str(k_thresh) + '_r' + str(r)+ '_full_matrix')

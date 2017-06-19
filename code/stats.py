@@ -773,3 +773,32 @@ def expand_corrmat_j(weights, C):
             K[x, y] = np.sum(Z * next_weights)
 
     return K + K.T, W + W.T
+
+
+def expand_corrmat_parsed(weights, C, mode='fit'):
+    n = weights.shape[0]
+    s = C.shape[0]
+    K = np.zeros([n, n])
+    W = np.zeros([n, n])
+    Z = r2z(C)
+
+    predict_mode = (mode == 'predict')
+
+    for x in range(n):
+        xweights = weights[x, :]
+        if predict_mode:
+            vals = range(x, n)
+        else:
+            vals = range(x)
+        for y in vals:
+            if predict_mode and (y < (n - s)): #this may be off by one index
+                continue
+            yweights = weights[y, :]
+
+            next_weights = np.outer(xweights, yweights)
+            next_weights = next_weights - np.triu(next_weights)
+
+            W[x, y] = np.sum(next_weights)
+            K[x, y] = np.sum(Z * next_weights)
+
+    return K + K.T, W + W.T
