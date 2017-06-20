@@ -2,6 +2,7 @@ import pandas as pd
 import seaborn as sns
 from ._helpers.stats import *
 from .brain import Brain
+import seaborn as sns
 
 class Model(object):
     """
@@ -38,17 +39,11 @@ class Model(object):
     locs : pandas.DataFrame
         MNI coordinate (x,y,z) by number of electrode df containing electrode locations
 
-    n_subs : int
-        Number of subjects used to create model
+    n_subs : int or elec x elec array
+        Number of subjects used to create model.
 
     meta : dict
         Optional dict containing whatever you want
-
-    Methods
-    ----------
-
-    plot : function
-        Plots model as a heatmap
 
     Returns
     ----------
@@ -57,7 +52,7 @@ class Model(object):
 
     """
 
-    def __init__(self, data=None, locs=None, n_subs=None, meta={}):
+    def __init__(self, data=None, locs=None, n_subs=1, meta={}):
 
         # convert data to df
         self.data = pd.DataFrame(data)
@@ -70,11 +65,6 @@ class Model(object):
 
         # meta
         self.meta = meta
-
-        # add methods
-        self.plot = self.plot
-        self.predict = self.predict
-
 
     def predict(self, bo, tf=False, kthreshold=10):
         """
@@ -105,19 +95,22 @@ class Model(object):
         sub_corrmat = get_corrmat(bo)
 
         # get rbf weights
-        sub_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), bo.locs)
+        sub_rbf_weights = rbf(self.locs, bo.locs)
 
         #  get subject expanded correlation matrix
         sub_corrmat_x = get_expanded_corrmat(sub_corrmat, sub_rbf_weights)
+
+        # add in new subj data
+        model_corrmat_x = np.divide(np.nansum(np.dstack((self.data.as_matrix() * self.n_subs, sub_corrmat_x)), 2), self.n_subs+1)
+
+        # replace the diagonal with zeros
+        model_corrmat_x[np.eye(model_corrmat_x.shape[0]) == 1] = 0
 
         # expanded rbf weights
         model_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), self.locs)
 
         # get model expanded correlation matrix
-        model_corrmat_x = get_expanded_corrmat(self.data.as_matrix(), model_rbf_weights)
-
-        # add in new subj data
-        model_corrmat_x = np.divide(((model_corrmat_x * self.n_subs) + sub_corrmat_x), (self.n_subs+1))
+        model_corrmat_x = get_expanded_corrmat(model_corrmat_x, model_rbf_weights)
 
         #convert from z to r
         model_corrmat_x = z2r(model_corrmat_x)
@@ -129,10 +122,8 @@ class Model(object):
             reconstructed = reconstruct_activity(bo, model_corrmat_x)
 
         # # create new bo with inferred activity
-        reconstructed_bo = Brain(data=reconstructed, locs=pd.concat([self.locs, bo.locs]),
+        return Brain(data=reconstructed, locs=pd.concat([self.locs, bo.locs]),
                     sessions=bo.sessions, sample_rate=bo.sample_rate)
-
-        return reconstructed_bo
 
     def expand(self, template):
         """

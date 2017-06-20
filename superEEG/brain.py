@@ -132,10 +132,16 @@ class Brain(object):
         """
         return self.data.as_matrix()
 
-    def save(self, filepath):
+    def to_pickle(self, filepath):
         """
         Save a pickled brain, mwahahaha
         """
         with open(filepath + '.bo', 'wb') as f:
             pickle.dump(self, f)
-            print('Brain object saved.')
+            print('Brain object saved as pickle.')
+
+    # def to_nifti(self, filepath):
+    #     """
+    #     Save brain object as a nifti file
+    #     """
+    #     nib.analyze.AnalyzeImage(self.get_data(), None).to_filename(filepath)
