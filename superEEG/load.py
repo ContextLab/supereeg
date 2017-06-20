@@ -51,8 +51,9 @@ def load(dataset):
             model = squareform(f['matrix_sum'].flatten()/f['weights_sum'], checks=False)
             model[np.eye(model.shape[0]) == 1] = 0
             model[np.where(np.isnan(model))] = 0
+            n_subs = squareform(f['weights_sum'])
 
         with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/R_small_MNI.npy', 'rb') as handle:
             locs = np.load(handle)
 
-        return Model(data=model, locs=locs, n_subs=2)
+        return Model(data=model, locs=locs, n_subs=n_subs)
