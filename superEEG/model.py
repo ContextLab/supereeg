@@ -109,15 +109,19 @@ class Model(object):
 
         #  get subject expanded correlation matrix
         sub_corrmat_x = get_expanded_corrmat(sub_corrmat, sub_rbf_weights)
-
+        sub_corrmat_y = get_expanded_corrmat_lucy(sub_corrmat, sub_rbf_weights)
         # expanded rbf weights
         model_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), self.locs)
 
         # get model expanded corrlation matrix
         model_corrmat_x = get_expanded_corrmat(self.data.as_matrix(), model_rbf_weights)
 
+        model_corrmat_y = get_expanded_corrmat_lucy(self.data.as_matrix(), model_rbf_weights)
         # add in new subj data
-        model_corrmat_x = ((model_corrmat_x * self.n_subs) + sub_corrmat_x) / self.n_subs+1
+        model_corrmat_x = np.divide(((model_corrmat_x * self.n_subs) + sub_corrmat_x), (self.n_subs+1))
+
+        #convert from z to r
+        model_corrmat_x = z2r(model_corrmat_x)
 
         # timeseries reconstruction
         if tf:
