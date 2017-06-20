@@ -44,12 +44,6 @@ class Model(object):
     meta : dict
         Optional dict containing whatever you want
 
-    Methods
-    ----------
-
-    plot : function
-        Plots model as a heatmap
-
     Returns
     ----------
     model : superEEG.Model instance
