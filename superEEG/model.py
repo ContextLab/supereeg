@@ -109,14 +109,13 @@ class Model(object):
 
         #  get subject expanded correlation matrix
         sub_corrmat_x = get_expanded_corrmat(sub_corrmat, sub_rbf_weights)
-        sub_corrmat_y = get_expanded_corrmat_lucy(sub_corrmat, sub_rbf_weights)
+
         # expanded rbf weights
         model_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), self.locs)
 
         # get model expanded corrlation matrix
         model_corrmat_x = get_expanded_corrmat(self.data.as_matrix(), model_rbf_weights)
 
-        model_corrmat_y = get_expanded_corrmat_lucy(self.data.as_matrix(), model_rbf_weights)
         # add in new subj data
         model_corrmat_x = np.divide(((model_corrmat_x * self.n_subs) + sub_corrmat_x), (self.n_subs+1))
 
@@ -134,6 +133,31 @@ class Model(object):
                     sessions=bo.sessions, sample_rate=bo.sample_rate)
 
         return reconstructed_bo
+
+    def expand(self, template):
+        """
+        Expand a model to a template space
+
+        Parameters
+        ----------
+
+        template : Model object
+
+        Returns
+        ----------
+
+        new_model : Model object
+            New model object in template space
+
+        """
+
+        # expanded rbf weights
+        model_rbf_weights = rbf(pd.concat([self.locs, template.locs]), template.locs)
+
+        # return new model
+        return Model(data=get_expanded_corrmat(self.data.as_matrix(), model_rbf_weights),
+                     locs=pd.concat([self.locs, template.locs])
+
 
     def plot(self):
         """
