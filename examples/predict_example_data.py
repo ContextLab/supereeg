@@ -26,3 +26,5 @@ reconstructed_bo = model.predict(bo)
 
 # print out info on new brain object
 reconstructed_bo.info()
+
+print(reconstructed_bo.get_data().shape)
