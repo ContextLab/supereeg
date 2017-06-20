@@ -113,7 +113,7 @@ class Model(object):
         # expanded rbf weights
         model_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), self.locs)
 
-        # get model expanded corrlation matrix
+        # get model expanded correlation matrix
         model_corrmat_x = get_expanded_corrmat(self.data.as_matrix(), model_rbf_weights)
 
         # add in new subj data
@@ -156,8 +156,57 @@ class Model(object):
 
         # return new model
         return Model(data=get_expanded_corrmat(self.data.as_matrix(), model_rbf_weights),
-                     locs=pd.concat([self.locs, template.locs])
+                     locs=pd.concat([self.locs, template.locs]))
 
+    def update(self, bo):
+        """
+        Update a model with new data
+
+        Parameters
+        ----------
+
+        bo : Brain object
+            New subject data
+
+        Returns
+        ----------
+
+        new_model : Model object
+            New model object updated with new subject data
+
+        """
+
+        # get subject-specific correlation matrix
+        sub_corrmat = get_corrmat(bo)
+
+        # if the locations are the same, skip the expand steps
+        if self.locs==bo.locs:
+
+            model_corrmat_x = sub_corrmat
+
+        else:
+
+            # get rbf weights
+            sub_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), bo.locs)
+
+            #  get subject expanded correlation matrix
+            sub_corrmat_x = get_expanded_corrmat(sub_corrmat, sub_rbf_weights)
+
+            # expanded rbf weights
+            model_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), self.locs)
+
+            # get model expanded correlation matrix
+            model_corrmat_x = get_expanded_corrmat(self.data.as_matrix(), model_rbf_weights)
+
+        # add in new subj data
+        model_corrmat_x = np.divide(((model_corrmat_x * self.n_subs) + sub_corrmat_x), (self.n_subs+1))
+
+        #convert from z to r
+        model_corrmat_x = z2r(model_corrmat_x)
+
+        # return a new updated model
+        return Model(data=model_corrmat_x, locs=pd.concat([self.locs, bo.locs])
+                     n_subs=self.n_subs+1, meta=self.meta)
 
     def plot(self):
         """
