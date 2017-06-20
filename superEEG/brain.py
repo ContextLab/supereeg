@@ -5,23 +5,29 @@ import time
 import os
 import numpy as np
 import pickle
+from ._helpers.stats import kurt_vals
 
 class Brain(object):
     """
     Brain data object for the superEEG package
 
-    Details about the Brain object.
+    A brain data object contains a single iEEG subject. To create one, at minimum
+    you need data (samples by electrodes), location coordinates in MNI space and
+    the sample rate of the data. Additionally, you can include a session id. If
+    included, all analyses will be performed within session and then aggregated
+    across sessions.  You can also include a meta dict, which can contain any
+    other information that might be useful (subject id, recording params, etc).
 
     Parameters
     ----------
 
-    data : 2d numpy array or list of lists
-        Samples x electrodes df containing the EEG data
+    data : numpy.ndarray
+        Samples x electrodes array containing the EEG data
 
-    locs : 1d numpy array or list
-        MNI coordinate (x,y,z) by electrode df containing electrode locations
+    locs : numpy.ndarray
+        MNI coordinate (x,y,z) by electrode array containing electrode locations
 
-    session : 1d numpy array or list
+    session : numpy.ndarray
         Samples x 1 array containing session identifiers
 
     sample_rates : float or list of floats
@@ -35,7 +41,7 @@ class Brain(object):
     ----------
 
     data : Pandas DataFrame
-        Samples x electrodes df containing the EEG data
+        Samples x electrodes dataframe containing the EEG data
 
     locs : Pandas DataFrame
         MNI coordinate (x,y,z) by electrode df containing electrode locations
@@ -66,23 +72,11 @@ class Brain(object):
     kurtosis : list of floats
         1 by number of electrode list containing kurtosis for each electrode
 
-    Methods
-    ----------
-
-    get_data : function
-        Takes brain object and returns data
-
-    remove_elecs : function
-        Takes brain object and returns brain object with electrodes and locations
-        exceeding some threshold removed
-
-    save : function
-        Saves brain object
 
     Returns
     ----------
 
-    brain : Brain data object
+    bo : Brain data object
         Instance of Brain data object containing subject data
 
     """
@@ -95,7 +89,6 @@ class Brain(object):
         # locs
         self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
-        print(sessions.shape)
         # session
         if isinstance(sessions, str) or isinstance(sessions, int):
             self.sessions = pd.Series([session for i in range(self.data.shape[0])])
@@ -118,6 +111,9 @@ class Brain(object):
         self.n_secs = self.data.shape[0]/self.sample_rate[0][0][0]
         self.date_created = time.strftime("%c")
 
+        # add methods
+        self.kurtosis = kurt_vals(self)
+
     # methods
 
     def info(self):
@@ -136,17 +132,10 @@ class Brain(object):
         """
         return self.data.as_matrix()
 
-    def remove_elecs(self, measure='kurtosis', threshold=10):
-        """
-        Gets data from brain object
-        """
-        if measure is 'kurtosis':
-            pass
-
     def save(self, filepath):
         """
         Save a pickled brain, mwahahaha
         """
         with open(filepath + '.bo', 'wb') as f:
             pickle.dump(self, f)
-            print('pickle saved.')
+            print('Brain object saved.')
