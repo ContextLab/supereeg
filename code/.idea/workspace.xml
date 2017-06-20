@@ -20,11 +20,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="full_cov_mats.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="full_cov_mats.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/full_cov_mats.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="165">
-              <caret line="52" column="34" selection-start-line="52" selection-start-column="34" selection-end-line="52" selection-end-column="40" />
+            <state relative-caret-position="510">
+              <caret line="46" column="30" selection-start-line="46" selection-start-column="30" selection-end-line="46" selection-end-column="30" />
               <folding>
                 <element signature="e#23#41#0" expanded="true" />
               </folding>
@@ -47,8 +47,8 @@
       <file leaf-file-name="compile_ful_cov_mats.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/compile_ful_cov_mats.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="214">
-              <caret line="92" column="49" selection-start-line="92" selection-start-column="49" selection-end-line="92" selection-end-column="49" />
+            <state relative-caret-position="1155">
+              <caret line="83" column="17" selection-start-line="83" selection-start-column="17" selection-end-line="83" selection-end-column="17" />
               <folding>
                 <element signature="e#23#41#0" expanded="true" />
               </folding>
@@ -59,8 +59,8 @@
       <file leaf-file-name="recon_with_model.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/recon_with_model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="390">
-              <caret line="71" column="0" selection-start-line="71" selection-start-column="0" selection-end-line="72" selection-end-column="56" />
+            <state relative-caret-position="300">
+              <caret line="34" column="4" selection-start-line="34" selection-start-column="4" selection-end-line="34" selection-end-column="78" />
               <folding>
                 <element signature="e#23#41#0" expanded="true" />
               </folding>
@@ -92,23 +92,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="file_io.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/file_io.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-191">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding>
-                <element signature="e#0#18#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="recon_with_model_compile.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/recon_with_model_compile.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="94">
-              <caret line="57" column="0" selection-start-line="57" selection-start-column="0" selection-end-line="57" selection-end-column="0" />
+            <state relative-caret-position="154">
+              <caret line="58" column="16" selection-start-line="58" selection-start-column="16" selection-end-line="58" selection-end-column="57" />
               <folding>
                 <element signature="e#23#41#0" expanded="true" />
               </folding>
@@ -116,12 +104,14 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="gif.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="gif.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/gif.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-30">
-              <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="30" />
-              <folding />
+            <state relative-caret-position="278">
+              <caret line="31" column="32" selection-start-line="31" selection-start-column="32" selection-end-line="31" selection-end-column="32" />
+              <folding>
+                <element signature="e#1#10#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -151,7 +141,6 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/corr_mats.py" />
-        <option value="$PROJECT_DIR$/full_cov_mats.py" />
         <option value="$PROJECT_DIR$/compile_ful_cov_mats.py" />
         <option value="$PROJECT_DIR$/junk.py" />
         <option value="$PROJECT_DIR$/timeseries.py" />
@@ -162,6 +151,7 @@
         <option value="$PROJECT_DIR$/recon_with_model.py" />
         <option value="$PROJECT_DIR$/stats.py" />
         <option value="$PROJECT_DIR$/expand_mat.py" />
+        <option value="$PROJECT_DIR$/full_cov_mats.py" />
       </list>
     </option>
   </component>
@@ -555,7 +545,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/full_cov_mats.py</url>
-          <line>62</line>
+          <line>50</line>
           <option name="timeStamp" value="66" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -652,7 +642,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-161">
           <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#1#10#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -760,7 +752,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="855">
           <caret line="57" column="79" selection-start-line="57" selection-start-column="79" selection-end-line="57" selection-end-column="79" />
-          <folding />
+          <folding>
+            <element signature="e#1#10#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -878,7 +872,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="645">
           <caret line="52" column="99" selection-start-line="52" selection-start-column="99" selection-end-line="52" selection-end-column="99" />
-          <folding />
+          <folding>
+            <element signature="e#1#10#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1041,52 +1037,32 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/compile_ful_cov_mats.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="214">
-          <caret line="92" column="49" selection-start-line="92" selection-start-column="49" selection-end-line="92" selection-end-column="49" />
-          <folding>
-            <element signature="e#23#41#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/full_cov_mats.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="52" column="34" selection-start-line="52" selection-start-column="34" selection-end-line="52" selection-end-column="40" />
-          <folding>
-            <element signature="e#23#41#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/recon_with_model_compile.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="94">
-          <caret line="57" column="0" selection-start-line="57" selection-start-column="0" selection-end-line="57" selection-end-column="0" />
-          <folding>
-            <element signature="e#23#41#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/recon_with_model.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="71" column="0" selection-start-line="71" selection-start-column="0" selection-end-line="72" selection-end-column="56" />
-          <folding>
-            <element signature="e#23#41#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/expand_mat.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="480">
           <caret line="59" column="30" selection-start-line="59" selection-start-column="30" selection-end-line="59" selection-end-column="30" />
           <folding>
             <element signature="e#23#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/compile_ful_cov_mats.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1155">
+          <caret line="83" column="17" selection-start-line="83" selection-start-column="17" selection-end-line="83" selection-end-column="17" />
+          <folding>
+            <element signature="e#23#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gif.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="278">
+          <caret line="31" column="32" selection-start-line="31" selection-start-column="32" selection-end-line="31" selection-end-column="32" />
+          <folding>
+            <element signature="e#1#10#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1101,11 +1077,33 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/gif.py">
+    <entry file="file://$PROJECT_DIR$/recon_with_model_compile.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-30">
-          <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="30" />
-          <folding />
+        <state relative-caret-position="154">
+          <caret line="58" column="16" selection-start-line="58" selection-start-column="16" selection-end-line="58" selection-end-column="57" />
+          <folding>
+            <element signature="e#23#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/recon_with_model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="34" column="4" selection-start-line="34" selection-start-column="4" selection-end-line="34" selection-end-column="78" />
+          <folding>
+            <element signature="e#23#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/full_cov_mats.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="46" column="30" selection-start-line="46" selection-start-column="30" selection-end-line="46" selection-end-column="30" />
+          <folding>
+            <element signature="e#23#41#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
