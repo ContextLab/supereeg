@@ -9,6 +9,26 @@ Gallery of Examples
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Here, we load an example dataset and then print out some information about it.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_download_model_thumb.png
+
+        :ref:`sphx_glr_auto_examples_download_model.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/download_model
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="Here we load the example model, and then plot it.">
 
 .. only:: html
@@ -49,26 +69,6 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="SuperEEG will run in different ways depending your computing environment. To change the computi...">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_set_context_thumb.png
-
-        :ref:`sphx_glr_auto_examples_set_context.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/set_context
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="In this example, we load in a single subject example, remove electrodes that exceed a kurtosis ...">
 
 .. only:: html
@@ -86,6 +86,26 @@ Gallery of Examples
    :hidden:
 
    /auto_examples/predict_example_data
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="SuperEEG will run in different ways depending your computing environment. To change the computi...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_set_context_thumb.png
+
+        :ref:`sphx_glr_auto_examples_set_context.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/set_context
 .. raw:: html
 
     <div style='clear:both'></div>

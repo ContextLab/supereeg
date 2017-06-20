@@ -205,7 +205,7 @@ class Model(object):
         model_corrmat_x = z2r(model_corrmat_x)
 
         # return a new updated model
-        return Model(data=model_corrmat_x, locs=pd.concat([self.locs, bo.locs])
+        return Model(data=model_corrmat_x, locs=pd.concat([self.locs, bo.locs]),
                      n_subs=self.n_subs+1, meta=self.meta)
 
     def plot(self):

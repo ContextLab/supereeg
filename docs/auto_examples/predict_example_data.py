@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 =============================
-Predict a dataset
+Predict unknown location
 =============================
 
 In this example, we load in a single subject example, remove electrodes that exceed
@@ -13,19 +13,16 @@ model locations.
 # Code source: Andrew Heusser & Lucy Owen
 # License: MIT
 
-import superEEG
+import superEEG as se
 
 # load example data
-bo = superEEG.load_example_data()
-
-# remove elecs that exceed some threshold
-bo.remove_elecs(measure='kurtosis', threshold=10)
+bo = se.load('example_data')
 
 # load example model
-model = superEEG.load_example_model()
+model = se.load('example_model')
 
 # fill in the missing timeseries data
-reconstructed_bo = superEEG.predict(bo, model=model)
+reconstructed_bo = model.predict(bo)
 
 # print out info on new brain object
 reconstructed_bo.info()
