@@ -65,11 +65,6 @@ class Model(object):
         # meta
         self.meta = meta
 
-        # add methods
-        self.plot = self.plot
-        self.predict = self.predict
-
-
     def predict(self, bo, tf=False, kthreshold=10):
         """
         Takes a brain object and a 'full' covariance model, fills in all
