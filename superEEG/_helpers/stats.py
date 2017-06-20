@@ -292,7 +292,7 @@ def get_expanded_corrmat_lucy(C, weights, mode='fit'):
     s = C.shape[0]
     K = np.zeros([n, n])
     W = np.zeros([n, n])
-    Z = r2z(C)
+    Z = C
 
     predict_mode = (mode == 'predict')
 

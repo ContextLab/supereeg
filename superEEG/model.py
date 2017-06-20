@@ -92,28 +92,41 @@ class Model(object):
         bo = filter_elecs(bo, measure='kurtosis', threshold=kthreshold)
 
         # get subject-specific correlation matrix
-        sub_corrmat = get_corrmat(bo)
+        sub_corrmat = r2z(get_corrmat(bo))
 
         # get rbf weights
         sub_rbf_weights = rbf(self.locs, bo.locs)
 
         #  get subject expanded correlation matrix
-        sub_corrmat_x = get_expanded_corrmat(sub_corrmat, sub_rbf_weights)
+        sub_corrmat_x = get_expanded_corrmat_lucy(sub_corrmat, sub_rbf_weights)
+
+        # find the places where subject has data
+        sub_has_data = ~np.isnan(sub_corrmat_x)
+
+        # convert to ints
+        sub_has_data = sub_has_data.astype(int)
 
         # add in new subj data
-        model_corrmat_x = np.divide(np.nansum(np.dstack((self.data.as_matrix() * self.n_subs, sub_corrmat_x)), 2), self.n_subs+1)
+        model_corrmat_x = np.divide(np.nansum(np.dstack((self.data.as_matrix(), sub_corrmat_x)), 2), self.n_subs + sub_has_data)
 
         # replace the diagonal with zeros
         model_corrmat_x[np.eye(model_corrmat_x.shape[0]) == 1] = 0
+
+        # convert nans to zeros
+        model_corrmat_x[np.where(np.isnan(model_corrmat_x))] = 0
 
         # expanded rbf weights
         model_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), self.locs)
 
         # get model expanded correlation matrix
-        model_corrmat_x = get_expanded_corrmat(model_corrmat_x, model_rbf_weights)
+        model_corrmat_x = get_expanded_corrmat_lucy(model_corrmat_x, model_rbf_weights)
 
         #convert from z to r
         model_corrmat_x = z2r(model_corrmat_x)
+
+        # convert diagonals to 1
+        # model_corrmat_x[np.eye(model_corrmat_x.shape[0]) == 1] = 1
+        model_corrmat_x[np.where(np.isnan(model_corrmat_x))] = 1
 
         # timeseries reconstruction
         if tf:
