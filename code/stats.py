@@ -775,12 +775,11 @@ def expand_corrmat_j(weights, C):
     return K + K.T, W + W.T
 
 
-def expand_corrmat_parsed(weights, C, mode='fit'):
+def expand_corrmat_parsed(weights, Z, mode='fit'):
     n = weights.shape[0]
-    s = C.shape[0]
+    s = Z.shape[0]
     K = np.zeros([n, n])
     W = np.zeros([n, n])
-    Z = r2z(C)
 
     predict_mode = (mode == 'predict')
 
