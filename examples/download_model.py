@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 =============================
-Loading data
+Downloading a model
 =============================
 
 Here, we load an example dataset and then print out some information about it.
@@ -12,10 +12,7 @@ Here, we load an example dataset and then print out some information about it.
 # License: MIT
 
 # import
-import superEEG
+import superEEG as se
 
 # load example data
-bo = superEEG.load_example_data()
-
-# check out the bo
-bo.info()
+se.download('example_model')
