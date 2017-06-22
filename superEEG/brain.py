@@ -5,6 +5,8 @@ import time
 import os
 import numpy as np
 import pickle
+import nibabel as nib
+from nibabel.affines import apply_affine
 from ._helpers.stats import kurt_vals
 
 class Brain(object):
@@ -140,8 +142,25 @@ class Brain(object):
             pickle.dump(self, f)
             print('Brain object saved as pickle.')
 
-    # def to_nifti(self, filepath):
-    #     """
-    #     Save brain object as a nifti file
-    #     """
-    #     nib.analyze.AnalyzeImage(self.get_data(), None).to_filename(filepath)
+    def to_nifti(self, filepath):
+        """
+        Save brain object as a nifti file
+        """
+        img = nib.load('../superEEG/data/MNI152_T1_6mm_brain.nii.gz')
+
+        print('BEFORE: ', self.locs)
+
+        # subtract off the origin
+        coords = (self.locs - (0,0,0))
+
+        # apply the affine transform
+        coords = apply_affine(img.affine, coords)
+
+        # divide by voxel dims
+        coords = coords/img.header.get_zooms()
+
+        coords = coords.astype(int)
+
+        print('AFTER: ', coords)
+
+        return coords
