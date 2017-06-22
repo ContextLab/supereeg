@@ -7,6 +7,7 @@ import numpy as np
 import pickle
 import nibabel as nib
 from nibabel.affines import apply_affine
+import warnings
 from ._helpers.stats import kurt_vals
 
 class Brain(object):
@@ -93,7 +94,9 @@ class Brain(object):
 
         # session
         if isinstance(sessions, str) or isinstance(sessions, int):
-            self.sessions = pd.Series([session for i in range(self.data.shape[0])])
+            self.sessions = pd.Series([sessions for i in range(self.data.shape[0])])
+        elif sessions is None:
+            self.sessions = pd.Series([1 for i in range(self.data.shape[0])])
         else:
             self.sessions = pd.Series(sessions.ravel())
 
@@ -101,7 +104,10 @@ class Brain(object):
         if isinstance(sample_rate, list):
             self.sample_rate = sample_rate
         elif isinstance(sessions, list):
-            self.sample_rate = [sample_rate for s in range(sessions)]
+            self.sample_rate = [sample_rate for s in self.sessions.values]
+        elif sample_rate is None:
+            self.sample_rate = [1000 for s in self.sessions.values]
+            warnings.warn('No sample rate given.  Setting sample rate to 1000')
         else:
             self.sample_rate = [sample_rate]
 
@@ -110,7 +116,8 @@ class Brain(object):
 
         # compute attrs
         self.n_elecs = self.data.shape[1]
-        self.n_secs = self.data.shape[0]/self.sample_rate[0][0][0]
+        ## needs to be calculated by sessions
+        self.n_secs = self.data.shape[0]/self.sample_rate[0]
         self.date_created = time.strftime("%c")
 
         # add methods
