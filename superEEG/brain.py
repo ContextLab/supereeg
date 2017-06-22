@@ -155,22 +155,29 @@ class Brain(object):
         Save brain object as a nifti file
         """
 
-        img = nib.load(template)
-
-        def normalize_locs(x, vox_size):
+        def coords2vox(x, vox_size):
             shifted = (x - np.min(x, axis=0)) + vox_size
             return np.round(np.divide(shifted, vox_size))-1
 
-        data = np.zeros(tuple(list(img.shape)+[self.data.shape[0]]))
-        locs = normalize_locs(self.locs, img.header.get_zooms())
+        # load template
+        img = nib.load(template)
 
+        # initialize data
+        data = np.zeros(tuple(list(img.shape)+[self.data.shape[0]]))
+
+        # convert coords from matrix coords to voxel indices
+        locs = coords2vox(self.locs, img.header.get_zooms())
+
+        # loop over data and locations to fill in activations
         for i, row in self.data.iterrows():
             for j, loc in locs.iterrows():
                 a,b,c,d = np.array(loc.values.tolist()+[i]).astype(int)
                 data[a,b,c,d]=row.loc[j]
 
+        # create nifti object
         nifti = nib.nifti1.Nifti1Image(data, img.affine, header=img.header)
 
+        # save if filepath
         if filepath:
             nifti.to_filename(filepath)
 
