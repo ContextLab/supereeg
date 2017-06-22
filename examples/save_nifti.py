@@ -14,9 +14,14 @@ model locations.
 # License: MIT
 
 import superEEG as se
+import seaborn as sns
+import numpy as np
 
 # load example data
 bo = se.load('example_data')
 
 # save as nifti
-bo.to_nifti('test')
+new_locs = bo.to_nifti('test')
+
+sns.heatmap(np.divide(bo.locs, new_locs))
+sns.plt.show()
