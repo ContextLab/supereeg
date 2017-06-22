@@ -20,8 +20,12 @@ import numpy as np
 # load example data
 bo = se.load('example_data')
 
-# save as nifti
-new_locs = bo.to_nifti('test')
+bo.data = bo.data.loc[:1000,:]
 
-sns.heatmap(np.divide(bo.locs, new_locs))
-sns.plt.show()
+# save as nifti
+data = bo.to_nifti('test')
+
+print(data)
+
+# sns.heatmap(np.divide(bo.locs, new_locs))
+# sns.plt.show()

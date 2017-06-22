@@ -149,25 +149,29 @@ class Brain(object):
             pickle.dump(self, f)
             print('Brain object saved as pickle.')
 
-    def to_nifti(self, filepath):
+    def to_nifti(self, filepath=None,
+                 template='../superEEG/data/MNI152_T1_6mm_brain.nii.gz'):
         """
         Save brain object as a nifti file
         """
-        img = nib.load('../superEEG/data/MNI152_T1_6mm_brain.nii.gz')
 
-        print('BEFORE: ', self.locs)
+        img = nib.load(template)
 
-        # subtract off the origin
-        coords = (self.locs - (0,0,0))
+        def normalize_locs(x, vox_size):
+            shifted = (x - np.min(x, axis=0)) + vox_size
+            return np.round(np.divide(shifted, vox_size))-1
 
-        # apply the affine transform
-        coords = apply_affine(img.affine, coords)
+        data = np.zeros(tuple(list(img.shape)+[self.data.shape[0]]))
+        locs = normalize_locs(self.locs, img.header.get_zooms())
 
-        # divide by voxel dims
-        coords = coords/img.header.get_zooms()
+        for i, row in self.data.iterrows():
+            for j, loc in locs.iterrows():
+                a,b,c,d = np.array(loc.values.tolist()+[i]).astype(int)
+                data[a,b,c,d]=row.loc[j]
 
-        coords = coords.astype(int)
+        nifti = nib.nifti1.Nifti1Image(data, img.affine, header=img.header)
 
-        print('AFTER: ', coords)
+        if filepath:
+            nifti.to_filename(filepath)
 
-        return coords
+        return nifti
