@@ -253,6 +253,28 @@ def get_expanded_corrmat_tf(C, weights):
 
     return expand_matrix(results, weights)
 
+
+def uniquerows(x):
+    """
+    Finds unique rows
+
+    Parameters
+    ----------
+    x : ndarray
+        Coordinates
+
+
+    Returns
+    ----------
+    results : ndarray
+        unique rows
+
+    """
+    y = np.ascontiguousarray(x).view(np.dtype((np.void, x.dtype.itemsize * x.shape[1])))
+    _, idx = np.unique(y, return_index=True)
+
+    return x[idx]
+
 def get_expanded_corrmat(C, weights):
     """
     Gets full correlation matrix

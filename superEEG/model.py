@@ -3,6 +3,7 @@ import seaborn as sns
 from ._helpers.stats import *
 from .brain import Brain
 import seaborn as sns
+import nibabel as nib
 
 class Model(object):
     """
@@ -63,9 +64,9 @@ class Model(object):
         # load template
         if self.locs is None:
             img = nib.load(template)
-            self.locs = pd.DataFrame(nii2cmu(img), columns=['x', 'y', 'z'])
+            #self.locs = pd.DataFrame(nii2cmu(img), columns=['x', 'y', 'z'])
         else:
-            pd.DataFrame(locs, columns=['x', 'y', 'z'])
+            self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
         numerator = np.zeros(self.locs, self.locs)
         denominator = np.zeros(self.locs, self.locs)

@@ -58,4 +58,4 @@ def load(dataset):
         with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/R_small_MNI.npy', 'rb') as handle:
             locs = np.load(handle)
 
-        return Model(data=model, locs=locs, n_subs=n_subs)
+        return Model(data=model, locs=locs)
