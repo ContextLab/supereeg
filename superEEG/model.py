@@ -54,12 +54,19 @@ class Model(object):
     def __init__(self, data=None, locs=None, template='../superEEG/data/MNI152_T1_6mm_brain.nii.gz',
                  measure='kurtosis', threshold=10, meta={}):
 
-        # load template
+        # get locations from template, or from locs arg
         if self.locs is None:
+
+            # load in template file
             img = nib.load(template)
+
+            # get locations from template
             self.locs = pd.DataFrame(nii2cmu(img), columns=['x', 'y', 'z'])
+
         else:
-            pd.DataFrame(self.locs, columns=['x', 'y', 'z'])
+
+            # otherwise, create df from locs passed as arg
+            self.locs = pd.DataFrame(self.locs, columns=['x', 'y', 'z'])
 
         # initialize numerator
         numerator = np.zeros(self.locs, self.locs)
