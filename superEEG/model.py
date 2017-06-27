@@ -138,6 +138,9 @@ class Model(object):
         #  get subject expanded correlation matrix
         num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(sub_corrmat, sub_rbf_weights)
 
+        # set weights equal to zero where the numerator is equal to nan
+        denom_corrmat_x[np.isnan(num_corrmat_x)] = 0
+
         # add in new subj data
         model_corrmat_x = np.divide(np.nansum(np.dstack((self.numerator.as_matrix(), num_corrmat_x)), 2), self.denominator + denom_corrmat_x)
 
@@ -151,7 +154,10 @@ class Model(object):
         model_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), self.locs)
 
         # get model expanded correlation matrix
-        model_corrmat_x = get_expanded_corrmat_lucy(model_corrmat_x, model_rbf_weights)
+        num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(model_corrmat_x, model_rbf_weights)
+
+        # divide the numerator and denominator
+        model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
 
         #convert from z to r
         model_corrmat_x = z2r(model_corrmat_x)
