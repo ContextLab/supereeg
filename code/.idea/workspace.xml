@@ -23,7 +23,7 @@
       <file leaf-file-name="full_cov_mats.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/full_cov_mats.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="345">
+            <state relative-caret-position="390">
               <caret line="68" column="77" selection-start-line="68" selection-start-column="77" selection-end-line="68" selection-end-column="77" />
               <folding>
                 <element signature="e#23#41#0" expanded="true" />
@@ -162,8 +162,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="3096" />
-    <option name="y" value="-290" />
+    <option name="x" value="1680" />
+    <option name="y" value="-420" />
     <option name="width" value="1680" />
     <option name="height" value="1027" />
   </component>
@@ -470,8 +470,8 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="3096" y="-290" width="1680" height="1027" extended-state="0" />
-    <editor active="false" />
+    <frame x="1680" y="-420" width="1680" height="1027" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24166666" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -992,7 +992,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/full_cov_mats.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
+        <state relative-caret-position="390">
           <caret line="68" column="77" selection-start-line="68" selection-start-column="77" selection-end-line="68" selection-end-column="77" />
           <folding>
             <element signature="e#23#41#0" expanded="true" />

@@ -29,39 +29,38 @@ model = se.load('example_model')
 # get the locations
 locs = model.locs
 
-### to we convert to z before creating the synthetic data?
+# create a fake model
+full_model = se.Model(data=scipy.linalg.toeplitz(np.linspace(0,1,len(locs))[::-1]), locs=locs)
 
-### if yes:
-
-# # create a fake model
-# temp = r2z(scipy.linalg.toeplitz(np.linspace(0,1,len(locs))[::-1]))
-# temp[temp == inf] = r2z(.999999)
-# # temp[temp == inf] = 0 # converting the diagnol to 0s gives an indefinete matrix - cant use cholesky
-# model = se.Model(data=temp, locs=locs)
-#
-# #model = se.Model(data=scipy.linalg.toeplitz(np.linspace(0,1,len(locs))[::-1]), locs=locs)
-# model = se.Model(data=model.data, locs=locs)
-
-### if no:
-model = se.Model(data=scipy.linalg.toeplitz(np.linspace(0,1,len(locs))[::-1]), locs=locs)
 # create a random multivariate distribution
 rand_dist = np.random.multivariate_normal(np.zeros(len(locs)), np.eye(len(locs)), size=n_samples)
 
-# multiply by the model
-bo = se.Brain(data=np.dot(rand_dist, scipy.linalg.cholesky(model.data)), locs=locs)
+# multiply by the model to create the synthetic full brain activity
+bo = se.Brain(data=np.dot(rand_dist, scipy.linalg.cholesky(full_model.data)), locs=locs)
 
-#temp = r2z(model.data)
-#temp[temp == inf] = 0
-#model.data = temp
-# create a brain object that is a subsample of the full data
-#bo_sub = se.Brain(data=bo.data.iloc[:, range(1,len(locs), 10)], locs=bo.locs.iloc[range(1,len(locs), 10), :])
+# indices: subset of 10 from full location for the synthetic subject data and the rest for the synthetic model
+locs_inds = range(0,len(locs))
+sub_inds = locs_inds[0::5]
+model_inds = list(set(locs_inds)-set(sub_inds))
+
+
+# create a brain object that is a subsample of the full data - this is the synthetic subject data
+bo_sub = se.Brain(data=bo.data.iloc[:, sub_inds], locs=bo.locs.iloc[sub_inds, :])
+
+# create a new model that is a subsample of the full model - this is the synthetic model
+model = se.Model(data=full_model.data.as_matrix()[:, model_inds][model_inds], locs=full_model.locs.iloc[model_inds, :])
+
+temp = r2z(model.data)
+temp[temp == inf] = 0
+model.data = temp
+reconstructed = model.predict(bo_sub)
+expected = zscore(bo.data.iloc[:, model_inds])
+import seaborn as sb
+sb.jointplot(reconstructed.data.iloc[:,0], expected[:, 0])
+
+### below works:
+
 bo_sub = se.Brain(data=bo.data.iloc[:, range(1,len(locs))], locs=bo.locs.iloc[range(1,len(locs)), :])
-
-
-# model.data = z2r(model.data)
-# reconstructed = model.predict(bo_sub)
-# expected = zscore(bo.data)
-
 
 def reconstruct_activity(bo, K):
     """
@@ -74,3 +73,6 @@ def reconstruct_activity(bo, K):
 
 
 reconstructed_activity = reconstruct_activity(bo_sub, model.data.as_matrix())
+
+import seaborn as sb
+sb.jointplot(reconstructed_activity, bo.data[0])
