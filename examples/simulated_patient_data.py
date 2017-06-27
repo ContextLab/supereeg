@@ -22,6 +22,7 @@ from numpy import inf
 from scipy.stats import zscore
 import os
 import pandas as pd
+import pickle
 
 # n_samples
 n_samples = 1000
@@ -30,17 +31,32 @@ n_samples = 1000
 with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/R_small_MNI.npy', 'rb') as handle:
     locs = np.load(handle)
 
-# get the locations
-
+# # get the locations
+#
+# R = scipy.linalg.toeplitz(np.linspace(0,1,len(locs))[::-1])
+#
+# count = 0
+# patient_inds = slice_list(range(0, len(locs)), 13)
+# for p in patient_inds:
+#
+#     count += 1
+#     rand_dist = np.random.multivariate_normal(np.zeros(len(locs)), np.eye(len(locs)), size=n_samples)
+#     bo = se.Brain(data=np.dot(rand_dist, scipy.linalg.cholesky(R))[:,p], locs=pd.DataFrame(locs[p,:], columns=['x', 'y', 'z']))
+#
+#     bo.to_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/synthetic_' + str(count))
 R = scipy.linalg.toeplitz(np.linspace(0,1,len(locs))[::-1])
+data = []
+for i in range(50):
+    p = np.random.choice(range(len(locs)), 20, replace=False)
 
-count = 0
-patient_inds = slice_list(range(0, len(locs)), 13)
-
-for p in patient_inds:
-
-    count += 1
     rand_dist = np.random.multivariate_normal(np.zeros(len(locs)), np.eye(len(locs)), size=n_samples)
-    bo = se.Brain(data=np.dot(rand_dist, scipy.linalg.cholesky(R))[:,p], locs=pd.DataFrame(locs[p,:], columns=['x', 'y', 'z']))
+    data.append(se.Brain(data=np.dot(rand_dist, scipy.linalg.cholesky(R))[:,p], locs=pd.DataFrame(locs[p,:], columns=['x', 'y', 'z'])))
 
-    bo.to_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/synthetic_' + str(count))
+    #bo.to_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/synthetic_' + str(i))
+
+# data = []
+# for i in range(1,14):
+#     with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/synthetic_' +str(i) + '.bo', 'rb') as handle:
+#         data.append(pickle.load(handle))
+
+se.Model(data=data, locs=locs)

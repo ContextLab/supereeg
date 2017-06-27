@@ -56,7 +56,7 @@ class Model(object):
                  measure='kurtosis', threshold=10, meta={}):
 
         # get locations from template, or from locs arg
-        if self.locs is None:
+        if locs is None:
 
             # load in template file
             img = nib.load(template)
@@ -67,19 +67,19 @@ class Model(object):
         else:
 
             # otherwise, create df from locs passed as arg
-            self.locs = pd.DataFrame(self.locs, columns=['x', 'y', 'z'])
+            self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
         # initialize numerator
-        numerator = np.zeros(self.locs, self.locs)
+        numerator = np.zeros((self.locs.shape[0], self.locs.shape[0]))
 
         # initialize denominator
-        denominator = np.zeros(self.locs, self.locs)
+        denominator = np.zeros((self.locs.shape[0], self.locs.shape[0]))
 
         # loop over brain objects
         for bo in data:
 
             # filter bad electrodes
-            filtered_bo = filter_elecs(bo, measure=self.measure, threshold=self.threshold)
+            bo = filter_elecs(bo, measure=measure, threshold=threshold)
 
             # get subject-specific correlation matrix
             sub_corrmat = r2z(get_corrmat(bo))
