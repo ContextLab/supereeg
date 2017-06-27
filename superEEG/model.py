@@ -55,21 +55,20 @@ class Model(object):
     def __init__(self, data=None, locs=None, template='../superEEG/data/MNI152_T1_6mm_brain.nii.gz',
                  measure='kurtosis', threshold=10, meta={}):
 
-        # convert data to df
-        # self.data = pd.DataFrame(data)
-        # expand to MNI space- if nifti, expand to that area- but could also pass flag for union of electrode locations
-        # pass in template space
-
         # load template
         if self.locs is None:
             img = nib.load(template)
             self.locs = pd.DataFrame(nii2cmu(img), columns=['x', 'y', 'z'])
         else:
-            pd.DataFrame(locs, columns=['x', 'y', 'z'])
+            pd.DataFrame(self.locs, columns=['x', 'y', 'z'])
 
+        # initialize numerator
         numerator = np.zeros(self.locs, self.locs)
+
+        # initialize denominator
         denominator = np.zeros(self.locs, self.locs)
 
+        # loop over brain objects
         for bo in data:
 
             # filter bad electrodes
@@ -93,8 +92,13 @@ class Model(object):
             # add in new subj data to denominator
             denominator += denom_corrmat_x
 
+        # attach numerator
         self.numerator = numerator
+
+        # attach denominator
         self.denominator = denominator
+
+        # attach number of subjects
         self.n_subs = len(data)
 
         # meta
