@@ -313,7 +313,7 @@ def get_expanded_corrmat_lucy(C, weights, mode='fit'):
             W[x, y] = np.sum(next_weights)
             K[x, y] = np.sum(Z * next_weights)
 
-    return (K + K.T)/ (W + W.T)
+    return (K + K.T), (W + W.T)
 
 
 def reconstruct_activity(bo, K):

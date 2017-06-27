@@ -52,16 +52,50 @@ class Model(object):
 
     """
 
-    def __init__(self, data=None, locs=None, n_subs=1, meta={}):
+    def __init__(self, data=None, locs=None, template='../superEEG/data/MNI152_T1_6mm_brain.nii.gz',
+                 measure='kurtosis', threshold=10, meta={}):
 
         # convert data to df
-        self.data = pd.DataFrame(data)
+        # self.data = pd.DataFrame(data)
+        # expand to MNI space- if nifti, expand to that area- but could also pass flag for union of electrode locations
+        # pass in template space
 
-        # locs
-        self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
+        # load template
+        if self.locs is None:
+            img = nib.load(template)
+            self.locs = pd.DataFrame(nii2cmu(img), columns=['x', 'y', 'z'])
+        else:
+            pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
-        # number of subjects
-        self.n_subs = n_subs
+        numerator = np.zeros(self.locs, self.locs)
+        denominator = np.zeros(self.locs, self.locs)
+
+        for bo in data:
+
+            # filter bad electrodes
+            filtered_bo = filter_elecs(bo, measure=self.measure, threshold=self.threshold)
+
+            # get subject-specific correlation matrix
+            sub_corrmat = r2z(get_corrmat(bo))
+
+            # get rbf weights
+            sub_rbf_weights = rbf(self.locs, bo.locs)
+
+            #  get subject expanded correlation matrix
+            num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(sub_corrmat, sub_rbf_weights)
+
+            # set weights equal to zero where the numerator is equal to nan
+            denom_corrmat_x[np.isnan(num_corrmat_x)] = 0
+
+            # add in new subj data to numerator
+            numerator = np.nansum(np.dstack((numerator, num_corrmat_x)), 2)
+
+            # add in new subj data to denominator
+            denominator += denom_corrmat_x
+
+        self.numerator = numerator
+        self.denominator = denominator
+        self.n_subs = len(data)
 
         # meta
         self.meta = meta
@@ -98,16 +132,10 @@ class Model(object):
         sub_rbf_weights = rbf(self.locs, bo.locs)
 
         #  get subject expanded correlation matrix
-        sub_corrmat_x = get_expanded_corrmat_lucy(sub_corrmat, sub_rbf_weights)
-
-        # find the places where subject has data
-        sub_has_data = ~np.isnan(sub_corrmat_x)
-
-        # convert to ints
-        sub_has_data = sub_has_data.astype(int)
+        num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(sub_corrmat, sub_rbf_weights)
 
         # add in new subj data
-        model_corrmat_x = np.divide(np.nansum(np.dstack((self.data.as_matrix(), sub_corrmat_x)), 2), self.n_subs + sub_has_data)
+        model_corrmat_x = np.divide(np.nansum(np.dstack((self.numerator.as_matrix(), num_corrmat_x)), 2), self.denominator + denom_corrmat_x)
 
         # replace the diagonal with zeros
         model_corrmat_x[np.eye(model_corrmat_x.shape[0]) == 1] = 0
