@@ -157,13 +157,16 @@ class Brain(object):
 
         def coords2vox(x, vox_size):
             shifted = (x - np.min(x, axis=0)) + vox_size
-            return np.round(np.divide(shifted, vox_size))-1
+            return (np.round(np.divide(shifted, vox_size)))-1
 
         # load template
         img = nib.load(template)
 
         # initialize data
         data = np.zeros(tuple(list(img.shape)+[self.data.shape[0]]))
+
+        # get origin
+        origin = np.divide(-img.affine[:, 3], np.diag(img.affine))[:3]
 
         # convert coords from matrix coords to voxel indices
         locs = coords2vox(self.locs, img.header.get_zooms())
