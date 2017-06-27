@@ -17,33 +17,32 @@ class Model(object):
     Parameters
     ----------
 
-    data : numpy.ndarray
-        Electrodes x electrodes correlation matrix
-
-    locs : numpy.ndarray
-        MNI coordinate (x,y,z) by number of electrode df containing electrode locations
-
-    n_subs : int
-        Number of subjects used to create model
-
-    meta : dict
-        Optional dict containing whatever you want
-
-
-    Attributes
-    ----------
-
-    data : pandas.DataFrame
-        Electrodes x electrodes correlation matrix
+    data : list
+        A list of superEEG.Brain objects used to create the model
 
     locs : pandas.DataFrame
         MNI coordinate (x,y,z) by number of electrode df containing electrode locations
 
-    n_subs : int or elec x elec array
-        Number of subjects used to create model.
+    template : filepath
+        Path to a template nifti file used to set model locations
 
     meta : dict
         Optional dict containing whatever you want
+
+    Attributes
+    ----------
+
+    numerator : Numpy.ndarray
+        A locations x locations matrix comprising the sum of the zscored
+        correlation matrices over subjects
+
+    denominator : Numpy.ndarray
+        A locations x locations matrix comprising the sum of the number of
+        subjects contributing to each matrix cell
+
+    n_subs : int
+        Number of subject used to create the model
+
 
     Returns
     ----------
@@ -163,7 +162,6 @@ class Model(object):
         model_corrmat_x = z2r(model_corrmat_x)
 
         # convert diagonals to 1
-        # model_corrmat_x[np.eye(model_corrmat_x.shape[0]) == 1] = 1
         model_corrmat_x[np.where(np.isnan(model_corrmat_x))] = 1
 
         # timeseries reconstruction
