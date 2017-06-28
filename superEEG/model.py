@@ -27,6 +27,22 @@ class Model(object):
     template : filepath
         Path to a template nifti file used to set model locations
 
+    numerator : Numpy.ndarray
+        (Optional) A locations x locations matrix comprising the sum of the zscored
+        correlation matrices over subjects.  If used, must also pass denominator,
+        locs and n_subs. Otherwise, numerator will be computed from the brain
+        object data.
+
+    denominator : Numpy.ndarray
+        (Optional) A locations x locations matrix comprising the sum of the number of
+        subjects contributing to each matrix cell. If used, must also pass numerator,
+        locs and n_subs. Otherwise, denominator will be computed from the brain
+        object data.
+
+    n_subs : int
+        The number of subjects used to create the model.  Required if you pass
+        numerator/denominator.  Otherwise computed automatically from the data.
+
     meta : dict
         Optional dict containing whatever you want
 
@@ -202,19 +218,19 @@ class Model(object):
 
     def update(self, data, measure='kurtosis', threshold=10):
         """
-        Update a model with new data in place.
+        Update a model with new data.
 
         Parameters
         ----------
 
-        data : Brain object or list of bos
+        data : Brain object or list of Brain objects
             New subject data
 
         Returns
         ----------
 
         model : Model object
-            Updates model instance in place
+            A new updated model object
 
         """
 
@@ -257,6 +273,17 @@ class Model(object):
 
     def plot(self, **kwargs):
         """
-        Plot the superEEG model
+        Plot the superEEG model as a correlation matrix
+
+        This function wraps seaborn's heatmap and accepts any inputs that seaborn
+        supports.
         """
         sns.heatmap(z2r(np.divide(self.numerator, self.denominator)), **kwargs)
+
+    def to_pickle(self, filepath):
+        """
+        Save a pickled model object
+        """
+        with open(filepath + '.mo', 'wb') as f:
+            pickle.dump(self, f)
+            print('Brain object saved as pickle.')
