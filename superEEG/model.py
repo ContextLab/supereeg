@@ -53,64 +53,78 @@ class Model(object):
     """
 
     def __init__(self, data=None, locs=None, template='../superEEG/data/MNI152_T1_6mm_brain.nii.gz',
-                 measure='kurtosis', threshold=10, meta={}):
+                 measure='kurtosis', threshold=10, numerator=None, denominator=None, n_subs=None,
+                 meta=None):
 
-        # get locations from template, or from locs arg
-        if locs is None:
+        # if all of these fields are not none, shortcut the model creation
+        if all([numerator is not None,
+                denominator is not None,
+                locs is not None,
+                n_subs is not None]):
 
-            # load in template file
-            img = nib.load(template)
-
-            # get locations from template
-            self.locs = pd.DataFrame(nii2cmu(img), columns=['x', 'y', 'z'])
+            self.numerator = numerator
+            self.denominator = denominator
+            self.locs = locs
+            self.n_subs = n_subs
 
         else:
 
-            # otherwise, create df from locs passed as arg
-            self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
+            # get locations from template, or from locs arg
+            if locs is None:
 
-        # initialize numerator
-        numerator = np.zeros((self.locs.shape[0], self.locs.shape[0]))
+                # load in template file
+                img = nib.load(template)
 
-        # initialize denominator
-        denominator = np.zeros((self.locs.shape[0], self.locs.shape[0]))
+                # get locations from template
+                self.locs = pd.DataFrame(nii2cmu(img), columns=['x', 'y', 'z'])
 
-        # turn data into a list if its a single subject
-        if ~isinstance(data, list):
-            data = [data]
+            else:
 
-        # loop over brain objects
-        for bo in data:
+                # otherwise, create df from locs passed as arg
+                self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
-            # filter bad electrodes
-            bo = filter_elecs(bo, measure=measure, threshold=threshold)
+            # initialize numerator
+            numerator = np.zeros((self.locs.shape[0], self.locs.shape[0]))
 
-            # get subject-specific correlation matrix
-            sub_corrmat = r2z(get_corrmat(bo))
+            # initialize denominator
+            denominator = np.zeros((self.locs.shape[0], self.locs.shape[0]))
 
-            # get rbf weights
-            sub_rbf_weights = rbf(self.locs, bo.locs)
+            # turn data into a list if its a single subject
+            # if ~isinstance(data, list):
+            #     data = [data]
 
-            #  get subject expanded correlation matrix
-            num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(sub_corrmat, sub_rbf_weights)
+            # loop over brain objects
+            for bo in data:
 
-            # set weights equal to zero where the numerator is equal to nan
-            denom_corrmat_x[np.isnan(num_corrmat_x)] = 0
+                # filter bad electrodes
+                bo = filter_elecs(bo, measure=measure, threshold=threshold)
 
-            # add in new subj data to numerator
-            numerator = np.nansum(np.dstack((numerator, num_corrmat_x)), 2)
+                # get subject-specific correlation matrix
+                sub_corrmat = r2z(get_corrmat(bo))
 
-            # add in new subj data to denominator
-            denominator += denom_corrmat_x
+                # get rbf weights
+                sub_rbf_weights = rbf(self.locs, bo.locs)
 
-        # attach numerator
-        self.numerator = numerator
+                #  get subject expanded correlation matrix
+                num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(sub_corrmat, sub_rbf_weights)
 
-        # attach denominator
-        self.denominator = denominator
+                # set weights equal to zero where the numerator is equal to nan
+                denom_corrmat_x[np.isnan(num_corrmat_x)] = 0
 
-        # attach number of subjects
-        self.n_subs = len(data)
+                # add in new subj data to numerator
+                numerator = np.nansum(np.dstack((numerator, num_corrmat_x)), 2)
+
+                # add in new subj data to denominator
+                denominator += denom_corrmat_x
+
+            # attach numerator
+            self.numerator = numerator
+
+            # attach denominator
+            self.denominator = denominator
+
+            # attach number of subjects
+            self.n_subs = len(data)
 
         # meta
         self.meta = meta
@@ -186,7 +200,7 @@ class Model(object):
         return Brain(data=reconstructed, locs=pd.concat([self.locs, bo.locs]),
                     sessions=bo.sessions, sample_rate=bo.sample_rate)
 
-    def update(self, data):
+    def update(self, data, measure='kurtosis', threshold=10):
         """
         Update a model with new data in place.
 
@@ -204,8 +218,9 @@ class Model(object):
 
         """
 
-        if ~isinstance(data, list):
-            data = [data]
+        numerator = self.numerator
+        denominator = self.denominator
+        n_subs = self.n_subs
 
         # loop over brain objects
         for bo in data:
@@ -226,18 +241,19 @@ class Model(object):
             denom_corrmat_x[np.isnan(num_corrmat_x)] = 0
 
             # add in new subj data to numerator
-            self.numerator = np.nansum(np.dstack((self.numerator, num_corrmat_x)), 2)
+            numerator = np.nansum(np.dstack((numerator, num_corrmat_x)), 2)
 
             # add in new subj data to denominator
-            self.denominator += denom_corrmat_x
+            denominator += denom_corrmat_x
 
             # add to n_subs
-            self.n_subs+=1
+            n_subs+=1
 
-    def plot(self):
+        return Model(numerator=numerator, denominator=denominator,
+                     locs=pd.concat([self.locs, bo.locs]), n_subs=n_subs)
+
+    def plot(self, **kwargs):
         """
         Plot the superEEG model
         """
-        sns.heatmap(z2r(np.divide(self.numerator, self.denominator)), xticklabels=False, yticklabels=False)
-        sns.plt.title('SuperEEG Model, N=' + str(self.n_subs))
-        sns.plt.show()
+        sns.heatmap(z2r(np.divide(self.numerator, self.denominator)), **kwargs)
