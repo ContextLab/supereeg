@@ -75,6 +75,10 @@ class Model(object):
         # initialize denominator
         denominator = np.zeros((self.locs.shape[0], self.locs.shape[0]))
 
+        # turn data into a list if its a single subject
+        if ~isinstance(data, list):
+            data = [data]
+
         # loop over brain objects
         for bo in data:
 
@@ -182,60 +186,58 @@ class Model(object):
         return Brain(data=reconstructed, locs=pd.concat([self.locs, bo.locs]),
                     sessions=bo.sessions, sample_rate=bo.sample_rate)
 
-    def update(self, bo):
+    def update(self, data):
         """
-        Update a model with new data
+        Update a model with new data in place.
 
         Parameters
         ----------
 
-        bo : Brain object
+        data : Brain object or list of bos
             New subject data
 
         Returns
         ----------
 
-        new_model : Model object
-            New model object updated with new subject data
+        model : Model object
+            Updates model instance in place
 
         """
 
-        # get subject-specific correlation matrix
-        sub_corrmat = get_corrmat(bo)
+        if ~isinstance(data, list):
+            data = [data]
 
-        # if the locations are the same, skip the expand steps
-        if self.locs==bo.locs:
+        # loop over brain objects
+        for bo in data:
 
-            model_corrmat_x = sub_corrmat
+            # filter bad electrodes
+            bo = filter_elecs(bo, measure=measure, threshold=threshold)
 
-        else:
+            # get subject-specific correlation matrix
+            sub_corrmat = r2z(get_corrmat(bo))
 
             # get rbf weights
-            sub_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), bo.locs)
+            sub_rbf_weights = rbf(self.locs, bo.locs)
 
             #  get subject expanded correlation matrix
-            sub_corrmat_x = get_expanded_corrmat(sub_corrmat, sub_rbf_weights)
+            num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(sub_corrmat, sub_rbf_weights)
 
-            # expanded rbf weights
-            model_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), self.locs)
+            # set weights equal to zero where the numerator is equal to nan
+            denom_corrmat_x[np.isnan(num_corrmat_x)] = 0
 
-            # get model expanded correlation matrix
-            model_corrmat_x = get_expanded_corrmat(self.data.as_matrix(), model_rbf_weights)
+            # add in new subj data to numerator
+            self.numerator = np.nansum(np.dstack((self.numerator, num_corrmat_x)), 2)
 
-        # add in new subj data
-        model_corrmat_x = np.divide(((model_corrmat_x * self.n_subs) + sub_corrmat_x), (self.n_subs+1))
+            # add in new subj data to denominator
+            self.denominator += denom_corrmat_x
 
-        #convert from z to r
-        model_corrmat_x = z2r(model_corrmat_x)
-
-        # return a new updated model
-        return Model(data=model_corrmat_x, locs=pd.concat([self.locs, bo.locs]),
-                     n_subs=self.n_subs+1, meta=self.meta)
+            # add to n_subs
+            self.n_subs+=1
 
     def plot(self):
         """
         Plot the superEEG model
         """
-        sns.heatmap(self.data, xticklabels=False, yticklabels=False)
+        sns.heatmap(z2r(np.divide(self.numerator, self.denominator)), xticklabels=False, yticklabels=False)
         sns.plt.title('SuperEEG Model, N=' + str(self.n_subs))
         sns.plt.show()
