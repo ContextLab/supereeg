@@ -182,30 +182,6 @@ class Model(object):
         return Brain(data=reconstructed, locs=pd.concat([self.locs, bo.locs]),
                     sessions=bo.sessions, sample_rate=bo.sample_rate)
 
-    def expand(self, template):
-        """
-        Expand a model to a template space
-
-        Parameters
-        ----------
-
-        template : Model object
-
-        Returns
-        ----------
-
-        new_model : Model object
-            New model object in template space
-
-        """
-
-        # expanded rbf weights
-        model_rbf_weights = rbf(pd.concat([self.locs, template.locs]), template.locs)
-
-        # return new model
-        return Model(data=get_expanded_corrmat(self.data.as_matrix(), model_rbf_weights),
-                     locs=pd.concat([self.locs, template.locs]))
-
     def update(self, bo):
         """
         Update a model with new data
