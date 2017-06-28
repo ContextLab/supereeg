@@ -90,8 +90,8 @@ class Model(object):
             denominator = np.zeros((self.locs.shape[0], self.locs.shape[0]))
 
             # turn data into a list if its a single subject
-            # if ~isinstance(data, list):
-            #     data = [data]
+            if type(data) is not list:
+                data = [data]
 
             # loop over brain objects
             for bo in data:
@@ -221,6 +221,9 @@ class Model(object):
         numerator = self.numerator
         denominator = self.denominator
         n_subs = self.n_subs
+
+        if type(data) is not list:
+            data = [data]
 
         # loop over brain objects
         for bo in data:
