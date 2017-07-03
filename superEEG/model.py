@@ -183,7 +183,7 @@ class Model(object):
         denom_corrmat_x[np.isnan(num_corrmat_x)] = 0
 
         # add in new subj data
-        model_corrmat_x = np.divide(np.nansum(np.dstack((self.numerator.as_matrix(), num_corrmat_x)), 2), self.denominator + denom_corrmat_x)
+        model_corrmat_x = np.divide(np.nansum(np.dstack((self.numerator, num_corrmat_x)), 2), self.denominator + denom_corrmat_x)
 
         # replace the diagonal with zeros
         model_corrmat_x[np.eye(model_corrmat_x.shape[0]) == 1] = 0
@@ -213,7 +213,8 @@ class Model(object):
             reconstructed = reconstruct_activity(bo, model_corrmat_x)
 
         # # create new bo with inferred activity
-        return Brain(data=reconstructed, locs=pd.concat([self.locs, bo.locs]),
+        return Brain(data=np.hstack([reconstructed, zscore(bo.get_data())]),
+                     locs=pd.concat([self.locs, bo.locs]),
                     sessions=bo.sessions, sample_rate=bo.sample_rate)
 
     def update(self, data, measure='kurtosis', threshold=10):

@@ -2,11 +2,15 @@ import os
 import sys
 import pickle
 import numpy as np
+import nibabel as nb
+import numpy as np
+from nilearn.input_data import NiftiMasker
+from scipy.spatial.distance import squareform
 from .brain import Brain
 from .model import Model
 from ._helpers.stats import tal2mni
 from ._helpers.stats import z2r
-from scipy.spatial.distance import squareform
+
 
 def load(dataset):
     """
@@ -59,3 +63,61 @@ def load(dataset):
             locs = np.load(handle)
 
         return Model(data=model, locs=locs)
+
+def load_nifti(fname, mask_strategy='background'):
+    """
+    """
+
+    # load image
+    img = nb.load(fname)
+
+    # mask image
+    mask = NiftiMasker(mask_strategy=mask_strategy)
+    mask.fit(fname)
+
+    # get header
+    hdr = img.get_header()
+
+    # get affine
+    S = img.get_sform()
+
+    # get voxel size
+    vox_size = hdr.get_zooms()
+
+    # get image shape
+    im_size = img.shape
+
+    #
+    if len(img.shape) > 3:
+        N = img.shape[3]
+    else:
+        N = 1
+
+    Y = mask.transform(fname)
+    V = Y.shape[1]
+    vmask = np.nonzero(np.array(np.reshape(mask.mask_img_.dataobj, (1, np.prod(mask.mask_img_.shape)), order='F')))[1]
+
+    vox_coords = fullfact(img.shape[0:3])[vmask, :]
+    locs = vox_coords
+
+    data = np.array(vox_coords*S[0:3, 0:3] + np.tile(S[0:3, 3].T, (V, 1))).T
+
+    return Brain(data=data, locs=locs, meta={'header' : hdr})
+
+
+def fullfact(dims):
+    '''
+    Replicates MATLAB's fullfact function (behaves the same way)
+    '''
+    vals = np.asmatrix(range(1, dims[0] + 1)).T
+    if len(dims) == 1:
+        return vals
+    else:
+        aftervals = np.asmatrix(fullfact(dims[1:]))
+        inds = np.asmatrix(np.zeros((np.prod(dims), len(dims))))
+        row = 0
+        for i in range(aftervals.shape[0]):
+            inds[row:(row + len(vals)), 0] = vals
+            inds[row:(row + len(vals)), 1:] = np.tile(aftervals[i, :], (len(vals), 1))
+            row += len(vals)
+        return inds

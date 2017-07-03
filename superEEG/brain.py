@@ -8,7 +8,7 @@ import pickle
 import nibabel as nib
 from nibabel.affines import apply_affine
 import warnings
-from ._helpers.stats import kurt_vals
+from ._helpers.stats import *
 
 class Brain(object):
     """
@@ -155,9 +155,8 @@ class Brain(object):
         Save brain object as a nifti file
         """
 
-        def coords2vox(x, vox_size):
-            shifted = (x - np.min(x, axis=0)) + vox_size
-            return (np.round(np.divide(shifted, vox_size)))-1
+        def coords2vox(R, S):
+            return pd.DataFrame(np.dot((R - S[0:3, 3].T), np.linalg.inv(S[0:3, 0:3])))-1
 
         # load template
         img = nib.load(template)
@@ -165,17 +164,14 @@ class Brain(object):
         # initialize data
         data = np.zeros(tuple(list(img.shape)+[self.data.shape[0]]))
 
-        # get origin
-        origin = np.divide(-img.affine[:, 3], np.diag(img.affine))[:3]
-
         # convert coords from matrix coords to voxel indices
-        locs = coords2vox(self.locs, img.header.get_zooms())
+        locs = coords2vox(self.locs.as_matrix(), img.get_sform())
 
         # loop over data and locations to fill in activations
         for i, row in self.data.iterrows():
             for j, loc in locs.iterrows():
                 a,b,c,d = np.array(loc.values.tolist()+[i]).astype(int)
-                data[a,b,c,d]=row.loc[j]
+                data[a,b,c,d] = row.iloc[j]
 
         # create nifti object
         nifti = nib.nifti1.Nifti1Image(data, img.affine, header=img.header)

@@ -416,3 +416,72 @@ def filter_elecs(bo, measure='kurtosis', threshold=10):
     nbo.locs = bo.locs.loc[~thresh_bool]
     nbo.n_elecs = bo.data.shape[1]
     return nbo
+
+import nibabel as nb
+import numpy as np
+from nilearn.input_data import NiftiMasker
+
+class BrainData:
+    def __init__(self, fname, mask_strategy='background'):
+        self.fname = fname
+        if len(self.fname) == 0:
+            self.Y = []
+            self.R = []
+            self.N = 0
+            self.V = 0
+            self.vox_size = (0, 0, 0)
+            self.im_size = (0, 0, 0)
+            self.mask = []
+            self.img = []
+        else:
+            img = nb.load(self.fname)
+            if not hasattr(img, 'dataobj'):
+                print("Loading: " + self.fname + " [DISK READ]")
+            else:
+                print("Loading: " + self.fname + " [RAM CACHE]")
+
+            self.mask = NiftiMasker(mask_strategy=mask_strategy)
+            self.mask.fit(self.fname)
+
+            hdr = img.get_header()
+            S = img.get_sform()
+            self.vox_size = hdr.get_zooms()
+            self.im_size = img.shape
+
+            if len(img.shape) > 3:
+                self.N = img.shape[3]
+            else:
+                self.N = 1
+
+            self.Y = self.mask.transform(self.fname)
+            self.V = self.Y.shape[1]
+            vmask = np.nonzero(np.array(np.reshape(self.mask.mask_img_.dataobj, (1, np.prod(self.mask.mask_img_.shape)), order='F')))[1]
+
+            vox_coords = fullfact(img.shape[0:3])[vmask, :]
+            self.matrix_coordinates = vox_coords
+
+            self.R = np.array(vox_coords*S[0:3, 0:3] + np.tile(S[0:3, 3].T, (self.V, 1)))
+
+
+def loadnii(fname, mask_strategy='background'):
+    #if mask_strategy is 'background', treat uniformly valued voxels at the outer parts of the images as background
+    #if mask_strategy is 'epi', use nilearn's background detection strategy: find the least dense point of the histogram, between fractions lower_cutoff and upper_cutoff of the total image histogram
+    return BrainData(fname, mask_strategy)
+
+
+def fullfact(dims):
+    '''
+    Replicates MATLAB's fullfact function (behaves the same way)
+    '''
+    vals = np.asmatrix(range(1, dims[0] + 1)).T
+    if len(dims) == 1:
+        return vals
+    else:
+        aftervals = np.asmatrix(fullfact(dims[1:]))
+        inds = np.asmatrix(np.zeros((np.prod(dims), len(dims))))
+        row = 0
+        for i in range(aftervals.shape[0]):
+            inds[row:(row + len(vals)), 0] = vals
+            inds[row:(row + len(vals)), 1:] = np.tile(aftervals[i, :], (len(vals), 1))
+            row += len(vals)
+        return inds
