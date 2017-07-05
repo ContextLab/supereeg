@@ -11,8 +11,16 @@ This example loads a nifti file and converts it into a brain object.
 # Code source: Andrew Heusser & Lucy Owen
 # License: MIT
 
+# import
 import superEEG as se
+from nilearn import plotting
 
-nifti = se.load_nifti('/Users/andyheusser/Documents/github/superEEG/superEEG/data/MNI152_T1_6mm_brain.nii.gz')
+# load nifti -> brain object
+bo = se.load_nifti('/Users/andyheusser/Documents/github/superEEG/superEEG/data/MNI152_T1_6mm_brain.nii.gz')
 
-print(nifti.info())
+# export brain object -> nifti
+nifti = bo.to_nifti()
+
+# plot the result
+plotting.plot_anat(nifti)
+plotting.show()

@@ -155,9 +155,6 @@ class Brain(object):
         Save brain object as a nifti file
         """
 
-        def coords2vox(R, S):
-            return pd.DataFrame(np.dot((R - S[0:3, 3].T), np.linalg.inv(S[0:3, 0:3])))-1
-
         # load template
         img = nib.load(template)
 
@@ -165,16 +162,18 @@ class Brain(object):
         data = np.zeros(tuple(list(img.shape)+[self.data.shape[0]]))
 
         # convert coords from matrix coords to voxel indices
-        locs = coords2vox(self.locs.as_matrix(), img.get_sform())
+        R = self.locs.as_matrix()
+        S =  img.affine
+        locs = pd.DataFrame(np.dot(R-S[:3, 3], np.linalg.inv(S[0:3, 0:3]))).astype(int)
 
         # loop over data and locations to fill in activations
         for i, row in self.data.iterrows():
             for j, loc in locs.iterrows():
-                a,b,c,d = np.array(loc.values.tolist()+[i]).astype(int)
-                data[a,b,c,d] = row.iloc[j]
+                a,b,c,d = np.array(loc.values.tolist()+[i])
+                data[a, b, c, d] = row.loc[j]
 
         # create nifti object
-        nifti = nib.nifti1.Nifti1Image(data, img.affine, header=img.header)
+        nifti = nib.Nifti1Image(data, affine=img.affine)
 
         # save if filepath
         if filepath:

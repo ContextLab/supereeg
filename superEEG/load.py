@@ -95,14 +95,12 @@ def load_nifti(fname, mask_strategy='background'):
 
     Y = mask.transform(fname)
     V = Y.shape[1]
-    vmask = np.nonzero(np.array(np.reshape(mask.mask_img_.dataobj, (1, np.prod(mask.mask_img_.shape)), order='F')))[1]
+    vmask = np.nonzero(np.array(np.reshape(mask.mask_img_.dataobj, (1, np.prod(mask.mask_img_.shape)), order='C')))[1]
+    vox_coords = fullfact(img.shape[0:3])[vmask, ::-1]-1
 
-    vox_coords = fullfact(img.shape[0:3])[vmask, :]
-    locs = vox_coords
+    locs = np.array(np.dot(vox_coords, S[0:3, 0:3])) + S[:3, 3]
 
-    data = np.array(vox_coords*S[0:3, 0:3] + np.tile(S[0:3, 3].T, (V, 1))).T
-
-    return Brain(data=data, locs=locs, meta={'header' : hdr})
+    return Brain(data=Y, locs=locs, meta={'header' : hdr})
 
 
 def fullfact(dims):
