@@ -127,6 +127,9 @@ class Brain(object):
     def info(self):
         """
         Print info about the brain object
+
+        Prints the number of electrodes, recording time, number of recording
+        sessions, date created, and any optional meta data.
         """
         print('Number of electrodes: ' + str(self.n_elecs))
         print('Recording time in seconds: ' + str(self.n_secs))
@@ -176,7 +179,7 @@ class Brain(object):
 
         nifti : nibabel.Nifti1Image
             A nibabel nifti image
-            
+
         """
 
         # load template
