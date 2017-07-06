@@ -1,13 +1,15 @@
 
 
-.. _sphx_glr_auto_examples_plot_model.py:
+.. _sphx_glr_auto_examples_plot_predict.py:
 
 
 =============================
-Load and plot a model
+Predict unknown location
 =============================
 
-Here we load the example model, and then plot it.
+In this example, we load in a single subject example, remove electrodes that exceed
+a kurtosis threshold (in place), load a model, and predict activity at all
+model locations.
 
 
 
@@ -18,7 +20,7 @@ Here we load the example model, and then plot it.
     Traceback (most recent call last):
       File "/Users/andyheusser/Library/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/sphinx_gallery/gen_rst.py", line 475, in execute_code_block
         exec(code_block, example_globals)
-      File "<string>", line 9, in <module>
+      File "<string>", line 11, in <module>
       File "/Users/andyheusser/Documents/github/superEEG/superEEG/load.py", line 65, in load
         return Model(data=model, locs=locs)
       File "/Users/andyheusser/Documents/github/superEEG/superEEG/model.py", line 114, in __init__
@@ -37,14 +39,19 @@ Here we load the example model, and then plot it.
     # Code source: Andrew Heusser & Lucy Owen
     # License: MIT
 
-    # import
     import superEEG as se
 
     # load example data
-    bo = se.load('example_model')
+    bo = se.load('example_data')
 
-    # plot it
-    model.plot()
+    # load example model
+    model = se.load('example_model')
+
+    # fill in the missing timeseries data
+    reconstructed_bo = model.predict(bo)
+
+    # print out info on new brain object
+    reconstructed_bo.info()
 
 **Total running time of the script:** ( 0 minutes  0.000 seconds)
 
@@ -55,13 +62,13 @@ Here we load the example model, and then plot it.
 
   .. container:: sphx-glr-download
 
-     :download:`Download Python source code: plot_model.py <plot_model.py>`
+     :download:`Download Python source code: plot_predict.py <plot_predict.py>`
 
 
 
   .. container:: sphx-glr-download
 
-     :download:`Download Jupyter notebook: plot_model.ipynb <plot_model.ipynb>`
+     :download:`Download Jupyter notebook: plot_predict.ipynb <plot_predict.ipynb>`
 
 .. rst-class:: sphx-glr-signature
 

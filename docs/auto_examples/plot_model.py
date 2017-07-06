@@ -12,10 +12,10 @@ Here we load the example model, and then plot it.
 # License: MIT
 
 # import
-import superEEG
+import superEEG as se
 
-# load the model
-model = superEEG.load_example_model()
+# load example data
+bo = se.load('example_model')
 
 # plot it
 model.plot()

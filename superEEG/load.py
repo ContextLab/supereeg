@@ -12,13 +12,13 @@ from ._helpers.stats import tal2mni
 from ._helpers.stats import z2r
 
 
-def load(dataset):
+def load(fname):
     """
     Load example data
 
     Parameters
     ----------
-    dataset : string
+    fname : string
         The name of the example data or a filepath
 
     Returns
@@ -27,19 +27,19 @@ def load(dataset):
         Example data
 
     """
-    if sys.version_info[0]==3:
-        pickle_options = {
-            'encoding' : 'latin1'
-        }
-    else:
-        pickle_options = {}
-
+    # if sys.version_info[0]==3:
+    #     pickle_options = {
+    #         'encoding' : 'latin1'
+    #     }
+    # else:
+    #     pickle_options = {}
     # if dataset is 'example_data':
     #     fileid = '0B7Ycm4aSYdPPREJrZ2stdHBFdjg'
     #     url = 'https://docs.google.com/uc?export=download&id=' + fileid
     #     data = pickle.loads(requests.get(url, stream=True).content, **pickle_options)
 
-    if dataset is 'example_data':
+    # load example data
+    if fname is 'example_data':
         with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/BW001.npz', 'rb') as handle:
             f = np.load(handle)
             data = f['Y']
@@ -49,7 +49,8 @@ def load(dataset):
 
         return Brain(data=data, locs=locs, sessions=sessions, sample_rate=sample_rate)
 
-    elif dataset is 'example_model':
+    # load example model
+    elif fname is 'example_model':
 
         with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/average_model_k_10_r_20.npz', 'rb') as handle:
             f = np.load(handle)
@@ -64,8 +65,31 @@ def load(dataset):
 
         return Model(data=model, locs=locs)
 
+    # load example locations
+    elif fname is 'example_locations':
+        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/R_small_MNI.npy', 'rb') as handle:
+            locs = np.load(handle)
+        return locs
+
+    # load brain object
+    elif fname.split('.')[-1]=='bo':
+        with open(fname, 'rb') as f:
+            bo = pickle.load(f)
+        return bo
+
+    # load model object
+    elif fname.split('.')[-1]=='mo':
+        with open(fname, 'rb') as f:
+            model = pickle.load(f)
+        return model
+
+    # load nifti
+    elif fname.split('.')[-1]=='nii' or '.'.join(fname.split('.')[-2:])=='nii.gz':
+        return load_nifti(fname)
+
 def load_nifti(fname, mask_strategy='background'):
     """
+    Load nifti file and convert to brain object
     """
 
     # load image
