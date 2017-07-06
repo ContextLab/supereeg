@@ -143,23 +143,23 @@ class Brain(object):
         """
         return self.data.as_matrix()
 
-    def to_pickle(self, filepath):
+    def save(self, filepath):
         """
-        Save a pickled brain, mwahahaha
+        Save brain object as a pickle
 
 
         Parameters
         ----------
 
         filepath : str
-            Path to save the pickled brain
+            Path to save the pickled brain, mwuahahahah
 
         """
         with open(filepath + '.bo', 'wb') as f:
             pickle.dump(self, f)
             print('Brain object saved as pickle.')
 
-    def to_nifti(self, filepath=None,
+    def to_nii(self, filepath=None,
                  template='../superEEG/data/MNI152_T1_6mm_brain.nii.gz'):
         """
         Save brain object as a nifti file

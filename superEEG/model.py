@@ -276,10 +276,18 @@ class Model(object):
         """
         sns.heatmap(z2r(np.divide(self.numerator, self.denominator)), **kwargs)
 
-    def to_pickle(self, filepath):
+    def save(self, filepath):
         """
-        Save a pickled model object
+        Save the model object
+
+
+        Parameters
+        ----------
+
+        filepath : str
+            Path to save the model object
+
         """
         with open(filepath + '.mo', 'wb') as f:
             pickle.dump(self, f)
-            print('Brain object saved as pickle.')
+            print('Model object saved.')
