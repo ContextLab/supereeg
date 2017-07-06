@@ -17,9 +17,9 @@ from nilearn import plotting
 
 # load nifti -> brain object
 bo = se.load('/Users/andyheusser/Documents/github/superEEG/superEEG/data/MNI152_T1_6mm_brain.nii.gz')
-print(bo)
+
 # export brain object -> nifti
-nifti = bo.to_nifti()
+nifti = bo.to_nii()
 
 # plot the result
 plotting.plot_anat(nifti)
