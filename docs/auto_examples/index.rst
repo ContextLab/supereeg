@@ -53,9 +53,9 @@ Gallery of Examples
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_load_example_data_thumb.png
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_load_example_data_thumb.png
 
-        :ref:`sphx_glr_auto_examples_load_example_data.py`
+        :ref:`sphx_glr_auto_examples_plot_load_example_data.py`
 
 .. raw:: html
 
@@ -65,7 +65,7 @@ Gallery of Examples
 .. toctree::
    :hidden:
 
-   /auto_examples/load_example_data
+   /auto_examples/plot_load_example_data
 
 .. raw:: html
 
@@ -73,9 +73,9 @@ Gallery of Examples
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_predict_example_data_thumb.png
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_predict_thumb.png
 
-        :ref:`sphx_glr_auto_examples_predict_example_data.py`
+        :ref:`sphx_glr_auto_examples_plot_predict.py`
 
 .. raw:: html
 
@@ -85,7 +85,27 @@ Gallery of Examples
 .. toctree::
    :hidden:
 
-   /auto_examples/predict_example_data
+   /auto_examples/plot_predict
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example loads a nifti file and converts it into a brain object.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_load_nifti_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_load_nifti.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_load_nifti
 
 .. raw:: html
 
@@ -106,6 +126,86 @@ Gallery of Examples
    :hidden:
 
    /auto_examples/set_context
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we load in a single subject example, remove electrodes that exceed a kurtosis ...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_simulated_patient_data_thumb.png
+
+        :ref:`sphx_glr_auto_examples_simulated_patient_data.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/simulated_patient_data
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we will parametrically vary how many subjects and how many electrodes per subj...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_reconstruct_correlation_matrix_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_reconstruct_correlation_matrix.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_reconstruct_correlation_matrix
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we load in a single subject example, remove electrodes that exceed a kurtosis ...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_simulated_analysis_thumb.png
+
+        :ref:`sphx_glr_auto_examples_simulated_analysis.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/simulated_analysis
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we will simulate a model and some data, and see if we can recover the model fr...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_update_model_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_update_model.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_update_model
 .. raw:: html
 
     <div style='clear:both'></div>

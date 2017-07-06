@@ -6,7 +6,6 @@ import os
 import numpy as np
 import pickle
 import nibabel as nib
-from nibabel.affines import apply_affine
 import warnings
 from ._helpers.stats import *
 
@@ -128,6 +127,9 @@ class Brain(object):
     def info(self):
         """
         Print info about the brain object
+
+        Prints the number of electrodes, recording time, number of recording
+        sessions, date created, and any optional meta data.
         """
         print('Number of electrodes: ' + str(self.n_elecs))
         print('Recording time in seconds: ' + str(self.n_secs))
@@ -144,6 +146,14 @@ class Brain(object):
     def to_pickle(self, filepath):
         """
         Save a pickled brain, mwahahaha
+
+
+        Parameters
+        ----------
+
+        filepath : str
+            Path to save the pickled brain
+
         """
         with open(filepath + '.bo', 'wb') as f:
             pickle.dump(self, f)
@@ -153,10 +163,24 @@ class Brain(object):
                  template='../superEEG/data/MNI152_T1_6mm_brain.nii.gz'):
         """
         Save brain object as a nifti file
-        """
 
-        def coords2vox(R, S):
-            return pd.DataFrame(np.dot((R - S[0:3, 3].T), np.linalg.inv(S[0:3, 0:3])))-1
+
+        Parameters
+        ----------
+
+        filepath : str
+            Path to save the nifti file
+
+        template : str
+            Path to template nifti file
+
+        Returns
+        ----------
+
+        nifti : nibabel.Nifti1Image
+            A nibabel nifti image
+
+        """
 
         # load template
         img = nib.load(template)
@@ -165,16 +189,18 @@ class Brain(object):
         data = np.zeros(tuple(list(img.shape)+[self.data.shape[0]]))
 
         # convert coords from matrix coords to voxel indices
-        locs = coords2vox(self.locs.as_matrix(), img.get_sform())
+        R = self.locs.as_matrix()
+        S =  img.affine
+        locs = pd.DataFrame(np.dot(R-S[:3, 3], np.linalg.inv(S[0:3, 0:3]))).astype(int)
 
         # loop over data and locations to fill in activations
         for i, row in self.data.iterrows():
             for j, loc in locs.iterrows():
-                a,b,c,d = np.array(loc.values.tolist()+[i]).astype(int)
-                data[a,b,c,d] = row.iloc[j]
+                a,b,c,d = np.array(loc.values.tolist()+[i])
+                data[a, b, c, d] = row.loc[j]
 
         # create nifti object
-        nifti = nib.nifti1.Nifti1Image(data, img.affine, header=img.header)
+        nifti = nib.Nifti1Image(data, affine=img.affine)
 
         # save if filepath
         if filepath:

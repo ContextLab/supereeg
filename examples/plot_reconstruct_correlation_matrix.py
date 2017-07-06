@@ -1,14 +1,32 @@
-import superEEG as se
+# -*- coding: utf-8 -*-
+"""
+=============================
+Model reconstruction by number of subjects and electrodes
+=============================
+
+In this example, we will parametrically vary how many subjects and how many
+electrodes per subject are used to create the model.  First, we load in some
+example locations.  Then, we simulate a correlation matrix (toeplitz) to impose
+on the simulated subject data. Finally, we loop over number of subjects and
+number of randomly chosen electrodes and plot the model at each iteration. As
+the figure shows, the more subjects and electrodes, the better then recovery of
+the true model.
+
+"""
+
+# Code source: Andrew Heusser & Lucy Owen
+# License: MIT
+
 import scipy
 import numpy as np
 import os
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import superEEG as se
 
 # load example model to get locations
-with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/R_small_MNI.npy', 'rb') as handle:
-    locs = np.load(handle)
+locs = se.load('example_locations')
 
 # simulate correlation matrix
 R = scipy.linalg.toeplitz(np.linspace(0,1,len(locs))[::-1])

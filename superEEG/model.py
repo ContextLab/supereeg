@@ -9,9 +9,10 @@ class Model(object):
     """
     superEEG model and associated locations
 
-    This class holds your superEEG model.  To create an instance, you need a model
-    (an electrode x electrode correlation matrix), electrode locations in MNI
-    space, and the number of subjects used to create the model.  Additionally,
+    This class holds your superEEG model.  To create an instance, pass a list
+    of brain objects and the model will be generated from those brain objects.
+    Alternatively, you can bypass creating a new model by passing numerator,
+    denominator and n_subs (see parameters for details).  Additionally,
     you can include a meta dictionary with any other information that you want
     to save with the model.
 
@@ -69,14 +70,11 @@ class Model(object):
     """
 
     def __init__(self, data=None, locs=None, template='../superEEG/data/MNI152_T1_6mm_brain.nii.gz',
-                 measure='kurtosis', threshold=10, numerator=None, denominator=None, n_subs=None,
-                 meta=None):
+                 measure='kurtosis', threshold=10, numerator=None, denominator=None,
+                 n_subs=None, meta=None):
 
         # if all of these fields are not none, shortcut the model creation
-        if all([numerator is not None,
-                denominator is not None,
-                locs is not None,
-                n_subs is not None]):
+        if all(v is not None for v in [numerator, denominator, locs, n_subs]):
 
             self.numerator = numerator
             self.denominator = denominator
