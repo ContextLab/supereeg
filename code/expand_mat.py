@@ -61,10 +61,11 @@ def main(fname, r, k_thresh):
                 outfile = os.path.join(mod_fig_dir, 'full_matrix_' + file_name + '_r_' + str(r) + '.png')
                 plot_cov(C_expand, outfile=outfile)
 
-                C_est = squareform(C_expand, checks=False)
+                Numerator = squareform(K, checks=False)
+                Denominator = squareform(W, checks=False)
                 outfile = os.path.join(full_dir,
                                        file_name + '_k' + str(k_thresh) + '_r' + str(r)+ '_full_matrix')
-                np.savez(outfile + '.npz', C_est=C_est)
+                np.savez(outfile + '.npz', Numerator=Numerator, Denominator=Denominator)
                 ### compare the expanded correlation matrix, but indexed by nearest locations - should match well
                 nearest_inds = np.argmin(cdist(R_full, R_K_subj, metric='sqeuclidean'), axis=0)
                 parsed_C = C_expand[nearest_inds, :][:, nearest_inds]

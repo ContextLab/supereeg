@@ -44,19 +44,39 @@ with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/R_smal
 #     bo = se.Brain(data=np.dot(rand_dist, scipy.linalg.cholesky(R))[:,p], locs=pd.DataFrame(locs[p,:], columns=['x', 'y', 'z']))
 #
 #     bo.to_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/synthetic_' + str(count))
+# data = []
+# for i in range(1,14):
+#     with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/synthetic_' +str(i) + '.bo', 'rb') as handle:
+#         data.append(pickle.load(handle))
+
+
+## create model with synthetic patient data, random sample 20 electrodes
+
 R = scipy.linalg.toeplitz(np.linspace(0,1,len(locs))[::-1])
 data = []
 for i in range(50):
+
     p = np.random.choice(range(len(locs)), 20, replace=False)
 
     rand_dist = np.random.multivariate_normal(np.zeros(len(locs)), np.eye(len(locs)), size=n_samples)
     data.append(se.Brain(data=np.dot(rand_dist, scipy.linalg.cholesky(R))[:,p], locs=pd.DataFrame(locs[p,:], columns=['x', 'y', 'z'])))
 
     #bo.to_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/synthetic_' + str(i))
+model = se.Model(data=data, locs=locs)
 
-# data = []
-# for i in range(1,14):
-#     with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/synthetic_' +str(i) + '.bo', 'rb') as handle:
-#         data.append(pickle.load(handle))
+## create brain object to be reconstructed
+## find indices
+locs_inds = range(0,len(locs))
+sub_inds = np.sort(np.random.choice(range(len(locs)), 20, replace=False))
+unknown_inds = list(set(locs_inds)-set(sub_inds))
 
-se.Model(data=data, locs=locs)
+rand_dist = np.random.multivariate_normal(np.zeros(len(locs)), np.eye(len(locs)), size=n_samples)
+full_data = np.dot(rand_dist, scipy.linalg.cholesky(R))
+bo_sub = se.Brain(data=full_data[:, sub_inds], locs=pd.DataFrame(locs[sub_inds, :], columns=['x', 'y', 'z']))
+bo_actual = se.Brain(data=full_data, locs=pd.DataFrame(locs, columns=['x', 'y', 'z']))
+
+## need to figure out if we want to keep the activty used to predict - right now its added at the end, but that might not be the best
+reconstructed = model.predict(bo_sub)
+
+import seaborn as sb
+sb.jointplot(reconstructed.data, bo_actual.data)

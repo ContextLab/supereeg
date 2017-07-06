@@ -18,8 +18,8 @@ def main(r, k_thresh):
 	if not os.path.isfile(os.path.join(average_dir, 'average_model_k_' + str(k_thresh) + '_r_' + str(r) + '.npz')):
 		files = glob.glob(os.path.join(full_dir, '*.npz'))
 		print(files)
-		results = []
-		weights = []
+		numerator = []
+		denominator = []
 		count = 0
 		for i in files:
 			matrix_variables = str('k' + str(k_thresh) + '_r' + str(r))
@@ -28,20 +28,20 @@ def main(r, k_thresh):
 				count += 1
 				data = np.load(i, mmap_mode='r')
 				#C_est = squareform(data['C_est'], checks=False)
-				next_mat = data['C_est']
-				next_weights = ~np.isnan(data['C_est'])
-				if np.shape(results)[0] == 0:
-					results = next_mat
-					weights = next_weights.astype(int)
+				next_num = data['Numerator']
+				next_denom = data['Denominator']
+				if np.shape(numerator)[0] == 0:
+					numerator = next_num
+					denominator = next_denom
 				else:
-					results = np.nansum(np.dstack((results, next_mat)),2)
-					weights = weights + next_weights.astype(int)
+					numerator = np.nansum(np.dstack((numerator, next_num)),2)
+					denominator =  + next_denom
 			else:
 				pass
 		#average_matrix = z2r(results /weights) + np.eye(np.shape(results)[0])
 		outfile = os.path.join(average_dir, 'average_model_k_' + str(k_thresh) + '_r_' + str(r) + '.npz')
 		### save out r - once new matrix is added, need to convert back to z
-		np.savez(outfile, matrix_sum=results, weights_sum = weights, n=count)
+		np.savez(outfile, Numerator=numerator, Denominator=denominator, n=count)
 	else:
 		print('average_full_matrix_k_' + str(k_thresh) + '_r_' + str(r) + '.npz', 'exists')
 

@@ -124,9 +124,6 @@ class Model(object):
                 #  get subject expanded correlation matrix
                 num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(sub_corrmat, sub_rbf_weights)
 
-                # set weights equal to zero where the numerator is equal to nan
-                denom_corrmat_x[np.isnan(num_corrmat_x)] = 0
-
                 # add in new subj data to numerator
                 numerator = np.nansum(np.dstack((numerator, num_corrmat_x)), 2)
 
@@ -179,13 +176,10 @@ class Model(object):
         #  get subject expanded correlation matrix
         num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(sub_corrmat, sub_rbf_weights)
 
-        # set weights equal to zero where the numerator is equal to nan
-        denom_corrmat_x[np.isnan(num_corrmat_x)] = 0
-
         # add in new subj data
         model_corrmat_x = np.divide(np.nansum(np.dstack((self.numerator, num_corrmat_x)), 2), self.denominator + denom_corrmat_x)
 
-        # replace the diagonal with zeros
+        # replace the diagonal with 1 -
         model_corrmat_x[np.eye(model_corrmat_x.shape[0]) == 1] = 0
 
         # convert nans to zeros
@@ -204,7 +198,7 @@ class Model(object):
         model_corrmat_x = z2r(model_corrmat_x)
 
         # convert diagonals to 1
-        model_corrmat_x[np.where(np.isnan(model_corrmat_x))] = 1
+        model_corrmat_x[np.eye(model_corrmat_x.shape[0]) == 1] = 0
 
         # timeseries reconstruction
         if tf:
@@ -213,9 +207,12 @@ class Model(object):
             reconstructed = reconstruct_activity(bo, model_corrmat_x)
 
         # # create new bo with inferred activity
-        return Brain(data=np.hstack([reconstructed, zscore(bo.get_data())]),
-                     locs=pd.concat([self.locs, bo.locs]),
-                    sessions=bo.sessions, sample_rate=bo.sample_rate)
+        # return Brain(data=np.hstack([reconstructed, zscore(bo.get_data())]),
+        #              locs=pd.concat([self.locs, bo.locs]),
+        #             sessions=bo.sessions, sample_rate=bo.sample_rate)
+
+        return Brain(data=reconstructed, locs=self.locs, sessions=bo.sessions, sample_rate=bo.sample_rate)
+
 
     def update(self, data, measure='kurtosis', threshold=10):
         """
