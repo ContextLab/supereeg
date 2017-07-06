@@ -15,7 +15,7 @@ Here, we load an example dataset and then print out some information about it.
 import superEEG
 
 # load example data
-bo = superEEG.load_example_data()
+bo = se.load('example_data')
 
 # check out the bo
 bo.info()

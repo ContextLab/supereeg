@@ -1,10 +1,34 @@
-import superEEG as se
+# -*- coding: utf-8 -*-
+"""
+=============================
+Create a model from scratch, and then update it with new subject data
+=============================
+
+In this example, we will simulate a model and some data, and see if we can
+recover the model from the data. First, we'll load in some example locations.
+Then, we will simulate correlational structure (a toeplitz matrix) to impose on
+our simulated data.  This will allow us to test whether we can recover the
+correlational structure in the data, and how that changes as a function of the
+number of subjects in the model. Then, we will simulate 10 subjects and create
+brain objects with their data.  The left figure shows the model derived from
+10 simulated subjects.  Finally, we simulate 10 additional subjects and use the
+model.update method to update an existing model with new data. On the right, the
+updated model is plotted. As is apparent from the figures, the more data in the
+model, the better the true correlational structure can be recovered.
+
+"""
+
+# Code source: Andrew Heusser & Lucy Owen
+# License: MIT
+
+# import libraries
+import os
 import scipy
 import numpy as np
-import os
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import superEEG as se
 
 # load example model to get locations
 with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/R_small_MNI.npy', 'rb') as handle:

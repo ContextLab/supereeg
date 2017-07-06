@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 =============================
-Load a nifti file
+Load and save nifti file
 =============================
 
 This example loads a nifti file and converts it into a brain object.
