@@ -6,7 +6,6 @@ import os
 import numpy as np
 import pickle
 import nibabel as nib
-from nibabel.affines import apply_affine
 import warnings
 from ._helpers.stats import *
 
@@ -144,6 +143,14 @@ class Brain(object):
     def to_pickle(self, filepath):
         """
         Save a pickled brain, mwahahaha
+
+
+        Parameters
+        ----------
+
+        filepath : str
+            Path to save the pickled brain
+
         """
         with open(filepath + '.bo', 'wb') as f:
             pickle.dump(self, f)
@@ -153,6 +160,23 @@ class Brain(object):
                  template='../superEEG/data/MNI152_T1_6mm_brain.nii.gz'):
         """
         Save brain object as a nifti file
+
+
+        Parameters
+        ----------
+
+        filepath : str
+            Path to save the nifti file
+
+        template : str
+            Path to template nifti file
+
+        Returns
+        ----------
+
+        nifti : nibabel.Nifti1Image
+            A nibabel nifti image
+            
         """
 
         # load template
