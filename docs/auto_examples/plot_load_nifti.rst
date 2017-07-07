@@ -31,7 +31,7 @@ This example loads a nifti file and converts it into a brain object.
     from nilearn import plotting
 
     # load nifti -> brain object
-    bo = se.load('/Users/andyheusser/Documents/github/superEEG/superEEG/data/MNI152_T1_6mm_brain.nii.gz')
+    bo = se.load('/Users/andyheusser/Documents/github/superEEG/superEEG/data/gray_mask_8mm_brain.nii')
 
     # export brain object -> nifti
     nifti = bo.to_nii()
@@ -40,7 +40,7 @@ This example loads a nifti file and converts it into a brain object.
     plotting.plot_anat(nifti)
     plotting.show()
 
-**Total running time of the script:** ( 0 minutes  2.079 seconds)
+**Total running time of the script:** ( 0 minutes  1.676 seconds)
 
 
 

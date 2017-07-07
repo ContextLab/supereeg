@@ -119,10 +119,8 @@ class Brain(object):
         self.n_secs = self.data.shape[0]/self.sample_rate[0]
         self.date_created = time.strftime("%c")
 
-        # add methods
+        # add kurtosis
         self.kurtosis = kurt_vals(self)
-
-    # methods
 
     def info(self):
         """
@@ -160,7 +158,7 @@ class Brain(object):
             print('Brain object saved as pickle.')
 
     def to_nii(self, filepath=None,
-                 template='../superEEG/data/MNI152_T1_6mm_brain.nii.gz'):
+                 template='../superEEG/data/gray_mask_8mm_brain.nii'):
         """
         Save brain object as a nifti file
 

@@ -34,28 +34,38 @@ model locations.
     # n_samples
     n_samples = 1000
 
-    # load example model to get locations
-    with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/R_small_MNI.npy', 'rb') as handle:
-        locs = np.load(handle)
+    # load nifti to get locations
+    gray = se.load(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_mask_20mm_brain.nii')
 
-    # # get the locations
-    #
-    # R = scipy.linalg.toeplitz(np.linspace(0,1,len(locs))[::-1])
-    #
-    # count = 0
-    # patient_inds = slice_list(range(0, len(locs)), 13)
-    # for p in patient_inds:
-    #
-    #     count += 1
-    #     rand_dist = np.random.multivariate_normal(np.zeros(len(locs)), np.eye(len(locs)), size=n_samples)
-    #     bo = se.Brain(data=np.dot(rand_dist, scipy.linalg.cholesky(R))[:,p], locs=pd.DataFrame(locs[p,:], columns=['x', 'y', 'z']))
-    #
-    #     bo.to_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/synthetic_' + str(count))
-    # data = []
-    # for i in range(1,14):
-    #     with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/synthetic_' +str(i) + '.bo', 'rb') as handle:
-    #         data.append(pickle.load(handle))
+    locs = gray.locs
 
+    # create 50 synthetic patient data with activity at every location
+    synth_dir = os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/synthetic_data'
+    if not os.path.isdir(synth_dir):
+        os.mkdir(synth_dir)
+
+    if not os.listdir(synth_dir):
+
+        R = scipy.linalg.toeplitz(np.linspace(0,1,len(locs))[::-1])
+        count = 0
+        for p in range(50):
+
+            rand_dist = np.random.multivariate_normal(np.zeros(len(locs)), np.eye(len(locs)), size=n_samples)
+            bo = se.Brain(data=np.dot(rand_dist, scipy.linalg.cholesky(R)), locs=pd.DataFrame(locs, columns=['x', 'y', 'z']))
+            bo.to_pickle(os.path.join(synth_dir, 'synthetic_'+ str(count).rjust(2, '0')))
+            count += 1
+
+
+    model_data = []
+
+
+    for i in np.random.choice(range(50), 10, replace=False):
+
+        p = np.random.choice(range(len(locs)), 20, replace=False)
+
+        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/synthetic_data/synthetic_' +str(i).rjust(2, '0') + '.bo', 'rb') as handle:
+            bo = pickle.load(handle)
+            model_data.append(se.Brain(data=bo.data.iloc[:, p],locs= bo.locs.iloc[p]))
 
     ## create model with synthetic patient data, random sample 20 electrodes
 
