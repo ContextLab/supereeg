@@ -13,13 +13,8 @@ Here we load the example model, and then plot it.
 
 
 
-.. code-block:: pytb
-
-    Traceback (most recent call last):
-      File "/Users/andyheusser/Library/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/sphinx_gallery/gen_rst.py", line 475, in execute_code_block
-        exec(code_block, example_globals)
-      File "<string>", line 12, in <module>
-    NameError: name 'model' is not defined
+.. image:: /auto_examples/images/sphx_glr_plot_model_001.png
+    :align: center
 
 
 
@@ -35,12 +30,12 @@ Here we load the example model, and then plot it.
     import superEEG as se
 
     # load example data
-    bo = se.load('example_model')
+    model = se.load('example_model')
 
     # plot it
-    model.plot()
+    model.plot(xticklabels=False, yticklabels=False)
 
-**Total running time of the script:** ( 0 minutes  0.000 seconds)
+**Total running time of the script:** ( 0 minutes  0.308 seconds)
 
 
 
