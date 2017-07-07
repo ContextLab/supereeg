@@ -286,6 +286,7 @@ class Model(object):
         supports.
         """
         sns.heatmap(z2r(np.divide(self.numerator, self.denominator)), **kwargs)
+        sns.plt.show()
 
     def save(self, filepath):
         """
