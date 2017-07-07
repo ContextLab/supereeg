@@ -8,3 +8,4 @@ nilearn
 nibabel
 seaborn
 matplotlib
+future
