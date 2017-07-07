@@ -18,14 +18,8 @@ Here we load the example model, and then plot it.
     Traceback (most recent call last):
       File "/Users/andyheusser/Library/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/sphinx_gallery/gen_rst.py", line 475, in execute_code_block
         exec(code_block, example_globals)
-      File "<string>", line 9, in <module>
-      File "/Users/andyheusser/Documents/github/superEEG/superEEG/load.py", line 65, in load
-        return Model(data=model, locs=locs)
-      File "/Users/andyheusser/Documents/github/superEEG/superEEG/model.py", line 114, in __init__
-        bo = filter_elecs(bo, measure=measure, threshold=threshold)
-      File "/Users/andyheusser/Documents/github/superEEG/superEEG/_helpers/stats.py", line 413, in filter_elecs
-        thresh_bool = bo.kurtosis > threshold
-    AttributeError: 'numpy.ndarray' object has no attribute 'kurtosis'
+      File "<string>", line 12, in <module>
+    NameError: name 'model' is not defined
 
 
 

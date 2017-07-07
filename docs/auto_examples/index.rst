@@ -129,26 +129,6 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we load in a single subject example, remove electrodes that exceed a kurtosis ...">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_simulated_patient_data_thumb.png
-
-        :ref:`sphx_glr_auto_examples_simulated_patient_data.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/simulated_patient_data
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="In this example, we will parametrically vary how many subjects and how many electrodes per subj...">
 
 .. only:: html
@@ -206,6 +186,26 @@ Gallery of Examples
    :hidden:
 
    /auto_examples/plot_update_model
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we load in a single subject example, remove electrodes that exceed a kurtosis ...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_simulated_patient_data_thumb.png
+
+        :ref:`sphx_glr_auto_examples_simulated_patient_data.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/simulated_patient_data
 .. raw:: html
 
     <div style='clear:both'></div>

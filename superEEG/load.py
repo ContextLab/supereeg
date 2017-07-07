@@ -14,17 +14,23 @@ from ._helpers.stats import z2r
 
 def load(fname):
     """
-    Load example data
+    Load nifti file, brain or model object, or example data.
+
+    This function can load in example data, as well as nifti files, brain objects
+    and model objects by detecting the extension and calling the appropriate
+    load function.  Thus, be sure to include the file extension in the fname
+    parameter.
 
     Parameters
     ----------
     fname : string
-        The name of the example data or a filepath
+        The name of the example data or a filepath.  Example data includes:
+        example_data, example_model and example_locations
 
     Returns
     ----------
-    data : any
-        Example data
+    data : nibabel.Nifti1, superEEG.Brain or superEEG.Model
+        Data to be returned
 
     """
     # if sys.version_info[0]==3:
@@ -63,7 +69,7 @@ def load(fname):
         with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/R_small_MNI.npy', 'rb') as handle:
             locs = np.load(handle)
 
-        return Model(data=model, locs=locs)
+        return Model(numerator=model, denominator=n_subs, n_subs=2, locs=locs)
 
     # load example locations
     elif fname is 'example_locations':

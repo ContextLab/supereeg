@@ -15,22 +15,21 @@ model locations.
 
 
 
-.. code-block:: pytb
 
-    Traceback (most recent call last):
-      File "/Users/andyheusser/Library/Enthought/Canopy_64bit/User/lib/python2.7/site-packages/sphinx_gallery/gen_rst.py", line 475, in execute_code_block
-        exec(code_block, example_globals)
-      File "<string>", line 11, in <module>
-      File "/Users/andyheusser/Documents/github/superEEG/superEEG/load.py", line 65, in load
-        return Model(data=model, locs=locs)
-      File "/Users/andyheusser/Documents/github/superEEG/superEEG/model.py", line 114, in __init__
-        bo = filter_elecs(bo, measure=measure, threshold=threshold)
-      File "/Users/andyheusser/Documents/github/superEEG/superEEG/_helpers/stats.py", line 413, in filter_elecs
-        thresh_bool = bo.kurtosis > threshold
-    AttributeError: 'numpy.ndarray' object has no attribute 'kurtosis'
+.. rst-class:: sphx-glr-script-out
+
+ Out::
+
+    Number of electrodes: 131
+    Recording time in seconds: [[ 1000.  1000.]]
+    Number of sessions: 1
+    Date created: Fri Jul  7 15:48:09 2017
+    Meta data: None
 
 
 
+
+|
 
 
 .. code-block:: python
@@ -53,7 +52,7 @@ model locations.
     # print out info on new brain object
     reconstructed_bo.info()
 
-**Total running time of the script:** ( 0 minutes  0.000 seconds)
+**Total running time of the script:** ( 0 minutes  5.013 seconds)
 
 
 
