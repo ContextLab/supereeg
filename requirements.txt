@@ -9,3 +9,6 @@ nibabel
 seaborn
 matplotlib
 future
+scikit-learn
+joblib
+tensorflow
