@@ -35,7 +35,7 @@ def main(r, k_thresh):
 					denominator = next_denom
 				else:
 					numerator = np.nansum(np.dstack((numerator, next_num)),2)
-					denominator =  + next_denom
+					denominator += next_denom
 			else:
 				pass
 		#average_matrix = z2r(results /weights) + np.eye(np.shape(results)[0])

@@ -141,7 +141,7 @@ def r2z(r):
     return 0.5 * (np.log(1 + r) - np.log(1 - r))
 
 
-def rbf(x, center, width=20):
+def rbf(x, center, width=5):
     """
     Radial basis function
 

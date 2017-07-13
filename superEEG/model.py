@@ -192,11 +192,14 @@ class Model(object):
         # divide the numerator and denominator
         model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
 
+        # convert nans to zeros
+        model_corrmat_x[np.where(np.isnan(model_corrmat_x))] = 0
+
         #convert from z to r
         model_corrmat_x = z2r(model_corrmat_x)
 
         # convert diagonals to 1
-        model_corrmat_x[np.eye(model_corrmat_x.shape[0]) == 1] = 0
+        model_corrmat_x[np.eye(model_corrmat_x.shape[0]) == 1] = 1
 
         # timeseries reconstruction
         if tf:
