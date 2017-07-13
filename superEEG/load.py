@@ -4,27 +4,34 @@ import pickle
 import numpy as np
 import nibabel as nb
 import numpy as np
+import scipy
 from nilearn.input_data import NiftiMasker
 from scipy.spatial.distance import squareform
 from .brain import Brain
 from .model import Model
 from ._helpers.stats import tal2mni
 from ._helpers.stats import z2r
-
+from ._helpers.stats import r2z
 
 def load(fname):
     """
-    Load example data
+    Load nifti file, brain or model object, or example data.
+
+    This function can load in example data, as well as nifti files, brain objects
+    and model objects by detecting the extension and calling the appropriate
+    load function.  Thus, be sure to include the file extension in the fname
+    parameter.
 
     Parameters
     ----------
     fname : string
-        The name of the example data or a filepath
+        The name of the example data or a filepath.  Example data includes:
+        example_data, example_model and example_locations
 
     Returns
     ----------
-    data : any
-        Example data
+    data : nibabel.Nifti1, superEEG.Brain or superEEG.Model
+        Data to be returned
 
     """
     # if sys.version_info[0]==3:
@@ -51,19 +58,13 @@ def load(fname):
 
     # load example model
     elif fname is 'example_model':
+        locs = np.random.multivariate_normal(np.zeros(3), np.eye(3), size=100)
+        model = r2z(scipy.linalg.toeplitz(np.linspace(0,.99,len(locs))[::-1]))
+        model[np.eye(model.shape[0]) == 1] = 0
+        model[np.where(np.isnan(model))] = 0
+        n_subs = np.ones((len(locs), len(locs)))
 
-        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/average_model_k_10_r_20.npz', 'rb') as handle:
-            f = np.load(handle)
-            model = squareform(f['matrix_sum'].flatten(), checks=False)
-            model[np.eye(model.shape[0]) == 1] = 0
-            model[np.where(np.isnan(model))] = 0
-            # model = z2r(model)
-            n_subs = squareform(f['weights_sum'], checks=False)
-
-        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/R_small_MNI.npy', 'rb') as handle:
-            locs = np.load(handle)
-
-        return Model(data=model, locs=locs)
+        return Model(numerator=model, denominator=n_subs, n_subs=2, locs=locs)
 
     # load example locations
     elif fname is 'example_locations':

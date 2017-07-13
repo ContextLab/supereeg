@@ -76,9 +76,19 @@ class Model(object):
         # if all of these fields are not none, shortcut the model creation
         if all(v is not None for v in [numerator, denominator, locs, n_subs]):
 
+            # numerator
             self.numerator = numerator
+
+            # denominator
             self.denominator = denominator
-            self.locs = locs
+
+            # if locs arent already a df, turn them into df
+            if isinstance(locs, pd.DataFrame):
+                self.locs = locs
+            else:
+                self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
+
+            # number of subjects
             self.n_subs = n_subs
 
         else:
@@ -177,7 +187,7 @@ class Model(object):
         # add in new subj data
         model_corrmat_x = np.divide(np.nansum(np.dstack((self.numerator, num_corrmat_x)), 2), self.denominator + denom_corrmat_x)
 
-        # replace the diagonal with 1 -
+        # replace the diagonal with 1
         model_corrmat_x[np.eye(model_corrmat_x.shape[0]) == 1] = 0
 
         # convert nans to zeros
@@ -212,7 +222,8 @@ class Model(object):
         #              locs=pd.concat([self.locs, bo.locs]),
         #             sessions=bo.sessions, sample_rate=bo.sample_rate)
 
-        return Brain(data=reconstructed, locs=self.locs, sessions=bo.sessions, sample_rate=bo.sample_rate)
+        return Brain(data=reconstructed, locs=self.locs, sessions=bo.sessions,
+                    sample_rate=bo.sample_rate)
 
 
     def update(self, data, measure='kurtosis', threshold=10):
@@ -278,6 +289,7 @@ class Model(object):
         supports.
         """
         sns.heatmap(z2r(np.divide(self.numerator, self.denominator)), **kwargs)
+        sns.plt.show()
 
     def save(self, filepath):
         """

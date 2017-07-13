@@ -23,31 +23,7 @@ the true model.
     :align: center
 
 
-.. rst-class:: sphx-glr-script-out
 
- Out::
-
-    10 Subjects, 10 Electrodes
-    10 Subjects, 25 Electrodes
-    10 Subjects, 50 Electrodes
-    10 Subjects, 100 Electrodes
-    25 Subjects, 10 Electrodes
-    25 Subjects, 25 Electrodes
-    25 Subjects, 50 Electrodes
-    25 Subjects, 100 Electrodes
-    50 Subjects, 10 Electrodes
-    50 Subjects, 25 Electrodes
-    50 Subjects, 50 Electrodes
-    50 Subjects, 100 Electrodes
-    100 Subjects, 10 Electrodes
-    100 Subjects, 25 Electrodes
-    100 Subjects, 50 Electrodes
-    100 Subjects, 100 Electrodes
-
-
-
-
-|
 
 
 .. code-block:: python
@@ -106,11 +82,10 @@ the true model.
             # set the title
             axarr[isub,ielec].set_title(str(n_subs) + ' Subjects, ' + str(n_elecs) + ' Electrodes')
 
-            print(str(n_subs) + ' Subjects, ' + str(n_elecs) + ' Electrodes')
-
+    sns.plt.tight_layout()
     sns.plt.show()
 
-**Total running time of the script:** ( 6 minutes  47.068 seconds)
+**Total running time of the script:** ( 6 minutes  26.358 seconds)
 
 
 

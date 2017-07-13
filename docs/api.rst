@@ -9,6 +9,14 @@ API reference
 
 .. _plot_api:
 
+Loading Data
+------------------
+
+.. autosummary::
+  :toctree:
+
+  load
+
 Brain data object
 ------------------
 

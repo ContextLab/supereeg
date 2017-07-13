@@ -67,6 +67,5 @@ for isub, n_subs in enumerate([10, 25, 50, 100]):
         # set the title
         axarr[isub,ielec].set_title(str(n_subs) + ' Subjects, ' + str(n_elecs) + ' Electrodes')
 
-        print(str(n_subs) + ' Subjects, ' + str(n_elecs) + ' Electrodes')
-
+sns.plt.tight_layout()
 sns.plt.show()
