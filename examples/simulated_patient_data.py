@@ -88,7 +88,7 @@ for i in patients:
 
         with open(os.path.join(synth_dir, 'synthetic_' + str(m).rjust(2, '0') + '.bo'), 'rb') as handle:
             bo = pickle.load(handle)
-            model_data.append(se.Brain(data=bo.data.iloc[:, p_m_elecs], locs=bo.locs.iloc[p_m_elecs]))
+            model_data.append(se.Brain(data=bo.data.iloc[:, unknown_inds], locs=bo.locs.iloc[unknown_inds]))
 
     model = se.Model(data=model_data, locs=bo_actual.locs.iloc[unknown_inds])
     reconstructed = model.predict(bo_sub)
