@@ -2,8 +2,64 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="72de947b-ed70-4f88-b013-460cd0bdb63e" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_00.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_01.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_02.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_03.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_04.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_05.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_06.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_07.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_08.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_09.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_10.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_11.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_12.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_13.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_14.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_15.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_16.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_17.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_18.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_19.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_20.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_21.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_22.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_23.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_24.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_25.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_26.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_27.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_28.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_29.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_30.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_31.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_32.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_33.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_34.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_35.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_36.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_37.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_38.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_39.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_40.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_41.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_42.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_43.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_44.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_45.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_46.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_47.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_48.bo" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_49.bo" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/average_model_k_10_r_20.npz" afterPath="$PROJECT_DIR$/superEEG/data/average_model_k_10_r_20.npz" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/code/.idea/workspace.xml" afterPath="$PROJECT_DIR$/code/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/code/k_mean_cluster.py" afterPath="$PROJECT_DIR$/code/k_mean_cluster.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/code/expand_mat.py" afterPath="$PROJECT_DIR$/code/expand_mat.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/simulated_patient_data.py" afterPath="$PROJECT_DIR$/examples/simulated_patient_data.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/.idea/workspace.xml" afterPath="$PROJECT_DIR$/superEEG/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/_helpers/stats.py" afterPath="$PROJECT_DIR$/superEEG/_helpers/stats.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/model.py" afterPath="$PROJECT_DIR$/superEEG/model.py" />
     </list>
     <ignored path="superEEG.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -26,8 +82,8 @@
       <file leaf-file-name="stats.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/superEEG/_helpers/stats.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-3305">
-              <caret line="121" column="4" selection-start-line="121" selection-start-column="4" selection-end-line="121" selection-end-column="52" />
+            <state relative-caret-position="233">
+              <caret line="347" column="0" selection-start-line="347" selection-start-column="0" selection-end-line="347" selection-end-column="0" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -38,7 +94,7 @@
       <file leaf-file-name="simulated_analysis.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/examples/simulated_analysis.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="400">
+            <state relative-caret-position="990">
               <caret line="66" column="7" selection-start-line="66" selection-start-column="7" selection-end-line="66" selection-end-column="7" />
               <folding>
                 <element signature="e#343#364#0" expanded="true" />
@@ -50,31 +106,11 @@
       <file leaf-file-name="simulated_patient_data.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/examples/simulated_patient_data.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
+            <state relative-caret-position="263">
+              <caret line="61" column="23" selection-start-line="61" selection-start-column="23" selection-end-line="61" selection-end-column="23" />
               <folding>
                 <element signature="e#343#364#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="indexing.py" pinned="false" current-in-tab="false">
-        <entry file="file:///Library/Python/2.7/site-packages/pandas/core/indexing.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="192">
-              <caret line="1301" column="0" selection-start-line="1301" selection-start-column="0" selection-end-line="1301" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="generic.py" pinned="false" current-in-tab="false">
-        <entry file="file:///Library/Python/2.7/site-packages/pandas/core/generic.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="143">
-              <caret line="1348" column="0" selection-start-line="1348" selection-start-column="0" selection-end-line="1348" selection-end-column="0" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -94,8 +130,8 @@
       <file leaf-file-name="model.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/superEEG/model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="263">
-              <caret line="205" column="8" selection-start-line="205" selection-start-column="8" selection-end-line="205" selection-end-column="64" />
+            <state relative-caret-position="188">
+              <caret line="181" column="8" selection-start-line="181" selection-start-column="8" selection-end-line="181" selection-end-column="49" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -139,15 +175,15 @@
         <option value="$PROJECT_DIR$/superEEG/_helpers/bookkeeping.py" />
         <option value="$PROJECT_DIR$/superEEG/load.py" />
         <option value="$PROJECT_DIR$/examples/simulated_analysis.py" />
+        <option value="$PROJECT_DIR$/superEEG/_helpers/stats.py" />
         <option value="$PROJECT_DIR$/superEEG/model.py" />
         <option value="$PROJECT_DIR$/examples/simulated_patient_data.py" />
-        <option value="$PROJECT_DIR$/superEEG/_helpers/stats.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="2696" />
-    <option name="y" value="-119" />
+    <option name="x" value="2437" />
+    <option name="y" value="-370" />
     <option name="width" value="1661" />
     <option name="height" value="1027" />
   </component>
@@ -162,7 +198,7 @@
     <ConfirmationsSetting value="0" id="Remove" />
   </component>
   <component name="ProjectView">
-    <navigator currentView="ProjectPane" proportions="" version="1">
+    <navigator proportions="" version="1">
       <flattenPackages />
       <showMembers />
       <showModules />
@@ -175,13 +211,7 @@
       <manualOrder />
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes>
-      <pane id="ProjectPane">
-        <subPane />
-      </pane>
-      <pane id="Scope" />
-      <pane id="Scratches" />
-    </panes>
+    <panes />
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
@@ -434,7 +464,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="2696" y="-119" width="1661" height="1027" extended-state="0" />
+    <frame x="2437" y="-370" width="1661" height="1027" extended-state="0" />
     <editor active="false" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24862888" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -443,10 +473,10 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32893288" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13658537" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.49614963" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.49614963" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -511,12 +541,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/examples/simulated_patient_data.py</url>
-          <line>137</line>
+          <line>145</line>
           <option name="timeStamp" value="52" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/examples/simulated_patient_data.py</url>
-          <line>134</line>
+          <line>142</line>
           <option name="timeStamp" value="56" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -526,13 +556,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/examples/simulated_patient_data.py</url>
-          <line>102</line>
+          <line>110</line>
           <option name="timeStamp" value="79" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/superEEG/model.py</url>
-          <line>200</line>
-          <option name="timeStamp" value="86" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/superEEG/_helpers/stats.py</url>
@@ -540,9 +565,29 @@
           <option name="timeStamp" value="90" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/superEEG/model.py</url>
+          <line>175</line>
+          <option name="timeStamp" value="93" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/examples/simulated_patient_data.py</url>
-          <line>92</line>
-          <option name="timeStamp" value="91" />
+          <line>102</line>
+          <option name="timeStamp" value="97" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/examples/simulated_patient_data.py</url>
+          <line>59</line>
+          <option name="timeStamp" value="100" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/superEEG/model.py</url>
+          <line>199</line>
+          <option name="timeStamp" value="102" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/examples/simulated_patient_data.py</url>
+          <line>54</line>
+          <option name="timeStamp" value="103" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
@@ -555,7 +600,7 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="93" />
+      <option name="time" value="104" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -816,17 +861,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="250">
-          <caret line="1579" column="0" selection-start-line="1579" selection-start-column="0" selection-end-line="1579" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/examples/simulated_analysis.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="400">
+        <state relative-caret-position="990">
           <caret line="66" column="7" selection-start-line="66" selection-start-column="7" selection-end-line="66" selection-end-column="7" />
           <folding>
             <element signature="e#343#364#0" expanded="true" />
@@ -838,7 +875,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="143">
           <caret line="1348" column="0" selection-start-line="1348" selection-start-column="0" selection-end-line="1348" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -846,14 +882,21 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="192">
           <caret line="1301" column="0" selection-start-line="1301" selection-start-column="0" selection-end-line="1301" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="250">
+          <caret line="1579" column="0" selection-start-line="1579" selection-start-column="0" selection-end-line="1579" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/superEEG/_helpers/stats.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3305">
-          <caret line="121" column="4" selection-start-line="121" selection-start-column="4" selection-end-line="121" selection-end-column="52" />
+        <state relative-caret-position="233">
+          <caret line="347" column="0" selection-start-line="347" selection-start-column="0" selection-end-line="347" selection-end-column="0" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>
@@ -862,8 +905,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/superEEG/model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="263">
-          <caret line="205" column="8" selection-start-line="205" selection-start-column="8" selection-end-line="205" selection-end-column="64" />
+        <state relative-caret-position="188">
+          <caret line="181" column="8" selection-start-line="181" selection-start-column="8" selection-end-line="181" selection-end-column="49" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
@@ -872,8 +915,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/examples/simulated_patient_data.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
+        <state relative-caret-position="263">
+          <caret line="61" column="23" selection-start-line="61" selection-start-column="23" selection-end-line="61" selection-end-column="23" />
           <folding>
             <element signature="e#343#364#0" expanded="true" />
           </folding>

@@ -20,7 +20,8 @@ def main(fname, r, k_thresh):
     ## downsampled locations with 5mm resolution:
     #loc_name = 'R_full_MNI.npy'
     ## downsampled locations with 30mm resolution for sample data test:
-    loc_name = 'R_small_MNI.npy'
+    #loc_name = 'R_small_MNI.npy'
+    loc_name = 'gray_20mm_locs.npy'
 
     ## create file name
     file_name = os.path.splitext(os.path.basename(fname))[0]
