@@ -209,7 +209,7 @@ class Model(object):
         model_corrmat_x = z2r(model_corrmat_x)
 
         # convert diagonals to 0
-        model_corrmat_x[np.eye(model_corrmat_x.shape[0]) == 1] = 0
+        model_corrmat_x[np.eye(model_corrmat_x.shape[0]) == 1] = 1
 
         # timeseries reconstruction
         if tf:

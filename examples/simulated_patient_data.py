@@ -52,9 +52,7 @@ if not os.path.isdir(synth_dir):
 # create 50 synthetic patients data with activity at every location
 if not os.listdir(synth_dir):
 
-    R = scipy.linalg.toeplitz(np.linspace(-1,1,len(locs))[::-1])
-    # R = np.dot(R, R.T)
-    # R = np.divide(R, np.max(R))
+    R = scipy.linalg.toeplitz(np.linspace(0,1,len(locs))[::-1])
 
     count = 0
     for p in range(50):
