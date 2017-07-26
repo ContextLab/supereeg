@@ -53,11 +53,9 @@ if not os.path.isdir(synth_dir):
 if not os.listdir(synth_dir):
 
     R = scipy.linalg.toeplitz(np.linspace(-1,1,len(locs))[::-1])
-    R = np.dot(R, R.T)
-    R = np.divide(R, np.max(R))
-    # from sklearn import datasets as dts
-    # prng = np.random.RandomState(1)
-    # R = dts.make_sparse_spd_matrix(len(locs), alpha=0, norm_diag=True, largest_coef=1, smallest_coef=-1, random_state=prng)
+    # R = np.dot(R, R.T)
+    # R = np.divide(R, np.max(R))
+
     count = 0
     for p in range(50):
         rand_dist = np.random.multivariate_normal(np.zeros(len(locs)), np.eye(len(locs)), size=n_samples)
