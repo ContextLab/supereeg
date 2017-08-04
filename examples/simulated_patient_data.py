@@ -30,7 +30,8 @@ import sklearn
 n_samples = 1000
 
 # n_electrodes - number of electrodes for reconstructed patient - need to loop over 5:5:130
-n_elecs =[10, 169, 85]
+#n_elecs =[5, 85, 165]
+n_elecs = [165]
 
 # m_patients - number of patients in the model - need to loop over 10:10:50
 m_patients = 50
@@ -72,7 +73,7 @@ patients = np.random.choice(range(50), m_patients, replace=False)
 # initiate dataframe
 d = []
 
-# to hold one one patient at a time:
+# ### to hold one one patient at a time with matrix expand:
 # for i in patients:
 #
 #
@@ -108,7 +109,13 @@ d = []
 #     actual = (new_pd - new_pd.mean()) / new_pd.std()
 #     predicted = reconstructed.data.loc[:, unknown_inds]
 #     corr = np.mean(np.diag(pd.concat([actual, predicted], axis=1, keys=['actual', 'predicted']).corr().loc['actual', 'predicted']))
+#
 
+
+
+
+
+### reconstruction with model (no expanding)
 for n in n_elecs:
 
     ## to create a model from all 50 simulated patients
@@ -132,10 +139,10 @@ for n in n_elecs:
 
             model = se.Model(data=model_data, locs=locs)
 
-            with open('model_170', 'wb') as h:
+            with open('model_170.mo', 'wb') as h:
                 pickle.dump(model, h)
 
-        with open('model_170', 'rb') as a:
+        with open('model_170.mo', 'rb') as a:
             mo = pickle.load(a)
 
         def recon_no_expand(bo_sub, mo):
@@ -152,24 +159,34 @@ for n in n_elecs:
             Y = zscore(bo_sub.get_data())
             return np.squeeze(np.dot(np.dot(Kba, np.linalg.pinv(Kaa)), Y.T).T)
 
-        predicted = recon_no_expand(bo_sub, mo)
+
+        def corr(X, Y):
+            return np.array([scipy.stats.pearsonr(x, y)[0] for x, y in zip(X.T, Y.T)])
+
+
+        predicted = np.atleast_2d(recon_no_expand(bo_sub, mo))
 
         unknown_locs = locs.drop(p_n_elecs)
         unknown_inds = unknown_locs.index.values
 
-        new_pd = bo_actual.data.loc[:, unknown_inds]
-        actual = (new_pd - new_pd.mean()) / new_pd.std()
-        #sb.jointplot(actual.as_matrix().flatten(), predicted)
-        corr = scipy.stats.pearsonr(actual.as_matrix().flatten(), predicted)[0]
+        actual = zscore(bo_actual.data.loc[:, unknown_inds].as_matrix())
+
+        corr_vals = corr(actual, predicted)
 
 
-        d.append({'Patients': m_patients, 'Model Locations': m_elecs, 'Patient Locations': n_elecs, 'Correlation': corr})
+        d.append({'Patients': m_patients, 'Model Locations': m_elecs, 'Patient Locations': n, 'Correlation': np.mean(corr_vals)})
 
-pd.DataFrame(d)
+d = pd.DataFrame(d)
+
+recon_corr = d.groupby(['Patient Locations']).mean()
 
 
 
-## create model with synthetic patient data, random sample 20 electrodes
+
+
+
+
+### create model with synthetic patient data, random sample 20 electrodes
 #
 # R = scipy.linalg.toeplitz(np.linspace(0,1,len(locs))[::-1])
 # data = []
