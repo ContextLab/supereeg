@@ -2,58 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="72de947b-ed70-4f88-b013-460cd0bdb63e" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/simulated_patient_data.py" afterPath="$PROJECT_DIR$/examples/simulated_patient_data.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_00.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_00.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_01.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_01.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_02.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_02.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_03.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_03.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_04.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_04.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_05.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_05.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_06.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_06.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_07.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_07.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_08.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_08.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_09.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_09.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_10.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_10.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_11.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_11.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_12.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_12.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_13.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_13.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_14.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_14.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_15.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_15.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_16.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_16.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_17.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_17.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_18.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_18.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_19.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_19.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_20.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_20.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_21.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_21.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_22.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_22.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_23.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_23.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_24.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_24.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_25.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_25.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_26.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_26.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_27.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_27.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_28.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_28.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_29.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_29.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_30.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_30.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_31.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_31.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_32.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_32.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_33.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_33.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_34.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_34.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_35.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_35.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_36.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_36.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_37.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_37.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_38.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_38.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_39.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_39.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_40.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_40.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_41.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_41.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_42.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_42.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_43.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_43.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_44.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_44.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_45.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_45.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_46.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_46.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_47.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_47.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_48.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_48.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_49.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_49.bo" />
     </list>
     <ignored path="superEEG.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -76,7 +25,7 @@
       <file leaf-file-name="stats.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/superEEG/_helpers/stats.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5205">
+            <state relative-caret-position="353">
               <caret line="347" column="0" selection-start-line="347" selection-start-column="0" selection-end-line="347" selection-end-column="0" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
@@ -100,8 +49,8 @@
       <file leaf-file-name="simulated_patient_data.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/examples/simulated_patient_data.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="173">
-              <caret line="187" column="0" selection-start-line="187" selection-start-column="0" selection-end-line="187" selection-end-column="52" />
+            <state relative-caret-position="338">
+              <caret line="119" column="8" selection-start-line="119" selection-start-column="8" selection-end-line="119" selection-end-column="135" />
               <folding>
                 <element signature="e#343#364#0" expanded="true" />
               </folding>
@@ -124,7 +73,7 @@
       <file leaf-file-name="model.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/superEEG/model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3375">
+            <state relative-caret-position="263">
               <caret line="225" column="0" selection-start-line="225" selection-start-column="0" selection-end-line="225" selection-end-column="0" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
@@ -458,7 +407,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="10" y="23" width="1636" height="1027" extended-state="0" />
+    <frame x="10" y="23" width="1636" height="1027" extended-state="1" />
     <editor active="false" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24862888" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -535,12 +484,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/examples/simulated_patient_data.py</url>
-          <line>224</line>
+          <line>226</line>
           <option name="timeStamp" value="52" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/examples/simulated_patient_data.py</url>
-          <line>221</line>
+          <line>223</line>
           <option name="timeStamp" value="56" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -560,18 +509,23 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/examples/simulated_patient_data.py</url>
-          <line>185</line>
+          <line>187</line>
           <option name="timeStamp" value="110" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/examples/simulated_patient_data.py</url>
-          <line>83</line>
-          <option name="timeStamp" value="114" />
+          <line>60</line>
+          <option name="timeStamp" value="115" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/examples/simulated_patient_data.py</url>
-          <line>59</line>
-          <option name="timeStamp" value="115" />
+          <line>95</line>
+          <option name="timeStamp" value="117" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/examples/simulated_patient_data.py</url>
+          <line>88</line>
+          <option name="timeStamp" value="118" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
@@ -584,7 +538,7 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="117" />
+      <option name="time" value="119" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -875,7 +829,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/superEEG/_helpers/stats.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5205">
+        <state relative-caret-position="353">
           <caret line="347" column="0" selection-start-line="347" selection-start-column="0" selection-end-line="347" selection-end-column="0" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
@@ -885,7 +839,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/superEEG/model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3375">
+        <state relative-caret-position="263">
           <caret line="225" column="0" selection-start-line="225" selection-start-column="0" selection-end-line="225" selection-end-column="0" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
@@ -895,8 +849,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/examples/simulated_patient_data.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="173">
-          <caret line="187" column="0" selection-start-line="187" selection-start-column="0" selection-end-line="187" selection-end-column="52" />
+        <state relative-caret-position="338">
+          <caret line="119" column="8" selection-start-line="119" selection-start-column="8" selection-end-line="119" selection-end-column="135" />
           <folding>
             <element signature="e#343#364#0" expanded="true" />
           </folding>
