@@ -20,6 +20,7 @@ from superEEG._helpers.stats import r2z, z2r
 from superEEG._helpers.bookkeeping import slice_list
 from numpy import inf
 from scipy.stats import zscore
+from scipy.spatial.distance import squareform, pdist
 import os
 import pandas as pd
 import pickle
@@ -30,8 +31,8 @@ import sklearn
 n_samples = 1000
 
 # n_electrodes - number of electrodes for reconstructed patient - need to loop over 5:5:130
-#n_elecs =[5, 85, 165]
-n_elecs = [165]
+n_elecs =[5, 85, 165]
+# n_elecs = [165]
 
 # m_patients - number of patients in the model - need to loop over 10:10:50
 m_patients = 50
@@ -53,7 +54,13 @@ if not os.path.isdir(synth_dir):
 # create 50 synthetic patients data with activity at every location
 if not os.listdir(synth_dir):
 
-    R = scipy.linalg.toeplitz(np.linspace(0,1,len(locs))[::-1])
+    ### for toeplitz matrix
+    # R = scipy.linalg.toeplitz(np.linspace(0,1,len(locs))[::-1])
+    ### for distance matrix
+    D = squareform(pdist(locs))
+    R = np.max(D) - D
+    R = R - np.min(R)
+    R = R / np.max(R)
 
     count = 0
     for p in range(50):
