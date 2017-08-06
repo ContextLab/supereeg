@@ -4,7 +4,7 @@ import copy
 import os
 import numpy as np
 import numpy.matlib as mat
-from scipy.stats import kurtosis, zscore
+from scipy.stats import kurtosis, zscore, pearsonr
 from scipy.spatial.distance import pdist
 from scipy.spatial.distance import cdist
 from scipy.spatial.distance import squareform
@@ -485,3 +485,35 @@ def fullfact(dims):
             inds[row:(row + len(vals)), 1:] = np.tile(aftervals[i, :], (len(vals), 1))
             row += len(vals)
         return inds
+
+
+def corr_column(X, Y):
+    return np.array([pearsonr(x, y)[0] for x, y in zip(X.T, Y.T)])
+
+
+
+def recon_no_expand(bo_sub, mo):
+    """
+    """
+    model = z2r(np.divide(mo.numerator, mo.denominator))
+    model[np.eye(model.shape[0]) == 1] = 1
+    known_locs = bo_sub.locs
+    known_inds = bo_sub.locs.index.values
+    unknown_locs = mo.locs.drop(known_inds)
+    unknown_inds = unknown_locs.index.values
+    Kba = model[unknown_inds, :][:, known_inds]
+    Kaa = model[:,known_inds][known_inds,:]
+    Y = zscore(bo_sub.get_data())
+    return np.squeeze(np.dot(np.dot(Kba, np.linalg.pinv(Kaa)), Y.T).T)
+
+def recon(bo_sub, mo):
+    """
+    """
+    mo[np.eye(mo.shape[0]) == 1] = 0
+    known_inds = bo_sub.locs.index.values
+    locs_inds = range(mo.shape[0])
+    unknown_inds = np.sort(list(set(locs_inds) - set(known_inds)))
+    Kba = mo[unknown_inds, :][:, known_inds]
+    Kaa = mo[:,known_inds][known_inds,:]
+    Y = zscore(bo_sub.get_data())
+    return np.squeeze(np.dot(np.dot(Kba, np.linalg.pinv(Kaa)), Y.T).T)

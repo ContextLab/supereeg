@@ -16,7 +16,7 @@ model locations.
 import superEEG as se
 import scipy
 import numpy as np
-from superEEG._helpers.stats import r2z, z2r
+from superEEG._helpers.stats import r2z, z2r, corr_column, recon_no_expand
 from superEEG._helpers.bookkeeping import slice_list
 from numpy import inf
 from scipy.stats import zscore
@@ -31,11 +31,11 @@ import sklearn
 n_samples = 1000
 
 # n_electrodes - number of electrodes for reconstructed patient - need to loop over 5:5:130
-n_elecs =[165, 85, 5]
+n_elecs =[85, 5]
 #n_elecs = [165]
 
 # m_patients - number of patients in the model - need to loop over 10:10:50
-m_patients = 50
+m_patients = [50, 40]
 
 # m_electrodes - number of electrodes for each patient in the model -  25:25:100
 m_elecs = 170
@@ -64,7 +64,7 @@ if not os.listdir(synth_dir):
     R = R / np.max(R)
 
     count = 0
-    for p in range(50):
+    for ps in range(50):
         rand_dist = np.random.multivariate_normal(np.zeros(len(locs)), np.eye(len(locs)), size=n_samples)
         bo = se.Brain(data=np.dot(rand_dist, scipy.linalg.cholesky(R)), locs=pd.DataFrame(locs, columns=['x', 'y', 'z']))
         bo.save(os.path.join(synth_dir, 'synthetic_'+ str(count).rjust(2, '0')))
@@ -79,47 +79,57 @@ model_data = []
 # initiate dataframe
 d = []
 
-# random sample m_patients from 50 simulated patients - this will also need to be in a loop
-patients = np.random.choice(range(50), m_patients, replace=False)
+for p in m_patients:
 
-### to hold one one patient at a time with matrix expand:
-for i in patients:
+    # random sample m_patients from 50 simulated patients - this will also need to be in a loop
+    patients = np.random.choice(range(50), p, replace=False)
 
+    # loop over n_elecs
     for n in n_elecs:
-        p_n_elecs = np.sort(np.random.choice(range(len(locs)), n, replace=False))
 
-        with open(os.path.join(synth_dir, 'synthetic_'+ str(i).rjust(2, '0') + '.bo'), 'rb') as handle:
-            bo_actual = pickle.load(handle)
-            bo_sub = se.Brain(data=bo_actual.data.loc[:, p_n_elecs],locs= bo_actual.locs.loc[p_n_elecs])
+        # hold out one patient at a time
+        for i in patients:
 
+            # random sample n locations from 170 locations
+            p_n_elecs = np.sort(np.random.choice(range(len(locs)), n, replace=False))
 
-        unknown_locs = locs.drop(p_n_elecs)
-        unknown_inds = unknown_locs.index.values
-
-        # create model from every other patient
-        model_patients = [p for p in patients if p != i]
-        for m in model_patients:
-
-            p_m_elecs = np.sort(np.random.choice(range(len(locs)), m_elecs, replace=False))
-
-            #p_m_elecs = np.random.choice(list(unknown_inds), m_elecs, replace=False)
-
-            with open(os.path.join(synth_dir, 'synthetic_' + str(m).rjust(2, '0') + '.bo'), 'rb') as handle:
-                bo = pickle.load(handle)
-                #model_data.append(se.Brain(data=bo.data.loc[:, unknown_inds], locs=bo.locs.loc[unknown_inds]))
-                model_data.append(se.Brain(data=bo.data.loc[:, p_m_elecs], locs=bo.locs.loc[p_m_elecs]))
-
-        #model = se.Model(data=model_data, locs=bo_actual.locs.loc[unknown_inds])
-
-        model = se.Model(data=model_data, locs=locs)
-        reconstructed = model.predict(bo_sub)
-
-        new_pd = bo_actual.data.loc[:, unknown_inds]
-        actual = (new_pd - new_pd.mean()) / new_pd.std()
-        predicted = reconstructed.data.loc[:, unknown_inds]
-        corr = np.mean(np.diag(pd.concat([actual, predicted], axis=1, keys=['actual', 'predicted']).corr().loc['actual', 'predicted']))
+            with open(os.path.join(synth_dir, 'synthetic_'+ str(i).rjust(2, '0') + '.bo'), 'rb') as handle:
+                bo_actual = pickle.load(handle)
+                bo_sub = se.Brain(data=bo_actual.data.loc[:, p_n_elecs],locs= bo_actual.locs.loc[p_n_elecs])
 
 
+            unknown_locs = locs.drop(p_n_elecs)
+            unknown_inds = unknown_locs.index.values
+
+            # create model from every other patient
+            model_patients = [p for p in patients if p != i]
+            for mp in model_patients:
+
+                # random sample m_elecs locations from 170 locations (this will also need to be looped over for coverage simulation)
+                p_m_elecs = np.sort(np.random.choice(range(len(locs)), m_elecs, replace=False))
+
+                with open(os.path.join(synth_dir, 'synthetic_' + str(mp).rjust(2, '0') + '.bo'), 'rb') as handle:
+                    bo = pickle.load(handle)
+                    model_data.append(se.Brain(data=bo.data.loc[:, p_m_elecs], locs=bo.locs.loc[p_m_elecs]))
+
+            model = se.Model(data=model_data, locs=locs)
+
+            # # to use expanded model:
+
+            reconstructed = model.predict(bo_sub, simulation=True)
+            predicted = reconstructed.data.loc[:, unknown_inds].as_matrix()
+
+            # # to use unexpanded model:
+            # predicted = recon_no_expand(bo_sub, model)
+
+            actual = zscore(bo_actual.data.loc[:, unknown_inds].as_matrix())
+
+            corr_vals = corr_column(actual, predicted)
+
+
+            d.append({'Patients': p, 'Model Locations': m_elecs, 'Patient Locations': n, 'Correlation': np.mean(corr_vals)})
+
+d = pd.DataFrame(d)
 
 
 

@@ -150,7 +150,7 @@ class Model(object):
         # meta
         self.meta = meta
 
-    def predict(self, bo, tf=False, kthreshold=10):
+    def predict(self, bo, simulation= False, tf=False, kthreshold=10):
         """
         Takes a brain object and a 'full' covariance model, fills in all
         electrode timeseries for all missing locations and returns the new brain object
@@ -193,27 +193,30 @@ class Model(object):
         # convert nans to zeros
         model_corrmat_x[np.where(np.isnan(model_corrmat_x))] = 0
 
-        # expanded rbf weights
-        model_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), self.locs)
+        if not simulation:
+            # expanded rbf weights
+            model_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), self.locs)
 
-        # get model expanded correlation matrix
-        num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(model_corrmat_x, model_rbf_weights)
+            # get model expanded correlation matrix
+            num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(model_corrmat_x, model_rbf_weights)
 
-        # divide the numerator and denominator
-        model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
+            # divide the numerator and denominator
+            model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
 
-        # convert nans to zeros
-        model_corrmat_x[np.where(np.isnan(model_corrmat_x))] = 0
+            # convert nans to zeros
+            model_corrmat_x[np.where(np.isnan(model_corrmat_x))] = 0
 
         #convert from z to r
         model_corrmat_x = z2r(model_corrmat_x)
 
         # convert diagonals to 0
-        model_corrmat_x[np.eye(model_corrmat_x.shape[0]) == 1] = 1
+        model_corrmat_x[np.eye(model_corrmat_x.shape[0]) == 1] = 0
 
         # timeseries reconstruction
         if tf:
             reconstructed = reconstruct_activity_tf(bo, model_corrmat_x)
+        elif simulation:
+            reconstructed = recon(bo, model_corrmat_x)
         else:
             reconstructed = reconstruct_activity(bo, model_corrmat_x)
 
