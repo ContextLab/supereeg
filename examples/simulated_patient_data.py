@@ -117,7 +117,7 @@ for p in m_patients:
             # # to use expanded model:
 
             reconstructed = model.predict(bo_sub, simulation=True)
-            predicted = reconstructed.data.loc[:, unknown_inds].as_matrix()
+            predicted = reconstructed.data.as_matrix()
 
             # # to use unexpanded model:
             # predicted = recon_no_expand(bo_sub, model)

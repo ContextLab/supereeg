@@ -509,7 +509,7 @@ def recon_no_expand(bo_sub, mo):
 def recon(bo_sub, mo):
     """
     """
-    mo[np.eye(mo.shape[0]) == 1] = 0
+    mo[np.eye(mo.shape[0]) == 1] = 1
     known_inds = bo_sub.locs.index.values
     locs_inds = range(mo.shape[0])
     unknown_inds = np.sort(list(set(locs_inds) - set(known_inds)))
