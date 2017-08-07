@@ -18,5 +18,16 @@ setup(
     author_email='contextualdynamics@gmail.com',
     url='https://www.context-lab.com',
     license=license,
+	install_requires=[
+   'scikit-learn>=0.18.1',
+   'pandas',
+   'seaborn>=0.7.1',
+   'matplotlib>=1.5.1',
+   'scipy>=0.17.1',
+   'numpy>=1.10.4',
+   'nilearn',
+   'nibabel',
+   'tensorflow',
+   ],
     packages=find_packages(exclude=('tests', 'docs')),
 )
