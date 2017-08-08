@@ -69,7 +69,7 @@ class Model(object):
 
     """
 
-    def __init__(self, data=None, locs=None, template='../superEEG/data/MNI152_T1_6mm_brain.nii.gz',
+    def __init__(self, data=None, locs=None, template='../superEEG/data/MNI152_T1_8mm_brain.nii.gz',
                  measure='kurtosis', threshold=10, numerator=None, denominator=None,
                  n_subs=None, meta=None):
 
@@ -150,7 +150,7 @@ class Model(object):
         # meta
         self.meta = meta
 
-    def predict(self, bo, simulation= False, tf=False, kthreshold=10):
+    def predict(self, bo, simulation= False, prediction =False, tf=False, kthreshold=10):
         """
         Takes a brain object and a 'full' covariance model, fills in all
         electrode timeseries for all missing locations and returns the new brain object
@@ -197,8 +197,14 @@ class Model(object):
             # expanded rbf weights
             model_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), self.locs)
 
-            # get model expanded correlation matrix
-            num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(model_corrmat_x, model_rbf_weights)
+            if prediction:
+
+                # get model expanded correlation matrix
+                num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(model_corrmat_x, model_rbf_weights, mode='predict')
+            else:
+
+                # get model expanded correlation matrix
+                num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(model_corrmat_x, model_rbf_weights)
 
             # divide the numerator and denominator
             model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)

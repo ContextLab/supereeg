@@ -46,6 +46,9 @@ gray = se.load(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/g
 # extract locations
 locs = gray.locs
 
+# small model
+
+
 # create directory for synthetic patient data
 synth_dir = os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/synthetic_data'
 if not os.path.isdir(synth_dir):
@@ -101,25 +104,39 @@ for p in m_patients:
             unknown_locs = locs.drop(p_n_elecs)
             unknown_inds = unknown_locs.index.values
 
-            # create model from every other patient
-            model_patients = [p for p in patients if p != i]
-            for mp in model_patients:
+            ##### create model from every other patient
+            # model_patients = [p for p in patients if p != i]
+            # for mp in model_patients:
+            #
+            #     # random sample m_elecs locations from 170 locations (this will also need to be looped over for coverage simulation)
+            #     p_m_elecs = np.sort(np.random.choice(range(len(locs)), m_elecs, replace=False))
+            #
+            #     with open(os.path.join(synth_dir, 'synthetic_' + str(mp).rjust(2, '0') + '.bo'), 'rb') as handle:
+            #         bo = pickle.load(handle)
+            #         model_data.append(se.Brain(data=bo.data.loc[:, p_m_elecs], locs=bo.locs.loc[p_m_elecs]))
+            #
+            # model = se.Model(data=model_data, locs=locs)
 
-                # random sample m_elecs locations from 170 locations (this will also need to be looped over for coverage simulation)
-                p_m_elecs = np.sort(np.random.choice(range(len(locs)), m_elecs, replace=False))
+            #### to use simulated model
+            with open('model_170.mo', 'rb') as a:
+                model = pickle.load(a)
 
-                with open(os.path.join(synth_dir, 'synthetic_' + str(mp).rjust(2, '0') + '.bo'), 'rb') as handle:
-                    bo = pickle.load(handle)
-                    model_data.append(se.Brain(data=bo.data.loc[:, p_m_elecs], locs=bo.locs.loc[p_m_elecs]))
 
-            model = se.Model(data=model_data, locs=locs)
+            #### comparing second corrmat_expand
+            #### only expand into unknownxknown and knownxknown
+            reconstructed_1 = model.predict(bo_sub, prediction=True)
+            #### expand all
+            reconstructed_2 = model.predict(bo_sub)
+            #### check if they give the same values
+            corr_reconstructions = np.mean(corr_column(reconstructed_1.data.as_matrix(), reconstructed_2.data.as_matrix()))
+            #### comparing second corrmat_expand
 
-            # # to use expanded model:
 
+            ##### to use predict function (averaging the subject's expanded matrix with the model) but bypass the second expanded
             reconstructed = model.predict(bo_sub, simulation=True)
             predicted = reconstructed.data.as_matrix()
 
-            # # to use unexpanded model:
+            ##### to bypass predict function entirely (and only parse model):
             # predicted = recon_no_expand(bo_sub, model)
 
             actual = zscore(bo_actual.data.loc[:, unknown_inds].as_matrix())
