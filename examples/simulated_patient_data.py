@@ -94,10 +94,10 @@ for p in m_patients:
         for i in patients:
 
             # random sample n locations from 170 locations
-            # p_n_elecs = np.sort(np.random.choice(range(len(locs)), n, replace=False))
+            p_n_elecs = np.sort(np.random.choice(range(len(locs)), n, replace=False))
 
             ### to debug expand_corrmat:
-            p_n_elecs = range(10,15)
+            # p_n_elecs = range(10,15)
 
             with open(os.path.join(synth_dir, 'synthetic_'+ str(i).rjust(2, '0') + '.bo'), 'rb') as handle:
                 bo_actual = pickle.load(handle)
@@ -125,20 +125,22 @@ for p in m_patients:
                 model = pickle.load(a)
 
 
-            #### comparing second corrmat_expand
-            #### expand all
-            reconstructed_predict = model.predict(bo_sub)
-            #### only expand into unknownxknown and knownxknown
-            reconstructed_fit = model.predict(bo_sub, prediction=True)
-            #### check if they give the same values
-            corr_reconstructions = np.mean(corr_column(reconstructed_predict.data.as_matrix(), reconstructed_fit.data.as_matrix()))
-            #### comparing second corrmat_expand
+            # #### comparing second corrmat_expand
+            # #### expand all
+            # reconstructed_predict = model.predict(bo_sub)
+            # #### only expand into unknownxknown and knownxknown
+            # reconstructed_fit = model.predict(bo_sub, prediction=True)
+            # #### check if they give the same values
+            # corr_reconstructions = np.mean(corr_column(reconstructed_predict.data.as_matrix(), reconstructed_fit.data.as_matrix()))
+            # #### comparing second corrmat_expand
 
+            reconstructed_predict = model.predict(bo_sub)
 
             ##### to use predict function (averaging the subject's expanded matrix with the model) but bypass the second expanded
             reconstructed = model.predict(bo_sub, simulation=True)
             predicted = reconstructed.data.as_matrix()
 
+            corr_reconstructions = np.mean(corr_column(reconstructed_predict.data.as_matrix(), predicted))
             ##### to bypass predict function entirely (and only parse model):
             # predicted = recon_no_expand(bo_sub, model)
 

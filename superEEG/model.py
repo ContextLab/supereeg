@@ -198,15 +198,19 @@ class Model(object):
             # expanded rbf weights
             model_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), self.locs)
 
-            if prediction:
+            #### below is used to debug predict mode
+            # if prediction:
+            #
+            #     # get model expanded correlation matrix
+            #     num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(model_corrmat_x, model_rbf_weights, mode='predict')
+            # else:
+            #
+            #     # get model expanded correlation matrix
+            #     num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(model_corrmat_x, model_rbf_weights)
 
-                # get model expanded correlation matrix
-                num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(model_corrmat_x, model_rbf_weights, mode='predict')
-            else:
-
-                # get model expanded correlation matrix
-                num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(model_corrmat_x, model_rbf_weights)
-
+            # get model expanded correlation matrix
+            num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(model_corrmat_x, model_rbf_weights,
+                                                                       mode='predict')
             # divide the numerator and denominator
             model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
 
