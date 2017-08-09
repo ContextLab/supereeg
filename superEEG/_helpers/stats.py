@@ -325,7 +325,7 @@ def get_expanded_corrmat_lucy(C, weights, mode='fit'):
         else:
             vals = range(x)
         for y in vals:
-            if predict_mode and (y <= s): #this may be off by one index
+            if predict_mode and (y < s): #this may be off by one index
                 continue
             yweights = weights[y, :]
 

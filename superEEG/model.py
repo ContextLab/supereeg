@@ -4,6 +4,7 @@ from ._helpers.stats import *
 from .brain import Brain
 import seaborn as sns
 import nibabel as nib
+import pickle
 
 class Model(object):
     """

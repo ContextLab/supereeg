@@ -31,7 +31,7 @@ import sklearn
 n_samples = 1000
 
 # n_electrodes - number of electrodes for reconstructed patient - need to loop over 5:5:130
-n_elecs =[85, 5]
+n_elecs =[165, 85, 5]
 #n_elecs = [165]
 
 # m_patients - number of patients in the model - need to loop over 10:10:50
@@ -94,7 +94,10 @@ for p in m_patients:
         for i in patients:
 
             # random sample n locations from 170 locations
-            p_n_elecs = np.sort(np.random.choice(range(len(locs)), n, replace=False))
+            # p_n_elecs = np.sort(np.random.choice(range(len(locs)), n, replace=False))
+
+            ### to debug expand_corrmat:
+            p_n_elecs = range(10,15)
 
             with open(os.path.join(synth_dir, 'synthetic_'+ str(i).rjust(2, '0') + '.bo'), 'rb') as handle:
                 bo_actual = pickle.load(handle)
@@ -123,12 +126,12 @@ for p in m_patients:
 
 
             #### comparing second corrmat_expand
-            #### only expand into unknownxknown and knownxknown
-            reconstructed_1 = model.predict(bo_sub, prediction=True)
             #### expand all
-            reconstructed_2 = model.predict(bo_sub)
+            reconstructed_predict = model.predict(bo_sub)
+            #### only expand into unknownxknown and knownxknown
+            reconstructed_fit = model.predict(bo_sub, prediction=True)
             #### check if they give the same values
-            corr_reconstructions = np.mean(corr_column(reconstructed_1.data.as_matrix(), reconstructed_2.data.as_matrix()))
+            corr_reconstructions = np.mean(corr_column(reconstructed_predict.data.as_matrix(), reconstructed_fit.data.as_matrix()))
             #### comparing second corrmat_expand
 
 
@@ -147,6 +150,11 @@ for p in m_patients:
             d.append({'Patients': p, 'Model Locations': m_elecs, 'Patient Locations': n, 'Correlation': np.mean(corr_vals)})
 
 d = pd.DataFrame(d)
+
+
+
+
+###### to debug the expand_corrmat mode ='predict'
 
 
 
