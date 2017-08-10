@@ -131,7 +131,7 @@ class Model(object):
                 sub_rbf_weights = rbf(self.locs, bo.locs)
 
                 #  get subject expanded correlation matrix
-                num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(sub_corrmat, sub_rbf_weights)
+                num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(sub_corrmat, sub_rbf_weights)
 
                 # add in new subj data to numerator
                 numerator = np.nansum(np.dstack((numerator, num_corrmat_x)), 2)
@@ -183,7 +183,7 @@ class Model(object):
         sub_rbf_weights = rbf(self.locs, bo.locs)
 
         #  get subject expanded correlation matrix
-        num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(sub_corrmat, sub_rbf_weights)
+        num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(sub_corrmat, sub_rbf_weights)
 
         # add in new subj data
         model_corrmat_x = np.divide(np.nansum(np.dstack((self.numerator, num_corrmat_x)), 2), self.denominator + denom_corrmat_x)
@@ -209,7 +209,7 @@ class Model(object):
             #     num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(model_corrmat_x, model_rbf_weights)
 
             # get model expanded correlation matrix
-            num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(model_corrmat_x, model_rbf_weights,
+            num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(model_corrmat_x, model_rbf_weights,
                                                                        mode='predict')
             # divide the numerator and denominator
             model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
@@ -278,7 +278,7 @@ class Model(object):
             sub_rbf_weights = rbf(self.locs, bo.locs)
 
             #  get subject expanded correlation matrix
-            num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_lucy(sub_corrmat, sub_rbf_weights)
+            num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(sub_corrmat, sub_rbf_weights)
 
             # set weights equal to zero where the numerator is equal to nan
             denom_corrmat_x[np.isnan(num_corrmat_x)] = 0

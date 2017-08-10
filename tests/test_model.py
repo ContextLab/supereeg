@@ -5,7 +5,9 @@ import superEEG as se
 import numpy as np
 import scipy
 import pandas as pd
-from superEEG._helpers.stats import get_expanded_corrmat_fit, get_expanded_corrmat_predict, rbf
+from superEEG._helpers.stats import get_expanded_corrmat, rbf
+import seaborn as sns
+
 # load example model to get locations
 locs = se.load('example_locations')
 
@@ -60,10 +62,5 @@ def test_expand_corrmat():
     R = scipy.linalg.toeplitz(np.linspace(0, 1, 3)[::-1])
     model_locs = np.array([[0, 0, 0], [0, 0, 1], [0, 0, 2]])
     subject_locs = np.array([[0,0,3], [0,0,4]])
-    weights = rbf(model_locs, subject_locs, width=2)
-    fit = get_expanded_corrmat_fit(R, weights)
-    predict = get_expanded_corrmat_predict(R, weights)
-    print fit, predict
-    fit[:3,:3]=0
-    print fit
-    assert fit == predict
+    weights = rbf(np.vstack([model_locs, subject_locs]), model_locs, width=2)
+    fit_num, fit_denom = get_expanded_corrmat(R, weights)
