@@ -338,6 +338,61 @@ def get_expanded_corrmat_lucy(C, weights, mode='fit'):
     return (K + K.T), (W + W.T)
 
 
+def get_expanded_corrmat_fit(C, weights):
+    C[np.eye(C.shape[0]) == 1] = 0
+    C[np.where(np.isnan(C))] = 0
+
+    n = weights.shape[0]
+    s = C.shape[0]
+    K = np.zeros([n, n])
+    W = np.zeros([n, n])
+    Z = C
+
+
+    for x in range(n):
+        xweights = weights[x, :]
+
+        vals = range(x)
+        for y in vals:
+
+            yweights = weights[y, :]
+
+            next_weights = np.outer(xweights, yweights)
+            next_weights = next_weights - np.triu(next_weights)
+
+            W[x, y] = np.sum(next_weights)
+            K[x, y] = np.sum(Z * next_weights)
+
+    return (K + K.T), (W + W.T)
+
+def get_expanded_corrmat_predict(C, weights):
+    C[np.eye(C.shape[0]) == 1] = 0
+    C[np.where(np.isnan(C))] = 0
+
+    n = weights.shape[0]
+    s = C.shape[0]
+    K = np.zeros([n, n])
+    W = np.zeros([n, n])
+    Z = C
+
+
+    for x in range(n):
+        xweights = weights[x, :]
+        vals = range(x, n)
+
+        for y in vals:
+            if (y < s): #this may be off by one index
+                continue
+            yweights = weights[y, :]
+
+            next_weights = np.outer(xweights, yweights)
+            next_weights = next_weights - np.triu(next_weights)
+
+            W[x, y] = np.sum(next_weights)
+            K[x, y] = np.sum(Z * next_weights)
+
+    return (K + K.T), (W + W.T)
+
 def reconstruct_activity(bo, K):
     """
     """
