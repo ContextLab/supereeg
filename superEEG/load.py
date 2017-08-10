@@ -3,7 +3,6 @@ import sys
 import pickle
 import numpy as np
 import nibabel as nb
-import numpy as np
 import scipy
 from nilearn.input_data import NiftiMasker
 from scipy.spatial.distance import squareform
@@ -12,6 +11,8 @@ from .model import Model
 from ._helpers.stats import tal2mni
 from ._helpers.stats import z2r
 from ._helpers.stats import r2z
+import pandas as pd
+
 
 def load(fname):
     """
@@ -58,17 +59,20 @@ def load(fname):
 
     # load example model
     elif fname is 'example_model':
-        locs = np.random.multivariate_normal(np.zeros(3), np.eye(3), size=100)
-        model = r2z(scipy.linalg.toeplitz(np.linspace(0,.99,len(locs))[::-1]))
-        model[np.eye(model.shape[0]) == 1] = 0
-        model[np.where(np.isnan(model))] = 0
-        n_subs = np.ones((len(locs), len(locs)))
+        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/example_model_k_10_r_20.npz', 'rb') as handle:
+            f = np.load(handle)
+            numerator = squareform(f['Numerator'].flatten())
+            denominator = squareform(f['Numerator'].flatten())
+            n_subs = f['n']
 
-        return Model(numerator=model, denominator=n_subs, n_subs=2, locs=locs)
+        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_20mm_locs.npy', 'rb') as handle:
+            l = np.load(handle)
+
+        return Model(numerator=numerator, denominator=denominator, n_subs=n_subs, locs=pd.DataFrame(l, columns=['x', 'y', 'z']))
 
     # load example locations
     elif fname is 'example_locations':
-        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/R_small_MNI.npy', 'rb') as handle:
+        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_20mm_locs.npy', 'rb') as handle:
             locs = np.load(handle)
         return locs
 

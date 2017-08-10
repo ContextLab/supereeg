@@ -58,6 +58,7 @@ def test_model_predict():
     bo = model.predict(data[0])
     assert isinstance(bo, se.Brain)
 
+### need to finish this test I think
 def test_expand_corrmat():
     R = scipy.linalg.toeplitz(np.linspace(0, 1, 3)[::-1])
     model_locs = np.array([[0, 0, 0], [0, 0, 1], [0, 0, 2]])
