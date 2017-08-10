@@ -1,6 +1,14 @@
-nose
+pytest
 sphinx
 numpy
 pandas
 scipy
 hypertools
+nilearn
+nibabel
+seaborn
+matplotlib
+future
+scikit-learn
+joblib
+tensorflow

@@ -88,3 +88,8 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+.DS_Store
+
+*.pyc
+*.idea/
