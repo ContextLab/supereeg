@@ -76,6 +76,10 @@ def load(fname):
             locs = np.load(handle)
         return locs
 
+    elif fname is 'example_nifti':
+        bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_mask_8mm_brain.nii')
+        return bo
+
     # load brain object
     elif fname.split('.')[-1]=='bo':
         with open(fname, 'rb') as f:
