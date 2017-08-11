@@ -62,7 +62,7 @@ def load(fname):
         with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/example_model_k_10_r_20.npz', 'rb') as handle:
             f = np.load(handle)
             numerator = squareform(f['Numerator'].flatten())
-            denominator = squareform(f['Numerator'].flatten())
+            denominator = squareform(f['Denominator'].flatten())
             n_subs = f['n']
 
         with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_20mm_locs.npy', 'rb') as handle:

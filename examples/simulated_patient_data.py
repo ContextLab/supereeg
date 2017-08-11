@@ -46,6 +46,12 @@ gray = se.load(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/g
 # extract locations
 locs = gray.locs
 
+import superEEG as se
+# small model
+model = se.load('example_model')
+data = se.load('example_data')
+
+reconstruct = model.predict(data)
 
 # create directory for synthetic patient data
 synth_dir = os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/synthetic_data'
