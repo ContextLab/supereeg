@@ -338,6 +338,60 @@ def uniquerows(x):
 #     return (K + K.T), (W + W.T)
 
 
+# def get_expanded_corrmat(C, weights, mode='fit'):
+#     """
+#     Gets full correlation matrix
+#
+#     Parameters
+#     ----------
+#     C : Numpy array
+#         Subject's correlation matrix
+#
+#     weights : Numpy array
+#         Weights matrix calculated using rbf function matrix
+#
+#     mode : str
+#         Specifies whether to compute over all elecs (fit mode) or just new elecs
+#         (predict mode)
+#
+#     Returns
+#     ----------
+#     numerator : Numpy array
+#         Numerator for the expanded correlation matrix
+#     denominator : Numpy array
+#         Denominator for the expanded correlation matrix
+#
+#     """
+#     C[np.eye(C.shape[0]) == 1] = 0
+#     C[np.where(np.isnan(C))] = 0
+#
+#     n = weights.shape[0]
+#     K = np.zeros([n, n])
+#     W = np.zeros([n, n])
+#     Z = C
+#
+#     if mode=='fit':
+#         s = 0
+#     elif mode=='predict':
+#         s = C.shape[0]
+#
+#     vals = range(s, n)
+#     for x in vals:
+#         xweights = weights[x, :]
+#
+#         vals = range(x)
+#         for y in vals:
+#
+#             yweights = weights[y, :]
+#
+#             next_weights = np.outer(xweights, yweights)
+#             next_weights = next_weights - np.triu(next_weights)
+#
+#             W[x, y] = np.sum(next_weights)
+#             K[x, y] = np.sum(Z * next_weights)
+#
+#     return (K + K.T), (W + W.T)
+
 def get_expanded_corrmat(C, weights, mode='fit'):
     """
     Gets full correlation matrix
@@ -379,7 +433,10 @@ def get_expanded_corrmat(C, weights, mode='fit'):
     for x in vals:
         xweights = weights[x, :]
 
-        vals = range(x)
+        if mode=='fit':
+            vals = range(x)
+        elif mode == 'predict':
+            vals = range(x, 10)
         for y in vals:
 
             yweights = weights[y, :]
