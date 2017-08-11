@@ -207,19 +207,19 @@ def compute_coord(coord, weights, Z):
     else:
         return 0
 
-def compute_coord_tf(coord, weights, Z, sess):
-
-    xweights = weights[coord[0], :].reshape([weights.shape[1],1])
-    yweights = weights[coord[1], :].reshape([weights.shape[1],1])
-
-    next_weights = tf.matrix_band_part(tf.matmul(xweights, yweights.T), -1, 0)
-
-    w = tf.reduce_sum(next_weights)
-    k = tf.reduce_sum(tf.matmul(tf.constant(Z),next_weights))
-
-    result = k / w
-
-    return sess.run(result)
+# def compute_coord_tf(coord, weights, Z, sess):
+#
+#     xweights = weights[coord[0], :].reshape([weights.shape[1],1])
+#     yweights = weights[coord[1], :].reshape([weights.shape[1],1])
+#
+#     next_weights = tf.matrix_band_part(tf.matmul(xweights, yweights.T), -1, 0)
+#
+#     w = tf.reduce_sum(next_weights)
+#     k = tf.reduce_sum(tf.matmul(tf.constant(Z),next_weights))
+#
+#     result = k / w
+#
+#     return sess.run(result)
 
 def get_expanded_corrmat_tf(C, weights):
     """
@@ -428,16 +428,20 @@ def get_expanded_corrmat(C, weights, mode='fit'):
         s = 0
     elif mode=='predict':
         s = C.shape[0]
+    else:
+        return []
 
-    vals = range(s, n)
-    for x in vals:
+    vals_x = range(s, n)
+    for x in vals_x:
         xweights = weights[x, :]
 
         if mode=='fit':
-            vals = range(x)
+            vals_y = range(x)
         elif mode == 'predict':
-            vals = range(1)
-        for y in vals:
+            vals_y = range(1)
+        else:
+            return []
+        for y in vals_y:
 
             yweights = weights[y, :]
 
@@ -448,6 +452,75 @@ def get_expanded_corrmat(C, weights, mode='fit'):
             K[x, y] = np.sum(Z * next_weights)
 
     return (K + K.T), (W + W.T)
+
+
+def get_expanded_corrmat_parallel(C, weights, mode='fit'):
+    """
+    Gets full correlation matrix
+
+    Parameters
+    ----------
+    C : Numpy array
+        Subject's correlation matrix
+
+    weights : Numpy array
+        Weights matrix calculated using rbf function matrix
+
+    mode : str
+        Specifies whether to compute over all elecs (fit mode) or just new elecs
+        (predict mode)
+
+    Returns
+    ----------
+    numerator : Numpy array
+        Numerator for the expanded correlation matrix
+    denominator : Numpy array
+        Denominator for the expanded correlation matrix
+
+    """
+    C[np.eye(C.shape[0]) == 1] = 0
+    C[np.where(np.isnan(C))] = 0
+
+    Z = C
+
+    if mode=='fit':
+        s = 0
+    elif mode=='predict':
+        s = C.shape[0]
+    else:
+        return []
+
+    ### to debug multiprocessing:
+
+    ### this should really be:
+    #sliced_up = [(x, y) for x in range(s, n) for y in range(1)]
+    if mode =='fit':
+        sliced_up = [(x, y) for x in range(s, n) for y in range(x)]
+    elif mode =='predict':
+        sliced_up = [(x, y) for x in range(s, n) for y in range(1)]
+    else:
+        return []
+
+    results = Parallel(n_jobs=multiprocessing.cpu_count())(
+        delayed(compute_coord)(coord, weights, Z) for coord in sliced_up)
+
+
+    return expand_matrix(results, C)
+
+def compute_coord(coord, weights, Z):
+
+    n = weights.shape[0]
+    K = np.zeros([n, n])
+    W = np.zeros([n, n])
+    xweights = weights[x, :]
+    yweights = weights[y, :]
+
+    next_weights = np.outer(xweights, yweights)
+    next_weights = next_weights - np.triu(next_weights)
+
+    W[x, y] = np.sum(next_weights)
+    K[x, y] = np.sum(Z * next_weights)
+
 
 def reconstruct_activity(bo, K):
     """
