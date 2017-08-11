@@ -115,9 +115,9 @@ class Brain(object):
 
         # compute attrs
         self.n_elecs = self.data.shape[1]
-        ## needs to be calculated by sessions
-        self.n_secs = self.data.shape[0]/self.sample_rate[0]
+        self.n_secs = self.data.shape[0]/self.sample_rate[0] # needs to be calculated by sessions
         self.date_created = time.strftime("%c")
+        self.n_sessions = len(self.sessions.unique())
 
         # add kurtosis
         self.kurtosis = kurt_vals(self)
@@ -131,7 +131,7 @@ class Brain(object):
         """
         print('Number of electrodes: ' + str(self.n_elecs))
         print('Recording time in seconds: ' + str(self.n_secs))
-        print('Number of sessions: ' + str(1))
+        print('Number of sessions: ' + str(self.n_sessions))
         print('Date created: ' + str(self.date_created))
         print('Meta data: ' + str(self.meta))
 
@@ -140,6 +140,12 @@ class Brain(object):
         Gets data from brain object
         """
         return self.data.as_matrix()
+
+    def get_locs(self):
+        """
+        Gets locations from brain object
+        """
+        return self.locs.as_matrix()
 
     def save(self, filepath):
         """
@@ -158,7 +164,7 @@ class Brain(object):
             print('Brain object saved as pickle.')
 
     def to_nii(self, filepath=None,
-                 template='../superEEG/data/gray_mask_8mm_brain.nii'):
+                 template=None):
         """
         Save brain object as a nifti file
 
@@ -179,6 +185,9 @@ class Brain(object):
             A nibabel nifti image
 
         """
+
+        if template is None:
+            template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_8mm_brain.nii'
 
         # load template
         img = nib.load(template)
