@@ -436,7 +436,7 @@ def get_expanded_corrmat(C, weights, mode='fit'):
         if mode=='fit':
             vals = range(x)
         elif mode == 'predict':
-            vals = range(x, 10)
+            vals = range(1)
         for y in vals:
 
             yweights = weights[y, :]
