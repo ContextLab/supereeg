@@ -51,7 +51,11 @@ import superEEG as se
 model = se.load('example_model')
 data = se.load('example_data')
 
+
+#### starting to predict parallelization
 reconstruct = model.predict(data)
+
+recon_parallel = model.predict(data, parallel = True)
 
 # create directory for synthetic patient data
 synth_dir = os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/synthetic_data'
