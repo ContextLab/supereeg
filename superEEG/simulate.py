@@ -1,5 +1,7 @@
 import scipy
 import numpy as np
+from .brain import Brain
+from .model import Model
 
 def simulate_data(n_samples=1000, n_elecs=10, cov='eye'):
     """
@@ -28,12 +30,7 @@ def simulate_data(n_samples=1000, n_elecs=10, cov='eye'):
 
     """
 
-    if cov is 'eye':
-        R = np.eye(n_elecs)
-    elif cov is 'toeplitz':
-        R = scipy.linalg.toeplitz(np.linspace(0, 1, n_elecs)[::-1])
-    elif isinstance(cov, np.ndarray):
-        R = cov
+    R = create_cov(cov, n_elecs=n_elecs)
 
     return np.random.multivariate_normal(np.zeros(n_elecs), R, size=n_samples)
 
@@ -56,3 +53,68 @@ def simulate_locations(n_elecs=10):
 
     return np.array([[np.random.randint(-80, 80), np.random.randint(-80, 80),
                np.random.randint(-80, 80)] for i in range(n_elecs)])
+
+def simulate_bo(n_samples=1000, n_elecs=10, cov='eye',
+                sample_rate=1000, sessions=None, meta=None):
+    """
+    Simulate brain object
+
+    Parameters
+    ----------
+
+    n_elecs : int
+        Number of electrodes
+
+    Returns
+    ----------
+
+    elecs : np.ndarray
+        A location by coordinate (x,y,z) matrix of simulated electrode locations
+    """
+    data = simulate_data(n_samples=n_samples, n_elecs=n_elecs, cov=cov)
+    locs =  simulate_locations(n_elecs=n_elecs)
+
+    return Brain(data=data, locs=locs, sample_rate=sample_rate,
+                 sessions=sessions, meta=meta)
+
+def simulate_model(n_subs=10, n_samples=1000, n_elecs=10, cov='eye'):
+    """
+    Simulate a model object
+
+    Parameters
+    ----------
+
+    n_subs : int
+        Number of subjects
+
+    n_subs : int
+        Number of subjects
+
+    Returns
+    ----------
+
+    elecs : np.ndarray
+        A location by coordinate (x,y,z) matrix of simulated electrode locations
+    """
+
+    # create covariance matrix
+    cov = create_cov(cov, n_elecs=n_elecs)
+
+    #
+    bos = [simulate_bo(n_samples=n_samples, n_elecs=n_elecs, cov=cov) for i in range(n_subs)]
+
+    return Model(data=bos)
+
+
+def create_cov(cov, n_elecs=10):
+    """
+    Creates covariance matrix of specified type
+    """
+    if cov is 'eye':
+        R = np.eye(n_elecs)
+    elif cov is 'toeplitz':
+        R = scipy.linalg.toeplitz(np.linspace(0, 1, n_elecs)[::-1])
+    elif isinstance(cov, np.ndarray):
+        R = cov
+
+    return R

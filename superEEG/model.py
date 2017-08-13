@@ -1,10 +1,11 @@
 import pandas as pd
 import seaborn as sns
-from ._helpers.stats import *
-from .brain import Brain
-import seaborn as sns
 import nibabel as nib
 import pickle
+import time
+import copy
+from ._helpers.stats import *
+from .brain import Brain
 
 class Model(object):
     """
@@ -70,7 +71,7 @@ class Model(object):
 
     """
 
-    def __init__(self, data=None, locs=None, template='../superEEG/data/MNI152_T1_8mm_brain.nii.gz',
+    def __init__(self, data=None, locs=None, template=None,
                  measure='kurtosis', threshold=10, numerator=None, denominator=None,
                  n_subs=None, meta=None):
 
@@ -97,11 +98,16 @@ class Model(object):
             # get locations from template, or from locs arg
             if locs is None:
 
+                if template is None:
+                    template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_20mm_brain.nii'
+
                 # load in template file
-                img = nib.load(template)
+                from .load import load_nifti
+
+                bo = load_nifti(template)
 
                 # get locations from template
-                self.locs = pd.DataFrame(nii2cmu(img), columns=['x', 'y', 'z'])
+                self.locs = pd.DataFrame(bo.get_locs(), columns=['x', 'y', 'z'])
 
             else:
 
@@ -147,6 +153,12 @@ class Model(object):
 
             # attach number of subjects
             self.n_subs = len(data)
+
+        # number of electrodes
+        self.n_locs = self.locs.shape[0]
+
+        # date created
+        self.date_created = time.strftime("%c")
 
         # meta
         self.meta = meta
@@ -258,9 +270,11 @@ class Model(object):
 
         """
 
-        numerator = self.numerator
-        denominator = self.denominator
-        n_subs = self.n_subs
+        m = copy.deepcopy(self)
+
+        numerator = m.numerator
+        denominator = m.denominator
+        n_subs = m.n_subs
 
         if type(data) is not list:
             data = [data]
@@ -275,7 +289,7 @@ class Model(object):
             sub_corrmat = r2z(get_corrmat(bo))
 
             # get rbf weights
-            sub_rbf_weights = rbf(self.locs, bo.locs)
+            sub_rbf_weights = rbf(m.locs, bo.locs)
 
             #  get subject expanded correlation matrix
             num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(sub_corrmat, sub_rbf_weights)
@@ -293,7 +307,19 @@ class Model(object):
             n_subs+=1
 
         return Model(numerator=numerator, denominator=denominator,
-                     locs=pd.concat([self.locs, bo.locs]), n_subs=n_subs)
+                     locs=pd.concat([m.locs, bo.locs]), n_subs=n_subs)
+
+    def info(self):
+        """
+        Print info about the model object
+
+        Prints the number of electrodes, number of subjects, date created,
+        and any optional meta data.
+        """
+        print('Number of locations: ' + str(self.n_locs))
+        print('Number of subjects: ' + str(self.n_subs))
+        print('Date created: ' + str(self.date_created))
+        print('Meta data: ' + str(self.meta))
 
     def plot(self, **kwargs):
         """

@@ -70,6 +70,31 @@ def load(fname):
 
         return Model(numerator=numerator, denominator=denominator, n_subs=n_subs, locs=pd.DataFrame(l, columns=['x', 'y', 'z']))
 
+    elif fname is 'pyFR_k10r20_20mm':
+        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/example_model_k_10_r_20.npz', 'rb') as handle:
+            f = np.load(handle)
+            numerator = squareform(f['Numerator'].flatten())
+            denominator = squareform(f['Denominator'].flatten())
+            n_subs = f['n']
+
+        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_20mm_locs.npy', 'rb') as handle:
+            l = np.load(handle)
+
+        return Model(numerator=numerator, denominator=denominator, n_subs=n_subs, locs=pd.DataFrame(l, columns=['x', 'y', 'z']))
+
+    elif fname is 'pyFR_k10r20_8mm':
+        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/pyFR_k10r20.npz', 'rb') as handle:
+            f = np.load(handle)
+            numerator = squareform(f['Numerator'].flatten())
+            denominator = squareform(f['Denominator'].flatten())
+            n_subs = f['n']
+
+        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_8mm_locs.npy', 'rb') as handle:
+            l = np.load(handle)
+
+        return Model(numerator=numerator, denominator=denominator, n_subs=n_subs, locs=pd.DataFrame(l, columns=['x', 'y', 'z']))
+
+
     # load example locations
     elif fname is 'example_locations':
         with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_20mm_locs.npy', 'rb') as handle:

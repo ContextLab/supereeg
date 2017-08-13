@@ -187,7 +187,7 @@ class Brain(object):
         """
 
         if template is None:
-            template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_8mm_brain.nii'
+            template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_20mm_brain.nii'
 
         # load template
         img = nib.load(template)
