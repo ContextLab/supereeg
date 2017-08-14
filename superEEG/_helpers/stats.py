@@ -338,6 +338,77 @@ def uniquerows(x):
 #     return (K + K.T), (W + W.T)
 
 
+def get_expanded_corrmat(C, weights, mode='fit'):
+    """
+    Gets full correlation matrix
+
+    Parameters
+    ----------
+    C : Numpy array
+        Subject's correlation matrix
+
+    weights : Numpy array
+        Weights matrix calculated using rbf function matrix
+
+    mode : str
+        Specifies whether to compute over all elecs (fit mode) or just new elecs
+        (predict mode)
+
+    Returns
+    ----------
+    numerator : Numpy array
+        Numerator for the expanded correlation matrix
+    denominator : Numpy array
+        Denominator for the expanded correlation matrix
+
+    """
+    C[np.eye(C.shape[0]) == 1] = 0
+    C[np.where(np.isnan(C))] = 0
+
+    n = weights.shape[0]
+    K = np.zeros([n, n])
+    W = np.zeros([n, n])
+    Z = C
+
+    if mode=='fit':
+        s = 0
+
+        vals = range(s, n)
+        for x in vals:
+            xweights = weights[x, :]
+
+            vals = range(x)
+            for y in vals:
+
+                yweights = weights[y, :]
+
+                next_weights = np.outer(xweights, yweights)
+                next_weights = next_weights - np.triu(next_weights)
+
+                W[x, y] = np.sum(next_weights)
+                K[x, y] = np.sum(Z * next_weights)
+        return (K + K.T), (W + W.T)
+
+    elif mode=='predict':
+        s = C.shape[0]
+        sliced_up = [(x, y) for x in range(s, n) for y in range(x)]
+
+        results = Parallel(n_jobs=multiprocessing.cpu_count())(
+            delayed(compute_coord)(coord, weights, Z) for coord in sliced_up)
+
+        w, k = zip(*results)
+
+        for i, x in enumerate(sliced_up):
+            W[x[0], x[1]] = w[i]
+            K[x[0], x[1]] = k[i]
+
+        return (K + K.T), (W + W.T)
+
+    else:
+        return 'error: unknown mode entered for get_expand_corrmat'
+
+
+#### this version was to check how long one line would take
 # def get_expanded_corrmat(C, weights, mode='fit'):
 #     """
 #     Gets full correlation matrix
@@ -374,13 +445,20 @@ def uniquerows(x):
 #         s = 0
 #     elif mode=='predict':
 #         s = C.shape[0]
+#     else:
+#         return []
 #
-#     vals = range(s, n)
-#     for x in vals:
+#     vals_x = range(s, n)
+#     for x in vals_x:
 #         xweights = weights[x, :]
 #
-#         vals = range(x)
-#         for y in vals:
+#         if mode=='fit':
+#             vals_y = range(x)
+#         elif mode == 'predict':
+#             vals_y = range(1)
+#         else:
+#             return []
+#         for y in vals_y:
 #
 #             yweights = weights[y, :]
 #
@@ -391,68 +469,6 @@ def uniquerows(x):
 #             K[x, y] = np.sum(Z * next_weights)
 #
 #     return (K + K.T), (W + W.T)
-
-#### this version was to check how long one line would take
-def get_expanded_corrmat(C, weights, mode='fit'):
-    """
-    Gets full correlation matrix
-
-    Parameters
-    ----------
-    C : Numpy array
-        Subject's correlation matrix
-
-    weights : Numpy array
-        Weights matrix calculated using rbf function matrix
-
-    mode : str
-        Specifies whether to compute over all elecs (fit mode) or just new elecs
-        (predict mode)
-
-    Returns
-    ----------
-    numerator : Numpy array
-        Numerator for the expanded correlation matrix
-    denominator : Numpy array
-        Denominator for the expanded correlation matrix
-
-    """
-    C[np.eye(C.shape[0]) == 1] = 0
-    C[np.where(np.isnan(C))] = 0
-
-    n = weights.shape[0]
-    K = np.zeros([n, n])
-    W = np.zeros([n, n])
-    Z = C
-
-    if mode=='fit':
-        s = 0
-    elif mode=='predict':
-        s = C.shape[0]
-    else:
-        return []
-
-    vals_x = range(s, n)
-    for x in vals_x:
-        xweights = weights[x, :]
-
-        if mode=='fit':
-            vals_y = range(x)
-        elif mode == 'predict':
-            vals_y = range(1)
-        else:
-            return []
-        for y in vals_y:
-
-            yweights = weights[y, :]
-
-            next_weights = np.outer(xweights, yweights)
-            next_weights = next_weights - np.triu(next_weights)
-
-            W[x, y] = np.sum(next_weights)
-            K[x, y] = np.sum(Z * next_weights)
-
-    return (K + K.T), (W + W.T)
 
 def compute_coord(coord, weights, Z):
 
@@ -504,12 +520,8 @@ def get_expanded_corrmat_parallel(C, weights, mode='fit'):
 
     ### to debug multiprocessing:
 
-    ### this should really be:
-    #sliced_up = [(x, y) for x in range(s, n) for y in range(1)]
-    if mode =='fit':
+    if mode =='predict':
         sliced_up = [(x, y) for x in range(s, n) for y in range(x)]
-    elif mode =='predict':
-        sliced_up = [(x, y) for x in range(s, n) for y in range(1)]
     else:
         return []
 

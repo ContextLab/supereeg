@@ -26,6 +26,7 @@ import pandas as pd
 import pickle
 import seaborn as sb
 import sklearn
+import timeit
 
 # n_samples
 n_samples = 1000
@@ -55,7 +56,6 @@ data = se.load('example_data')
 #### starting to predict parallelization
 reconstruct = model.predict(data)
 
-recon_parallel = model.predict(data, parallel=True)
 
 # create directory for synthetic patient data
 synth_dir = os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/synthetic_data'
