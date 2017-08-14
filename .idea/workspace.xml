@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="72de947b-ed70-4f88-b013-460cd0bdb63e" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/simulated_patient_data.py" afterPath="$PROJECT_DIR$/examples/simulated_patient_data.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/_helpers/stats.py" afterPath="$PROJECT_DIR$/superEEG/_helpers/stats.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/model.py" afterPath="$PROJECT_DIR$/superEEG/model.py" />
     </list>
     <ignored path="superEEG.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -26,8 +26,8 @@
       <file leaf-file-name="stats.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/superEEG/_helpers/stats.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="393">
-              <caret line="524" column="40" selection-start-line="524" selection-start-column="40" selection-end-line="524" selection-end-column="40" />
+            <state relative-caret-position="315">
+              <caret line="409" column="22" selection-start-line="409" selection-start-column="22" selection-end-line="409" selection-end-column="22" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -39,8 +39,10 @@
         <entry file="file://$PROJECT_DIR$/superEEG/load.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="-1690">
-              <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="42" />
-              <folding />
+              <caret line="32" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="42" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -72,8 +74,8 @@
       <file leaf-file-name="model.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/superEEG/model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="363">
-              <caret line="204" column="0" selection-start-line="204" selection-start-column="0" selection-end-line="204" selection-end-column="0" />
+            <state relative-caret-position="458">
+              <caret line="216" column="0" selection-start-line="216" selection-start-column="0" selection-end-line="216" selection-end-column="0" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -84,8 +86,8 @@
       <file leaf-file-name="simulated_patient_data.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/examples/simulated_patient_data.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="57" column="0" selection-start-line="57" selection-start-column="0" selection-end-line="57" selection-end-column="0" />
+            <state relative-caret-position="480">
+              <caret line="67" column="27" selection-start-line="67" selection-start-column="27" selection-end-line="67" selection-end-column="27" />
               <folding>
                 <element signature="e#343#364#0" expanded="true" />
               </folding>
@@ -120,17 +122,17 @@
         <option value="$PROJECT_DIR$/examples/simulated_analysis.py" />
         <option value="$PROJECT_DIR$/superEEG/load.py" />
         <option value="$PROJECT_DIR$/superEEG/brain.py" />
-        <option value="$PROJECT_DIR$/superEEG/model.py" />
         <option value="$PROJECT_DIR$/examples/simulated_patient_data.py" />
+        <option value="$PROJECT_DIR$/superEEG/model.py" />
         <option value="$PROJECT_DIR$/superEEG/_helpers/stats.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="2429" />
-    <option name="y" value="-230" />
+    <option name="x" value="2897" />
+    <option name="y" value="-353" />
     <option name="width" value="1636" />
-    <option name="height" value="1103" />
+    <option name="height" value="1027" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -464,8 +466,8 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="2429" y="-230" width="1636" height="1103" extended-state="0" />
-    <editor active="false" />
+    <frame x="2897" y="-353" width="1636" height="1027" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24862888" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32893288" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -476,7 +478,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.13605443" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.36649746" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.39713973" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -580,19 +582,14 @@
           <option name="timeStamp" value="140" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/superEEG/_helpers/stats.py</url>
-          <line>526</line>
-          <option name="timeStamp" value="149" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/examples/simulated_patient_data.py</url>
           <line>57</line>
           <option name="timeStamp" value="150" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/superEEG/_helpers/stats.py</url>
-          <line>515</line>
-          <option name="timeStamp" value="151" />
+          <url>file://$PROJECT_DIR$/examples/simulated_patient_data.py</url>
+          <line>55</line>
+          <option name="timeStamp" value="154" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
@@ -605,12 +602,11 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="153" />
+      <option name="time" value="155" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/superEEG/helpers.py" />
     <entry file="file://$PROJECT_DIR$/superEEG/predict.py" />
     <entry file="file://$PROJECT_DIR$/superEEG/_helpers/stats.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -884,16 +880,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/examples/simulated_analysis.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="29" selection-end-column="57" />
-          <folding>
-            <element signature="e#343#364#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/code/recon_with_model.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-660">
@@ -923,23 +909,43 @@
     <entry file="file://$PROJECT_DIR$/superEEG/load.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1690">
-          <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="42" />
+          <caret line="32" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="42" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/multiprocessing/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="173">
+          <caret line="112" column="0" selection-start-line="112" selection-start-column="0" selection-end-line="112" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file:///Library/Python/2.7/site-packages/joblib/parallel.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
+        <state relative-caret-position="173">
           <caret line="721" column="0" selection-start-line="721" selection-start-column="0" selection-end-line="721" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/examples/simulated_analysis.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="29" selection-end-column="57" />
+          <folding>
+            <element signature="e#343#364#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/superEEG/model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="363">
-          <caret line="204" column="0" selection-start-line="204" selection-start-column="0" selection-end-line="204" selection-end-column="0" />
+        <state relative-caret-position="458">
+          <caret line="216" column="0" selection-start-line="216" selection-start-column="0" selection-end-line="216" selection-end-column="0" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
@@ -948,8 +954,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/superEEG/_helpers/stats.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="393">
-          <caret line="524" column="40" selection-start-line="524" selection-start-column="40" selection-end-line="524" selection-end-column="40" />
+        <state relative-caret-position="315">
+          <caret line="409" column="22" selection-start-line="409" selection-start-column="22" selection-end-line="409" selection-end-column="22" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>
@@ -958,8 +964,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/examples/simulated_patient_data.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="57" column="0" selection-start-line="57" selection-start-column="0" selection-end-line="57" selection-end-column="0" />
+        <state relative-caret-position="480">
+          <caret line="67" column="27" selection-start-line="67" selection-start-column="27" selection-end-line="67" selection-end-column="27" />
           <folding>
             <element signature="e#343#364#0" expanded="true" />
           </folding>

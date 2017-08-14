@@ -221,8 +221,8 @@ class Model(object):
                 num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(model_corrmat_x, model_rbf_weights, mode='predict')
 
             # get model expanded correlation matrix
-            num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(model_corrmat_x, model_rbf_weights,
-                                                                       mode='predict')
+            # num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(model_corrmat_x, model_rbf_weights,
+            #                                                            mode='predict')
             # divide the numerator and denominator
             model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
 
