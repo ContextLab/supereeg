@@ -396,11 +396,14 @@ def get_expanded_corrmat(C, weights, mode='fit'):
         results = Parallel(n_jobs=multiprocessing.cpu_count())(
             delayed(compute_coord)(coord, weights, Z) for coord in sliced_up)
 
-        w, k = zip(*results)
+        # w, k = zip(*results)
+        #
+        # for i, x in enumerate(sliced_up):
+        #     W[x[0], x[1]] = w[i]
+        #     K[x[0], x[1]] = k[i]
 
-        for i, x in enumerate(sliced_up):
-            W[x[0], x[1]] = w[i]
-            K[x[0], x[1]] = k[i]
+        W[map(lambda x: x[0], sliced_up), map(lambda x: x[1], sliced_up)] = map(lambda x: x[0], results)
+        K[map(lambda x: x[0], sliced_up), map(lambda x: x[1], sliced_up)] = map(lambda x: x[1], results)
 
         return (K + K.T), (W + W.T)
 
@@ -471,11 +474,11 @@ def get_expanded_corrmat(C, weights, mode='fit'):
 #     return (K + K.T), (W + W.T)
 
 def compute_coord(coord, weights, Z):
+    #
+    # xweights = weights[coord[0], :]
+    # yweights = weights[coord[1], :]
 
-    xweights = weights[coord[0], :]
-    yweights = weights[coord[1], :]
-
-    next_weights = np.outer(xweights, yweights)
+    next_weights = np.outer(weights[coord[0], :], weights[coord[1], :])
     next_weights = next_weights - np.triu(next_weights)
 
     return np.sum(next_weights), np.sum(Z * next_weights)
