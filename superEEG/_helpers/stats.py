@@ -721,3 +721,4 @@ def recon(bo_sub, mo):
     Kaa = mo[:,known_inds][known_inds,:]
     Y = zscore(bo_sub.get_data())
     return np.squeeze(np.dot(np.dot(Kba, np.linalg.pinv(Kaa)), Y.T).T)
+

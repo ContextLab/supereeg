@@ -306,7 +306,10 @@ class Model(object):
             n_subs+=1
 
         return Model(numerator=numerator, denominator=denominator,
-                     locs=pd.concat([m.locs, bo.locs]), n_subs=n_subs)
+                     locs=m.locs, n_subs=n_subs)
+        ### this concatenation of locations doesn't work when updating an existing model (but would be necessary for a build)
+        # return Model(numerator=numerator, denominator=denominator,
+        #              locs=pd.concat([m.locs, bo.locs]), n_subs=n_subs)
 
     def info(self):
         """

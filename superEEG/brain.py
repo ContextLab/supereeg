@@ -94,6 +94,7 @@ class Brain(object):
         # session
         if isinstance(sessions, str) or isinstance(sessions, int):
             self.sessions = pd.Series([sessions for i in range(self.data.shape[0])])
+        ### check this out... I'm not sure what this does
         elif sessions is None:
             self.sessions = pd.Series([1 for i in range(self.data.shape[0])])
         else:
