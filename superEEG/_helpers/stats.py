@@ -396,12 +396,6 @@ def get_expanded_corrmat(C, weights, mode='fit'):
         results = Parallel(n_jobs=multiprocessing.cpu_count())(
             delayed(compute_coord)(coord, weights, Z) for coord in sliced_up)
 
-        # w, k = zip(*results)
-        #
-        # for i, x in enumerate(sliced_up):
-        #     W[x[0], x[1]] = w[i]
-        #     K[x[0], x[1]] = k[i]
-
         W[map(lambda x: x[0], sliced_up), map(lambda x: x[1], sliced_up)] = map(lambda x: x[0], results)
         K[map(lambda x: x[0], sliced_up), map(lambda x: x[1], sliced_up)] = map(lambda x: x[1], results)
 
@@ -483,62 +477,62 @@ def compute_coord(coord, weights, Z):
 
     return np.sum(next_weights), np.sum(Z * next_weights)
 
-def get_expanded_corrmat_parallel(C, weights, mode='fit'):
-    """
-    Gets full correlation matrix
-
-    Parameters
-    ----------
-    C : Numpy array
-        Subject's correlation matrix
-
-    weights : Numpy array
-        Weights matrix calculated using rbf function matrix
-
-    mode : str
-        Specifies whether to compute over all elecs (fit mode) or just new elecs
-        (predict mode)
-
-    Returns
-    ----------
-    numerator : Numpy array
-        Numerator for the expanded correlation matrix
-    denominator : Numpy array
-        Denominator for the expanded correlation matrix
-
-    """
-    C[np.eye(C.shape[0]) == 1] = 0
-    C[np.where(np.isnan(C))] = 0
-    n = weights.shape[0]
-    K = np.zeros([n, n])
-    W = np.zeros([n, n])
-    Z = C
-
-    if mode=='fit':
-        s = 0
-    elif mode=='predict':
-        s = C.shape[0]
-    else:
-        return []
-
-    ### to debug multiprocessing:
-
-    if mode =='predict':
-        sliced_up = [(x, y) for x in range(s, n) for y in range(x)]
-    else:
-        return []
-
-    results = Parallel(n_jobs=multiprocessing.cpu_count())(
-        delayed(compute_coord)(coord, weights, Z) for coord in sliced_up)
-
-    w, k = zip(*results)
-
-    for i, x in enumerate(sliced_up):
-        W[x[0], x[1]] = w[i]
-        K[x[0], x[1]] = k[i]
-
-
-    return (K + K.T), (W + W.T)
+# def get_expanded_corrmat_parallel(C, weights, mode='fit'):
+#     """
+#     Gets full correlation matrix
+#
+#     Parameters
+#     ----------
+#     C : Numpy array
+#         Subject's correlation matrix
+#
+#     weights : Numpy array
+#         Weights matrix calculated using rbf function matrix
+#
+#     mode : str
+#         Specifies whether to compute over all elecs (fit mode) or just new elecs
+#         (predict mode)
+#
+#     Returns
+#     ----------
+#     numerator : Numpy array
+#         Numerator for the expanded correlation matrix
+#     denominator : Numpy array
+#         Denominator for the expanded correlation matrix
+#
+#     """
+#     C[np.eye(C.shape[0]) == 1] = 0
+#     C[np.where(np.isnan(C))] = 0
+#     n = weights.shape[0]
+#     K = np.zeros([n, n])
+#     W = np.zeros([n, n])
+#     Z = C
+#
+#     if mode=='fit':
+#         s = 0
+#     elif mode=='predict':
+#         s = C.shape[0]
+#     else:
+#         return []
+#
+#     ### to debug multiprocessing:
+#
+#     if mode =='predict':
+#         sliced_up = [(x, y) for x in range(s, n) for y in range(x)]
+#     else:
+#         return []
+#
+#     results = Parallel(n_jobs=multiprocessing.cpu_count())(
+#         delayed(compute_coord)(coord, weights, Z) for coord in sliced_up)
+#
+#     w, k = zip(*results)
+#
+#     for i, x in enumerate(sliced_up):
+#         W[x[0], x[1]] = w[i]
+#         K[x[0], x[1]] = k[i]
+#
+#
+#     return (K + K.T), (W + W.T)
 
 
 
@@ -620,6 +614,17 @@ def filter_elecs(bo, measure='kurtosis', threshold=10):
     nbo.locs = bo.locs.loc[~thresh_bool]
     nbo.n_elecs = bo.data.shape[1]
     return nbo
+
+
+def filter_subj(bo, measure='kurtosis', threshold=10):
+    """
+    Filter subjects based on filter measure (use only if 2 or more electrodes pass thresholding)
+    """
+    thresh_bool = bo.kurtosis > threshold
+    if sum(~thresh_bool)<2:
+        print(bo.meta + ': not enough electrodes pass threshold')
+    else:
+        return bo.meta
 
 import nibabel as nb
 import numpy as np
