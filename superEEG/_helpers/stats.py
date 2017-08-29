@@ -13,7 +13,7 @@ import pandas as pd
 from scipy import linalg
 from sklearn.decomposition import PCA
 from joblib import Parallel, delayed
-import tensorflow as tf
+#import tensorflow as tf
 
 def apply_by_file_index(bo, xform, aggregator):
 
