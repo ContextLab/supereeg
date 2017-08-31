@@ -48,27 +48,22 @@ def load(fname):
 
     # load example data
     if fname is 'example_data':
-        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/BW001.npz', 'rb') as handle:
+        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/CH003.npz', 'rb') as handle:
             f = np.load(handle)
             data = f['Y']
             sample_rate = f['samplerate']
             sessions = f['fname_labels']
             locs = tal2mni(f['R'])
+            meta = 'CH003'
 
-        return Brain(data=data, locs=locs, sessions=sessions, sample_rate=sample_rate)
+        return Brain(data=data, locs=locs, sessions=sessions, sample_rate=sample_rate, meta= meta)
 
     # load example model
     elif fname is 'example_model':
-        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/example_model_k_10_r_20.npz', 'rb') as handle:
-            f = np.load(handle)
-            numerator = squareform(f['Numerator'].flatten())
-            denominator = squareform(f['Denominator'].flatten())
-            n_subs = f['n']
+        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/pyFR_20mm.mo', 'rb') as handle:
+            example_model = pickle.load(handle)
+        return example_model
 
-        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_20mm_locs.npy', 'rb') as handle:
-            l = np.load(handle)
-
-        return Model(numerator=numerator, denominator=denominator, n_subs=n_subs, locs=pd.DataFrame(l, columns=['x', 'y', 'z']))
 
     elif fname is 'pyFR_k10r20_20mm':
         with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/example_model_k_10_r_20.npz', 'rb') as handle:

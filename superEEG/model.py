@@ -132,6 +132,7 @@ class Model(object):
 
                 # get subject-specific correlation matrix
                 sub_corrmat = r2z(get_corrmat(bo))
+                print(sub_corrmat)
 
                 # get rbf weights
                 sub_rbf_weights = rbf(self.locs, bo.locs)

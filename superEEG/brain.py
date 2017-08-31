@@ -8,6 +8,7 @@ import pickle
 import nibabel as nib
 import warnings
 from ._helpers.stats import *
+from scipy.stats import zscore
 
 class Brain(object):
     """
@@ -141,6 +142,12 @@ class Brain(object):
         Gets data from brain object
         """
         return self.data.as_matrix()
+
+    def get_zscore_data(self):
+        """
+        Gets zscored data from brain object
+        """
+        return zscore(self.data.as_matrix())
 
     def get_locs(self):
         """
