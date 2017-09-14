@@ -3,20 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to sample's documentation!
+**SuperEEG**: A python toolbox for inferring whole-brain activity from intracranial data
 ==================================
 
-Contents:
+   .. image:: _static/smaller.gif
+       :width: 400pt
 
-.. toctree::
-   :maxdepth: 2
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
+ .. toctree::
