@@ -119,7 +119,7 @@ def z2r(z):
 
 
     """
-    with np.errstate(invalid='ignore'):
+    with np.errstate(invalid='ignore', divide='ignore'):
         return (np.exp(2 * z) - 1) / (np.exp(2 * z) + 1)
 
 
@@ -139,7 +139,7 @@ def r2z(r):
 
 
     """
-    with np.errstate(invalid='ignore'):
+    with np.errstate(invalid='ignore', divide='ignore'):
         return 0.5 * (np.log(1 + r) - np.log(1 - r))
 
 
