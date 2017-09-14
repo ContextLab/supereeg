@@ -3,7 +3,7 @@ import numpy as np
 from .brain import Brain
 from .model import Model
 
-def simulate_data(n_samples=1000, n_elecs=10, cov='eye'):
+def simulate_data(n_samples=1000, n_elecs=10, locs=None, cov='distance'):
     """
     Simulate iEEG data
 
@@ -29,8 +29,12 @@ def simulate_data(n_samples=1000, n_elecs=10, cov='eye'):
         A samples by number of electrods array of simulated iEEG data
 
     """
-
-    R = create_cov(cov, n_elecs=n_elecs)
+    if locs is not None:
+        R = 1 - scipy.spatial.distance.cdist(locs, locs, metric='euclidean')
+        R -= np.min(R)
+        R /= np.max(R)
+    else:
+        R = create_cov(cov, n_elecs=n_elecs)
 
     return np.random.multivariate_normal(np.zeros(n_elecs), R, size=n_samples)
 
@@ -54,7 +58,7 @@ def simulate_locations(n_elecs=10):
     return np.array([[np.random.randint(-80, 80), np.random.randint(-80, 80),
                np.random.randint(-80, 80)] for i in range(n_elecs)])
 
-def simulate_bo(n_samples=1000, n_elecs=10, cov='eye',
+def simulate_bo(n_samples=1000, n_elecs=10, cov='distance',
                 sample_rate=1000, sessions=None, meta=None):
     """
     Simulate brain object
@@ -71,8 +75,8 @@ def simulate_bo(n_samples=1000, n_elecs=10, cov='eye',
     elecs : np.ndarray
         A location by coordinate (x,y,z) matrix of simulated electrode locations
     """
-    data = simulate_data(n_samples=n_samples, n_elecs=n_elecs, cov=cov)
     locs =  simulate_locations(n_elecs=n_elecs)
+    data = simulate_data(n_samples=n_samples, n_elecs=n_elecs, locs=locs, cov=cov)
 
     return Brain(data=data, locs=locs, sample_rate=sample_rate,
                  sessions=sessions, meta=meta)
