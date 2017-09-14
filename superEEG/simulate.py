@@ -59,7 +59,7 @@ def simulate_locations(n_elecs=10):
     return np.array([[np.random.randint(-80, 80), np.random.randint(-80, 80),
                np.random.randint(-80, 80)] for i in range(n_elecs)])
 
-def simulate_bo(n_samples=1000, n_elecs=10, cov='distance',
+def simulate_bo(n_samples=1000, n_elecs=10, locs=None, cov='distance',
                 sample_rate=1000, sessions=None, meta=None):
     """
     Simulate brain object
@@ -76,7 +76,11 @@ def simulate_bo(n_samples=1000, n_elecs=10, cov='distance',
     elecs : np.ndarray
         A location by coordinate (x,y,z) matrix of simulated electrode locations
     """
-    locs =  simulate_locations(n_elecs=n_elecs)
+    if not locs:
+        locs =  simulate_locations(n_elecs=n_elecs)
+    else:
+        n_elecs=locs.shape[0]
+        
     data = simulate_data(n_samples=n_samples, n_elecs=n_elecs, locs=locs, cov=cov)
 
     return Brain(data=data, locs=locs, sample_rate=sample_rate,
