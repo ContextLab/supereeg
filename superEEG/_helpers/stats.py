@@ -119,7 +119,8 @@ def z2r(z):
 
 
     """
-    return (np.exp(2 * z) - 1) / (np.exp(2 * z) + 1)
+    with np.errstate(invalid='ignore'):
+        return (np.exp(2 * z) - 1) / (np.exp(2 * z) + 1)
 
 
 def r2z(r):
@@ -138,7 +139,8 @@ def r2z(r):
 
 
     """
-    return 0.5 * (np.log(1 + r) - np.log(1 - r))
+    with np.errstate(invalid='ignore'):
+        return 0.5 * (np.log(1 + r) - np.log(1 - r))
 
 
 def rbf(x, center, width=20):
@@ -404,6 +406,98 @@ def get_expanded_corrmat(C, weights, mode='fit'):
     else:
         return 'error: unknown mode entered for get_expand_corrmat'
 
+def expand_corrmat_fit(C, weights):
+    """
+    Gets full correlation matrix
+
+    Parameters
+    ----------
+    C : Numpy array
+        Subject's correlation matrix
+
+    weights : Numpy array
+        Weights matrix calculated using rbf function matrix
+
+    mode : str
+        Specifies whether to compute over all elecs (fit mode) or just new elecs
+        (predict mode)
+
+    Returns
+    ----------
+    numerator : Numpy array
+        Numerator for the expanded correlation matrix
+    denominator : Numpy array
+        Denominator for the expanded correlation matrix
+
+    """
+    C[np.eye(C.shape[0]) == 1] = 0
+    C[np.where(np.isnan(C))] = 0
+
+    n = weights.shape[0]
+    K = np.zeros([n, n])
+    W = np.zeros([n, n])
+    Z = C
+
+    s = 0
+
+    vals = range(s, n)
+    for x in vals:
+        xweights = weights[x, :]
+
+        vals = range(x)
+        for y in vals:
+
+            yweights = weights[y, :]
+
+            next_weights = np.outer(xweights, yweights)
+            next_weights = next_weights - np.triu(next_weights)
+
+            W[x, y] = np.sum(next_weights)
+            K[x, y] = np.sum(Z * next_weights)
+    return (K + K.T), (W + W.T)
+
+def expand_corrmat_predict(C, weights):
+    """
+    Gets full correlation matrix
+
+    Parameters
+    ----------
+    C : Numpy array
+        Subject's correlation matrix
+
+    weights : Numpy array
+        Weights matrix calculated using rbf function matrix
+
+    mode : str
+        Specifies whether to compute over all elecs (fit mode) or just new elecs
+        (predict mode)
+
+    Returns
+    ----------
+    numerator : Numpy array
+        Numerator for the expanded correlation matrix
+    denominator : Numpy array
+        Denominator for the expanded correlation matrix
+
+    """
+    C[np.eye(C.shape[0]) == 1] = 0
+    C[np.where(np.isnan(C))] = 0
+
+    n = weights.shape[0]
+    K = np.zeros([n, n])
+    W = np.zeros([n, n])
+    Z = C
+
+    s = C.shape[0]
+    sliced_up = [(x, y) for x in range(s, n) for y in range(x)]
+
+    results = Parallel(n_jobs=multiprocessing.cpu_count())(
+        delayed(compute_coord)(coord, weights, Z) for coord in sliced_up)
+
+    W[map(lambda x: x[0], sliced_up), map(lambda x: x[1], sliced_up)] = map(lambda x: x[0], results)
+    K[map(lambda x: x[0], sliced_up), map(lambda x: x[1], sliced_up)] = map(lambda x: x[1], results)
+
+    return (K + K.T), (W + W.T)
 
 #### this version was to check how long one line would take
 # def get_expanded_corrmat(C, weights, mode='fit'):
@@ -726,4 +820,3 @@ def recon(bo_sub, mo):
     Kaa = mo[:,known_inds][known_inds,:]
     Y = zscore(bo_sub.get_data())
     return np.squeeze(np.dot(np.dot(Kba, np.linalg.pinv(Kaa)), Y.T).T)
-
