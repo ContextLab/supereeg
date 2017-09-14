@@ -76,11 +76,11 @@ def simulate_bo(n_samples=1000, n_elecs=10, locs=None, cov='distance',
     elecs : np.ndarray
         A location by coordinate (x,y,z) matrix of simulated electrode locations
     """
-    if not locs:
+    if locs is None:
         locs =  simulate_locations(n_elecs=n_elecs)
     else:
         n_elecs=locs.shape[0]
-        
+
     data = simulate_data(n_samples=n_samples, n_elecs=n_elecs, locs=locs, cov=cov)
 
     return Brain(data=data, locs=locs, sample_rate=sample_rate,
