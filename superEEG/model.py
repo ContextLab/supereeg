@@ -1,3 +1,4 @@
+from __future__ import division
 import pandas as pd
 import seaborn as sns
 import nibabel as nib
@@ -131,17 +132,22 @@ class Model(object):
                 bo = filter_elecs(bo, measure=measure, threshold=threshold)
 
                 # get subject-specific correlation matrix
-                sub_corrmat = r2z(get_corrmat(bo))
-                print(sub_corrmat)
+                sub_corrmat = get_corrmat(bo)
+
+                # convert diag to nans
+                np.fill_diagonal(sub_corrmat, np.nan)
+
+                # z-score the corrmat
+                sub_corrmat_z = r2z(sub_corrmat)
 
                 # get rbf weights
                 sub_rbf_weights = rbf(self.locs, bo.locs)
 
                 #  get subject expanded correlation matrix
-                num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(sub_corrmat, sub_rbf_weights)
+                num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(sub_corrmat_z, sub_rbf_weights)
 
                 # add in new subj data to numerator
-                numerator = np.nansum(np.dstack((numerator, num_corrmat_x)), 2)
+                numerator += num_corrmat_x
 
                 # add in new subj data to denominator
                 denominator += denom_corrmat_x
@@ -164,7 +170,7 @@ class Model(object):
         # meta
         self.meta = meta
 
-    def predict(self, bo, simulation= False, tf=False, kthreshold=10):
+    def predict(self, bo, kthreshold=10):
         """
         Takes a brain object and a 'full' covariance model, fills in all
         electrode timeseries for all missing locations and returns the new brain object
@@ -174,9 +180,6 @@ class Model(object):
 
         bo : Brain data object or a list of Brain objects
             The brain data object that you want to predict
-
-        tf : bool
-            If True, uses Tensorflow (default is False).
 
         Returns
         ----------
@@ -190,64 +193,53 @@ class Model(object):
         bo = filter_elecs(bo, measure='kurtosis', threshold=kthreshold)
 
         # get subject-specific correlation matrix
-        sub_corrmat = r2z(get_corrmat(bo))
+        sub_corrmat = get_corrmat(bo)
+
+        # fill diag with nans
+        np.fill_diagonal(sub_corrmat, np.nan)
+
+        # z-score the corrmat
+        sub_corrmat_z = r2z(sub_corrmat)
 
         # get rbf weights
         sub_rbf_weights = rbf(self.locs, bo.locs)
 
         #  get subject expanded correlation matrix
-        num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(sub_corrmat, sub_rbf_weights)
+        num_corrmat_x, denom_corrmat_x = expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
 
         # add in new subj data
-        model_corrmat_x = np.divide(np.nansum(np.dstack((self.numerator, num_corrmat_x)), 2), self.denominator + denom_corrmat_x)
+        with np.errstate(invalid='ignore'):
+            model_corrmat_x = np.divide(np.add(self.numerator, num_corrmat_x), np.add(self.denominator,denom_corrmat_x))
 
-        # replace the diagonal with 1
-        model_corrmat_x[np.eye(model_corrmat_x.shape[0]) == 1] = 0
+        # replace the diagonal with nan
+        np.fill_diagonal(model_corrmat_x, np.nan)
 
-        # convert nans to zeros
-        model_corrmat_x[np.where(np.isnan(model_corrmat_x))] = 0
+        # convert from z to r
+        model_corrmat_x = z2r(model_corrmat_x)
 
-        if not simulation:
-            # expanded rbf weights
-            model_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), self.locs)
+        # fill diagonal with 0
+        np.fill_diagonal(model_corrmat_x, 0)
 
-            # #### below is used to debug parralelization
-            # if parallel:
-            #
-            #     # get model expanded correlation matrix
-            #     num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_parallel(model_corrmat_x, model_rbf_weights, mode='predict')
-            # else:
-            #
-            #     # get model expanded correlation matrix
-            #     num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(model_corrmat_x, model_rbf_weights, mode='predict')
+        # expanded rbf weights
+        model_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), self.locs)
 
-            # get model expanded correlation matrix
-            num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(model_corrmat_x, model_rbf_weights, mode='predict')
-            # divide the numerator and denominator
+        # get model expanded correlation matrix
+        num_corrmat_x, denom_corrmat_x = expand_corrmat_predict(model_corrmat_x, model_rbf_weights)
+
+        # divide the numerator and denominator
+        with np.errstate(invalid='ignore'):
             model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
-
-            # convert nans to zeros
-            model_corrmat_x[np.where(np.isnan(model_corrmat_x))] = 0
 
         #convert from z to r
         model_corrmat_x = z2r(model_corrmat_x)
 
         # convert diagonals to 0
-        model_corrmat_x[np.eye(model_corrmat_x.shape[0]) == 1] = 1
+        np.fill_diagonal(model_corrmat_x, 0)
 
         # timeseries reconstruction
-        if tf:
-            reconstructed = reconstruct_activity_tf(bo, model_corrmat_x)
-        elif simulation:
-            reconstructed = recon(bo, model_corrmat_x)
-        else:
-            reconstructed = reconstruct_activity(bo, model_corrmat_x)
+        reconstructed = reconstruct_activity(bo, model_corrmat_x)
 
-        # # create new bo with inferred activity
-        # return Brain(data=np.hstack([reconstructed, zscore(bo.get_data())]),
-        #              locs=pd.concat([self.locs, bo.locs]),
-        #             sessions=bo.sessions, sample_rate=bo.sample_rate)
-
+        # return reconstructed data
         return Brain(data=reconstructed, locs=self.locs, sessions=bo.sessions,
                     sample_rate=bo.sample_rate)
 
