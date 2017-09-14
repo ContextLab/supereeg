@@ -13,7 +13,7 @@ import pandas as pd
 from scipy import linalg
 from sklearn.decomposition import PCA
 from joblib import Parallel, delayed
-import tensorflow as tf
+#import tensorflow as tf
 
 def apply_by_file_index(bo, xform, aggregator):
 
@@ -372,25 +372,38 @@ def get_expanded_corrmat(C, weights, mode='fit'):
 
     if mode=='fit':
         s = 0
+
+        vals = range(s, n)
+        for x in vals:
+            xweights = weights[x, :]
+
+            vals = range(x)
+            for y in vals:
+
+                yweights = weights[y, :]
+
+                next_weights = np.outer(xweights, yweights)
+                next_weights = next_weights - np.triu(next_weights)
+
+                W[x, y] = np.sum(next_weights)
+                K[x, y] = np.sum(Z * next_weights)
+        return (K + K.T), (W + W.T)
+
     elif mode=='predict':
         s = C.shape[0]
+        sliced_up = [(x, y) for x in range(s, n) for y in range(x)]
 
-    vals = range(s, n)
-    for x in vals:
-        xweights = weights[x, :]
+        results = Parallel(n_jobs=multiprocessing.cpu_count())(
+            delayed(compute_coord)(coord, weights, Z) for coord in sliced_up)
 
-        vals = range(x)
-        for y in vals:
+        W[map(lambda x: x[0], sliced_up), map(lambda x: x[1], sliced_up)] = map(lambda x: x[0], results)
+        K[map(lambda x: x[0], sliced_up), map(lambda x: x[1], sliced_up)] = map(lambda x: x[1], results)
 
-            yweights = weights[y, :]
+        return (K + K.T), (W + W.T)
 
-            next_weights = np.outer(xweights, yweights)
-            next_weights = next_weights - np.triu(next_weights)
+    else:
+        return 'error: unknown mode entered for get_expand_corrmat'
 
-            W[x, y] = np.sum(next_weights)
-            K[x, y] = np.sum(Z * next_weights)
-
-    return (K + K.T), (W + W.T)
 
 #### this version was to check how long one line would take
 # def get_expanded_corrmat(C, weights, mode='fit'):
@@ -455,76 +468,71 @@ def get_expanded_corrmat(C, weights, mode='fit'):
 #     return (K + K.T), (W + W.T)
 
 def compute_coord(coord, weights, Z):
+    #
+    # xweights = weights[coord[0], :]
+    # yweights = weights[coord[1], :]
 
-    xweights = weights[coord[0], :]
-    yweights = weights[coord[1], :]
-
-    next_weights = np.outer(xweights, yweights)
+    next_weights = np.outer(weights[coord[0], :], weights[coord[1], :])
     next_weights = next_weights - np.triu(next_weights)
 
     return np.sum(next_weights), np.sum(Z * next_weights)
 
-def get_expanded_corrmat_parallel(C, weights, mode='fit'):
-    """
-    Gets full correlation matrix
-
-    Parameters
-    ----------
-    C : Numpy array
-        Subject's correlation matrix
-
-    weights : Numpy array
-        Weights matrix calculated using rbf function matrix
-
-    mode : str
-        Specifies whether to compute over all elecs (fit mode) or just new elecs
-        (predict mode)
-
-    Returns
-    ----------
-    numerator : Numpy array
-        Numerator for the expanded correlation matrix
-    denominator : Numpy array
-        Denominator for the expanded correlation matrix
-
-    """
-    C[np.eye(C.shape[0]) == 1] = 0
-    C[np.where(np.isnan(C))] = 0
-    n = weights.shape[0]
-    K = np.zeros([n, n])
-    W = np.zeros([n, n])
-    Z = C
-
-    if mode=='fit':
-        s = 0
-    elif mode=='predict':
-        s = C.shape[0]
-    else:
-        return []
-
-    ### to debug multiprocessing:
-
-    ### this should really be:
-    #sliced_up = [(x, y) for x in range(s, n) for y in range(1)]
-    if mode =='fit':
-        sliced_up = [(x, y) for x in range(s, n) for y in range(x)]
-    elif mode =='predict':
-        sliced_up = [(x, y) for x in range(s, n) for y in range(1)]
-    else:
-        return []
-
-    # for coord in sliced_up:
-    #     W[coord[0], coord[1]], K[coord[0], coord[1]] = compute_coord(coord, weights, Z)
-
-    results_W, results_K= Parallel(n_jobs=multiprocessing.cpu_count())(
-        delayed(compute_coord)(coord, weights, Z) for coord in sliced_up)
-
-
-    return results_W, results_K
-    # W[x, y] = np.sum(next_weights)
-    # K[x, y] = np.sum(Z * next_weights)
-
-    # return expand_matrix(results, C)
+# def get_expanded_corrmat_parallel(C, weights, mode='fit'):
+#     """
+#     Gets full correlation matrix
+#
+#     Parameters
+#     ----------
+#     C : Numpy array
+#         Subject's correlation matrix
+#
+#     weights : Numpy array
+#         Weights matrix calculated using rbf function matrix
+#
+#     mode : str
+#         Specifies whether to compute over all elecs (fit mode) or just new elecs
+#         (predict mode)
+#
+#     Returns
+#     ----------
+#     numerator : Numpy array
+#         Numerator for the expanded correlation matrix
+#     denominator : Numpy array
+#         Denominator for the expanded correlation matrix
+#
+#     """
+#     C[np.eye(C.shape[0]) == 1] = 0
+#     C[np.where(np.isnan(C))] = 0
+#     n = weights.shape[0]
+#     K = np.zeros([n, n])
+#     W = np.zeros([n, n])
+#     Z = C
+#
+#     if mode=='fit':
+#         s = 0
+#     elif mode=='predict':
+#         s = C.shape[0]
+#     else:
+#         return []
+#
+#     ### to debug multiprocessing:
+#
+#     if mode =='predict':
+#         sliced_up = [(x, y) for x in range(s, n) for y in range(x)]
+#     else:
+#         return []
+#
+#     results = Parallel(n_jobs=multiprocessing.cpu_count())(
+#         delayed(compute_coord)(coord, weights, Z) for coord in sliced_up)
+#
+#     w, k = zip(*results)
+#
+#     for i, x in enumerate(sliced_up):
+#         W[x[0], x[1]] = w[i]
+#         K[x[0], x[1]] = k[i]
+#
+#
+#     return (K + K.T), (W + W.T)
 
 
 
@@ -606,6 +614,17 @@ def filter_elecs(bo, measure='kurtosis', threshold=10):
     nbo.locs = bo.locs.loc[~thresh_bool]
     nbo.n_elecs = bo.data.shape[1]
     return nbo
+
+
+def filter_subj(bo, measure='kurtosis', threshold=10):
+    """
+    Filter subjects based on filter measure (use only if 2 or more electrodes pass thresholding)
+    """
+    thresh_bool = bo.kurtosis > threshold
+    if sum(~thresh_bool)<2:
+        print(bo.meta + ': not enough electrodes pass threshold')
+    else:
+        return bo.meta
 
 import nibabel as nb
 import numpy as np
@@ -707,3 +726,4 @@ def recon(bo_sub, mo):
     Kaa = mo[:,known_inds][known_inds,:]
     Y = zscore(bo_sub.get_data())
     return np.squeeze(np.dot(np.dot(Kba, np.linalg.pinv(Kaa)), Y.T).T)
+

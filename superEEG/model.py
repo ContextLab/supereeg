@@ -132,6 +132,7 @@ class Model(object):
 
                 # get subject-specific correlation matrix
                 sub_corrmat = r2z(get_corrmat(bo))
+                print(sub_corrmat)
 
                 # get rbf weights
                 sub_rbf_weights = rbf(self.locs, bo.locs)
@@ -163,7 +164,7 @@ class Model(object):
         # meta
         self.meta = meta
 
-    def predict(self, bo, simulation= False, parallel =False, tf=False, kthreshold=10):
+    def predict(self, bo, simulation= False, tf=False, kthreshold=10):
         """
         Takes a brain object and a 'full' covariance model, fills in all
         electrode timeseries for all missing locations and returns the new brain object
@@ -210,19 +211,18 @@ class Model(object):
             # expanded rbf weights
             model_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), self.locs)
 
-            #### below is used to debug parralelization
-            if parallel:
-
-                # get model expanded correlation matrix
-                num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_parallel(model_corrmat_x, model_rbf_weights, mode='predict')
-            else:
-
-                # get model expanded correlation matrix
-                num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(model_corrmat_x, model_rbf_weights, mode='predict')
+            # #### below is used to debug parralelization
+            # if parallel:
+            #
+            #     # get model expanded correlation matrix
+            #     num_corrmat_x, denom_corrmat_x = get_expanded_corrmat_parallel(model_corrmat_x, model_rbf_weights, mode='predict')
+            # else:
+            #
+            #     # get model expanded correlation matrix
+            #     num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(model_corrmat_x, model_rbf_weights, mode='predict')
 
             # get model expanded correlation matrix
-            num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(model_corrmat_x, model_rbf_weights,
-                                                                       mode='predict')
+            num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(model_corrmat_x, model_rbf_weights, mode='predict')
             # divide the numerator and denominator
             model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
 
@@ -307,7 +307,10 @@ class Model(object):
             n_subs+=1
 
         return Model(numerator=numerator, denominator=denominator,
-                     locs=pd.concat([m.locs, bo.locs]), n_subs=n_subs)
+                     locs=m.locs, n_subs=n_subs)
+        ### this concatenation of locations doesn't work when updating an existing model (but would be necessary for a build)
+        # return Model(numerator=numerator, denominator=denominator,
+        #              locs=pd.concat([m.locs, bo.locs]), n_subs=n_subs)
 
     def info(self):
         """

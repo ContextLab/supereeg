@@ -26,12 +26,13 @@ import pandas as pd
 import pickle
 import seaborn as sb
 import sklearn
+import timeit
 
 # n_samples
 n_samples = 1000
 
 # n_electrodes - number of electrodes for reconstructed patient - need to loop over 5:5:130
-n_elecs =[165, 85, 5]
+n_elecs =[170, 85, 5]
 #n_elecs = [165]
 
 # m_patients - number of patients in the model - need to loop over 10:10:50
@@ -46,16 +47,15 @@ gray = se.load(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/g
 # extract locations
 locs = gray.locs
 
-import superEEG as se
-# small model
-model = se.load('example_model')
-data = se.load('example_data')
+# import superEEG as se
+# # small model
+# model = se.load('example_model')
+# data = se.load('example_data')
 
 
-#### starting to predict parallelization
-reconstruct = model.predict(data)
+# #### starting to predict parallelization
+# reconstruct = model.predict(data)
 
-recon_parallel = model.predict(data, parallel=True)
 
 # create directory for synthetic patient data
 synth_dir = os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/synthetic_data'
@@ -128,8 +128,8 @@ for p in m_patients:
             #
             # model = se.Model(data=model_data, locs=locs)
 
-            #### to use simulated model
-            with open('model_170.mo', 'rb') as a:
+            ### to use simulated model
+            with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/model_170.mo', 'rb') as a:
                 model = pickle.load(a)
 
 
