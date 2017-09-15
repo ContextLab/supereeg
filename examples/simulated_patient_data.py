@@ -27,14 +27,14 @@ from superEEG._helpers.stats import r2z, z2r, corr_column
 n_samples = 1000
 
 # n_electrodes - number of electrodes for reconstructed patient - need to loop over 5:5:130
-n_elecs =[5, 169]
+n_elecs =[169, 50]
 #n_elecs = [165]
 
 # m_patients - number of patients in the model - need to loop over 10:10:50
 m_patients = [10, 50]
 
 # m_electrodes - number of electrodes for each patient in the model -  25:25:100
-m_elecs = [10, 170]
+m_elecs = [170, 10]
 
 # load nifti to get locations
 gray = se.load(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_mask_20mm_brain.nii')
@@ -42,14 +42,17 @@ gray = se.load(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/g
 # extract locations
 gray_locs = gray.locs
 
+
 d = []
 
 param_grid = [(p,m,n) for p in m_patients for m in m_elecs for n in n_elecs]
 
 for p, m, n in param_grid:
-
+    sub_locs = gray_locs.sample(m)
+    #
+    #predict_loc = locs.drop(p_n_elecs)
     #create brain objects with m_patients and loop over the number of model locations
-    model_bos = [se.simulate_bo(n_samples=10000, sample_rate=1000, locs = gray_locs.sample(m)) for i in range(p)]
+    model_bos = [se.simulate_bo(n_samples=10000, sample_rate=1000, locs = sub_locs) for i in range(p)]
 
     model = se.Model(model_bos)
     model.plot(yticklabels=False, xticklabels=False)
@@ -64,7 +67,7 @@ for p, m, n in param_grid:
 
     corr_vals = corr_column(np.atleast_2d(bo.data.iloc[:, unknown_ind].as_matrix()), np.atleast_2d(recon.data.iloc[:, unknown_ind].as_matrix()))
 
-    d.append({'Patients': p, 'Model Locations': m, 'Patient Locations': n, 'Correlation': np.mean(corr_vals)})
+    d.append({'Patients': p, 'Model Locations': m, 'Patient Locations': n, 'Correlation': corr_vals})
 
 d = pd.DataFrame(d)
 
