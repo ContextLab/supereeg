@@ -14,19 +14,10 @@ model locations.
 # License: MIT
 
 import superEEG as se
-import scipy
-import numpy as np
-from superEEG._helpers.stats import r2z, z2r, corr_column, recon_no_expand
-from superEEG._helpers.bookkeeping import slice_list
-from numpy import inf
-from scipy.stats import zscore
-from scipy.spatial.distance import squareform, pdist
 import os
 import pandas as pd
 import pickle
-import seaborn as sb
-import sklearn
-import timeit
+import seaborn as sns
 
 # n_samples
 n_samples = 1000
@@ -45,7 +36,19 @@ m_elecs = 170
 gray = se.load(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_mask_20mm_brain.nii')
 
 # extract locations
-locs = gray.locs
+gray_locs = gray.locs
+model_bos = [se.simulate_bo(n_samples=10000, sample_rate=1000, locs = gray_locs) for i in range(10)]
+model = se.Model(model_bos)
+model.plot(yticklabels=False, xticklabels=False)
+bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=model.locs)
+data = bo.data.T.sample(169).T
+bo_sample = se.Brain(data=data.as_matrix(), locs=bo.locs.loc[data.columns, :].as_matrix())
+recon = model.predict(bo_sample)
+unknown_ind = [item for item in bo.data.columns if item not in data.columns]
+
+predicted = recon.data.iloc[:, unknown_ind]
+actual = bo.data.iloc[:, unknown_ind]
+sns.jointplot(predicted, actual)
 
 # import superEEG as se
 # # small model
@@ -57,110 +60,110 @@ locs = gray.locs
 # reconstruct = model.predict(data)
 
 
-# create directory for synthetic patient data
-synth_dir = os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/synthetic_data'
-if not os.path.isdir(synth_dir):
-    os.mkdir(synth_dir)
-
-# create 50 synthetic patients data with activity at every location
-if not os.listdir(synth_dir):
-
-    ### for toeplitz matrix
-    # R = scipy.linalg.toeplitz(np.linspace(0,1,len(locs))[::-1])
-
-    ### for distance matrix
-    D = squareform(pdist(locs))
-    R = np.max(D) - D
-    R = R - np.min(R)
-    R = R / np.max(R)
-
-    count = 0
-    for ps in range(50):
-        rand_dist = np.random.multivariate_normal(np.zeros(len(locs)), np.eye(len(locs)), size=n_samples)
-        bo = se.Brain(data=np.dot(rand_dist, scipy.linalg.cholesky(R)), locs=pd.DataFrame(locs, columns=['x', 'y', 'z']))
-        bo.save(os.path.join(synth_dir, 'synthetic_'+ str(count).rjust(2, '0')))
-        count += 1
-else:
-    print os.listdir(synth_dir)
-
-
-# initiate model
-model_data = []
-
-# initiate dataframe
-d = []
-
-for p in m_patients:
-
-    # random sample m_patients from 50 simulated patients - this will also need to be in a loop
-    patients = np.random.choice(range(50), p, replace=False)
-
-    # loop over n_elecs
-    for n in n_elecs:
-
-        # hold out one patient at a time
-        for i in patients:
-
-            # random sample n locations from 170 locations
-            p_n_elecs = np.sort(np.random.choice(range(len(locs)), n, replace=False))
-
-            ### to debug expand_corrmat:
-            # p_n_elecs = range(10,15)
-
-            with open(os.path.join(synth_dir, 'synthetic_'+ str(i).rjust(2, '0') + '.bo'), 'rb') as handle:
-                bo_actual = pickle.load(handle)
-                bo_sub = se.Brain(data=bo_actual.data.loc[:, p_n_elecs],locs= bo_actual.locs.loc[p_n_elecs])
-
-
-            unknown_locs = locs.drop(p_n_elecs)
-            unknown_inds = unknown_locs.index.values
-
-            ##### create model from every other patient
-            # model_patients = [p for p in patients if p != i]
-            # for mp in model_patients:
-            #
-            #     # random sample m_elecs locations from 170 locations (this will also need to be looped over for coverage simulation)
-            #     p_m_elecs = np.sort(np.random.choice(range(len(locs)), m_elecs, replace=False))
-            #
-            #     with open(os.path.join(synth_dir, 'synthetic_' + str(mp).rjust(2, '0') + '.bo'), 'rb') as handle:
-            #         bo = pickle.load(handle)
-            #         model_data.append(se.Brain(data=bo.data.loc[:, p_m_elecs], locs=bo.locs.loc[p_m_elecs]))
-            #
-            # model = se.Model(data=model_data, locs=locs)
-
-            ### to use simulated model
-            with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/model_170.mo', 'rb') as a:
-                model = pickle.load(a)
-
-
-            # #### comparing second corrmat_expand
-            # #### expand all
-            # reconstructed_predict = model.predict(bo_sub)
-            # #### only expand into unknownxknown and knownxknown
-            # reconstructed_fit = model.predict(bo_sub, prediction=True)
-            # #### check if they give the same values
-            # corr_reconstructions = np.mean(corr_column(reconstructed_predict.data.as_matrix(), reconstructed_fit.data.as_matrix()))
-            # #### comparing second corrmat_expand
-
-            reconstructed_predict = model.predict(bo_sub)
-
-            ##### to use predict function (averaging the subject's expanded matrix with the model) but bypass the second expanded
-            reconstructed = model.predict(bo_sub, simulation=True)
-            predicted = reconstructed.data.as_matrix()
-
-            corr_reconstructions = np.mean(corr_column(reconstructed_predict.data.as_matrix(), predicted))
-            ##### to bypass predict function entirely (and only parse model):
-            # predicted = recon_no_expand(bo_sub, model)
-
-            actual = zscore(bo_actual.data.loc[:, unknown_inds].as_matrix())
-
-            corr_vals = corr_column(actual, predicted)
-
-
-            d.append({'Patients': p, 'Model Locations': m_elecs, 'Patient Locations': n, 'Correlation': np.mean(corr_vals)})
-
-d = pd.DataFrame(d)
-
+# # create directory for synthetic patient data
+# synth_dir = os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/synthetic_data'
+# if not os.path.isdir(synth_dir):
+#     os.mkdir(synth_dir)
+#
+# # create 50 synthetic patients data with activity at every location
+# if not os.listdir(synth_dir):
+#
+#     ### for toeplitz matrix
+#     # R = scipy.linalg.toeplitz(np.linspace(0,1,len(locs))[::-1])
+#
+#     ### for distance matrix
+#     D = squareform(pdist(locs))
+#     R = np.max(D) - D
+#     R = R - np.min(R)
+#     R = R / np.max(R)
+#
+#     count = 0
+#     for ps in range(50):
+#         rand_dist = np.random.multivariate_normal(np.zeros(len(locs)), np.eye(len(locs)), size=n_samples)
+#         bo = se.Brain(data=np.dot(rand_dist, scipy.linalg.cholesky(R)), locs=pd.DataFrame(locs, columns=['x', 'y', 'z']))
+#         bo.save(os.path.join(synth_dir, 'synthetic_'+ str(count).rjust(2, '0')))
+#         count += 1
+# else:
+#     print os.listdir(synth_dir)
+#
+#
+# # initiate model
+# model_data = []
+#
+# # initiate dataframe
+# d = []
+#
+# for p in m_patients:
+#
+#     # random sample m_patients from 50 simulated patients - this will also need to be in a loop
+#     patients = np.random.choice(range(50), p, replace=False)
+#
+#     # loop over n_elecs
+#     for n in n_elecs:
+#
+#         # hold out one patient at a time
+#         for i in patients:
+#
+#             # random sample n locations from 170 locations
+#             p_n_elecs = np.sort(np.random.choice(range(len(locs)), n, replace=False))
+#
+#             ### to debug expand_corrmat:
+#             # p_n_elecs = range(10,15)
+#
+#             with open(os.path.join(synth_dir, 'synthetic_'+ str(i).rjust(2, '0') + '.bo'), 'rb') as handle:
+#                 bo_actual = pickle.load(handle)
+#                 bo_sub = se.Brain(data=bo_actual.data.loc[:, p_n_elecs],locs= bo_actual.locs.loc[p_n_elecs])
+#
+#
+#             unknown_locs = locs.drop(p_n_elecs)
+#             unknown_inds = unknown_locs.index.values
+#
+#             ##### create model from every other patient
+#             # model_patients = [p for p in patients if p != i]
+#             # for mp in model_patients:
+#             #
+#             #     # random sample m_elecs locations from 170 locations (this will also need to be looped over for coverage simulation)
+#             #     p_m_elecs = np.sort(np.random.choice(range(len(locs)), m_elecs, replace=False))
+#             #
+#             #     with open(os.path.join(synth_dir, 'synthetic_' + str(mp).rjust(2, '0') + '.bo'), 'rb') as handle:
+#             #         bo = pickle.load(handle)
+#             #         model_data.append(se.Brain(data=bo.data.loc[:, p_m_elecs], locs=bo.locs.loc[p_m_elecs]))
+#             #
+#             # model = se.Model(data=model_data, locs=locs)
+#
+#             ### to use simulated model
+#             with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/model_170.mo', 'rb') as a:
+#                 model = pickle.load(a)
+#
+#
+#             # #### comparing second corrmat_expand
+#             # #### expand all
+#             # reconstructed_predict = model.predict(bo_sub)
+#             # #### only expand into unknownxknown and knownxknown
+#             # reconstructed_fit = model.predict(bo_sub, prediction=True)
+#             # #### check if they give the same values
+#             # corr_reconstructions = np.mean(corr_column(reconstructed_predict.data.as_matrix(), reconstructed_fit.data.as_matrix()))
+#             # #### comparing second corrmat_expand
+#
+#             reconstructed_predict = model.predict(bo_sub)
+#
+#             ##### to use predict function (averaging the subject's expanded matrix with the model) but bypass the second expanded
+#             reconstructed = model.predict(bo_sub, simulation=True)
+#             predicted = reconstructed.data.as_matrix()
+#
+#             corr_reconstructions = np.mean(corr_column(reconstructed_predict.data.as_matrix(), predicted))
+#             ##### to bypass predict function entirely (and only parse model):
+#             # predicted = recon_no_expand(bo_sub, model)
+#
+#             actual = zscore(bo_actual.data.loc[:, unknown_inds].as_matrix())
+#
+#             corr_vals = corr_column(actual, predicted)
+#
+#
+#             d.append({'Patients': p, 'Model Locations': m_elecs, 'Patient Locations': n, 'Correlation': np.mean(corr_vals)})
+#
+# d = pd.DataFrame(d)
+#
 
 
 

@@ -4,56 +4,6 @@
     <list default="true" id="72de947b-ed70-4f88-b013-460cd0bdb63e" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/simulated_patient_data.py" afterPath="$PROJECT_DIR$/examples/simulated_patient_data.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_00.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_00.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_01.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_01.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_02.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_02.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_03.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_03.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_04.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_04.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_05.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_05.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_06.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_06.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_07.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_07.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_08.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_08.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_09.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_09.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_10.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_10.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_11.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_11.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_12.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_12.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_13.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_13.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_14.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_14.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_15.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_15.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_16.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_16.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_17.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_17.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_18.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_18.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_19.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_19.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_20.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_20.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_21.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_21.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_22.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_22.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_23.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_23.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_24.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_24.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_25.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_25.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_26.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_26.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_27.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_27.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_28.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_28.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_29.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_29.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_30.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_30.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_31.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_31.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_32.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_32.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_33.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_33.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_34.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_34.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_35.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_35.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_36.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_36.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_37.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_37.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_38.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_38.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_39.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_39.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_40.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_40.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_41.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_41.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_42.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_42.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_43.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_43.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_44.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_44.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_45.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_45.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_46.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_46.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_47.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_47.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_48.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_48.bo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_49.bo" afterPath="$PROJECT_DIR$/superEEG/data/synthetic_data/synthetic_49.bo" />
     </list>
     <ignored path="superEEG.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -76,11 +26,9 @@
       <file leaf-file-name="stats.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/superEEG/_helpers/stats.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="103">
-              <caret line="141" column="0" selection-start-line="141" selection-start-column="0" selection-end-line="141" selection-end-column="0" />
-              <folding>
-                <element signature="e#0#31#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="90">
+              <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="50" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -100,7 +48,7 @@
       <file leaf-file-name="file_io.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/file_io.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="412">
+            <state relative-caret-position="1455">
               <caret line="97" column="0" selection-start-line="97" selection-start-column="0" selection-end-line="97" selection-end-column="0" />
               <folding>
                 <element signature="e#1#22#0" expanded="true" />
@@ -124,7 +72,7 @@
       <file leaf-file-name="brain.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/superEEG/brain.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
+            <state relative-caret-position="1245">
               <caret line="83" column="0" selection-start-line="83" selection-start-column="0" selection-end-line="83" selection-end-column="0" />
               <folding>
                 <element signature="e#25#44#0" expanded="true" />
@@ -136,11 +84,9 @@
       <file leaf-file-name="model.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/superEEG/model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
+            <state relative-caret-position="1890">
               <caret line="134" column="33" selection-start-line="134" selection-start-column="33" selection-end-line="134" selection-end-column="33" />
-              <folding>
-                <element signature="e#0#19#0" expanded="true" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
@@ -148,7 +94,7 @@
       <file leaf-file-name="corr_mats.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/code/corr_mats.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="270">
+            <state relative-caret-position="615">
               <caret line="46" column="126" selection-start-line="46" selection-start-column="75" selection-end-line="46" selection-end-column="126" />
               <folding />
             </state>
@@ -158,10 +104,20 @@
       <file leaf-file-name="simulated_patient_data.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/examples/simulated_patient_data.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="892">
-              <caret line="147" column="0" selection-start-line="147" selection-start-column="0" selection-end-line="147" selection-end-column="0" />
+            <state relative-caret-position="-315">
+              <caret line="15" column="21" selection-start-line="15" selection-start-column="21" selection-end-line="15" selection-end-column="21" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="simulate.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/superEEG/simulate.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="180">
+              <caret line="28" column="61" selection-start-line="28" selection-start-column="61" selection-end-line="28" selection-end-column="61" />
               <folding>
-                <element signature="e#343#364#0" expanded="true" />
+                <element signature="e#0#12#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -203,8 +159,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="9" />
-    <option name="y" value="23" />
+    <option name="x" value="1716" />
+    <option name="y" value="-75" />
     <option name="width" value="1636" />
     <option name="height" value="1027" />
   </component>
@@ -559,7 +515,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="9" y="23" width="1636" height="1027" extended-state="1" />
+    <frame x="1716" y="-75" width="1636" height="1027" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24862888" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -631,12 +587,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/examples/simulated_patient_data.py</url>
-          <line>271</line>
+          <line>274</line>
           <option name="timeStamp" value="52" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/examples/simulated_patient_data.py</url>
-          <line>268</line>
+          <line>271</line>
           <option name="timeStamp" value="56" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -646,17 +602,17 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/examples/simulated_patient_data.py</url>
-          <line>232</line>
+          <line>235</line>
           <option name="timeStamp" value="110" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/examples/simulated_patient_data.py</url>
-          <line>159</line>
+          <line>162</line>
           <option name="timeStamp" value="120" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/examples/simulated_patient_data.py</url>
-          <line>144</line>
+          <line>147</line>
           <option name="timeStamp" value="131" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -691,7 +647,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/examples/simulated_patient_data.py</url>
-          <line>51</line>
+          <line>54</line>
           <option name="timeStamp" value="175" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -706,12 +662,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/examples/simulated_patient_data.py</url>
-          <line>44</line>
+          <line>35</line>
           <option name="timeStamp" value="178" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/examples/simulated_patient_data.py</url>
-          <line>131</line>
+          <line>134</line>
           <option name="timeStamp" value="180" />
         </line-breakpoint>
       </breakpoints>
@@ -877,7 +833,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1170">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -885,7 +840,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-865">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -893,9 +847,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-720">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#23#88#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -903,7 +854,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-660">
           <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="36" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -911,7 +861,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="650">
           <caret line="85" column="47" selection-start-line="85" selection-start-column="47" selection-end-line="85" selection-end-column="47" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -919,7 +868,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="173">
           <caret line="112" column="0" selection-start-line="112" selection-start-column="0" selection-end-line="112" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -927,7 +875,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="173">
           <caret line="721" column="0" selection-start-line="721" selection-start-column="0" selection-end-line="721" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -935,7 +882,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-315">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -943,18 +889,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="385">
           <caret line="51" column="0" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/superEEG/_helpers/file_io.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/superEEG/_helpers/file_io.py" />
     <entry file="file://$USER_HOME$/Desktop/analysis/file_io.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="345">
@@ -967,7 +905,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="315">
           <caret line="48" column="37" selection-start-line="48" selection-start-column="37" selection-end-line="48" selection-end-column="51" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -975,9 +912,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="625">
           <caret line="73" column="75" selection-start-line="73" selection-start-column="66" selection-end-line="73" selection-end-column="75" />
-          <folding>
-            <element signature="e#23#95#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -985,9 +919,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#23#41#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -995,13 +926,12 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/code/corr_mats.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
+        <state relative-caret-position="615">
           <caret line="46" column="126" selection-start-line="46" selection-start-column="75" selection-end-line="46" selection-end-column="126" />
           <folding />
         </state>
@@ -1011,9 +941,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="390">
           <caret line="57" column="50" selection-start-line="57" selection-start-column="50" selection-end-line="57" selection-end-column="64" />
-          <folding>
-            <element signature="e#1#10#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1029,7 +956,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="337">
           <caret line="1579" column="0" selection-start-line="1579" selection-start-column="0" selection-end-line="1579" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1045,7 +971,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/file_io.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="412">
+        <state relative-caret-position="1455">
           <caret line="97" column="0" selection-start-line="97" selection-start-column="0" selection-end-line="97" selection-end-column="0" />
           <folding>
             <element signature="e#1#22#0" expanded="true" />
@@ -1067,9 +993,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="103">
           <caret line="332" column="70" selection-start-line="332" selection-start-column="70" selection-end-line="332" selection-end-column="70" />
-          <folding>
-            <element signature="e#0#18#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1085,7 +1008,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/superEEG/brain.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
+        <state relative-caret-position="1245">
           <caret line="83" column="0" selection-start-line="83" selection-start-column="0" selection-end-line="83" selection-end-column="0" />
           <folding>
             <element signature="e#25#44#0" expanded="true" />
@@ -1095,31 +1018,25 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/superEEG/model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
+        <state relative-caret-position="1890">
           <caret line="134" column="33" selection-start-line="134" selection-start-column="33" selection-end-line="134" selection-end-column="33" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/superEEG/_helpers/stats.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="103">
-          <caret line="141" column="0" selection-start-line="141" selection-start-column="0" selection-end-line="141" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="90">
+          <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="50" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/examples/simulated_patient_data.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="892">
-          <caret line="147" column="0" selection-start-line="147" selection-start-column="0" selection-end-line="147" selection-end-column="0" />
-          <folding>
-            <element signature="e#343#364#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="-315">
+          <caret line="15" column="21" selection-start-line="15" selection-start-column="21" selection-end-line="15" selection-end-column="21" />
+          <folding />
         </state>
       </provider>
     </entry>
