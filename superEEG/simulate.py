@@ -33,7 +33,7 @@ def simulate_data(n_samples=1000, n_elecs=10, locs=None, cov='distance'):
         R = 1 - scipy.spatial.distance.cdist(locs, locs, metric='euclidean')
         R -= np.min(R)
         R /= np.max(R)
-        R *= 2*R - 1
+        R = 2*R - 1
     else:
         R = create_cov(cov, n_elecs=n_elecs)
 
