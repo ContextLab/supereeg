@@ -54,14 +54,16 @@ def recon_m(bo_sub, mo):
 n_samples = 1000
 
 # n_electrodes - number of electrodes for reconstructed patient - need to loop over 5:5:130
-n_elecs =[169, 165, 50, 5, 1]
+n_elecs =[169, 50, 5]
 #n_elecs = [165]
 
 # m_patients - number of patients in the model - need to loop over 10:10:50
 m_patients = [10, 50]
 
 # m_electrodes - number of electrodes for each patient in the model -  25:25:100
-m_elecs = [169, 50, 10]
+m_elecs = [169, 50, 5]
+
+iter_val = 10
 
 # load nifti to get locations
 gray = se.load(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_mask_20mm_brain.nii')
@@ -74,49 +76,56 @@ d = []
 R = 1 - cdist(gray_locs, gray_locs, metric='euclidean')
 R -= np.min(R)
 R /= np.max(R)
-R *= 2 * R - 1
+R = 2 * R - 1
 
 
 param_grid = [(p,m,n) for p in m_patients for m in m_elecs for n in n_elecs]
+
 for p, m, n in param_grid:
 
-    sub_locs = gray_locs.sample(n).sort_values(['x', 'y', 'z'])
+    for i in range(iter_val):
 
-    unknown_loc = gray_locs[~gray_locs.index.isin(sub_locs.index)]
+        #create brain objects with m_patients and loop over the number of model locations
+        model_bos = [se.simulate_bo(n_samples=10000, sample_rate=1000, locs = gray_locs) for x in range(p)]
 
-    #create brain objects with m_patients and loop over the number of model locations
-    model_bos = [se.simulate_bo(n_samples=10000, sample_rate=1000, locs = gray_locs) for i in range(p)]
+        model = se.Model(model_bos, locs=gray_locs)
 
-    model = se.Model(model_bos, locs=gray_locs)
+        # model.plot(yticklabels=False, xticklabels=False)
 
-    # model.plot(yticklabels=False, xticklabels=False)
+        sub_locs = gray_locs.sample(n).sort_values(['x', 'y', 'z'])
 
-    bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
+        unknown_loc = gray_locs[~gray_locs.index.isin(sub_locs.index)]
 
-    data = bo.data.T.drop(unknown_loc.index).T
-    bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs)
+        bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
 
-    # recon = model.predict(bo_sample)
+        data = bo.data.T.drop(unknown_loc.index).T
+        bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs)
 
-    predicted = pd.DataFrame(recon(bo_sample, R))
-    predicted_m = pd.DataFrame(recon_m(bo_sample, model))
+        # recon = model.predict(bo_sample)
 
-    unknown_ind = [item for item in bo.data.columns if item not in data.columns]
+        predicted = pd.DataFrame(recon(bo_sample, R))
 
-    # predicted = recon.data.iloc[:, unknown_ind]
-    # actual = bo.data.iloc[:, unknown_ind]
+        predicted_m = pd.DataFrame(recon_m(bo_sample, model))
 
-    actual = bo.data.iloc[:, unknown_ind]
+        unknown_ind = [item for item in bo.data.columns if item not in data.columns]
 
-    corr_vals = corr_column(actual.as_matrix(),predicted_m.as_matrix())
+        # predicted = recon.data.iloc[:, unknown_ind]
+        # actual = bo.data.iloc[:, unknown_ind]
 
-    # sns.jointplot(bo.data.iloc[:, unknown_ind].values.flatten(), predicted)
+        actual = bo.data.iloc[:, unknown_ind]
 
-    d.append({'Patients': p, 'Model Locations': m, 'Patient Locations': n, 'Correlation': corr_vals})
+        corr_vals = corr_column(actual.as_matrix(),predicted_m.as_matrix())
 
-    # d.append({'Patient Locations': n, 'Correlation': corr_vals})
+        # sns.jointplot(bo.data.iloc[:, unknown_ind].values.flatten(), predicted)
 
-d = pd.DataFrame(d)
+        d.append({'Patients': p, 'Model Locations': m, 'Patient Locations': n, 'Correlation': corr_vals})
+
+    d = pd.DataFrame(d)
+
+    iter_average = iter_average.append(d[['Patients', 'Model Locations', 'Patient Locations', 'Correlation']].mean(axis=0))
+
+
+iter_average
 
 
 
