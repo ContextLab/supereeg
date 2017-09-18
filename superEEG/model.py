@@ -134,8 +134,8 @@ class Model(object):
                 # get subject-specific correlation matrix
                 sub_corrmat = get_corrmat(bo)
 
-                # convert diag to nans
-                np.fill_diagonal(sub_corrmat, np.nan)
+                # convert diag to zeros
+                np.fill_diagonal(sub_corrmat, 0)
 
                 # z-score the corrmat
                 sub_corrmat_z = r2z(sub_corrmat)
@@ -195,11 +195,14 @@ class Model(object):
         # get subject-specific correlation matrix
         sub_corrmat = get_corrmat(bo)
 
-        # fill diag with nans
-        np.fill_diagonal(sub_corrmat, np.nan)
+        # fill diag with zeros
+        np.fill_diagonal(sub_corrmat, 0)
 
         # z-score the corrmat
         sub_corrmat_z = r2z(sub_corrmat)
+
+        # fill diag with zeros
+        np.fill_diagonal(sub_corrmat_z, 0)
 
         # get rbf weights
         sub_rbf_weights = rbf(self.locs, bo.locs)
@@ -209,16 +212,16 @@ class Model(object):
 
         # add in new subj data
         with np.errstate(invalid='ignore'):
-            model_corrmat_x = np.divide(np.add(self.numerator, num_corrmat_x), np.add(self.denominator,denom_corrmat_x))
+            model_corrmat_x = np.divide(np.add(self.numerator, num_corrmat_x), np.add(self.denominator, denom_corrmat_x))
 
-        # replace the diagonal with nan
-        np.fill_diagonal(model_corrmat_x, np.nan)
-
-        # convert from z to r
-        model_corrmat_x = z2r(model_corrmat_x)
-
-        # fill diagonal with 0
-        np.fill_diagonal(model_corrmat_x, 0)
+        # # replace the diagonal with zeros
+        # np.fill_diagonal(model_corrmat_x, 0)
+        #
+        # # convert from z to r
+        # model_corrmat_x = z2r(model_corrmat_x)
+        #
+        # # fill diagonal with zeros
+        # np.fill_diagonal(model_corrmat_x, 0)
 
         # expanded rbf weights
         model_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), self.locs)
@@ -233,8 +236,11 @@ class Model(object):
         #convert from z to r
         model_corrmat_x = z2r(model_corrmat_x)
 
-        # convert diagonals to 0
-        np.fill_diagonal(model_corrmat_x, 0)
+        # convert diagonals to zeros
+        np.fill_diagonal(model_corrmat_x, 1)
+
+        sns.heatmap(model_corrmat_x, yticklabels=False, xticklabels=False)
+        sns.plt.show()
 
         # timeseries reconstruction
         reconstructed = reconstruct_activity(bo, model_corrmat_x)
@@ -324,7 +330,7 @@ class Model(object):
         supports.
         """
         sns.heatmap(z2r(np.divide(self.numerator, self.denominator)), **kwargs)
-        sns.plt.show()
+        # sns.plt.show()
 
     def save(self, filepath):
         """

@@ -13,6 +13,7 @@ import pandas as pd
 from scipy import linalg
 from sklearn.decomposition import PCA
 from joblib import Parallel, delayed
+import seaborn as sns
 #import tensorflow as tf
 
 def apply_by_file_index(bo, xform, aggregator):
@@ -480,6 +481,7 @@ def expand_corrmat_predict(C, weights):
         Denominator for the expanded correlation matrix
 
     """
+
     C[np.eye(C.shape[0]) == 1] = 0
     C[np.where(np.isnan(C))] = 0
 
@@ -498,6 +500,13 @@ def expand_corrmat_predict(C, weights):
     K[map(lambda x: x[0], sliced_up), map(lambda x: x[1], sliced_up)] = map(lambda x: x[1], results)
 
     return (K + K.T), (W + W.T)
+
+def compute_coord(coord, weights, Z):
+
+    next_weights = np.outer(weights[coord[0], :], weights[coord[1], :])
+    next_weights = next_weights - np.triu(next_weights)
+
+    return np.sum(next_weights), np.sum(Z * next_weights)
 
 #### this version was to check how long one line would take
 # def get_expanded_corrmat(C, weights, mode='fit'):
@@ -560,16 +569,6 @@ def expand_corrmat_predict(C, weights):
 #             K[x, y] = np.sum(Z * next_weights)
 #
 #     return (K + K.T), (W + W.T)
-
-def compute_coord(coord, weights, Z):
-    #
-    # xweights = weights[coord[0], :]
-    # yweights = weights[coord[1], :]
-
-    next_weights = np.outer(weights[coord[0], :], weights[coord[1], :])
-    next_weights = next_weights - np.triu(next_weights)
-
-    return np.sum(next_weights), np.sum(Z * next_weights)
 
 # def get_expanded_corrmat_parallel(C, weights, mode='fit'):
 #     """
