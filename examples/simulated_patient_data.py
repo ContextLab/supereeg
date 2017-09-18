@@ -20,21 +20,48 @@ import numpy as np
 import pickle
 import seaborn as sns
 from scipy.stats import kurtosis, zscore, pearsonr
+from scipy.spatial.distance import cdist
 from superEEG._helpers.stats import r2z, z2r, corr_column
 
+def recon(bo_sub, R):
+    """
+    """
+    R[np.eye(R.shape[0]) == 1] = 1
+    known_inds = bo_sub.locs.index.values
+    locs_inds = range(R.shape[0])
+    unknown_inds = np.sort(list(set(locs_inds) - set(known_inds)))
+    Kba = R[unknown_inds, :][:, known_inds]
+    Kaa = R[:,known_inds][known_inds,:]
+    Y = zscore(bo_sub.get_data())
+    return np.squeeze(np.dot(np.dot(Kba, np.linalg.pinv(Kaa)), Y.T).T)
+
+
+def recon_m(bo_sub, mo):
+    """
+    """
+    model = z2r(np.divide(mo.numerator, mo.denominator))
+    model[np.eye(model.shape[0]) == 1] = 1
+    known_locs = bo_sub.locs
+    known_inds = bo_sub.locs.index.values
+    unknown_locs = mo.locs.drop(known_inds)
+    unknown_inds = unknown_locs.index.values
+    Kba = model[unknown_inds, :][:, known_inds]
+    Kaa = model[:,known_inds][known_inds,:]
+    Y = zscore(bo_sub.get_data())
+    return np.squeeze(np.dot(np.dot(Kba, np.linalg.pinv(Kaa)), Y.T).T)
 
 # n_samples
 n_samples = 1000
 
 # n_electrodes - number of electrodes for reconstructed patient - need to loop over 5:5:130
-n_elecs =[5, 169]
+n_elecs =[169, 165, 50, 5, 1]
 #n_elecs = [165]
 
 # m_patients - number of patients in the model - need to loop over 10:10:50
 m_patients = [10, 50]
 
 # m_electrodes - number of electrodes for each patient in the model -  25:25:100
-m_elecs = [10, 170]
+m_elecs = [169, 50, 10]
 
 # load nifti to get locations
 gray = se.load(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_mask_20mm_brain.nii')
@@ -44,34 +71,52 @@ gray_locs = gray.locs
 
 d = []
 
-param_grid = [(p,m,n) for p in m_patients for m in m_elecs for n in n_elecs]
+R = 1 - cdist(gray_locs, gray_locs, metric='euclidean')
+R -= np.min(R)
+R /= np.max(R)
+R *= 2 * R - 1
 
+
+param_grid = [(p,m,n) for p in m_patients for m in m_elecs for n in n_elecs]
 for p, m, n in param_grid:
 
-    #create brain objects with m_patients and loop over the number of model locations
-    model_bos = [se.simulate_bo(n_samples=10000, sample_rate=1000, locs = gray_locs.sample(m)) for i in range(p)]
+    sub_locs = gray_locs.sample(n).sort_values(['x', 'y', 'z'])
 
-    model = se.Model(model_bos)
-    model.plot(yticklabels=False, xticklabels=False)
-    bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=model.locs)
-    data = bo.data.T.sample(n).T
-    bo_sample = se.Brain(data=data.as_matrix(), locs=bo.locs.loc[data.columns, :].as_matrix())
-    recon = model.predict(bo_sample)
+    unknown_loc = gray_locs[~gray_locs.index.isin(sub_locs.index)]
+
+    #create brain objects with m_patients and loop over the number of model locations
+    model_bos = [se.simulate_bo(n_samples=10000, sample_rate=1000, locs = gray_locs) for i in range(p)]
+
+    model = se.Model(model_bos, locs=gray_locs)
+
+    # model.plot(yticklabels=False, xticklabels=False)
+
+    bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
+
+    data = bo.data.T.drop(unknown_loc.index).T
+    bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs)
+
+    # recon = model.predict(bo_sample)
+
+    predicted = pd.DataFrame(recon(bo_sample, R))
+    predicted_m = pd.DataFrame(recon_m(bo_sample, model))
+
     unknown_ind = [item for item in bo.data.columns if item not in data.columns]
 
     # predicted = recon.data.iloc[:, unknown_ind]
     # actual = bo.data.iloc[:, unknown_ind]
 
-    corr_vals = corr_column(np.atleast_2d(bo.data.iloc[:, unknown_ind].as_matrix()), np.atleast_2d(recon.data.iloc[:, unknown_ind].as_matrix()))
+    actual = bo.data.iloc[:, unknown_ind]
 
-    d.append({'Patients': p, 'Model Locations': m, 'Patient Locations': n, 'Correlation': np.mean(corr_vals)})
+    corr_vals = corr_column(actual.as_matrix(),predicted_m.as_matrix())
+
+    # sns.jointplot(bo.data.iloc[:, unknown_ind].values.flatten(), predicted)
+
+    d.append({'Patients': p, 'Model Locations': m, 'Patient Locations': n, 'Correlation': corr_vals})
+
+    # d.append({'Patient Locations': n, 'Correlation': corr_vals})
 
 d = pd.DataFrame(d)
-
-
-
-
-
 
 
 
