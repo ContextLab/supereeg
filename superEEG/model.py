@@ -196,13 +196,10 @@ class Model(object):
         sub_corrmat = get_corrmat(bo)
 
         # fill diag with zeros
-        np.fill_diagonal(sub_corrmat, 0)
+        np.fill_diagonal(sub_corrmat, 0) # <- possible failpoint
 
         # z-score the corrmat
         sub_corrmat_z = r2z(sub_corrmat)
-
-        # fill diag with zeros
-        np.fill_diagonal(sub_corrmat_z, 0)
 
         # get rbf weights
         sub_rbf_weights = rbf(self.locs, bo.locs)
@@ -214,33 +211,37 @@ class Model(object):
         with np.errstate(invalid='ignore'):
             model_corrmat_x = np.divide(np.add(self.numerator, num_corrmat_x), np.add(self.denominator, denom_corrmat_x))
 
-        # # replace the diagonal with zeros
-        # np.fill_diagonal(model_corrmat_x, 0)
-        #
-        # # convert from z to r
-        # model_corrmat_x = z2r(model_corrmat_x)
-        #
-        # # fill diagonal with zeros
-        # np.fill_diagonal(model_corrmat_x, 0)
+        # get model indices where subject locs overlap with model locs
+        unknown_inds = np.where([(y==x).all() for x in self.locs for y in bo.locs])[0]
 
-        # expanded rbf weights
-        model_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), self.locs)
+        # if there are no unknown inds, keep going
+        if not unknown_inds:
 
-        # get model expanded correlation matrix
-        num_corrmat_x, denom_corrmat_x = expand_corrmat_predict(model_corrmat_x, model_rbf_weights)
+            # expanded rbf weights
+            model_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), self.locs)
 
-        # divide the numerator and denominator
-        with np.errstate(invalid='ignore'):
-            model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
+            # get model expanded correlation matrix
+            num_corrmat_x, denom_corrmat_x = expand_corrmat_predict(model_corrmat_x, model_rbf_weights)
+
+            # divide the numerator and denominator
+            with np.errstate(invalid='ignore'):
+                model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
+
+        # else if all of the subject locations are in the set of model locations
+        elif unknown_inds.shape[0] == bo.locs.shape[0]:
+
+            # permute the correlation matrix so that the inds to reconstruct are on the right edge of the matrix
+            perm_inds = range(self.locs.shape[0])-set(unknown_inds))+list(set(unknown_inds))
+            model_corrmat_x = model_corrmat_x[:, perm_inds][perm_inds, :]
+
+        # else if some of the subject and model locations overlap
+        # else:
 
         #convert from z to r
         model_corrmat_x = z2r(model_corrmat_x)
 
         # convert diagonals to zeros
         np.fill_diagonal(model_corrmat_x, 1)
-
-        sns.heatmap(model_corrmat_x, yticklabels=False, xticklabels=False)
-        sns.plt.show()
 
         # timeseries reconstruction
         reconstructed = reconstruct_activity(bo, model_corrmat_x)
