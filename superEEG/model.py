@@ -235,6 +235,7 @@ class Model(object):
 
             # permute the correlation matrix so that the inds to reconstruct are on the right edge of the matrix
             perm_inds = list(set(unknown_inds)) + list(set(range(self.locs.shape[0]))-set(unknown_inds))
+            #perm_inds =  list(set(range(self.locs.shape[0])) - set(unknown_inds)) + list(set(unknown_inds))
             model_corrmat_x = model_corrmat_x[:, perm_inds][perm_inds, :]
 
         # else if some of the subject and model locations overlap
