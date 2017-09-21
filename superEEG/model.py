@@ -218,7 +218,7 @@ class Model(object):
         unknown_inds = np.where(~bool_mask)[0]
 
         # if there are no unknown inds, keep going
-        if not unknown_inds:
+        if not any(bool_mask):
 
             # expanded rbf weights
             model_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), self.locs)
