@@ -212,7 +212,10 @@ class Model(object):
             model_corrmat_x = np.divide(np.add(self.numerator, num_corrmat_x), np.add(self.denominator, denom_corrmat_x))
 
         # get model indices where subject locs overlap with model locs
-        unknown_inds = np.where([(y==x).all() for x in self.locs for y in bo.locs])[0]
+
+        mask = np.sum([(self.locs == y).all(1) for idy, y in bo.locs.iterrows()], 0)
+        bool_mask = mask.astype(bool)
+        unknown_inds = np.where(~bool_mask)[0]
 
         # if there are no unknown inds, keep going
         if not unknown_inds:
@@ -228,14 +231,22 @@ class Model(object):
                 model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
 
         # else if all of the subject locations are in the set of model locations
-        elif unknown_inds.shape[0] == bo.locs.shape[0]:
+        elif sum(bool_mask) == bo.locs.shape[0]:
 
             # permute the correlation matrix so that the inds to reconstruct are on the right edge of the matrix
-            perm_inds = range(self.locs.shape[0])-set(unknown_inds))+list(set(unknown_inds))
+            perm_inds = list(set(unknown_inds)) + list(set(range(self.locs.shape[0]))-set(unknown_inds))
             model_corrmat_x = model_corrmat_x[:, perm_inds][perm_inds, :]
 
         # else if some of the subject and model locations overlap
         # else:
+        elif sum(bool_mask) != bo.locs.shape[0]:
+
+            bo_mask = np.sum([(bo.locs == y).all(1) for idy, y in self.locs.iterrows()], 0)
+            bool_mask = mask.astype(bool)
+            disjoint_inds = np.where(~bool_mask)[0]
+            perm_inds = list(set(range(self.locs.shape[0])) - set(unknown_inds)) + list(set(unknown_inds))
+            model_permuted = model_corrmat_x[:, perm_inds][perm_inds, :]
+
 
         #convert from z to r
         model_corrmat_x = z2r(model_corrmat_x)
