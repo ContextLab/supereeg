@@ -50,6 +50,26 @@ def recon_m(bo_sub, mo):
     Y = zscore(bo_sub.get_data())
     return np.squeeze(np.dot(np.dot(Kba, np.linalg.pinv(Kaa)), Y.T).T)
 
+def row_in_array(myarray, myrow):
+    """
+        Looks to see if a row (electrode location) is in the bigger array
+
+        Parameters
+        ----------
+        myarray : ndarray
+            Larger array of electrode locations
+
+        myrow : ndarray
+            Specific row to find
+
+        Returns
+        ----------
+        results : bool
+            True if row in array; False if not
+
+        """
+    return (myarray == myrow).all(-1).any()
+
 # n_samples
 n_samples = 1000
 
@@ -101,7 +121,7 @@ for p, m, n in param_grid:
         data = bo.data.T.drop(unknown_loc.index).T
         bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs)
 
-        # recon = model.predict(bo_sample)
+        recon = model.predict(bo_sample)
 
         predicted = pd.DataFrame(recon(bo_sample, R))
 
