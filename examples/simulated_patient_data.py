@@ -74,14 +74,14 @@ def row_in_array(myarray, myrow):
 n_samples = 1000
 
 # n_electrodes - number of electrodes for reconstructed patient - need to loop over 5:5:130
-n_elecs =[160, 50, 5]
+n_elecs =[70, 50, 5]
 #n_elecs = [165]
 
 # m_patients - number of patients in the model - need to loop over 10:10:50
 m_patients = [10, 50]
 
 # m_electrodes - number of electrodes for each patient in the model -  25:25:100
-m_elecs = [165, 50, 5]
+m_elecs = [100, 50, 5]
 
 iter_val = 10
 
@@ -151,46 +151,46 @@ for p, m, n in param_grid:
 
 ####################################
 
-        ### 2: all brain object locations are also model locations ( B is a subset of A)
-
-        # subset locations to build model
-        mo_locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])
-
-        #create brain objects with m_patients and loop over the number of model locations
-        model_bos = [se.simulate_bo(n_samples=10000, sample_rate=1000, locs = mo_locs) for x in range(p)]
-
-        # create model from subsampled gray locations
-        model = se.Model(model_bos, locs=mo_locs)
-
-        # # model.plot(yticklabels=False, xticklabels=False)
-
-        # brain object locations subsetted entirely from model - for this m > n
-        sub_locs = mo_locs.sample(n).sort_values(['x', 'y', 'z'])
-
-        # create a brain object with all gray locations
-        bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
-
-        # get indices for unknown locations (where we wish to predict)
-        unknown_loc = gray_locs[~gray_locs.index.isin(sub_locs.index)]
-
-        # parse brain object to create synthetic patient data
-        data = bo.data.T.drop(unknown_loc.index).T
-
-        # put data and locations together in new sample brain object
-        bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs)
-
-        # predict activity at all unknown locations
-        recon = model.predict(bo_sample)
-
-        # get indices for unknown locations (where we wish to predict)
-        unknown_ix = mo_locs[~mo_locs.index.isin(sub_locs.index)]
-
-        # this next step is redundant - just get from unknown_loc later
-        #unknown_ind = [item for item in bo.data.columns if item not in data.columns]
-
-        actual = bo.data.iloc[:, unknown_ix.index]
-
-        corr_vals = corr_column(actual.as_matrix(), recon.data.as_matrix())
+        # ### 2: all brain object locations are also model locations ( B is a subset of A)
+        #
+        # # subset locations to build model
+        # mo_locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])
+        #
+        # #create brain objects with m_patients and loop over the number of model locations
+        # model_bos = [se.simulate_bo(n_samples=10000, sample_rate=1000, locs = mo_locs) for x in range(p)]
+        #
+        # # create model from subsampled gray locations
+        # model = se.Model(model_bos, locs=gray_locs)
+        #
+        # # # model.plot(yticklabels=False, xticklabels=False)
+        #
+        # # brain object locations subsetted entirely from model - for this m > n
+        # sub_locs = gray_locs.sample(n).sort_values(['x', 'y', 'z'])
+        #
+        # # create a brain object with all gray locations
+        # bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
+        #
+        # # get indices for unknown locations (where we wish to predict)
+        # unknown_loc = gray_locs[~gray_locs.index.isin(sub_locs.index)]
+        #
+        # # parse brain object to create synthetic patient data
+        # data = bo.data.T.drop(unknown_loc.index).T
+        #
+        # # put data and locations together in new sample brain object
+        # bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs)
+        #
+        # # predict activity at all unknown locations
+        # recon = model.predict(bo_sample)
+        #
+        # # get indices for unknown locations (where we wish to predict)
+        # unknown_ix = mo_locs[~mo_locs.index.isin(sub_locs.index)]
+        #
+        # # this next step is redundant - just get from unknown_loc later
+        # #unknown_ind = [item for item in bo.data.columns if item not in data.columns]
+        #
+        # actual = bo.data.iloc[:, unknown_ix.index]
+        #
+        # corr_vals = corr_column(actual.as_matrix(), recon.data.as_matrix())
 
 ############################
 
@@ -206,37 +206,31 @@ for p, m, n in param_grid:
         model = se.Model(model_bos, locs=mo_locs)
 
         # # brain object locations subsetted entirely from model and gray locations - for this n > m
-        # #sub_locs = gray_locs.sample(n).sort_values(['x', 'y', 'z'])
-        #
-        # #sub_locs = gray_locs.sample(n).sort_values(['x', 'y', 'z'])
-        #
-        # # for the case where you want both subset and disjoint locations
-        # # unknown_loc = gray_locs[~gray_locs.index.isin(sub_locs.index)]
-        #
+        sub_locs = gray_locs.sample(n).sort_values(['x', 'y', 'z'])
 
-        # get indices for unknown locations (where we wish to predict)
-        # unknown_loc = gray_locs[~gray_locs.index.isin(sub_locs.index)]
-        # unknown_loc = mo_locs[~mo_locs.index.isin(sub_locs.index)]
-        #
-        # bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
-        #
-        # data = bo.data.T.drop(unknown_loc.index).T
-        # bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs)
-        #
-        # recon = model.predict(bo_sample)
+
+        # for the case where you want both subset and disjoint locations - get indices for unknown locations (where we wish to predict)
+        unknown_loc = gray_locs[~gray_locs.index.isin(sub_locs.index)]
+
+        bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
+
+        data = bo.data.T.drop(unknown_loc.index).T
+        bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs)
+
+        recon = model.predict(bo_sample)
         #
         # # predicted = pd.DataFrame(recon(bo_sample, R))
         #
         # #predicted_m = pd.DataFrame(recon_m(bo_sample, model))
         #
-        # unknown_ind = [item for item in bo.data.columns if item not in data.columns]
+        unknown_ind = [item for item in bo.data.columns if item not in data.columns]
         #
         # # predicted = recon.data.iloc[:, unknown_ind]
         # # actual = bo.data.iloc[:, unknown_ind]
         #
-        # actual = bo.data.iloc[:, unknown_ind]
+        actual = bo.data.iloc[:, unknown_ind]
         #
-        # corr_vals = corr_column(actual.as_matrix(),recon.data.as_matrix())
+        corr_vals = corr_column(actual.as_matrix(),recon.data.as_matrix())
         #
         # # sns.jointplot(bo.data.iloc[:, unknown_ind].values.flatten(), predicted)
 

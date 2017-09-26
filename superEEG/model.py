@@ -216,6 +216,7 @@ class Model(object):
         mask = np.sum([(self.locs == y).all(1) for idy, y in bo.locs.iterrows()], 0)
         bool_mask = mask.astype(bool)
         unknown_inds = np.where(~bool_mask)[0]
+        joint_model_inds = np.where(bool_mask)[0]
 
         # if there are no unknown inds, keep going
         if not any(bool_mask):
@@ -234,19 +235,45 @@ class Model(object):
         elif sum(bool_mask) == bo.locs.shape[0]:
 
             # permute the correlation matrix so that the inds to reconstruct are on the right edge of the matrix
-            perm_inds = list(set(unknown_inds)) + list(set(range(self.locs.shape[0]))-set(unknown_inds))
-            #perm_inds =  list(set(range(self.locs.shape[0])) - set(unknown_inds)) + list(set(unknown_inds))
+
+            # perm_inds = sorted(set(unknown_inds)) + sorted(set(range(self.locs.shape[0]))-set(unknown_inds))
+            perm_inds = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds)) + sorted(set(joint_model_inds))
+
             model_corrmat_x = model_corrmat_x[:, perm_inds][perm_inds, :]
 
         # else if some of the subject and model locations overlap
         # else:
         elif sum(bool_mask) != bo.locs.shape[0]:
 
+            # get subject indices where subject locs do not overlap with model locs
             bo_mask = np.sum([(bo.locs == y).all(1) for idy, y in self.locs.iterrows()], 0)
-            bool_mask = mask.astype(bool)
-            disjoint_inds = np.where(~bool_mask)[0]
-            perm_inds = list(set(range(self.locs.shape[0])) - set(unknown_inds)) + list(set(unknown_inds))
+            bool_bo_mask = bo_mask.astype(bool)
+            disjoint_bo_inds = np.where(~bool_bo_mask)[0]
+
+            # permute the correlation matrix so that the inds to reconstruct are on the right edge of the matrix
+
+            # perm_inds_unknown = sorted(set(unknown_inds)) + sorted(set(range(self.locs.shape[0])) - set(unknown_inds))
+            perm_inds = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds)) + sorted(set(joint_model_inds))
             model_permuted = model_corrmat_x[:, perm_inds][perm_inds, :]
+
+            # permute the model locations (important for the rbf calculation later
+            model_locs_permuted = self.locs.iloc[perm_inds]
+
+            # permute the subject locations arranging them
+            bo_perm_inds = sorted(set(range(bo.locs.shape[0])) - set(disjoint_bo_inds)) + sorted(set(disjoint_bo_inds))
+            #bo.locs = bo.locs.iloc[disjoint_bo_inds]
+            bo.locs = bo.locs.iloc[bo_perm_inds]
+            bo.data = bo.data[bo_perm_inds]
+
+            # expanded rbf weights
+            model_rbf_weights = rbf(pd.concat([model_locs_permuted, bo.locs]), model_locs_permuted)
+
+            # get model expanded correlation matrix
+            num_corrmat_x, denom_corrmat_x = expand_corrmat_predict(model_permuted, model_rbf_weights)
+
+            # divide the numerator and denominator
+            with np.errstate(invalid='ignore'):
+                model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
 
 
         #convert from z to r
@@ -259,7 +286,7 @@ class Model(object):
         reconstructed = reconstruct_activity(bo, model_corrmat_x)
 
         # return reconstructed data
-        return Brain(data=reconstructed, locs=self.locs, sessions=bo.sessions,
+        return Brain(data=reconstructed, locs=self.locs.loc[perm_inds], sessions=bo.sessions,
                     sample_rate=bo.sample_rate)
 
 
