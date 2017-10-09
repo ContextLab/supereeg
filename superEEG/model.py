@@ -261,15 +261,18 @@ class Model(object):
 
             # permute the subject locations arranging them
             bo_perm_inds = sorted(set(range(bo.locs.shape[0])) - set(disjoint_bo_inds)) + sorted(set(disjoint_bo_inds))
+           # bo_perm_sub_inds = sorted(set(disjoint_bo_inds))
             #bo.locs = bo.locs.iloc[disjoint_bo_inds]
+            sub_bo = bo.locs.iloc[disjoint_bo_inds]
             bo.locs = bo.locs.iloc[bo_perm_inds]
             bo.data = bo.data[bo_perm_inds]
 
             # expanded rbf weights
-            model_rbf_weights = rbf(pd.concat([model_locs_permuted, bo.locs]), model_locs_permuted)
+            #model_rbf_weights = rbf(pd.concat([model_locs_permuted, bo.locs]), model_locs_permuted)
+            model_rbf_weights = rbf(pd.concat([model_locs_permuted, sub_bo]), model_locs_permuted)
 
             # get model expanded correlation matrix
-            num_corrmat_x, denom_corrmat_x = expand_corrmat_predict(model_permuted, model_rbf_weights)
+            num_corrmat_x, denom_corrmat_x = expand_corrmat_fit(model_permuted, model_rbf_weights)
 
             # divide the numerator and denominator
             with np.errstate(invalid='ignore'):
@@ -286,7 +289,7 @@ class Model(object):
         reconstructed = reconstruct_activity(bo, model_corrmat_x)
 
         # return reconstructed data
-        return Brain(data=reconstructed, locs=self.locs.loc[perm_inds], sessions=bo.sessions,
+        return Brain(data=reconstructed, locs=self.locs.iloc[perm_inds], sessions=bo.sessions,
                     sample_rate=bo.sample_rate)
 
 
