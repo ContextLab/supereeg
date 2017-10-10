@@ -231,6 +231,8 @@ class Model(object):
             with np.errstate(invalid='ignore'):
                 model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
 
+            perm_locs = self.locs
+
         # else if all of the subject locations are in the set of model locations
         elif sum(bool_mask) == bo.locs.shape[0]:
 
@@ -240,6 +242,8 @@ class Model(object):
             perm_inds = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds)) + sorted(set(joint_model_inds))
 
             model_corrmat_x = model_corrmat_x[:, perm_inds][perm_inds, :]
+
+            perm_locs = self.locs.iloc[perm_inds]
 
         # else if some of the subject and model locations overlap
         # else:
@@ -252,8 +256,8 @@ class Model(object):
 
             # permute the correlation matrix so that the inds to reconstruct are on the right edge of the matrix
 
-            # perm_inds_unknown = sorted(set(unknown_inds)) + sorted(set(range(self.locs.shape[0])) - set(unknown_inds))
             perm_inds = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds)) + sorted(set(joint_model_inds))
+            perm_inds_unknown = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds))
             model_permuted = model_corrmat_x[:, perm_inds][perm_inds, :]
 
             # permute the model locations (important for the rbf calculation later
@@ -267,17 +271,22 @@ class Model(object):
             bo.locs = bo.locs.iloc[bo_perm_inds]
             bo.data = bo.data[bo_perm_inds]
 
+            # replace bo_perm_inds with only those unknown
+            perm_inds_unknown = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds))
             # expanded rbf weights
             #model_rbf_weights = rbf(pd.concat([model_locs_permuted, bo.locs]), model_locs_permuted)
             model_rbf_weights = rbf(pd.concat([model_locs_permuted, sub_bo]), model_locs_permuted)
 
             # get model expanded correlation matrix
-            num_corrmat_x, denom_corrmat_x = expand_corrmat_fit(model_permuted, model_rbf_weights)
+            num_corrmat_x, denom_corrmat_x = expand_corrmat_predict(model_permuted, model_rbf_weights)
 
             # divide the numerator and denominator
             with np.errstate(invalid='ignore'):
                 model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
 
+            model_corrmat_x[:model_permuted.shape[0], :model_permuted.shape[0]] = model_permuted
+
+            perm_locs = self.locs.iloc[perm_inds_unknown]
 
         #convert from z to r
         model_corrmat_x = z2r(model_corrmat_x)
@@ -289,7 +298,7 @@ class Model(object):
         reconstructed = reconstruct_activity(bo, model_corrmat_x)
 
         # return reconstructed data
-        return Brain(data=reconstructed, locs=self.locs.iloc[perm_inds], sessions=bo.sessions,
+        return Brain(data=reconstructed, locs=perm_locs, sessions=bo.sessions,
                     sample_rate=bo.sample_rate)
 
 
