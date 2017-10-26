@@ -2,8 +2,7 @@
 
 <h2>Overview</h2>
 
-SuperEEG is...
-
+SuperEEG is a Python package used for estimating neural activity throughout the brain from a small number of intracranial recordings by leveraging across patients and Gaussian process regression. 
 <!-- <h2>Try it!</h2>
 
 Click the badge to launch a binder instance with example uses:
