@@ -2,6 +2,8 @@ import scipy
 import numpy as np
 from .brain import Brain
 from .model import Model
+from sklearn import datasets
+
 
 def simulate_data(n_samples=1000, n_elecs=10, locs=None, cov='distance'):
     """
@@ -29,6 +31,12 @@ def simulate_data(n_samples=1000, n_elecs=10, locs=None, cov='distance'):
         A samples by number of electrods array of simulated iEEG data
 
     """
+    # if locs is not None:
+    #     R = 1 - scipy.spatial.distance.cdist(locs, locs, metric='euclidean')
+    #     R -= np.min(R)
+    #     R /= np.max(R)
+    #     R = 2*R - 1
+    # make random positive definite matix
     if locs is not None:
         R = 1 - scipy.spatial.distance.cdist(locs, locs, metric='euclidean')
         R -= np.min(R)
@@ -38,6 +46,8 @@ def simulate_data(n_samples=1000, n_elecs=10, locs=None, cov='distance'):
         R = create_cov(cov, n_elecs=n_elecs)
 
     return np.random.multivariate_normal(np.zeros(n_elecs), R, size=n_samples)
+
+###### should be R + noise - create random matrix of numbers that are close to 0 - random normal draws x (noise) R + x * xT - positive definite
 
 def simulate_locations(n_elecs=10):
     """
@@ -123,6 +133,8 @@ def create_cov(cov, n_elecs=10):
         R = np.eye(n_elecs)
     elif cov is 'toeplitz':
         R = scipy.linalg.toeplitz(np.linspace(0, 1, n_elecs)[::-1])
+    elif cov is 'random':
+        R = datasets.make_spd_matrix(170, random_state=None)
     elif isinstance(cov, np.ndarray):
         R = cov
 

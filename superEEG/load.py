@@ -100,6 +100,10 @@ def load(fname):
         bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_mask_8mm_brain.nii')
         return bo
 
+    elif fname is 'mini_model_nifti':
+        bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_mask_20mm_brain.nii')
+        return bo
+
     # load brain object
     elif fname.split('.')[-1]=='bo':
         with open(fname, 'rb') as f:
