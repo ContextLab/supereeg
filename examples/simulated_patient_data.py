@@ -31,14 +31,15 @@ def main(n_elecs):
     n_samples = 1000
 
     # n_electrodes - number of electrodes for reconstructed patient - need to loop over 5:5:130
-    n_elecs = [ast.literal_eval(n_elecs)]
+    n_elecs = range(5, 165, 50)
+    #n_elecs = [ast.literal_eval(n_elecs)]
 
     # m_patients - number of patients in the model - need to loop over 10:10:50
-    m_patients = [25]
+    m_patients = [5]
 
     # m_electrodes - number of electrodes for each patient in the model -  25:25:100
-    #m_elecs = range(5, 165, 50)
-    m_elecs = [100]
+    m_elecs = range(5, 165, 50)
+    #m_elecs = [100]
 
     iter_val = 1
 
@@ -167,7 +168,7 @@ def main(n_elecs):
             # for the case where you want both subset and disjoint locations - get indices for unknown locations (where we wish to predict)
             unknown_loc = gray_locs[~gray_locs.index.isin(sub_locs.index)]
 
-            bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
+            bo = se.simulate_bo_random(n_samples=1000, sample_rate=1000, locs=gray_locs)
 
             data = bo.data.T.drop(unknown_loc.index).T
             bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs)
@@ -175,12 +176,13 @@ def main(n_elecs):
             recon = model.predict(bo_sample)
 
             # sample actual data at reconstructed locations
-            actual = bo.data.iloc[:, recon.locs.index]
+            actual = bo.data.iloc[:, unknown_loc.index]
 
             #correlate reconstruction with actual data
             corr_vals = corr_column(actual.as_matrix(),recon.data.as_matrix())
+            corr_vals_sample = np.random.choice(corr_vals, 5)
 
-            d.append({'Numbder of Patients in Model': p, 'Number of Model Locations': m, 'Number of Patient Locations': n, 'Average Correlation': corr_vals.mean(), 'Correlations': corr_vals, 'Model Locations': model_locs.values, 'Patient Locations': bo_sample.locs.values})
+            d.append({'Numbder of Patients in Model': p, 'Number of Model Locations': m, 'Number of Patient Locations': n, 'Average Correlation': corr_vals_sample.mean(), 'Correlations': corr_vals, 'Model Locations': model_locs.values, 'Patient Locations': bo_sample.locs.values})
 
         d = pd.DataFrame(d, columns = ['Numbder of Patients in Model', 'Number of Model Locations', 'Number of Patient Locations', 'Average Correlation', 'Correlations', 'Model Locations', 'Patient Locations'])
         append_d = append_d.append(d)
@@ -221,7 +223,7 @@ def main(n_elecs):
             data_plot = append_d[append_d['Numbder of Patients in Model'] == i].pivot_table(
                 index=['Number of Model Locations'], columns='Number of Patient Locations',
                 values='Average Correlation')
-            ax = sns.heatmap(data_plot, cmap="Blues", vmin=-1, vmax=1)
+            ax = sns.heatmap(data_plot, cmap="coolwarm", vmin=-1, vmax=1)
             ax.invert_yaxis()
             ax.set(xlabel='Number of electrodes from to-be-reconstructed patient', ylabel=' Number of electrodes from patients used to construct model')
             #axs_iter += 1
