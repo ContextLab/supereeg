@@ -146,7 +146,9 @@ def main(n_elecs):
             #mo_locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])
 
             #create brain objects with m_patients and loop over the number of model locations
-            model_bos = [se.simulate_bo(n_samples=10000, sample_rate=1000, locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])) for x in range(p)]
+            model_bos = [se.simulate_model_bos(n_samples=10000, sample_rate=1000, locs=gray_locs, sample_locs = m) for x in range(p)]
+
+            #model_bos = [se.simulate_bo(n_samples=10000, sample_rate=1000, locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])) for x in range(p)]
 
             model_locs = pd.DataFrame()
             for i in range(len(model_bos)):
