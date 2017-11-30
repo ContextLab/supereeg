@@ -163,7 +163,6 @@ def main(n_elecs):
             # # brain object locations subsetted entirely from both model and gray locations - for this n > m (this isn't necessarily true, but this ensures overlap)
             sub_locs = gray_locs.sample(n).sort_values(['x', 'y', 'z'])
 
-            #### add while loop that samples from both modle and gray locations
 
             # for the case where you want both subset and disjoint locations - get indices for unknown locations (where we wish to predict)
             unknown_loc = gray_locs[~gray_locs.index.isin(sub_locs.index)]
