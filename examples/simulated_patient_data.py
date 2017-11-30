@@ -35,7 +35,7 @@ def main(n_elecs):
     #n_elecs = [ast.literal_eval(n_elecs)]
 
     # m_patients - number of patients in the model - need to loop over 10:10:50
-    m_patients = [5]
+    m_patients = [5, 10, 50]
 
     # m_electrodes - number of electrodes for each patient in the model -  25:25:100
     m_elecs = range(5, 165, 50)
