@@ -31,15 +31,16 @@ def main(n_elecs):
     n_samples = 1000
 
     # n_electrodes - number of electrodes for reconstructed patient - need to loop over 5:5:130
-    n_elecs = range(5, 165, 50)
+    #n_elecs = range(5, 165, 160)
+    n_elecs = [10, 160]
     #n_elecs = [ast.literal_eval(n_elecs)]
 
     # m_patients - number of patients in the model - need to loop over 10:10:50
-    m_patients = [5, 10, 50]
+    m_patients = [25]
 
     # m_electrodes - number of electrodes for each patient in the model -  25:25:100
-    m_elecs = range(5, 165, 50)
-    #m_elecs = [100]
+    #m_elecs = range(5, 165, 160)
+    m_elecs = [10, 160]
 
     iter_val = 1
 
@@ -189,6 +190,8 @@ def main(n_elecs):
 
 
     append_d
+
+
     if os.path.isfile('ave_corrs'):
         f = open('ave_corrs', 'a')
         append_d.to_csv(f, mode='a', header=False)
@@ -199,8 +202,8 @@ def main(n_elecs):
         f.close()
 
     new_df=append_d.groupby('Average Correlation').mean()
-    new_df['Proportion of electrodes from to-be-reconstructed patient'] = new_df['Number of Model Locations'] / 170
-    new_df['Proportion of electrodes from patients used to construct model'] = new_df['Number of Patient Locations'] / 170
+    # new_df['Proportion of electrodes from to-be-reconstructed patient'] = new_df['Number of Model Locations'] / 170
+    # new_df['Proportion of electrodes from patients used to construct model'] = new_df['Number of Patient Locations'] / 170
     if len(np.unique(new_df['Numbder of Patients in Model'])) > 1:
 
         fig, axs = plt.subplots(ncols=len(np.unique(new_df['Numbder of Patients in Model'])), sharex=True, sharey=True)
@@ -230,7 +233,7 @@ def main(n_elecs):
     #
 
     #
-    # plt.savefig('average_correlation_heatmap.pdf')
+    plt.savefig('average_correlation_heatmap.pdf')
 
     ## put in locations of electrodes as well
 
