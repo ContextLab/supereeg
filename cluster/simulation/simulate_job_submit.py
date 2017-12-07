@@ -17,7 +17,7 @@ except:
 
 # each job command should be formatted as a string
 job_script = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test.py')
-job_commands = map(lambda x: x[0]+" "+str(x[1]), zip([job_script]*10, range(5)))
+job_commands = map(lambda x: x[0]+" "+str(x[1]), zip([job_script]*10, range(3)))
 
 # job_names should specify the file name of each script (as a list, of the same length as job_commands)
 job_names = map(lambda x: str(x)+'.sh', range(len(job_commands)))
