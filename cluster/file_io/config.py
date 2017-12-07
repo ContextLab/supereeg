@@ -12,7 +12,7 @@ if (socket.gethostname() == 'Lucys-MacBook-Pro-3.local') or (socket.gethostname(
     config['startdir'] = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))  # directory to start the job in
     config['template'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'run_job_local.sh')
 else:
-    config['datadir'] = '/idata/cdl/data/ECoG/pyFR/data/npz/'
+    config['datadir'] = '/idata/cdl/data/ECoG/pyFR/data/'
     config['workingdir'] = '/idata/cdl/data/ECoG/pyFR/data/'
     config['startdir'] = '/idata/cdl/lowen'
     config['template'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'run_job.sh')
@@ -20,7 +20,7 @@ else:
 # job creation options
 config['scriptdir'] = os.path.join(config['workingdir'], 'scripts')
 config['lockdir'] = os.path.join(config['workingdir'], 'locks')
-config['resultsdir'] = os.path.join(config['workingdir'], 'bo')
+config['resultsdir'] = os.path.join(config['workingdir'], 'bo_new')
 
 # runtime options
 config['jobname'] = "simulation"  # default job name

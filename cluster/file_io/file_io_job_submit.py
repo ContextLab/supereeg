@@ -18,7 +18,7 @@ except:
 
 # each job command should be formatted as a string
 job_script = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'file_io.py')
-files = glob.glob(os.path.join(config['datadir'],'npz/BW*'))
+files = glob.glob(os.path.join(config['datadir'],'npz/BW00*'))
 job_commands = map(lambda x: x[0]+" "+str(x[1]), zip([job_script]*10, files))
 
 # job_names should specify the file name of each script (as a list, of the same length as job_commands)
