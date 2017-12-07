@@ -3,6 +3,7 @@
 # create a bunch of job scripts
 from config import config
 from subprocess import call
+import glob
 import os
 import socket
 import getpass
@@ -17,7 +18,8 @@ except:
 
 # each job command should be formatted as a string
 job_script = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'file_io.py')
-job_commands = map(lambda x: x[0]+" "+str(x[1]), zip([job_script]*10, range(0)))
+files = glob.glob(os.path.join(config['datadir'],'npz/BW*'))
+job_commands = map(lambda x: x[0]+" "+str(x[1]), zip([job_script]*10, files))
 
 # job_names should specify the file name of each script (as a list, of the same length as job_commands)
 job_names = map(lambda x: str(x)+'.sh', range(len(job_commands)))

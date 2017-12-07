@@ -3,6 +3,7 @@ import superEEG as se
 import numpy as np
 from superEEG._helpers.stats import tal2mni
 import glob
+import sys
 import os
 from config import config
 
@@ -25,11 +26,17 @@ results_dir = config['resultsdir']
 
 data_dir = config['datadir']
 
-files = glob.glob(os.path.join(data_dir,'BW*'))
-for i in files:
-    file_name = os.path.splitext(os.path.basename(i))[0]
-    bo = npz2bo(i)
-    bo.save(filepath=os.path.join(results_dir, file_name))
+fname = sys.argv[1]
+
+file_name = os.path.basename(os.path.splitext(fname)[0])
+bo = npz2bo(fname)
+bo.save(filepath=os.path.join(results_dir, file_name))
+
+#files = glob.glob(os.path.join(data_dir,'npz/BW*'))
+# for i in files:
+#     file_name = os.path.splitext(os.path.basename(i))[0]
+#     bo = npz2bo(i)
+#     bo.save(filepath=os.path.join(results_dir, file_name))
 
 print('done')
 

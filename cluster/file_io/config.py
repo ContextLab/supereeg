@@ -7,8 +7,8 @@ config['template'] = 'run_job.sh'
 
 # ====== MODIFY ONLY THE CODE BETWEEN THESE LINES ======
 if (socket.gethostname() == 'Lucys-MacBook-Pro-3.local') or (socket.gethostname() == 'vertex.kiewit.dartmouth.edu') or (socket.gethostname() == 'vertex.local'):
-    config['datadir'] = '/Users/lucyowen/Desktop/supereeg_env/npz'
-    config['workingdir'] = '/Users/lucyowen/Desktop/supereeg_env'
+    config['datadir'] = '/Users/lucyowen/Desktop/supereeg_env'
+    config['workingdir'] = config['datadir']
     config['startdir'] = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))  # directory to start the job in
     config['template'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'run_job_local.sh')
 else:
