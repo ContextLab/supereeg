@@ -1,4 +1,0 @@
-/ihome/lowen/anaconda2/envs/supereeg_env/lib/python2.7/site-packages/numpy/lib/function_base.py:4011: RuntimeWarning: Invalid value encountered in median
-  r = func(a, **kwargs)
-/ihome/lowen/anaconda2/envs/supereeg_env/lib/python2.7/site-packages/superEEG/brain.py:111: UserWarning: No sample rate given.  Setting sample rate to 1000
-  warnings.warn('No sample rate given.  Setting sample rate to 1000')
