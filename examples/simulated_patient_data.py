@@ -50,7 +50,7 @@ def main(n_elecs):
     # extract locations
     gray_locs = gray.locs
 
-    d = []
+
     append_d = pd.DataFrame()
 
     param_grid = [(p,m,n) for p in m_patients for m in m_elecs for n in n_elecs]

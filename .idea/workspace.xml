@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="72de947b-ed70-4f88-b013-460cd0bdb63e" name="Default" comment="" />
+    <list default="true" id="72de947b-ed70-4f88-b013-460cd0bdb63e" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/examples/sim_pat_test.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/simulated_patient_data.py" afterPath="$PROJECT_DIR$/examples/simulated_patient_data.py" />
+    </list>
     <ignored path="superEEG.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -23,18 +27,40 @@
       <file leaf-file-name="stats.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/superEEG/_helpers/stats.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="313">
-              <caret line="638" column="0" selection-start-line="638" selection-start-column="0" selection-end-line="638" selection-end-column="0" />
+            <state relative-caret-position="427">
+              <caret line="644" column="35" selection-start-line="644" selection-start-column="35" selection-end-line="644" selection-end-column="35" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="simulated_patient_data.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="simulated_patient_data.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/examples/simulated_patient_data.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-57">
-              <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+            <state relative-caret-position="513">
+              <caret line="33" column="33" selection-start-line="33" selection-start-column="33" selection-end-line="33" selection-end-column="33" />
+              <folding>
+                <element signature="e#343#364#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pydevd.py" pinned="false" current-in-tab="false">
+        <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="334">
+              <caret line="1579" column="0" selection-start-line="1579" selection-start-column="0" selection-end-line="1579" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="sim_pat_test.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/examples/sim_pat_test.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="342">
+              <caret line="25" column="25" selection-start-line="25" selection-start-column="25" selection-end-line="25" selection-end-column="25" />
               <folding>
                 <element signature="e#343#364#0" expanded="true" />
               </folding>
@@ -45,14 +71,14 @@
       <file leaf-file-name="compile_ful_cov_mats.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/code/compile_ful_cov_mats.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1340">
+            <state relative-caret-position="0">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="load.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="load.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/superEEG/load.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="598">
@@ -65,8 +91,8 @@
       <file leaf-file-name="model.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/superEEG/model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3173">
-              <caret line="167" column="47" selection-start-line="167" selection-start-column="47" selection-end-line="167" selection-end-column="47" />
+            <state relative-caret-position="377">
+              <caret line="300" column="0" selection-start-line="300" selection-start-column="0" selection-end-line="300" selection-end-column="0" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -77,8 +103,8 @@
       <file leaf-file-name="simulate.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/superEEG/simulate.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="579">
-              <caret line="238" column="12" selection-start-line="238" selection-start-column="12" selection-end-line="238" selection-end-column="12" />
+            <state relative-caret-position="244">
+              <caret line="165" column="0" selection-start-line="165" selection-start-column="0" selection-end-line="165" selection-end-column="0" />
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
               </folding>
@@ -129,14 +155,15 @@
         <option value="$PROJECT_DIR$/superEEG/simulate.py" />
         <option value="$PROJECT_DIR$/superEEG/model.py" />
         <option value="$PROJECT_DIR$/examples/simulated_patient_data.py" />
+        <option value="$PROJECT_DIR$/examples/sim_pat_test.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="2133" />
-    <option name="y" value="-367" />
-    <option name="width" value="2146" />
-    <option name="height" value="1177" />
+    <option name="x" value="1680" />
+    <option name="y" value="-420" />
+    <option name="width" value="1680" />
+    <option name="height" value="1027" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -170,7 +197,7 @@
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Font" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
   </component>
-  <component name="RunManager" selected="Python.simulated_patient_data">
+  <component name="RunManager" selected="Python.sim_pat_test">
     <configuration default="false" name="simulated_analysis" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -241,6 +268,23 @@
       <option name="USE_PATTERN" value="false" />
       <option name="PARAMS" value="" />
       <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="sim_pat_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="/System/Library/Frameworks/Python.framework/Versions/2.7/bin/python2.7" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/examples" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="superEEG" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/examples/sim_pat_test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
     </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
@@ -428,7 +472,7 @@
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
     </configuration>
-    <list size="7">
+    <list size="8">
       <item index="0" class="java.lang.String" itemvalue="Python.predict.py" />
       <item index="1" class="java.lang.String" itemvalue="Python.predict_example_data.py" />
       <item index="2" class="java.lang.String" itemvalue="Python.load_example_data.py" />
@@ -436,13 +480,15 @@
       <item index="4" class="java.lang.String" itemvalue="Python.simulated_patient_data" />
       <item index="5" class="java.lang.String" itemvalue="Python.file_io" />
       <item index="6" class="java.lang.String" itemvalue="Python tests.Nosetest test_expand_corrmat" />
+      <item index="7" class="java.lang.String" itemvalue="Python.sim_pat_test" />
     </list>
     <recent_temporary>
-      <list size="4">
-        <item index="0" class="java.lang.String" itemvalue="Python.simulated_patient_data" />
-        <item index="1" class="java.lang.String" itemvalue="Python.file_io" />
-        <item index="2" class="java.lang.String" itemvalue="Python.simulated_analysis" />
-        <item index="3" class="java.lang.String" itemvalue="Python tests.Nosetest test_expand_corrmat" />
+      <list size="5">
+        <item index="0" class="java.lang.String" itemvalue="Python.sim_pat_test" />
+        <item index="1" class="java.lang.String" itemvalue="Python.simulated_patient_data" />
+        <item index="2" class="java.lang.String" itemvalue="Python.file_io" />
+        <item index="3" class="java.lang.String" itemvalue="Python.simulated_analysis" />
+        <item index="4" class="java.lang.String" itemvalue="Python tests.Nosetest test_expand_corrmat" />
       </list>
     </recent_temporary>
   </component>
@@ -495,7 +541,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="2133" y="-367" width="2146" height="1177" extended-state="0" />
+    <frame x="1680" y="-420" width="1680" height="1027" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24862888" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -507,7 +553,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.13605443" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.30122757" sideWeight="0.8781893" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3509351" sideWeight="0.8781893" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -615,6 +661,11 @@
           <line>191</line>
           <option name="timeStamp" value="267" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/examples/sim_pat_test.py</url>
+          <line>23</line>
+          <option name="timeStamp" value="272" />
+        </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
@@ -626,18 +677,11 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="269" />
+      <option name="time" value="273" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file:///System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/pickle.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="143">
-          <caret line="1377" column="0" selection-start-line="1377" selection-start-column="0" selection-end-line="1377" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///Library/Python/2.7/site-packages/pandas/core/indexing.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="192">
@@ -801,13 +845,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="23160">
-          <caret line="1579" column="0" selection-start-line="1579" selection-start-column="0" selection-end-line="1579" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/code/plt_corrs.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="195">
@@ -946,6 +983,22 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/superEEG/load.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="598">
+          <caret line="102" column="37" selection-start-line="102" selection-start-column="37" selection-end-line="102" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="334">
+          <caret line="1579" column="0" selection-start-line="1579" selection-start-column="0" selection-end-line="1579" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file:///Library/Python/2.7/site-packages/pandas/core/frame.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="134">
@@ -954,26 +1007,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/superEEG/_helpers/stats.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="313">
-          <caret line="638" column="0" selection-start-line="638" selection-start-column="0" selection-end-line="638" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/code/compile_ful_cov_mats.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1340">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/superEEG/simulate.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="579">
-          <caret line="238" column="12" selection-start-line="238" selection-start-column="12" selection-end-line="238" selection-end-column="12" />
+        <state relative-caret-position="244">
+          <caret line="165" column="0" selection-start-line="165" selection-start-column="0" selection-end-line="165" selection-end-column="0" />
           <folding>
             <element signature="e#0#12#0" expanded="true" />
           </folding>
@@ -982,29 +1019,47 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/superEEG/model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3173">
-          <caret line="167" column="47" selection-start-line="167" selection-start-column="47" selection-end-line="167" selection-end-column="47" />
+        <state relative-caret-position="377">
+          <caret line="300" column="0" selection-start-line="300" selection-start-column="0" selection-end-line="300" selection-end-column="0" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/examples/simulated_patient_data.py">
+    <entry file="file://$PROJECT_DIR$/superEEG/_helpers/stats.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-57">
-          <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+        <state relative-caret-position="427">
+          <caret line="644" column="35" selection-start-line="644" selection-start-column="35" selection-end-line="644" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/code/compile_ful_cov_mats.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/sim_pat_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="342">
+          <caret line="25" column="25" selection-start-line="25" selection-start-column="25" selection-end-line="25" selection-end-column="25" />
           <folding>
             <element signature="e#343#364#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/superEEG/load.py">
+    <entry file="file://$PROJECT_DIR$/examples/simulated_patient_data.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="598">
-          <caret line="102" column="37" selection-start-line="102" selection-start-column="37" selection-end-line="102" selection-end-column="37" />
-          <folding />
+        <state relative-caret-position="513">
+          <caret line="33" column="33" selection-start-line="33" selection-start-column="33" selection-end-line="33" selection-end-column="33" />
+          <folding>
+            <element signature="e#343#364#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
