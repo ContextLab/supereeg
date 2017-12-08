@@ -1,0 +1,28 @@
+------------------------- Prologue ----------------------------
+         Started: Fri Dec  8 11:10:53 EST 2017
+          Job ID: 747095.knorr.hpcc.dartmouth.edu
+         User ID: lowen
+        Group ID: PBS
+        Job Name: simulation
+ Resources Req'd: nodes=1:ppn=1,walltime=00:10:00,neednodes=1:ppn=1
+      Queue Name: default
+    Account Name: 
+------------------------- Prologue ----------------------------
+
+ACTIVATING SUPEREEG VIRTUAL ENVIRONMENT
+Brain object saved as pickle.
+done
+
+------------------------- Epilogue ----------------------------
+        Finished: Fri Dec  8 11:13:07 EST 2017
+          Job ID: 747095.knorr.hpcc.dartmouth.edu
+         User ID: lowen
+        Group ID: PBS
+        Job Name: simulation
+      Session ID: 30749
+ Resources Req'd: nodes=1:ppn=1,walltime=00:10:00,neednodes=1:ppn=1
+  Resources Used: cput=00:00:21,vmem=2672908kb,walltime=00:02:15,mem=623756kb,energy_used=0
+      Queue Name: default
+    Account Name: 
+------------------------- Epilogue ----------------------------
+
