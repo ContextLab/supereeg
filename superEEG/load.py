@@ -100,15 +100,25 @@ def load(fname):
         bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_mask_8mm_brain.nii')
         return bo
 
+    elif fname is 'pyFR_union':
+        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/R_full_MNI.npy', 'rb') as handle:
+            locs = np.load(handle)
+        return locs
+
     elif fname is 'mini_model_nifti':
         bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_mask_20mm_brain.nii')
         return bo
 
     # load brain object
     elif fname.split('.')[-1]=='bo':
-        with open(fname, 'rb') as f:
-            bo = pickle.load(f)
-        return bo
+        try:
+            with open(fname, 'rb') as f:
+                bo = pickle.load(f)
+            return bo
+        except:
+            bo = pd.read_pickle(fname)
+            return bo
+
 
     # load model object
     elif fname.split('.')[-1]=='mo':
@@ -176,3 +186,14 @@ def fullfact(dims):
             inds[row:(row + len(vals)), 1:] = np.tile(aftervals[i, :], (len(vals), 1))
             row += len(vals)
         return inds
+
+def npz2bo(infile):
+
+    with open(infile, 'rb') as handle:
+        f = np.load(handle)
+        data = f['Y']
+        sample_rate = f['samplerate']
+        sessions = f['fname_labels']
+        locs = tal2mni(f['R'])
+
+    return Brain(data=data, locs=locs, sessions=sessions, sample_rate=sample_rate)

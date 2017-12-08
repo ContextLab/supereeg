@@ -7,20 +7,54 @@ import sys
 import os
 from config import config
 
-try:
-    os.stat(config['resultsdir'])
-except:
-    os.makedirs(config['resultsdir'])
-
-
-results_dir = config['resultsdir']
-
 
 fname = sys.argv[1]
 
+model_template = sys.argv[2]
+
+results_dir = os.path.join(config['resultsdir'], model_template)
+
+try:
+    os.stat(results_dir)
+except:
+    os.makedirs(results_dir)
+
+
+
+# load locations for model
+### this weird work around is necessary because there's an issue using a variable for a string in an argument
+
+if model_template == 'mini_model_nifti':
+    gray = se.load('mini_model_nifti')
+
+elif model_template == 'pyFR_union':
+    gray = se.load('pyFR_union')
+
+elif model_template == 'big_temp':
+    gray = se.load('big_temp')
+else:
+    gray = se.load('mini_model_nifti')
+
+
+
+# extract locations
+gray_locs = gray.locs
+
 file_name = os.path.basename(os.path.splitext(fname)[0])
-bo = se.npz2bo(fname)
-bo.save(filepath=os.path.join(results_dir, file_name))
+
+# work around if not brain object:
+if fname.split('.')[-1]=='npz':
+    bo = se.npz2bo(fname)
+
+elif fname.split('.')[-1]=='bo':
+    bo = se.load(fname)
+else:
+    print('unknown file type')
+
+
+model = se.Model(data=bo.data, template = gray_locs)
+
+model.save(filepath=os.path.join(results_dir, file_name))
 
 
 print('done')

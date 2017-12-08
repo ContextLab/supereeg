@@ -6,7 +6,6 @@ from stats import tal2mni, uniquerows, round_it
 import os
 from scipy.spatial.distance import squareform
 
-
 def get_rows(all_locations, subj_locations):
     """
         This function indexes a subject's electrode locations in the full array of electrode locations
