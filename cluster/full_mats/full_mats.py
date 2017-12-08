@@ -42,17 +42,15 @@ gray_locs = gray.locs
 
 file_name = os.path.basename(os.path.splitext(fname)[0])
 
-# work around if not brain object:
-if fname.split('.')[-1]=='npz':
-    bo = se.npz2bo(fname)
-
-elif fname.split('.')[-1]=='bo':
+# work around if not brain objects, but :
+if fname.split('.')[-1]=='bo':
     bo = se.load(fname)
+
 else:
     print('unknown file type')
 
 
-model = se.Model(data=bo.data, template = gray_locs)
+model = se.Model(bo, locs = gray_locs)
 
 model.save(filepath=os.path.join(results_dir, file_name))
 
