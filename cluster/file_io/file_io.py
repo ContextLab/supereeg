@@ -32,11 +32,6 @@ file_name = os.path.basename(os.path.splitext(fname)[0])
 bo = npz2bo(fname)
 bo.save(filepath=os.path.join(results_dir, file_name))
 
-#files = glob.glob(os.path.join(data_dir,'npz/BW*'))
-# for i in files:
-#     file_name = os.path.splitext(os.path.basename(i))[0]
-#     bo = npz2bo(i)
-#     bo.save(filepath=os.path.join(results_dir, file_name))
 
 print('done')
 
