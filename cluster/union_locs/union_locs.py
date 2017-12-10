@@ -1,7 +1,7 @@
 
 import superEEG as se
 import numpy as np
-from superEEG._helpers.bookkeeping import sort_unique_locs
+#from superEEG._helpers.bookkeeping import sort_unique_locs
 import glob
 import sys
 import os
@@ -31,7 +31,7 @@ for b in bo_files:
     union_locs = union_locs.append(bo.locs, ignore_index=True)
 
 
-locations = sort_unique_locs(union_locs)
+locations = se.sort_unique_locs(union_locs)
 
 filepath=os.path.join(results_dir, 'union_locs.npy')
 
