@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="72de947b-ed70-4f88-b013-460cd0bdb63e" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cluster/union_locs/union_locs.py" afterPath="$PROJECT_DIR$/cluster/union_locs/union_locs.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/__init__.py" afterPath="$PROJECT_DIR$/superEEG/__init__.py" />
     </list>
     <ignored path="superEEG.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -26,8 +25,8 @@
       <file leaf-file-name="bookkeeping.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/superEEG/_helpers/bookkeeping.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4552">
-              <caret line="254" column="45" selection-start-line="254" selection-start-column="45" selection-end-line="254" selection-end-column="45" />
+            <state relative-caret-position="448">
+              <caret line="265" column="0" selection-start-line="265" selection-start-column="0" selection-end-line="273" selection-end-column="62" />
               <folding>
                 <element signature="e#23#41#0" expanded="true" />
               </folding>
@@ -38,7 +37,7 @@
       <file leaf-file-name="simulated_patient_data.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cluster/simulation/simulated_patient_data.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2280">
+            <state relative-caret-position="2755">
               <caret line="149" column="54" selection-start-line="149" selection-start-column="54" selection-end-line="149" selection-end-column="54" />
               <folding>
                 <element signature="e#343#364#0" expanded="true" />
@@ -62,8 +61,8 @@
       <file leaf-file-name="union_locs.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/cluster/union_locs/union_locs.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="323">
-              <caret line="30" column="0" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
+            <state relative-caret-position="304">
+              <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
               <folding>
                 <element signature="e#1#22#0" expanded="true" />
               </folding>
@@ -177,8 +176,8 @@
         <option value="$PROJECT_DIR$/cluster/file_io/file_io.py" />
         <option value="$PROJECT_DIR$/cluster/full_mats/full_mats.py" />
         <option value="$PROJECT_DIR$/code/corr_mats.py" />
-        <option value="$PROJECT_DIR$/superEEG/_helpers/bookkeeping.py" />
         <option value="$PROJECT_DIR$/superEEG/__init__.py" />
+        <option value="$PROJECT_DIR$/superEEG/_helpers/bookkeeping.py" />
         <option value="$PROJECT_DIR$/cluster/union_locs/union_locs.py" />
       </list>
     </option>
@@ -703,12 +702,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/cluster/union_locs/union_locs.py</url>
-          <line>35</line>
+          <line>44</line>
           <option name="timeStamp" value="295" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/cluster/union_locs/union_locs.py</url>
-          <line>17</line>
+          <line>26</line>
           <option name="timeStamp" value="296" />
         </line-breakpoint>
       </breakpoints>
@@ -1039,26 +1038,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/superEEG/_helpers/bookkeeping.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4552">
-          <caret line="254" column="45" selection-start-line="254" selection-start-column="45" selection-end-line="254" selection-end-column="45" />
-          <folding>
-            <element signature="e#23#41#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cluster/simulation/simulated_patient_data.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2280">
-          <caret line="149" column="54" selection-start-line="149" selection-start-column="54" selection-end-line="149" selection-end-column="54" />
-          <folding>
-            <element signature="e#343#364#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/superEEG/simulate.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="418">
@@ -1089,10 +1068,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/cluster/simulation/simulated_patient_data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2755">
+          <caret line="149" column="54" selection-start-line="149" selection-start-column="54" selection-end-line="149" selection-end-column="54" />
+          <folding>
+            <element signature="e#343#364#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/superEEG/_helpers/bookkeeping.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="448">
+          <caret line="265" column="0" selection-start-line="265" selection-start-column="0" selection-end-line="273" selection-end-column="62" />
+          <folding>
+            <element signature="e#23#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/cluster/union_locs/union_locs.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="30" column="0" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
+        <state relative-caret-position="304">
+          <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
           <folding>
             <element signature="e#1#22#0" expanded="true" />
           </folding>

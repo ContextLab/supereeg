@@ -14,6 +14,15 @@ try:
 except:
     os.makedirs(config['resultsdir'])
 
+def sort_unique_locs(locs):
+    if isinstance(locs, pd.DataFrame):
+        unique_full_locs = np.vstack(set(map(tuple, locs.as_matrix())))
+    elif isinstance(locs, np.ndarray):
+        unique_full_locs = np.vstack(set(map(tuple, locs)))
+    else:
+        print('unknown location type')
+
+    return unique_full_locs[unique_full_locs[:, 0].argsort(),]
 
 results_dir = config['resultsdir']
 
@@ -31,7 +40,7 @@ for b in bo_files:
     union_locs = union_locs.append(bo.locs, ignore_index=True)
 
 
-locations = se.sort_unique_locs(union_locs)
+locations = sort_unique_locs(union_locs)
 
 filepath=os.path.join(results_dir, 'union_locs.npy')
 
