@@ -35,8 +35,8 @@ bo_files = glob.glob(os.path.join(data_dir,'*.bo'))
 
 union_locs = pd.DataFrame()
 for b in bo_files:
-    bo = se.load(b)
-    #bo = se.filter_subj(se.load(b))
+    #bo = se.load(b)
+    bo = se.filter_elecs(se.load(b))
     union_locs = union_locs.append(bo.locs, ignore_index=True)
 
 
