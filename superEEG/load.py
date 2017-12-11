@@ -191,9 +191,11 @@ def npz2bo(infile):
 
     with open(infile, 'rb') as handle:
         f = np.load(handle)
+        f_name = os.path.splitext(os.path.basename(infile))[0]
         data = f['Y']
         sample_rate = f['samplerate']
         sessions = f['fname_labels']
         locs = tal2mni(f['R'])
+        meta = f_name
 
-    return Brain(data=data, locs=locs, sessions=sessions, sample_rate=sample_rate)
+    return Brain(data=data, locs=locs, sessions=sessions, sample_rate=sample_rate, meta=meta)

@@ -1,7 +1,6 @@
 
 import superEEG as se
 import numpy as np
-from superEEG._helpers.stats import tal2mni
 import glob
 import sys
 import os
