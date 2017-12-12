@@ -44,8 +44,8 @@ n_elecs = [ast.literal_eval(sys.argv[1])]
 m_patients = [25]
 
 # m_electrodes - number of electrodes for each patient in the model -  25:25:100
-m_elecs = range(5, 165, 5)
-#m_elecs = [10, 160]
+#m_elecs = range(5, 165, 5)
+m_elecs = [100, 10]
 
 iter_val = 5
 
