@@ -18,7 +18,7 @@ except:
 
 # each job command should be formatted as a string
 job_script = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'full_mats.py')
-files = glob.glob(os.path.join(config['datadir'],'bo/BW00*'))
+files = glob.glob(os.path.join(config['datadir'],'BW00*'))
 # options for model: 'pyFR_union', 'mini_model_nifti'
 model = str('mini_model_nifti')
 job_commands = map(lambda x: x[0]+" "+str(x[1])+" " + model, zip([job_script]*len(files), files))
