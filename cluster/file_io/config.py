@@ -13,7 +13,7 @@ if (socket.gethostname() == 'Lucys-MacBook-Pro-3.local') or (socket.gethostname(
     config['template'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'run_job_local.sh')
 else:
     config['datadir'] = '/idata/cdl/data/ECoG/pyFR/data/'
-    config['workingdir'] = '/idata/cdl/data/ECoG/pyFR/data/bo_try'
+    config['workingdir'] = '/idata/cdl/data/ECoG/pyFR/data/bo'
     config['startdir'] = '/idata/cdl/lowen'
     config['template'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'run_job.sh')
 
