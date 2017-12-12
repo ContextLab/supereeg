@@ -41,20 +41,33 @@ else:
 
 file_name = os.path.basename(os.path.splitext(fname)[0])
 
-# work around if not brain objects, but :
 if fname.split('.')[-1]=='bo':
     bo = se.load(fname)
+    if se.filter_subj(bo):
+        model = se.Model(bo, locs=gray_locs)
+        model.save(filepath=os.path.join(results_dir, file_name))
+        print('done')
 
+    else:
+        print(file_name + '_filtered')
 else:
     print('unknown file type')
-
-
-model = se.Model(bo, locs = gray_locs)
-
-model.save(filepath=os.path.join(results_dir, file_name))
-
-
-print('done')
+# work around if not brain objects, but :
+# if fname.split('.')[-1]=='bo':
+#     bo = se.filter_elecs(se.load(fname))
+#
+# else:
+#     print('unknown file type')
+#
+# if bo.locs.shape[0] > 1:
+#
+#     model = se.Model(bo, locs = gray_locs)
+#
+#
+#     print('done')
+#
+# else:
+#     print(file_name + 'filtered')
 
 # model_data = []
 # bo_files = glob.glob(os.path.join('/Users/lucyowen/Desktop/analysis/bo','*.bo'))

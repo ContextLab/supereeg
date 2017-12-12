@@ -20,7 +20,7 @@ except:
 job_script = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'full_mats.py')
 files = glob.glob(os.path.join(config['datadir'],'*.bo'))
 # options for model: 'pyFR_locs', 'mini_model_nifti'
-model = str('pyFR_locs')
+model = str('mini_model_nifti')
 job_commands = map(lambda x: x[0]+" "+str(x[1])+" " + model, zip([job_script]*len(files), files))
 
 # job_names should specify the file name of each script (as a list, of the same length as job_commands)
