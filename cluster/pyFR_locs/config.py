@@ -8,19 +8,19 @@ config['template'] = 'run_job.sh'
 # ====== MODIFY ONLY THE CODE BETWEEN THESE LINES ======
 if (socket.gethostname() == 'Lucys-MacBook-Pro-3.local') or (socket.gethostname() == 'vertex.kiewit.dartmouth.edu') or (socket.gethostname() == 'vertex.local'):
     config['datadir'] = '/Users/lucyowen/Desktop/supereeg_env/bo/'
-    config['workingdir'] = '/Users/lucyowen/Desktop/supereeg_env/'
+    config['workingdir'] = '/Users/lucyowen/Desktop/supereeg_env/pyFR_locs'
     config['startdir'] = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))  # directory to start the job in
     config['template'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'run_job_local.sh')
 else:
     config['datadir'] = '/idata/cdl/data/ECoG/pyFR/data/bo/'
-    config['workingdir'] = '/idata/cdl/lowen/union_locs'
+    config['workingdir'] = '/idata/cdl/lowen/pyFR_locs'
     config['startdir'] = '/idata/cdl/lowen'
     config['template'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'run_job.sh')
 
 # job creation options
 config['scriptdir'] = os.path.join(config['workingdir'], 'scripts')
 config['lockdir'] = os.path.join(config['workingdir'], 'locks')
-config['resultsdir'] = os.path.join(config['workingdir'], 'union_locs')
+config['resultsdir'] = os.path.join(config['workingdir'], 'results')
 
 # runtime options
 config['jobname'] = "compile_locs"  # default job name

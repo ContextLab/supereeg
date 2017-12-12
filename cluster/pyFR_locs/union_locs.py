@@ -1,4 +1,3 @@
-
 import superEEG as se
 import numpy as np
 # not sure why this doesn't work:
@@ -29,13 +28,11 @@ def sort_unique_locs(locs):
 
     return unique_full_locs[unique_full_locs[:, 0].argsort(),]
 
-
 results_dir = config['resultsdir']
 
 data_dir = config['datadir']
 
 bo_files = glob.glob(os.path.join(data_dir,'*.bo'))
-
 
 model_data = []
 for b in bo_files:
@@ -50,7 +47,7 @@ for bo in model_data:
     if bo == None:
         continue
     else:
-        ## for only the union electrode locations that pass kurtosis threshold:
+    ## for only the union electrode locations that pass kurtosis threshold:
         bo = se.filter_elecs(se.load(os.path.join(data_dir, bo + '.bo')))
 
     union_locs = union_locs.append(bo.locs, ignore_index=True)
@@ -67,4 +64,3 @@ pdfpath=os.path.join(results_dir, 'pyFR_k10_union_locs.pdf')
 ni_plt.plot_connectome(np.eye(locations.shape[0]), locations, display_mode='lyrz', output_file=pdfpath, node_kwargs={'alpha':0.5, 'edgecolors':None}, node_size=10, node_color = np.ones(locations.shape[0]))
 
 print('done')
-

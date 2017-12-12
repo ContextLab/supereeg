@@ -18,11 +18,11 @@ except:
 
 # each job command should be formatted as a string
 job_script = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'file_io.py')
-files = glob.glob(os.path.join(config['datadir'],'npz/BW*'))
+files = glob.glob(os.path.join(config['datadir'],'npz/*'))
 job_commands = map(lambda x: x[0]+" "+str(x[1]), zip([job_script]*len(files), files))
 
 # job_names should specify the file name of each script (as a list, of the same length as job_commands)
-job_names = map(lambda x: str(x)+'.sh', range(len(job_commands)))
+job_names = map(lambda x: os.path.basename(os.path.splitext(x)[0])+'.sh', files)
 # ====== MODIFY ONLY THE CODE BETWEEN THESE LINES ======
 
 assert(len(job_commands) == len(job_names))
