@@ -1,7 +1,6 @@
 
 import superEEG as se
 import numpy as np
-from superEEG._helpers.stats import tal2mni
 import glob
 import sys
 import os
@@ -26,19 +25,19 @@ except:
 
 if model_template == 'mini_model_nifti':
     gray = se.load('mini_model_nifti')
+    gray_locs = gray.locs
 
-elif model_template == 'pyFR_union':
-    gray = se.load('pyFR_union')
+elif model_template == 'pyFR_locs':
+    data = np.load(os.path.join(config['startdir'],'pyFR_locs/results/pyFR_k10_union_locs.npz'))
+    gray_locs = data['locs']
 
 elif model_template == 'big_temp':
     gray = se.load('big_temp')
+    gray_locs = gray.locs
 else:
     gray = se.load('mini_model_nifti')
+    gray_locs = gray.locs
 
-
-
-# extract locations
-gray_locs = gray.locs
 
 file_name = os.path.basename(os.path.splitext(fname)[0])
 

@@ -8,8 +8,8 @@ config['template'] = 'run_job.sh'
 # ====== MODIFY ONLY THE CODE BETWEEN THESE LINES ======
 if (socket.gethostname() == 'Lucys-MacBook-Pro-3.local') or (socket.gethostname() == 'vertex.kiewit.dartmouth.edu') or (socket.gethostname() == 'vertex.local'):
     config['datadir'] = '/Users/lucyowen/Desktop/supereeg_env/bo/'
-    config['workingdir'] = '/Users/lucyowen/Desktop/supereeg_env/'
-    config['startdir'] = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))  # directory to start the job in
+    config['workingdir'] = '/Users/lucyowen/Desktop/supereeg_env/full_mats/'
+    config['startdir'] = '/Users/lucyowen/Desktop/supereeg_env/'  # directory to start the job in
     config['template'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'run_job_local.sh')
 else:
     config['datadir'] = '/idata/cdl/data/ECoG/pyFR/data/bo/'
@@ -20,7 +20,8 @@ else:
 # job creation options
 config['scriptdir'] = os.path.join(config['workingdir'], 'scripts')
 config['lockdir'] = os.path.join(config['workingdir'], 'locks')
-config['resultsdir'] = os.path.join(config['workingdir'], 'full_mats')
+config['resultsdir'] = os.path.join(config['workingdir'], 'results')
+config['pyFRlocsdir'] = os.path.join(config['startdir'], 'pyFR_locs/results')
 
 # runtime options
 config['jobname'] = "file_io"  # default job name
