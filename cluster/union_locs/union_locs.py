@@ -8,6 +8,8 @@ import os
 from config import config
 import pandas as pd
 from nilearn import plotting as ni_plt
+import matplotlib.pyplot as plt
+plt.switch_backend('agg')
 
 ## this script iterates over brain objects, filters them based on kurtosis value,
 ## then compiles the clean electrodes into a numpy array as well as a list of the contributing brain objects

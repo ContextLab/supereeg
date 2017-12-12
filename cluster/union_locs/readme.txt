@@ -1,8 +1,11 @@
-This script converts pyFR patient data from npz format to brain objects.
-One job submitted for each patient. 
+This script loops over  pyFR subjects (brain objects),
+removes patients that don't have more than 2 clean electrodes (pass kurtosis threshold of 10)
+and compiles the unique clean electrodes into a numpy array.
+It also plots the union of the electrodes and saves as a pdf.
+One job submitted.
 
 To run :
-python file_io_job_submit.py
+python union_locs_job_submit.py
 ======
 ORIGINAL CLUSTER TOOLS README:
 
