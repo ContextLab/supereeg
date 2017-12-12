@@ -23,7 +23,7 @@ config['lockdir'] = os.path.join(config['workingdir'], 'locks')
 config['resultsdir'] = config['workingdir']
 
 # runtime options
-config['jobname'] = "file_io"  # default job name
+config['jobname'] = "file_io_npz_bo"  # default job name
 config['q'] = "default"  # options: default, testing, largeq
 config['nnodes'] = 1  # how many nodes to use for this one job
 config['ppn'] = 1  # how many processors to use for this one job (assume 4GB of RAM per processor)

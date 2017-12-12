@@ -55,11 +55,11 @@ for bo in model_data:
 
 locations = sort_unique_locs(union_locs)
 
-filepath=os.path.join(results_dir, 'pyFR_k10_union_locs.npz')
+filepath=os.path.join(results_dir, 'pyFR_k10_locs.npz')
 
 np.savez(filepath, locs = locations, subjs = model_data)
 
-pdfpath=os.path.join(results_dir, 'pyFR_k10_union_locs.pdf')
+pdfpath=os.path.join(results_dir, 'pyFR_k10_locs.pdf')
 
 ni_plt.plot_connectome(np.eye(locations.shape[0]), locations, display_mode='lyrz', output_file=pdfpath, node_kwargs={'alpha':0.5, 'edgecolors':None}, node_size=10, node_color = np.ones(locations.shape[0]))
 
