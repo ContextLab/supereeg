@@ -101,7 +101,7 @@ def load(fname):
         return bo
 
     elif fname is 'pyFR_union':
-        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/R_full_MNI.npy', 'rb') as handle:
+        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/pyFR_k10_locs.npz', 'rb') as handle:
             locs = np.load(handle)
         return locs
 

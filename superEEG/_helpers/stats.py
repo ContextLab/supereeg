@@ -631,6 +631,7 @@ def compute_coord(coord, weights, Z):
 
 def reconstruct_activity(bo, K):
     """
+    Reconstruct activity - need to add chunking option here
     """
     s = K.shape[0]-bo.locs.shape[0]
     Kba = K[:s,s:]

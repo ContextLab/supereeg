@@ -328,6 +328,8 @@ class Model(object):
         if type(data) is not list:
             data = [data]
 
+        #fname.split('.')[-1] == 'mo'
+
         # loop over brain objects
         for bo in data:
 
