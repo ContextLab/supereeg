@@ -31,8 +31,8 @@ elif model_template == 'pyFR_locs':
     data = np.load(os.path.join(config['startdir'],'pyFR_locs/results/pyFR_k10_locs.npz'))
     gray_locs = data['locs']
 
-elif model_template == 'big_temp':
-    gray = se.load('big_temp')
+elif model_template == 'gray_mask_6mm_brain':
+    gray = se.load('gray_mask_6mm_brain')
     gray_locs = gray.locs
 else:
     gray = se.load('mini_model_nifti')
