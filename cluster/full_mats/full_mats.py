@@ -23,7 +23,7 @@ except:
 # load locations for model
 ### this weird work around is necessary because there's an issue using a variable for a string in an argument
 
-if model_template == 'mini_model_nifti':
+if model_template == 'mini_model':
     gray = se.load('mini_model_nifti')
     gray_locs = gray.locs
 
@@ -35,7 +35,7 @@ elif model_template == 'gray_mask_6mm_brain':
     gray = se.load('gray_mask_6mm_brain')
     gray_locs = gray.locs
 else:
-    gray = se.load('mini_model_nifti')
+    gray = se.load('mini_model')
     gray_locs = gray.locs
 
 

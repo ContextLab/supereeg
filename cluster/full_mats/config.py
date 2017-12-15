@@ -24,7 +24,7 @@ config['resultsdir'] = os.path.join(config['workingdir'], 'results')
 config['pyFRlocsdir'] = os.path.join(config['startdir'], 'pyFR_locs/results')
 
 # runtime options
-config['jobname'] = "file_io"  # default job name
+config['jobname'] = "full_mats"  # default job name
 config['q'] = "default"  # options: default, testing, largeq
 config['nnodes'] = 1  # how many nodes to use for this one job
 config['ppn'] = 1  # how many processors to use for this one job (assume 4GB of RAM per processor)

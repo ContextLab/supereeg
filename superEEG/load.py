@@ -105,7 +105,7 @@ def load(fname):
             locs = np.load(handle)
         return locs
 
-    elif fname is 'mini_model_nifti':
+    elif fname is 'mini_model':
         bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_mask_20mm_brain.nii')
         return bo
 
