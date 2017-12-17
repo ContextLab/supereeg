@@ -46,6 +46,8 @@ if fname.split('.')[-1]=='bo':
     if se.filter_subj(bo):
         model = se.Model(bo, locs=gray_locs)
         model.save(filepath=os.path.join(results_dir, file_name))
+        sns_plot = model.plot()
+        sns_plot.savefig(os.path.join(results_dir, file_name, '.png'))
         print('done')
 
     else:

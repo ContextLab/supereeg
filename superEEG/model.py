@@ -363,6 +363,69 @@ class Model(object):
         # return Model(numerator=numerator, denominator=denominator,
         #              locs=pd.concat([m.locs, bo.locs]), n_subs=n_subs)
 
+
+    # def compile(self, data, measure='kurtosis', threshold=10):
+    #     """
+    #     Update a model with new data.
+    #
+    #     Parameters
+    #     ----------
+    #
+    #     data : list of model objects
+    #         This is specific for data replication and probably shouldn't be in the package release
+    #
+    #     Returns
+    #     ----------
+    #
+    #     model : Model object
+    #         A new updated model object
+    #
+    #     """
+    #
+    #     m = copy.deepcopy(self)
+    #
+    #     numerator = m.numerator
+    #     denominator = m.denominator
+    #     n_subs = m.n_subs
+    #
+    #     if type(data) is not list:
+    #         data = [data]
+    #
+    #     #fname.split('.')[-1] == 'mo'
+    #
+    #     # loop over brain objects
+    #     for bo in data:
+    #
+    #         # filter bad electrodes
+    #         bo = filter_elecs(bo, measure=measure, threshold=threshold)
+    #
+    #         # get subject-specific correlation matrix
+    #         sub_corrmat = r2z(get_corrmat(bo))
+    #
+    #         # get rbf weights
+    #         sub_rbf_weights = rbf(m.locs, bo.locs)
+    #
+    #         #  get subject expanded correlation matrix
+    #         num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(sub_corrmat, sub_rbf_weights)
+    #
+    #         # set weights equal to zero where the numerator is equal to nan
+    #         denom_corrmat_x[np.isnan(num_corrmat_x)] = 0
+    #
+    #         # add in new subj data to numerator
+    #         numerator = np.nansum(np.dstack((numerator, num_corrmat_x)), 2)
+    #
+    #         # add in new subj data to denominator
+    #         denominator += denom_corrmat_x
+    #
+    #         # add to n_subs
+    #         n_subs+=1
+    #
+    #     return Model(numerator=numerator, denominator=denominator,
+    #                  locs=m.locs, n_subs=n_subs)
+    #     ### this concatenation of locations doesn't work when updating an existing model (but would be necessary for a build)
+    #     # return Model(numerator=numerator, denominator=denominator,
+    #     #              locs=pd.concat([m.locs, bo.locs]), n_subs=n_subs)
+
     def info(self):
         """
         Print info about the model object
