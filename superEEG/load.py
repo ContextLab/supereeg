@@ -191,3 +191,38 @@ def fullfact(dims):
             inds[row:(row + len(vals)), 1:] = np.tile(aftervals[i, :], (len(vals), 1))
             row += len(vals)
         return inds
+
+
+def model_compile(data):
+    """
+    Compile existing expanded correlation matrices.
+
+    Parameters
+    ----------
+
+    data : list of model object file directories
+        This is specific for data replication and probably shouldn't be in the package release
+
+    Returns
+    ----------
+
+    model : Model object
+        A new updated model object
+
+    """
+    m = load(data[0])
+    numerator = m.numerator
+    denominator = m.denominator
+    n_subs = 1
+
+    for mo in data[1:]:
+        m = load(mo)
+        numerator += m.numerator
+        denominator += m.denominator
+        n_subs += 1
+
+    return Model(numerator=numerator, denominator=denominator,
+                 locs=m.locs, n_subs=n_subs)
+    ### this concatenation of locations doesn't work when updating an existing model (but would be necessary for a build)
+    # return Model(numerator=numerator, denominator=denominator,
+    #              locs=pd.concat([m.locs, bo.locs]), n_subs=n_subs)
