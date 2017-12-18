@@ -1,7 +1,6 @@
 import superEEG as se
 import numpy as np
-# not sure why this doesn't work:
-#from superEEG._helpers.bookkeeping import sort_unique_locs
+from superEEG._helpers.bookkeeping import sort_unique_locs
 import glob
 import os
 from config import config
@@ -18,15 +17,6 @@ try:
 except:
     os.makedirs(config['resultsdir'])
 
-def sort_unique_locs(locs):
-    if isinstance(locs, pd.DataFrame):
-        unique_full_locs = np.vstack(set(map(tuple, locs.as_matrix())))
-    elif isinstance(locs, np.ndarray):
-        unique_full_locs = np.vstack(set(map(tuple, locs)))
-    else:
-        print('unknown location type')
-
-    return unique_full_locs[unique_full_locs[:, 0].argsort(),]
 
 results_dir = config['resultsdir']
 
