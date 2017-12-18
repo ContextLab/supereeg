@@ -23,9 +23,9 @@ import pickle
 import seaborn as sns
 from superEEG._helpers.stats import r2z, z2r, corr_column
 import matplotlib.pyplot as plt
-from config import config
 #plt.switch_backend('agg')
 
+from config import config
 try:
     os.stat(config['resultsdir'])
 except:

@@ -4,6 +4,8 @@ import numpy as np
 import glob
 import sys
 import os
+import matplotlib.pyplot as plt
+#plt.switch_backend('agg')
 from config import config
 
 
@@ -13,11 +15,17 @@ model_template = sys.argv[2]
 
 results_dir = os.path.join(config['resultsdir'], model_template)
 
+fig_dir = os.path.join(results_dir, 'figs')
+
 try:
     os.stat(results_dir)
 except:
     os.makedirs(results_dir)
 
+try:
+    os.stat(fig_dir)
+except:
+    os.makedirs(fig_dir)
 
 
 # load locations for model
@@ -46,8 +54,8 @@ if fname.split('.')[-1]=='bo':
     if se.filter_subj(bo):
         model = se.Model(bo, locs=gray_locs)
         model.save(filepath=os.path.join(results_dir, file_name))
-        sns_plot = model.plot()
-        sns_plot.savefig(os.path.join(results_dir, file_name, '.png'))
+        model.plot()
+        plt.savefig(os.path.join(fig_dir, file_name))
         print('done')
 
     else:
