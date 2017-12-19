@@ -41,40 +41,6 @@ def get_rows(all_locations, subj_locations):
 
 
 
-# datadir can either be a file OR a directory
-# I dont think this is in use
-def get_locs(datadir):
-    """
-        This function compiles electrode locations
-
-        Parameters
-        ----------
-        datadir : file or directory
-            location or file containing electrode locations
-
-        Returns
-        ----------
-        results : ndarray
-            Compiled electrode locations
-
-        """
-    if datadir[-3:] == 'npz':
-        files = (datadir)
-    else:
-        files = lsdir(os.path.join(datadir, '*.npz'))
-
-    R = []
-    for f in files:
-        data = np.load(f, mmap_mode='r')
-        if len(R) == 0:
-            R = data['R']
-        else:
-            R = np.vstack((R, data['R']))
-
-    R = tal2mni(uniquerows(R))
-    return R[R[:, 0].argsort(),]
-
-
 def row_in_array(myarray, myrow):
     """
         Looks to see if a row (electrode location) is in the bigger array
