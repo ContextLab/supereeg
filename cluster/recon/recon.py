@@ -23,14 +23,15 @@ def electrode_search(fname, threshold=10):
         bo = pickle.load(f)
         thresh_bool = bo.kurtosis > threshold
         if sum(~thresh_bool) < 2:
-            print(bo.meta + ': not enough electrodes pass threshold')
+            return 0
         else:
             return sum(~thresh_bool)
 
-electrode_search(fname)
+num_elecs = electrode_search(fname)
 
 
 #([electrode_search(fname) for fname in files])
+
 try:
     os.stat(results_dir)
 except:
