@@ -100,11 +100,13 @@ class Brain(object):
             self.sessions = pd.Series([1 for i in range(self.data.shape[0])])
         else:
             self.sessions = pd.Series(sessions.ravel())
+
         if sample_rate is None:
+            self.sample_rate = None
             self.n_secs = None
             warnings.warn('No sample rate given.  Number of seconds cant be computed')
         else:
-            self.n_secs = self.data.shape[0] / self.sample_rate[0]
+            self.n_secs = self.data.shape[0] / np.array(sample_rate)
 
         # sample rate
         if isinstance(sample_rate, list):

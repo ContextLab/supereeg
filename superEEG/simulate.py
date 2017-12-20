@@ -3,6 +3,7 @@ import numpy as np
 from .brain import Brain
 from .model import Model
 from sklearn import datasets
+import pandas as pd
 
 
 def simulate_data(n_samples=1000, n_elecs=10, locs=None, cov='distance'):
@@ -125,6 +126,8 @@ def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None
     #     R /= np.max(R)
     #     R = 2*R - 1
     # make random positive definite matix
+    if type(locs) is np.ndarray:
+        locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
     if sample_locs is not None:
         R = create_cov(cov, n_elecs=len(locs))
         noise = np.random.normal(0, .1, len(locs))
