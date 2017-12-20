@@ -11,15 +11,8 @@
 
  .. toctree::
 
- `Quail <https://github.com/ContextLab/quail>`_ is a library for analyzing and visualizing free recall data
- in Python. It is built on top of matplotlib and seaborn.  For sample Jupyter
- notebooks, click `here <https://github.com/ContextLab/quail-example-notebooks>`_
+ `SuperEEG <https://github.com/ContextLab/superEEG>`_ is a Python package used for estimating neural activity throughout the brain from a small number of intracranial recordings by leveraging across patients and Gaussian process regression.
  and to read the paper, click
- `here <https://github.com/ContextLab/>`_.
+ `here <http://www.biorxiv.org/content/early/2017/03/27/121020>`_.
 
-  Some key features of Quail are:
-
-  + A simple data structure for encoding and recall data (eggs).
-  + A set of functions for analyzing data: accuracy, serial position curves, p(first recall), lag-crp and memory fingerprints!
-  + Simple API for customizing plot styles.
-  + Set of powerful tools for importing data, automatically transcribing audio files and more.
+  For details on how to use this package, checkout the examples and tutorials on this website.

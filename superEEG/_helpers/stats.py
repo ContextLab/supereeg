@@ -821,3 +821,27 @@ def recon(bo_sub, mo):
     Y = zscore(bo_sub.get_data())
     return np.squeeze(np.dot(np.dot(Kba, np.linalg.pinv(Kaa)), Y.T).T)
 
+def normalize_Y(Y_matrix):
+    """
+         Normalizes timeseries
+
+         Parameters
+         ----------
+
+         Y_matrix : ndarray
+             Raw activity from each electrode channel
+
+         Returns
+         ----------
+         results : ndarray
+             Normalized activity from each electrode channel
+
+         """
+    Y = Y_matrix
+    m = mat.repmat(np.min(Y, axis = 0), Y.shape[0], 1)
+    Y = Y - m
+    m = mat.repmat(np.max(Y, axis = 0), Y.shape[0], 1)
+    Y = np.divide(Y,m)
+    added = mat.repmat(0.5 + np.arange(Y.shape[1]), Y.shape[0], 1)
+    Y = Y + added
+    return pd.DataFrame(Y)

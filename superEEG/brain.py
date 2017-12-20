@@ -100,15 +100,17 @@ class Brain(object):
             self.sessions = pd.Series([1 for i in range(self.data.shape[0])])
         else:
             self.sessions = pd.Series(sessions.ravel())
+        if sample_rate is None:
+            self.n_secs = None
+            warnings.warn('No sample rate given.  Number of seconds cant be computed')
+        else:
+            self.n_secs = self.data.shape[0] / self.sample_rate[0]
 
         # sample rate
         if isinstance(sample_rate, list):
             self.sample_rate = sample_rate
         elif isinstance(sessions, list):
             self.sample_rate = [sample_rate for s in self.sessions.values]
-        elif sample_rate is None:
-            self.sample_rate = [1000 for s in self.sessions.values]
-            warnings.warn('No sample rate given.  Setting sample rate to 1000')
         else:
             self.sample_rate = [sample_rate]
 
@@ -116,8 +118,7 @@ class Brain(object):
         self.meta = meta
 
         # compute attrs
-        self.n_elecs = self.data.shape[1]
-        self.n_secs = self.data.shape[0]/self.sample_rate[0] # needs to be calculated by sessions
+        self.n_elecs = self.data.shape[1] # needs to be calculated by sessions
         self.date_created = time.strftime("%c")
         self.n_sessions = len(self.sessions.unique())
 
@@ -154,6 +155,31 @@ class Brain(object):
         Gets locations from brain object
         """
         return self.locs.as_matrix()
+
+    def plot(self):
+        """
+        Normalizes and plots data from brain object
+        # ideally would like this to start and stop at default first 5 seconds unless specified
+        # plot all channels as default but set index if channels = all else plot but index out
+        """
+        Y = normalize_Y(self.data)
+        ax = Y.plot(legend=False, color='k', lw=.6)
+        ax.set_axis_bgcolor('w')
+        ax.set_xlabel("time")
+        ax.set_ylabel("electrode")
+        ax.set_ylim([0,len(Y.columns) + 1])
+        # Y['time'] = Y.index / npz_data['samplerate'].mean()
+        # ##### create time mask ######
+        # mask = (Y['time'] > lower_time) & (Y['time'] < upper_time)
+        # ax = Y[Y.columns[k_flat_removed]][mask].plot(legend=False, title='electrode activity for ' + file_name, color='k', lw=.6)
+        # Y[Y.columns[int(electrode)]][mask].plot(color='r', lw=.8)
+        # ax = Y.plot(color='k', lw=.6)
+        # ax.set_axis_bgcolor('w')
+        # ax.set_xlabel("time")
+        # ax.set_ylabel("electrode")
+        # ax.set_ylim([0,len(Y.columns) + 1])
+        # vals = ax.get_xticks()
+        # ax.set_xticklabels([round_it(x/npz_data['samplerate'].mean(),3) for x in vals])
 
     def save(self, filepath):
         """

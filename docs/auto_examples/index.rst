@@ -13,26 +13,6 @@ Gallery of Examples
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_download_model_thumb.png
-
-        :ref:`sphx_glr_auto_examples_download_model.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/download_model
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Here, we load an example dataset and then print out some information about it.">
-
-.. only:: html
-
     .. figure:: /auto_examples/images/thumb/sphx_glr_plot_load_example_data_thumb.png
 
         :ref:`sphx_glr_auto_examples_plot_load_example_data.py`
@@ -73,9 +53,9 @@ Gallery of Examples
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_predict_thumb.png
+    .. figure:: /auto_examples/images/thumb/sphx_glr_predict_thumb.png
 
-        :ref:`sphx_glr_auto_examples_plot_predict.py`
+        :ref:`sphx_glr_auto_examples_predict.py`
 
 .. raw:: html
 
@@ -85,7 +65,7 @@ Gallery of Examples
 .. toctree::
    :hidden:
 
-   /auto_examples/plot_predict
+   /auto_examples/predict
 
 .. raw:: html
 
@@ -106,26 +86,6 @@ Gallery of Examples
    :hidden:
 
    /auto_examples/plot_load_nifti
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="SuperEEG will run in different ways depending your computing environment. To change the computi...">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_set_context_thumb.png
-
-        :ref:`sphx_glr_auto_examples_set_context.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/set_context
 
 .. raw:: html
 
@@ -193,9 +153,9 @@ Gallery of Examples
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_simulated_patient_data_thumb.png
+    .. figure:: /auto_examples/images/thumb/sphx_glr_simulation_thumb.png
 
-        :ref:`sphx_glr_auto_examples_simulated_patient_data.py`
+        :ref:`sphx_glr_auto_examples_simulation.py`
 
 .. raw:: html
 
@@ -205,7 +165,7 @@ Gallery of Examples
 .. toctree::
    :hidden:
 
-   /auto_examples/simulated_patient_data
+   /auto_examples/simulation
 .. raw:: html
 
     <div style='clear:both'></div>
@@ -217,13 +177,13 @@ Gallery of Examples
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Python source code: auto_examples_python.zip <//Users/andyheusser/Documents/github/superEEG/docs/auto_examples/auto_examples_python.zip>`
+    :download:`Download all examples in Python source code: auto_examples_python.zip <//Users/lucyowen/repos/superEEG/docs/auto_examples/auto_examples_python.zip>`
 
 
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//Users/andyheusser/Documents/github/superEEG/docs/auto_examples/auto_examples_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//Users/lucyowen/repos/superEEG/docs/auto_examples/auto_examples_jupyter.zip>`
 
 .. rst-class:: sphx-glr-signature
 
