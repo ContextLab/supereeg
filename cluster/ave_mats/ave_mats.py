@@ -11,7 +11,7 @@ from config import config
 
 model_template = sys.argv[1]
 
-model_dir = os.path.join(config['modeldir'], model_template)
+model_dir = os.path.join(config['datadir'], model_template)
 
 results_dir = os.path.join(config['resultsdir'], model_template)
 

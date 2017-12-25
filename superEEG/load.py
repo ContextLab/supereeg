@@ -59,13 +59,14 @@ def load(fname):
         return Brain(data=data, locs=locs, sessions=sessions, sample_rate=sample_rate, meta= meta)
 
     # load example model
+    ## the example model needs to be replaced with the one on the cluster
     elif fname is 'example_model':
         try:
-            with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/pyFR_20mm.mo', 'rb') as handle:
+            with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/mini_model.mo', 'rb') as handle:
                 example_model = pickle.load(handle)
             return example_model
         except:
-            model = pd.read_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/pyFR_20mm.mo')
+            model = pd.read_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/mini_model.mo')
             return model
 
     elif fname is 'pyFR_k10r20_20mm':
