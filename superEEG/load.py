@@ -60,10 +60,13 @@ def load(fname):
 
     # load example model
     elif fname is 'example_model':
-        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/pyFR_20mm.mo', 'rb') as handle:
-            example_model = pickle.load(handle)
-        return example_model
-
+        try:
+            with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/pyFR_20mm.mo', 'rb') as handle:
+                example_model = pickle.load(handle)
+            return example_model
+        except:
+            model = pd.read_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/pyFR_20mm.mo')
+            return model
 
     elif fname is 'pyFR_k10r20_20mm':
         with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/example_model_k_10_r_20.npz', 'rb') as handle:
@@ -77,17 +80,19 @@ def load(fname):
 
         return Model(numerator=numerator, denominator=denominator, n_subs=n_subs, locs=pd.DataFrame(l, columns=['x', 'y', 'z']))
 
-    elif fname is 'pyFR_k10r20_8mm':
-        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/pyFR_k10r20.npz', 'rb') as handle:
-            f = np.load(handle)
-            numerator = squareform(f['Numerator'].flatten())
-            denominator = squareform(f['Denominator'].flatten())
-            n_subs = f['n']
+    ## This should be replaced with the new 10K model and named pyFR_k10r20_6mm
 
-        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_8mm_locs.npy', 'rb') as handle:
-            l = np.load(handle)
-
-        return Model(numerator=numerator, denominator=denominator, n_subs=n_subs, locs=pd.DataFrame(l, columns=['x', 'y', 'z']))
+    # elif fname is 'pyFR_k10r20_8mm':
+    #     with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/pyFR_k10r20.npz', 'rb') as handle:
+    #         f = np.load(handle)
+    #         numerator = squareform(f['Numerator'].flatten())
+    #         denominator = squareform(f['Denominator'].flatten())
+    #         n_subs = f['n']
+    #
+    #     with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_8mm_locs.npy', 'rb') as handle:
+    #         l = np.load(handle)
+    #
+    #     return Model(numerator=numerator, denominator=denominator, n_subs=n_subs, locs=pd.DataFrame(l, columns=['x', 'y', 'z']))
 
 
     # load example locations
@@ -102,7 +107,9 @@ def load(fname):
 
     elif fname is 'pyFR_union':
         with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/pyFR_k10_locs.npz', 'rb') as handle:
-            locs = np.load(handle)
+            data = np.load(handle)
+            locs = data['locs']
+            print('number of subjects = ', data['subjs'])
         return locs
 
     elif fname is 'mini_model':
@@ -127,9 +134,13 @@ def load(fname):
 
     # load model object
     elif fname.split('.')[-1]=='mo':
-        with open(fname, 'rb') as f:
-            model = pickle.load(f)
-        return model
+        try:
+            with open(fname, 'rb') as f:
+                model = pickle.load(f)
+            return model
+        except:
+            model = pd.read_pickle(fname)
+            return model
 
     # load nifti
     elif fname.split('.')[-1]=='nii' or '.'.join(fname.split('.')[-2:])=='nii.gz':

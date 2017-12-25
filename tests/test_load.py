@@ -28,13 +28,14 @@ def test_load_nifti():
     bo = se.load('example_nifti')
     assert isinstance(bo, se.Brain)
 
-def test_load_pyFR_k10r20_8mm():
-    bo = se.load('pyFR_k10r20_8mm')
-    assert isinstance(bo, se.Model)
+## this should be replaced with test_load_pyFR_k10r20_6mm()
+# def test_load_pyFR_k10r20_8mm():
+#     bo = se.load('pyFR_k10r20_8mm')
+#     assert isinstance(bo, se.Model)
 
 def test_load_pyFR_union():
-    locs = se.load('pyFR_union')
-    assert isinstance(locs, np.ndarray)
+    data = se.load('pyFR_union')
+    assert isinstance(data, np.ndarray)
 
 def test_load_mini_model():
     bo = se.load('mini_model')
@@ -45,8 +46,8 @@ def test_load_gray_mask_6mm_brain():
     assert isinstance(bo, se.Brain)
 
 
-def test_bo_load(tmpdir):
-    p = tmpdir.mkdir("sub").join("bo")
-    p.write(test_bo)
-    assert p.read() == "bo"
-    assert len(tmpdir.listdir()) == 1
+# def test_bo_load(tmpdir):
+#     p = tmpdir.mkdir("sub").join("bo")
+#     p.write(test_bo)
+#     assert p.read() == "bo"
+#     assert len(tmpdir.listdir()) == 1

@@ -27,6 +27,7 @@ try:
 except:
     os.makedirs(fig_dir)
 
+tryit = se.load('example_model')
 
 # load locations for model
 ### this weird work around is necessary because there's an issue using a variable for a string in an argument
@@ -37,7 +38,8 @@ if model_template == 'mini_model':
 
 elif model_template == 'pyFR_locs':
     data = np.load(os.path.join(config['startdir'],'pyFR_locs/results/pyFR_k10_locs.npz'))
-    gray_locs = data['locs']
+    #gray_locs = se.load('pyFR_union')
+
 
 elif model_template == 'gray_mask_6mm_brain':
     gray = se.load('gray_mask_6mm_brain')
