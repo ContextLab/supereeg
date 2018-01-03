@@ -3,14 +3,13 @@ import superEEG as se
 import numpy as np
 import os
 
-data = np.random.multivariate_normal(np.zeros(10), np.eye(10), size=100)
-locs = np.random.multivariate_normal(np.zeros(3), np.eye(3), size=10)
-test_bo = se.Brain(data=data, locs=locs)
-# with open(filepath + '.bo', 'wb') as f:
-#     pickle.dump(self, f)
-#     print('Brain object saved as pickle.')
-
-# update these tests for the new loaded data
+locs = se.load('example_locations')
+n_samples = 1000
+n_subs = 5
+n_elecs = 10
+data = [se.simulate_model_bos(n_samples=10000, sample_rate=1000, locs=locs, sample_locs = n_elecs) for x in range(n_subs)]
+test_bo = data[0]
+test_model = se.Model(data=data, locs=locs)
 
 def test_load_example_data():
     bo = se.load('example_data')
@@ -45,9 +44,14 @@ def test_load_gray_mask_6mm_brain():
     bo = se.load('gray_mask_6mm_brain')
     assert isinstance(bo, se.Brain)
 
+def test_bo_load(tmpdir):
+    p = tmpdir.mkdir("sub").join("example")
+    test_bo.save(filepath=str(p))
+    bo = se.load(os.path.join(str(p) + '.bo'))
+    assert isinstance(bo, se.Brain)
 
-# def test_bo_load(tmpdir):
-#     p = tmpdir.mkdir("sub").join("bo")
-#     p.write(test_bo)
-#     assert p.read() == "bo"
-#     assert len(tmpdir.listdir()) == 1
+def test_mo_load(tmpdir):
+    p = tmpdir.mkdir("sub").join("example")
+    test_model.save(filepath=str(p))
+    bo = se.load(os.path.join(str(p) + '.mo'))
+    assert isinstance(bo, se.Model)

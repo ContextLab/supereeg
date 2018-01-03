@@ -21,15 +21,11 @@ n_subs = 5
 # number of electrodes
 n_elecs = 10
 
-
-
 # simulate correlation matrix
 data = [se.simulate_model_bos(n_samples=10000, sample_rate=1000, locs=locs, sample_locs = n_elecs) for x in range(n_subs)]
 
 
 # make tests for attributes
-
-
 
 def test_create_model_1bo():
     model = se.Model(data=data[0], locs=locs)
