@@ -27,7 +27,7 @@ try:
 except:
     os.makedirs(fig_dir)
 
-tryit = se.load('example_model')
+
 
 # load locations for model
 ### this weird work around is necessary because there's an issue using a variable for a string in an argument
