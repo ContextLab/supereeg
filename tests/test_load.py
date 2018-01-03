@@ -55,3 +55,9 @@ def test_mo_load(tmpdir):
     test_model.save(filepath=str(p))
     bo = se.load(os.path.join(str(p) + '.mo'))
     assert isinstance(bo, se.Model)
+
+def test_nii_load(tmpdir):
+    p = tmpdir.mkdir("sub").join("example")
+    test_bo.to_nii(filepath=str(p))
+    bo = se.load(os.path.join(str(p) + '.nii'))
+    assert isinstance(bo, se.Brain)
