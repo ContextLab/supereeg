@@ -229,6 +229,7 @@ def model_compile(data):
 
     for mo in data[1:]:
         m = load(mo)
+        #numerator = np.nansum(np.dstack((numerator, m.numerator)), 2)
         numerator += m.numerator
         denominator += m.denominator
         n_subs += 1
