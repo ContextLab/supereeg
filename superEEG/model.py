@@ -1,12 +1,13 @@
 from __future__ import division
+import time
+import copy
 import pandas as pd
 import seaborn as sns
 import nibabel as nib
-import pickle
-import time
-import copy
+import deepdish as dd
 from ._helpers.stats import *
 from .brain import Brain
+
 
 class Model(object):
     """

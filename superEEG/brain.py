@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import pandas as pd
 import time
 import os
-import numpy as np
-import pickle
-import nibabel as nib
 import warnings
+import numpy as np
+import pandas as pd
+import nibabel as nib
+import deepdish as dd
 from ._helpers.stats import *
 from scipy.stats import zscore
 
@@ -211,7 +211,6 @@ class Brain(object):
             'locs' : self.locs.as_matrix(),
             'sessions' : self.sessions,
             'sample_rate' : self.sample_rate,
-            'n_secs' : self.n_secs,
             'meta' : self.meta
         }
 
