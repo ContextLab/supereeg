@@ -125,12 +125,15 @@ def load(fname):
     elif fname.split('.')[-1]=='bo':
         bo = dd.io.load(fname)
         return Brain(data=bo['data'], locs=bo['locs'], sessions=bo['sessions'],
-                     sample_rate=bo['sample_rate'], meta=bo['meta'])
+                     sample_rate=bo['sample_rate'], meta=bo['meta'],
+                     date_created=bo['date_created'])
 
     # load model object
     elif fname.split('.')[-1]=='mo':
         mo = dd.io.load(fname)
-        return Model(numerator=mo['numerator'], denominator=mo['denominator'], locs=mo['locs'], n_subs=mo['n_subs'], meta=mo['meta'])
+        return Model(numerator=mo['numerator'], denominator=mo['denominator'],
+                     locs=mo['locs'], n_subs=mo['n_subs'], meta=mo['meta'],
+                     date_created=mo['date_created'])
 
     # load nifti
     elif fname.split('.')[-1]=='nii' or '.'.join(fname.split('.')[-2:])=='nii.gz':

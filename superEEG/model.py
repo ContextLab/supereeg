@@ -75,7 +75,7 @@ class Model(object):
 
     def __init__(self, data=None, locs=None, template=None,
                  measure='kurtosis', threshold=10, numerator=None, denominator=None,
-                 n_subs=None, meta=None):
+                 n_subs=None, meta=None, date_created=None):
 
         # if all of these fields are not none, shortcut the model creation
         if all(v is not None for v in [numerator, denominator, locs, n_subs]):
@@ -166,7 +166,10 @@ class Model(object):
         self.n_locs = self.locs.shape[0]
 
         # date created
-        self.date_created = time.strftime("%c")
+        if not date_created:
+            self.date_created = time.strftime("%c")
+        else:
+            self.date_created = date_created
 
         # meta
         self.meta = meta
@@ -415,7 +418,8 @@ class Model(object):
             'denominator' : self.denominator,
             'locs' : self.locs,
             'n_subs' : self.n_subs,
-            'meta' : self.meta
+            'meta' : self.meta,
+            'date_created' : self.date_created
         }
 
         # if extension wasn't included, add it

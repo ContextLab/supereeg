@@ -84,7 +84,8 @@ class Brain(object):
 
     """
 
-    def __init__(self, data=None, locs=None, sessions=None, sample_rate=None, meta=None):
+    def __init__(self, data=None, locs=None, sessions=None, sample_rate=None,
+                 meta=None, date_created=None):
 
         # convert data to df
         self.data = pd.DataFrame(data)
@@ -119,9 +120,13 @@ class Brain(object):
         # meta
         self.meta = meta
 
+        if not date_created:
+            self.date_created = time.strftime("%c")
+        else:
+            self.date_created = date_created
+
         # compute attrs
         self.n_elecs = self.data.shape[1] # needs to be calculated by sessions
-        self.date_created = time.strftime("%c")
         self.n_sessions = len(self.sessions.unique())
 
         # add kurtosis
@@ -211,7 +216,8 @@ class Brain(object):
             'locs' : self.locs.as_matrix(),
             'sessions' : self.sessions,
             'sample_rate' : self.sample_rate,
-            'meta' : self.meta
+            'meta' : self.meta,
+            'date_created' : self.date_created
         }
 
         # if extension wasn't included, add it
