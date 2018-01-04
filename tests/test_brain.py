@@ -5,10 +5,12 @@ import superEEG as se
 import numpy as np
 import pandas as pd
 import nibabel as nib
+import os
 
 data = np.random.multivariate_normal(np.zeros(10), np.eye(10), size=100)
 locs = np.random.multivariate_normal(np.zeros(3), np.eye(3), size=10)
 bo = se.Brain(data=data, locs=locs)
+
 
 def test_create_bo():
     assert isinstance(bo, se.Brain)
@@ -16,10 +18,8 @@ def test_create_bo():
 def test_bo_data_df():
     assert isinstance(bo.data, pd.DataFrame)
 
-
 def test_bo_locs_df():
     assert isinstance(bo.locs, pd.DataFrame)
-
 
 def test_bo_sessions_series():
     assert isinstance(bo.sessions, pd.Series)
@@ -47,6 +47,12 @@ def test_bo_zscoredata_nparray():
 
 def test_bo_get_locs_nparray():
     assert isinstance(bo.get_locs(), np.ndarray)
+
+def test_bo_save(tmpdir):
+    p = tmpdir.mkdir("sub").join("example")
+    bo.save(filepath=str(p))
+    test_bo = se.load(os.path.join(str(p) + '.bo'))
+    assert isinstance(test_bo, se.Brain)
 
 def test_nii_nifti():
     assert isinstance(bo.to_nii(), nib.nifti1.Nifti1Image)
