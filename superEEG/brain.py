@@ -183,21 +183,44 @@ class Brain(object):
         # vals = ax.get_xticks()
         # ax.set_xticklabels([round_it(x/npz_data['samplerate'].mean(),3) for x in vals])
 
-    def save(self, filepath):
+    def save(self, fname, compression='blosc'):
         """
-        Save brain object as a pickle
+        Save method for the brain object
 
+        The data will be saved as a 'bo' file, which is a dictionary containing
+        the elements of a brain object saved in the hd5 format using
+        `deepdish`.
 
         Parameters
         ----------
 
-        filepath : str
-            Path to save the pickled brain, mwuahahahah
+        fname : str
+            A name for the file.  If the file extension (.bo) is not specified,
+            it will be appended.
+
+        compression : str
+            The kind of compression to use.  See the deepdish documentation for
+            options: http://deepdish.readthedocs.io/en/latest/api_io.html#deepdish.io.save
 
         """
-        with open(filepath + '.bo', 'wb') as f:
-            pickle.dump(self, f)
-            print('Brain object saved as pickle.')
+
+
+        # put bo vars into a dict
+        bo = {
+            'data' : self.data.as_matrix(),
+            'locs' : self.locs.as_matrix(),
+            'sessions' : self.sessions,
+            'sample_rate' : self.sample_rate,
+            'n_secs' : self.n_secs,
+            'meta' : self.meta
+        }
+
+        # if extension wasn't included, add it
+        if fname[-3:]!='.bo':
+            fname+='.bo'
+
+        # save
+        dd.io.save(fname, bo, compression=compression)
 
     def to_nii(self, filepath=None,
                  template=None):
