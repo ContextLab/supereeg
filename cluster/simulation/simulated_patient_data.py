@@ -70,6 +70,8 @@ for p, m, n in param_grid:
 
 # 3 separate contingincies:
 
+### should figure out tests for these !!!!!! ####
+
 ############################
 
        #  ### 1: no intersection of model locations and brain object locations ( intersection of A and B is null )

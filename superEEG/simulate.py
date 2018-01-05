@@ -19,12 +19,14 @@ def simulate_locations(n_elecs=10):
     Returns
     ----------
 
-    elecs : np.ndarray
+    elecs : pd.DataFrame
         A location by coordinate (x,y,z) matrix of simulated electrode locations
     """
 
-    return np.array([[np.random.randint(-80, 80), np.random.randint(-80, 80),
+    locs = np.array([[np.random.randint(-80, 80), np.random.randint(-80, 80),
                np.random.randint(-80, 80)] for i in range(n_elecs)])
+
+    return pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
 def simulate_model_bos(n_samples=1000, locs=None, sample_locs = None, cov='random',
                 sample_rate=1000, sessions=None, meta=None):
@@ -43,20 +45,20 @@ def simulate_model_bos(n_samples=1000, locs=None, sample_locs = None, cov='rando
     sample_locs : int
         Number of subsampled electrode location to create each brain object
 
-    cov : str (or np.array)?
-        need to make sure this supports an array as an input so that you can also pass a custom covariance matrix by simply passing
-        numpy array that is n_elecs by n_elecs
-
-        The covariance structure of the data.  If 'eye', the covariance will be
-        the identity matrix.  If 'toeplitz', the covariance will be a toeplitz
-        matrix. If 'random', uses a random semidefinite matrix with a set random seed.
+    cov : str or np.array
+        The covariance structure of the data.
+        If 'eye', the covariance will be the identity matrix.
+        If 'toeplitz', the covariance will be a toeplitz matrix.
+        If 'random', uses a random semidefinite matrix with a set random seed.
         If 'distance'calculates the euclidean distance between each electrode.
+        You can also pass a custom covariance matrix by simply passing
+        numpy array that is n_elecs by n_elecs
 
     Returns
     ----------
 
-    elecs : np.ndarray
-        A location by coordinate (x,y,z) matrix of simulated electrode locations
+    bo : Brain data object
+        Instance of Brain data object containing simulated subject data and locations
     """
 
     data, sub_locs= simulate_model_data(n_samples=n_samples, locs=locs, sample_locs=sample_locs, cov=cov)
@@ -78,24 +80,32 @@ def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None
     n_elecs : int
         Number of electrodes
 
-    cov : str (or np.array)?
-        need to make sure this supports an array as an input so that you can also pass a custom covariance matrix by simply passing
-        numpy array that is n_elecs by n_elecs
-
-        The covariance structure of the data.  If 'eye', the covariance will be
-        the identity matrix.  If 'toeplitz', the covariance will be a toeplitz
-        matrix. If 'random', uses a random semidefinite matrix with a set random seed.
+    cov : str or np.array
+        The covariance structure of the data.
+        If 'eye', the covariance will be the identity matrix.
+        If 'toeplitz', the covariance will be a toeplitz matrix.
+        If 'random', uses a random semidefinite matrix with a set random seed.
         If 'distance'calculates the euclidean distance between each electrode.
+        You can also pass a custom covariance matrix by simply passing
+        numpy array that is n_elecs by n_elecs
 
     Returns
     ----------
 
-    data: np.ndarray
-        A samples by number of electrods array of simulated iEEG data
+    data : np.ndarray
+        A samples by number of electrodes array of simulated iEEG data
+
+    sub_locs : pd.DataFrame
+        A location by coordinate (x,y,z) matrix of simulated electrode locations
 
     """
     if type(locs) is np.ndarray:
         locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
+    if locs is not None and cov is 'distance':
+        R = 1 - scipy.spatial.distance.cdist(locs, locs, metric='euclidean')
+        R -= np.min(R)
+        R /= np.max(R)
+        cov = 2*R - 1
     if sample_locs is not None:
         R = create_cov(cov, n_elecs=len(locs))
         noise = np.random.normal(0, .1, len(locs))
@@ -104,15 +114,10 @@ def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None
         full_data = np.random.multivariate_normal(np.zeros(n_elecs), R, size=n_samples)
         data = full_data[:, sub_locs.index]
         return data, sub_locs
-    if locs is not None and cov is 'distance':
-        R = 1 - scipy.spatial.distance.cdist(locs, locs, metric='euclidean')
-        R -= np.min(R)
-        R /= np.max(R)
-        R = 2*R - 1
     else:
         R = create_cov(cov, n_elecs=len(locs))
 
-        return np.random.multivariate_normal(np.zeros(n_elecs), R, size=n_samples)
+        return np.random.multivariate_normal(np.zeros(n_elecs), R, size=n_samples), locs
 
 def simulate_bo(n_samples=1000, n_elecs=10, locs=None, cov='random',
                 sample_rate=1000, sessions=None, meta=None):
@@ -128,15 +133,15 @@ def simulate_bo(n_samples=1000, n_elecs=10, locs=None, cov='random',
     Returns
     ----------
 
-    elecs : np.ndarray
-        A location by coordinate (x,y,z) matrix of simulated electrode locations
+    bo : Brain data object
+        Instance of Brain data object containing simulated subject data and locations
     """
     if locs is None:
         locs =  simulate_locations(n_elecs=n_elecs)
     else:
         n_elecs=locs.shape[0]
 
-    data = simulate_model_data(n_samples=n_samples, n_elecs=n_elecs, locs=locs, cov=cov)
+    data, locs = simulate_model_data(n_samples=n_samples, n_elecs=n_elecs, locs=locs, cov=cov)
 
     return Brain(data=data, locs=locs, sample_rate=sample_rate,
                  sessions=sessions, meta=meta)
@@ -144,6 +149,22 @@ def simulate_bo(n_samples=1000, n_elecs=10, locs=None, cov='random',
 def create_cov(cov, n_elecs=10):
     """
     Creates covariance matrix of specified type
+
+    Parameters
+    ----------
+
+    cov : str or np.array
+        The covariance structure of the data.
+        If 'eye', the covariance will be the identity matrix.
+        If 'toeplitz', the covariance will be a toeplitz matrix.
+        If 'random', uses a random semidefinite matrix with a set random seed.
+        If 'distance'calculates the euclidean distance between each electrode.
+        You can also pass a custom covariance matrix by simply passing
+        numpy array that is n_elecs by n_elecs
+
+    n_elecs : int
+        Number of electrodes
+
     """
     if cov is 'eye':
         R = np.eye(n_elecs)
