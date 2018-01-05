@@ -6,50 +6,6 @@ from sklearn import datasets
 import pandas as pd
 
 
-def simulate_data(n_samples=1000, n_elecs=10, locs=None, cov='distance'):
-    """
-    Simulate iEEG data
-
-    Parameters
-    ----------
-
-    n_samples : int
-        Number of time samples
-
-    n_elecs : int
-        Number of electrodes
-
-    cov : str or np.array
-        The covariance structure of the data.  if 'eye', the covariance will be
-        the identity matrix.  If 'toeplitz', the covariance will be a toeplitz
-        matrix.  You can also pass a custom covariance matrix by simply passing
-        numpy array that is n_elecs by n_elecs
-
-    Returns
-    ----------
-
-    data: np.ndarray
-        A samples by number of electrods array of simulated iEEG data
-
-    """
-    # if locs is not None:
-    #     R = 1 - scipy.spatial.distance.cdist(locs, locs, metric='euclidean')
-    #     R -= np.min(R)
-    #     R /= np.max(R)
-    #     R = 2*R - 1
-    # make random positive definite matix
-    if locs is not None and cov is 'distance':
-        R = 1 - scipy.spatial.distance.cdist(locs, locs, metric='euclidean')
-        R -= np.min(R)
-        R /= np.max(R)
-        R = 2*R - 1
-    else:
-        R = create_cov(cov, n_elecs=n_elecs)
-
-    return np.random.multivariate_normal(np.zeros(n_elecs), R, size=n_samples)
-
-###### should be R + noise - create random matrix of numbers that are close to 0 - random normal draws x (noise) R + x * xT - positive definite
-
 def simulate_locations(n_elecs=10):
     """
     Simulate iEEG locations
@@ -120,12 +76,6 @@ def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None
         A samples by number of electrods array of simulated iEEG data
 
     """
-    # if locs is not None:
-    #     R = 1 - scipy.spatial.distance.cdist(locs, locs, metric='euclidean')
-    #     R -= np.min(R)
-    #     R /= np.max(R)
-    #     R = 2*R - 1
-    # make random positive definite matix
     if type(locs) is np.ndarray:
         locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
     if sample_locs is not None:
@@ -172,6 +122,70 @@ def simulate_bo(n_samples=1000, n_elecs=10, locs=None, cov='random',
 
     return Brain(data=data, locs=locs, sample_rate=sample_rate,
                  sessions=sessions, meta=meta)
+
+def create_cov(cov, n_elecs=10):
+    """
+    Creates covariance matrix of specified type
+    """
+    if cov is 'eye':
+        R = np.eye(n_elecs)
+    elif cov is 'toeplitz':
+        R = scipy.linalg.toeplitz(np.linspace(0, 1, n_elecs)[::-1])
+    elif cov is 'random':
+        R = datasets.make_spd_matrix(n_elecs, random_state=1)
+        R -= np.min(R)
+        R /= np.max(R)
+    elif isinstance(cov, np.ndarray):
+        R = cov
+
+    return R
+
+
+###### should be R + noise - create random matrix of numbers that are close to 0 - random normal draws x (noise) R + x * xT - positive definite
+
+
+# def simulate_data(n_samples=1000, n_elecs=10, locs=None, cov='distance'):
+#     """
+#     Simulate iEEG data
+#
+#     Parameters
+#     ----------
+#
+#     n_samples : int
+#         Number of time samples
+#
+#     n_elecs : int
+#         Number of electrodes
+#
+#     cov : str or np.array
+#         The covariance structure of the data.  if 'eye', the covariance will be
+#         the identity matrix.  If 'toeplitz', the covariance will be a toeplitz
+#         matrix.  You can also pass a custom covariance matrix by simply passing
+#         numpy array that is n_elecs by n_elecs
+#
+#     Returns
+#     ----------
+#
+#     data: np.ndarray
+#         A samples by number of electrods array of simulated iEEG data
+#
+#     """
+#     # if locs is not None:
+#     #     R = 1 - scipy.spatial.distance.cdist(locs, locs, metric='euclidean')
+#     #     R -= np.min(R)
+#     #     R /= np.max(R)
+#     #     R = 2*R - 1
+#     # make random positive definite matix
+#     if locs is not None and cov is 'distance':
+#         R = 1 - scipy.spatial.distance.cdist(locs, locs, metric='euclidean')
+#         R -= np.min(R)
+#         R /= np.max(R)
+#         R = 2*R - 1
+#     else:
+#         R = create_cov(cov, n_elecs=n_elecs)
+#
+#     return np.random.multivariate_normal(np.zeros(n_elecs), R, size=n_samples)
+
 
 # def simulate_bo(n_samples=1000, n_elecs=10, locs=None, cov='distance',
 #                 sample_rate=1000, sessions=None, meta=None):
@@ -227,21 +241,3 @@ def simulate_bo(n_samples=1000, n_elecs=10, locs=None, cov='random',
 #     bos = [simulate_bo(n_samples=n_samples, n_elecs=n_elecs, cov=cov) for i in range(n_subs)]
 #
 #     return Model(data=bos)
-
-
-def create_cov(cov, n_elecs=10):
-    """
-    Creates covariance matrix of specified type
-    """
-    if cov is 'eye':
-        R = np.eye(n_elecs)
-    elif cov is 'toeplitz':
-        R = scipy.linalg.toeplitz(np.linspace(0, 1, n_elecs)[::-1])
-    elif cov is 'random':
-        R = datasets.make_spd_matrix(n_elecs, random_state=1)
-        R -= np.min(R)
-        R /= np.max(R)
-    elif isinstance(cov, np.ndarray):
-        R = cov
-
-    return R
