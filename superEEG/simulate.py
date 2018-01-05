@@ -26,7 +26,7 @@ def simulate_locations(n_elecs=10):
     return np.array([[np.random.randint(-80, 80), np.random.randint(-80, 80),
                np.random.randint(-80, 80)] for i in range(n_elecs)])
 
-def simulate_model_bos(n_samples=1000, n_elecs=170, locs=None, sample_locs = None, cov='random',
+def simulate_model_bos(n_samples=1000, locs=None, sample_locs = None, cov='random',
                 sample_rate=1000, sessions=None, meta=None):
     """
     Simulate brain object
@@ -34,8 +34,23 @@ def simulate_model_bos(n_samples=1000, n_elecs=170, locs=None, sample_locs = Non
     Parameters
     ----------
 
-    n_elecs : int
-        Number of electrodes
+    n_samples : int
+        Number of time samples
+
+    locs :  np.ndarray
+         A location by coordinate (x,y,z) matrix of simulated electrode locations
+
+    sample_locs : int
+        Number of subsampled electrode location to create each brain object
+
+    cov : str (or np.array)?
+        need to make sure this supports an array as an input so that you can also pass a custom covariance matrix by simply passing
+        numpy array that is n_elecs by n_elecs
+
+        The covariance structure of the data.  If 'eye', the covariance will be
+        the identity matrix.  If 'toeplitz', the covariance will be a toeplitz
+        matrix. If 'random', uses a random semidefinite matrix with a set random seed.
+        If 'distance'calculates the euclidean distance between each electrode.
 
     Returns
     ----------
@@ -63,11 +78,14 @@ def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None
     n_elecs : int
         Number of electrodes
 
-    cov : str or np.array
-        The covariance structure of the data.  if 'eye', the covariance will be
-        the identity matrix.  If 'toeplitz', the covariance will be a toeplitz
-        matrix.  You can also pass a custom covariance matrix by simply passing
+    cov : str (or np.array)?
+        need to make sure this supports an array as an input so that you can also pass a custom covariance matrix by simply passing
         numpy array that is n_elecs by n_elecs
+
+        The covariance structure of the data.  If 'eye', the covariance will be
+        the identity matrix.  If 'toeplitz', the covariance will be a toeplitz
+        matrix. If 'random', uses a random semidefinite matrix with a set random seed.
+        If 'distance'calculates the euclidean distance between each electrode.
 
     Returns
     ----------

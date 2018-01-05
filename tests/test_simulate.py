@@ -20,6 +20,6 @@ R = se.create_cov('random', len(locs))
 
 # make tests for attributes
 
-def test_simulate_data():
-    model = se.Model(data=data[0], locs=locs)
-    assert isinstance(model, se.Model)
+def test_simulate_locations():
+    locs = se.simulate_locations(10)
+    assert isinstance(locs, np.ndarray)
