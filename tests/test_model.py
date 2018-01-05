@@ -11,19 +11,16 @@ from sklearn import datasets
 
 # load example model to get locations
 locs = se.load('example_locations')
-
 # number of timeseries samples
 n_samples = 1000
-
 # number of subjects
 n_subs = 5
-
 # number of electrodes
 n_elecs = 10
-
 # simulate correlation matrix
 data = [se.simulate_model_bos(n_samples=10000, sample_rate=1000, locs=locs, sample_locs = n_elecs) for x in range(n_subs)]
-
+# test model to compare
+test_model = se.Model(data=data, locs=locs)
 
 # make tests for attributes
 
@@ -48,9 +45,13 @@ def test_model_predict():
     assert isinstance(bo, se.Brain)
 
 def test_update():
-    model = se.Model(data=data[0:2], locs=locs)
+    model = se.Model(data=data[1:5], locs=locs)
     mo = model.update(data[0])
+    print(test_model.n_subs)
+    print(mo.n_subs)
     assert isinstance(mo, se.Model)
+    assert np.allclose(mo.numerator, test_model.numerator)
+    assert np.allclose(mo.denominator, test_model.denominator)
 
 ### need to finish this test I think and put it in test helpers
 # def test_expand_corrmat():

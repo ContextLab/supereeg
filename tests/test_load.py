@@ -72,5 +72,5 @@ def test_model_compile(tmpdir):
     model_data = glob.glob(os.path.join(str(p), '*.mo'))
     mo = se.model_compile(model_data)
     assert isinstance(mo, se.Model)
-    assert np.array_equal(mo.numerator, test_model.numerator)
-    assert np.array_equal(mo.denominator, test_model.denominator)
+    assert np.allclose(mo.numerator, test_model.numerator)
+    assert np.allclose(mo.denominator, test_model.denominator)
