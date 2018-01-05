@@ -38,7 +38,7 @@ def simulate_data(n_samples=1000, n_elecs=10, locs=None, cov='distance'):
     #     R /= np.max(R)
     #     R = 2*R - 1
     # make random positive definite matix
-    if locs is not None:
+    if locs is not None and cov is 'distance':
         R = 1 - scipy.spatial.distance.cdist(locs, locs, metric='euclidean')
         R -= np.min(R)
         R /= np.max(R)
@@ -136,12 +136,17 @@ def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None
         full_data = np.random.multivariate_normal(np.zeros(n_elecs), R, size=n_samples)
         data = full_data[:, sub_locs.index]
         return data, sub_locs
+    if locs is not None and cov is 'distance':
+        R = 1 - scipy.spatial.distance.cdist(locs, locs, metric='euclidean')
+        R -= np.min(R)
+        R /= np.max(R)
+        R = 2*R - 1
     else:
         R = create_cov(cov, n_elecs=len(locs))
 
         return np.random.multivariate_normal(np.zeros(n_elecs), R, size=n_samples)
 
-def simulate_bo_random(n_samples=1000, n_elecs=10, locs=None, cov='random',
+def simulate_bo(n_samples=1000, n_elecs=10, locs=None, cov='random',
                 sample_rate=1000, sessions=None, meta=None):
     """
     Simulate brain object
@@ -168,60 +173,60 @@ def simulate_bo_random(n_samples=1000, n_elecs=10, locs=None, cov='random',
     return Brain(data=data, locs=locs, sample_rate=sample_rate,
                  sessions=sessions, meta=meta)
 
-def simulate_bo(n_samples=1000, n_elecs=10, locs=None, cov='distance',
-                sample_rate=1000, sessions=None, meta=None):
-    """
-    Simulate brain object
+# def simulate_bo(n_samples=1000, n_elecs=10, locs=None, cov='distance',
+#                 sample_rate=1000, sessions=None, meta=None):
+#     """
+#     Simulate brain object
+#
+#     Parameters
+#     ----------
+#
+#     n_elecs : int
+#         Number of electrodes
+#
+#     Returns
+#     ----------
+#
+#     elecs : np.ndarray
+#         A location by coordinate (x,y,z) matrix of simulated electrode locations
+#     """
+#     if locs is None:
+#         locs =  simulate_locations(n_elecs=n_elecs)
+#     else:
+#         n_elecs=locs.shape[0]
+#
+#     data = simulate_data(n_samples=n_samples, n_elecs=n_elecs, locs=locs, cov=cov)
+#
+#     return Brain(data=data, locs=locs, sample_rate=sample_rate,
+#                  sessions=sessions, meta=meta)
 
-    Parameters
-    ----------
-
-    n_elecs : int
-        Number of electrodes
-
-    Returns
-    ----------
-
-    elecs : np.ndarray
-        A location by coordinate (x,y,z) matrix of simulated electrode locations
-    """
-    if locs is None:
-        locs =  simulate_locations(n_elecs=n_elecs)
-    else:
-        n_elecs=locs.shape[0]
-
-    data = simulate_data(n_samples=n_samples, n_elecs=n_elecs, locs=locs, cov=cov)
-
-    return Brain(data=data, locs=locs, sample_rate=sample_rate,
-                 sessions=sessions, meta=meta)
-
-def simulate_model(n_subs=10, n_samples=1000, n_elecs=10, cov='eye'):
-    """
-    Simulate a model object
-
-    Parameters
-    ----------
-
-    n_subs : int
-        Number of subjects
-
-    n_subs : int
-        Number of subjects
-
-    Returns
-    ----------
-
-    elecs : np.ndarray
-        A location by coordinate (x,y,z) matrix of simulated electrode locations
-    """
-
-    # create covariance matrix
-    cov = create_cov(cov, n_elecs=n_elecs)
-
-    #
-    bos = [simulate_bo(n_samples=n_samples, n_elecs=n_elecs, cov=cov) for i in range(n_subs)]
-
-    return Model(data=bos)
+# def simulate_model(n_subs=10, n_samples=1000, n_elecs=10, cov='eye'):
+#     """
+#     Simulate a model object
+#
+#     Parameters
+#     ----------
+#
+#     n_subs : int
+#         Number of subjects
+#
+#     n_subs : int
+#         Number of subjects
+#
+#     Returns
+#     ----------
+#
+#     elecs : np.ndarray
+#         A location by coordinate (x,y,z) matrix of simulated electrode locations
+#     """
+#
+#     # create covariance matrix
+#     cov = create_cov(cov, n_elecs=n_elecs)
+#
+#     #
+#     bos = [simulate_bo(n_samples=n_samples, n_elecs=n_elecs, cov=cov) for i in range(n_subs)]
+#
+#     return Model(data=bos)
 
 
 def create_cov(cov, n_elecs=10):

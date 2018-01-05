@@ -41,16 +41,16 @@ n_samples = 1000
 #n_elecs = [ast.literal_eval(n_elecs)]
 n_elecs = [ast.literal_eval(sys.argv[1])]
 # m_patients - number of patients in the model - need to loop over 10:10:50
-m_patients = [25]
+m_patients = [5]
 
 # m_electrodes - number of electrodes for each patient in the model -  25:25:100
 #m_elecs = range(5, 165, 5)
-m_elecs = [100, 10]
+m_elecs = [10, 100]
 
-iter_val = 5
+iter_val = 1
 
 # load nifti to get locations
-gray = se.load('mini_model_nifti')
+gray = se.load('mini_model')
 
 # extract locations
 gray_locs = gray.locs
@@ -173,10 +173,10 @@ for p, m, n in param_grid:
         # for the case where you want both subset and disjoint locations - get indices for unknown locations (where we wish to predict)
         unknown_loc = gray_locs[~gray_locs.index.isin(sub_locs.index)]
 
-        bo = se.simulate_bo_random(n_samples=1000, sample_rate=1000, locs=gray_locs)
+        bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
 
         data = bo.data.T.drop(unknown_loc.index).T
-        bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs)
+        bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
 
         recon = model.predict(bo_sample)
 
