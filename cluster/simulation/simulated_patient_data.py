@@ -38,7 +38,7 @@ n_samples = 1000
 # n_electrodes - number of electrodes for reconstructed patient - need to loop over 5:5:130
 
 #n_elecs = range(5, 165, 50)
-n_elecs = [10, 50, 160]
+n_elecs = [10, 25, 50, 75, 100, 125, 150]
 #n_elecs = [ast.literal_eval(n_elecs)]
 
 ### debug with input:
@@ -46,13 +46,13 @@ n_elecs = [10, 50, 160]
 #n_elecs = [ast.literal_eval(sys.argv[1])]
 
 # m_patients - number of patients in the model - need to loop over 10:10:50
-m_patients = [5]
+m_patients = [1, 5, 10]
 
 # m_electrodes - number of electrodes for each patient in the model -  25:25:100
 #m_elecs = range(5, 165, 50)
-m_elecs = [10, 50, 160]
+m_elecs = [10, 25, 50, 75, 100, 125, 150]
 
-iter_val = 1
+iter_val = 2
 
 # load nifti to get locations
 gray = se.load('mini_model')
@@ -157,27 +157,29 @@ for p, m, n in param_grid:
         ### 3: some locations in the brain object overlap with the model locations
 
         ### bypassing making the model from brain objects
-
-        mo_locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])
-
-        c = se.create_cov(cov='random', n_elecs=170)
-
-        data = c[:, mo_locs.index][mo_locs.index, :]
-
-        model = se.Model(numerator=data, denominator=np.ones(np.shape(data)), locs=mo_locs, n_subs=1)
-
-        # #create brain objects with m_patients and loop over the number of model locations
-        # model_bos = [se.simulate_model_bos(n_samples=10000, sample_rate=1000, locs=gray_locs, sample_locs = m) for x in range(p)]
         #
-        # #model_bos = [se.simulate_bo(n_samples=10000, sample_rate=1000, locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])) for x in range(p)]
+        # mo_locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])
         #
+        # c = se.create_cov(cov='random', n_elecs=170)
+        #
+        # data = c[:, mo_locs.index][mo_locs.index, :]
+        #
+        # model = se.Model(numerator=data, denominator=np.ones(np.shape(data)), locs=mo_locs, n_subs=1)
+
+        ### create with brain objects:
+
+        #create brain objects with m_patients and loop over the number of model locations
+        model_bos = [se.simulate_model_bos(n_samples=10000, sample_rate=1000, locs=gray_locs, sample_locs = m) for x in range(p)]
+
+        #model_bos = [se.simulate_bo(n_samples=10000, sample_rate=1000, locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])) for x in range(p)]
+
         # model_locs = pd.DataFrame()
         # for i in range(len(model_bos)):
         #     #locats = model_bos[i].locs
         #     model_locs = model_locs.append(model_bos[i].locs, ignore_index = True)
-        #
-        # # create model from subsampled gray locations
-        # model = se.Model(model_bos, locs=gray_locs)
+
+        # create model from subsampled gray locations
+        model = se.Model(model_bos, locs=gray_locs)
 
 
         # # brain object locations subsetted entirely from both model and gray locations - for this n > m (this isn't necessarily true, but this ensures overlap)
@@ -199,13 +201,13 @@ for p, m, n in param_grid:
 
         #correlate reconstruction with actual data
         corr_vals = corr_column(actual.as_matrix(),recon.data.as_matrix())
-        #corr_vals_sample = np.random.choice(corr_vals, 5)
+        corr_vals_sample = np.random.choice(corr_vals, 5)
 
         ### with model locations
         #d.append({'Numbder of Patients in Model': p, 'Number of Model Locations': m, 'Number of Patient Locations': n, 'Average Correlation': corr_vals_sample.mean(), 'Correlations': corr_vals, 'Model Locations': model_locs.values, 'Patient Locations': bo_sample.locs.values})
 
         d.append({'Numbder of Patients in Model': p, 'Number of Model Locations': m, 'Number of Patient Locations': n,
-                  'Average Correlation': corr_vals.mean(), 'Correlations': corr_vals, 'Patient Locations': bo_sample.locs.values})
+                  'Average Correlation': corr_vals_sample.mean(), 'Correlations': corr_vals, 'Patient Locations': bo_sample.locs.values})
 
     append_d = append_d.append(d)
     append_d.index.rename('Iteration', inplace=True)
@@ -246,7 +248,7 @@ else:
         data_plot = append_d[append_d['Numbder of Patients in Model'] == i].pivot_table(
             index=['Number of Model Locations'], columns='Number of Patient Locations',
             values='Average Correlation')
-        ax = sns.heatmap(data_plot, cmap="coolwarm", vmin=-1, vmax=1)
+        ax = sns.heatmap(data_plot, cmap="coolwarm", vmin=0, vmax=1)
         ax.invert_yaxis()
         ax.set(xlabel='Number of electrodes from to-be-reconstructed patient', ylabel=' Number of electrodes from patients used to construct model')
         #axs_iter += 1
