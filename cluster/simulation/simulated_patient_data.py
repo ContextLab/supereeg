@@ -45,7 +45,7 @@ m_patients = [5]
 
 # m_electrodes - number of electrodes for each patient in the model -  25:25:100
 #m_elecs = range(5, 165, 5)
-m_elecs = [10, 100]
+m_elecs = [100, 10]
 
 iter_val = 1
 
@@ -151,21 +151,30 @@ for p, m, n in param_grid:
 
         ### 3: some locations in the brain object overlap with the model locations
 
-        # subset locations to build model
-        #mo_locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])
+        ### bypassing making the model from brain objects
 
-        #create brain objects with m_patients and loop over the number of model locations
-        model_bos = [se.simulate_model_bos(n_samples=10000, sample_rate=1000, locs=gray_locs, sample_locs = m) for x in range(p)]
+        mo_locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])
 
-        #model_bos = [se.simulate_bo(n_samples=10000, sample_rate=1000, locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])) for x in range(p)]
+        c = se.create_cov(cov='random', n_elecs=170)
 
-        model_locs = pd.DataFrame()
-        for i in range(len(model_bos)):
-            #locats = model_bos[i].locs
-            model_locs = model_locs.append(model_bos[i].locs, ignore_index = True)
+        data = c[:, mo_locs.index][mo_locs.index, :]
 
-        # create model from subsampled gray locations
-        model = se.Model(model_bos, locs=gray_locs)
+        model = se.Model(numerator=data, denominator=np.ones(np.shape(data)), locs=mo_locs, n_subs=1)
+
+
+
+        # #create brain objects with m_patients and loop over the number of model locations
+        # model_bos = [se.simulate_model_bos(n_samples=10000, sample_rate=1000, locs=gray_locs, sample_locs = m) for x in range(p)]
+        #
+        # #model_bos = [se.simulate_bo(n_samples=10000, sample_rate=1000, locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])) for x in range(p)]
+        #
+        # model_locs = pd.DataFrame()
+        # for i in range(len(model_bos)):
+        #     #locats = model_bos[i].locs
+        #     model_locs = model_locs.append(model_bos[i].locs, ignore_index = True)
+        #
+        # # create model from subsampled gray locations
+        # model = se.Model(model_bos, locs=gray_locs)
 
 
         # # brain object locations subsetted entirely from both model and gray locations - for this n > m (this isn't necessarily true, but this ensures overlap)
