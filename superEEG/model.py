@@ -256,7 +256,6 @@ class Model(object):
             # permute the correlation matrix so that the inds to reconstruct are on the right edge of the matrix
 
             perm_inds = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds)) + sorted(set(joint_model_inds))
-            perm_inds_unknown = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds))
             model_permuted = model_corrmat_x[:, perm_inds][perm_inds, :]
 
             # permute the model locations (important for the rbf calculation later
@@ -291,7 +290,7 @@ class Model(object):
         model_corrmat_x = z2r(model_corrmat_x)
 
         # convert diagonals to zeros
-        np.fill_diagonal(model_corrmat_x, 1)
+        np.fill_diagonal(model_corrmat_x, 0)
 
         # timeseries reconstruction
         reconstructed = reconstruct_activity(bo, model_corrmat_x)

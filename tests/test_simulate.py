@@ -318,4 +318,4 @@ def test_electrode_contingencies_3_locations_can_subset():
 
     print(corr_vals)
     print(np.shape(corr_vals))
-    assert corr_vals.mean() > .75
+    assert corr_vals.mean() > .95
