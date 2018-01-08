@@ -203,7 +203,7 @@ def test_electrode_contingencies_1_null_set():
 
     data = c[:, mo_locs.index][mo_locs.index, :]
 
-    model = se.Model(numerator=data, denominator=np.ones(np.shape(data)), locs=mo_locs, n_subs=1)
+    model = se.Model(numerator=data * 10, denominator=np.ones(np.shape(data)) * 10, locs=mo_locs, n_subs=1 * 10)
 
     # create brain object from the remaining locations - first find remaining locations
     sub_locs = gray_locs[~gray_locs.index.isin(mo_locs.index)]
@@ -211,11 +211,8 @@ def test_electrode_contingencies_1_null_set():
     # create a brain object with all gray locations
     bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
 
-    # get indices for unknown locations (where we wish to predict)
-    unknown_loc = mo_locs[~mo_locs.index.isin(sub_locs.index)]
-
     # parse brain object to create synthetic patient data
-    data = bo.data.T.drop(unknown_loc.index).T
+    data = bo.data.iloc[:, sub_locs.index]
 
     # put data and locations together in new sample brain object
     bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
@@ -223,7 +220,7 @@ def test_electrode_contingencies_1_null_set():
     # predict activity at all unknown locations
     recon = model.predict(bo_sample)
 
-    #actual = bo.data.iloc[:, unknown_ind]
+    # actual = bo.data.iloc[:, unknown_ind]
     actual = bo.data.iloc[:, recon.locs.index]
 
     corr_vals = corr_column(actual.as_matrix(), recon.data.as_matrix())
@@ -242,9 +239,9 @@ def test_electrode_contingencies_2_subset():
 
     c = se.create_cov(cov='random', n_elecs=170)
 
-    data = c[:, mo_locs.index][mo_locs.index, :]
+    data = np.dot(c[:, mo_locs.index][mo_locs.index, :], 10)
 
-    model = se.Model(numerator=data, denominator=np.ones(np.shape(data)), locs=mo_locs, n_subs=1)
+    model = se.Model(numerator=data*10, denominator=np.ones(np.shape(data)) * 10, locs=mo_locs, n_subs=1 * 10)
 
     # create brain object from the remaining locations - first find remaining locations
     sub_locs = mo_locs.sample(20).sort_values(['x', 'y', 'z'])
@@ -252,11 +249,8 @@ def test_electrode_contingencies_2_subset():
     # create a brain object with all gray locations
     bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
 
-    # get indices for unknown locations (where we wish to predict)
-    unknown_loc = gray_locs[~gray_locs.index.isin(sub_locs.index)]
-
     # parse brain object to create synthetic patient data
-    data = bo.data.T.drop(unknown_loc.index).T
+    data = bo.data.iloc[:, sub_locs.index]
 
     # put data and locations together in new sample brain object
     bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
@@ -264,7 +258,6 @@ def test_electrode_contingencies_2_subset():
     # predict activity at all unknown locations
     recon = model.predict(bo_sample)
 
-    #actual = bo.data.iloc[:, unknown_ind]
     actual = bo.data.iloc[:, recon.locs.index]
 
     corr_vals = corr_column(actual.as_matrix(), recon.data.as_matrix())
@@ -287,29 +280,31 @@ def test_electrode_contingencies_3_locations_can_subset():
 
     data = c[:, mo_locs.index][mo_locs.index, :]
 
-    model = se.Model(numerator=data, denominator=np.ones(np.shape(data)), locs=mo_locs, n_subs=1)
+    model = se.Model(numerator=data*10, denominator=np.ones(np.shape(data))*10, locs=mo_locs, n_subs=1*10)
 
-    # # brain object locations subsetted entirely from both model and gray locations - for this n > m (this isn't necessarily true, but this ensures overlap)
+    # brain object locations subsetted entirely from both model and gray locations - for this n > m (this isn't necessarily true, but this ensures overlap)
+
     sub_locs = gray_locs.sample(20).sort_values(['x', 'y', 'z'])
 
-    # for the case where you want both subset and disjoint locations - get indices for unknown locations (where we wish to predict)
-    unknown_loc = gray_locs[~gray_locs.index.isin(sub_locs.index)]
 
-    # create a brain object with all gray locations
     bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
 
-    # parse brain object to create synthetic patient data
-    data = bo.data.T.drop(unknown_loc.index).T
+    data = bo.data.iloc[:, sub_locs.index]
 
-    # put data and locations together in new sample brain object
     bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
 
-    # predict activity at all unknown locations
     recon = model.predict(bo_sample)
 
-    #actual = bo.data.iloc[:, unknown_ind]
+    # sample actual data at reconstructed locations
     actual = bo.data.iloc[:, recon.locs.index]
 
+    # correlate reconstruction with actual data
     corr_vals = corr_column(actual.as_matrix(), recon.data.as_matrix())
 
+    overlap = mo_locs[~mo_locs.index.isin(sub_locs.index)]
+
+    # print(mo_locs.shape)
+    # print(sub_locs.shape)
+    # print(overlap)
+    # print(np.shape(overlap))
     assert corr_vals.mean() > .75

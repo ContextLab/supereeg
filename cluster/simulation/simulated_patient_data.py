@@ -37,8 +37,8 @@ n_samples = 1000
 
 # n_electrodes - number of electrodes for reconstructed patient - need to loop over 5:5:130
 
-#n_elecs = range(5, 165, 50)
-n_elecs = [10, 25, 50, 75, 100, 125, 150]
+#n_elecs = range(5, 95, )
+#n_elecs = [5,15, 25, 45, 65, 85,  50, 95]
 #n_elecs = [ast.literal_eval(n_elecs)]
 
 ### debug with input:
@@ -50,9 +50,9 @@ m_patients = [1, 5, 10]
 
 # m_electrodes - number of electrodes for each patient in the model -  25:25:100
 #m_elecs = range(5, 165, 50)
-m_elecs = [10, 25, 50, 75, 100, 125, 150]
+#m_elecs = [100]
 
-iter_val = 2
+iter_val = 1
 
 # load nifti to get locations
 gray = se.load('mini_model')
@@ -63,7 +63,8 @@ gray_locs = gray.locs
 d = []
 append_d = pd.DataFrame()
 
-param_grid = [(p,m,n) for p in m_patients for m in m_elecs for n in n_elecs]
+#param_grid = [(p,m,n) for p in m_patients for m in m_elecs for n in n_elecs]
+param_grid =[(p,m,n) for p in m_patients for m in range(10,80,10) for n in range(10, m, 10)]
 
 for p, m, n in param_grid:
     d = []
@@ -79,84 +80,44 @@ for p, m, n in param_grid:
 
 ############################
 
-       #  ### 1: no intersection of model locations and brain object locations ( intersection of A and B is null )
-       #
-       #  # subset locations to build model
-       #  mo_locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])
-       #
-       #  #create brain objects with m_patients and loop over the number of model locations
-       #  model_bos = [se.simulate_bo(n_samples=10000, sample_rate=1000, locs = mo_locs) for x in range(p)]
-       #
-       #  # create model from subsampled gray locations
-       #  model = se.Model(model_bos, locs=mo_locs)
-       #
-       #  # create brain object from the remaining locations - first find remaining locations
-       #  sub_locs = gray_locs[~gray_locs.index.isin(mo_locs.index)]
-       #
-       #  # create a brain object with all gray locations
-       #  bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
-       #
-       #  # get indices for unknown locations (where we wish to predict)
-       #  unknown_loc = mo_locs[~mo_locs.index.isin(sub_locs.index)]
-       #
-       #  # parse brain object to create synthetic patient data
-       #  data = bo.data.T.drop(unknown_loc.index).T
-       #
-       #  # put data and locations together in new sample brain object
-       #  bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs)
-       #
-       #  # predict activity at all unknown locations
-       #  recon = model.predict(bo_sample)
-       #
-       #  # this next step is redundant - just get from unknown_loc later
-       # # unknown_ind = [item for item in bo.data.columns if item not in data.columns]
-       #
-       #  #actual = bo.data.iloc[:, unknown_ind]
-       #  actual = bo.data.iloc[:, recon.locs.index]
-       #
-       #  corr_vals = corr_column(actual.as_matrix(), recon.data.as_matrix())
+        ### 1: no intersection of model locations and brain object locations ( intersection of A and B is null
+
+        mo_locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])
+
+        c = se.create_cov(cov='random', n_elecs=170)
+
+        #data = c[:, mo_locs.index][mo_locs.index, :]
+        data = np.dot(c[:, mo_locs.index][mo_locs.index, :], 10)
+
+        model = se.Model(numerator=data*p, denominator=np.ones(np.shape(data))*p, locs=mo_locs, n_subs=p)
+
+        # create brain object from the remaining locations - first find remaining locations
+        possible_sub_locs = gray_locs[~gray_locs.index.isin(mo_locs.index)]
+
+        sub_locs = possible_sub_locs.sample(n).sort_values(['x', 'y', 'z'])
+
+        # create a brain object with all gray locations
+        bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
+
+        # parse brain object to create synthetic patient data
+        data = bo.data.iloc[:, sub_locs.index]
+
+        # put data and locations together in new sample brain object
+        bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
+
+        # predict activity at all unknown locations
+        recon = model.predict(bo_sample)
+
+        # actual = bo.data.iloc[:, unknown_ind]
+        actual = bo.data.iloc[:, recon.locs.index]
+
+        corr_vals = corr_column(actual.as_matrix(), recon.data.as_matrix())
+
+        corr_vals_sample = np.random.choice(corr_vals, 5)
 
 ####################################
-
+        #
         # ### 2: all brain object locations are also model locations ( B is a subset of A)
-        #
-        # # subset gray locations to build model
-        # mo_locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])
-        #
-        # #create brain objects with m_patients and loop over the number of model locations
-        # model_bos = [se.simulate_bo(n_samples=10000, sample_rate=1000, locs = mo_locs) for x in range(p)]
-        #
-        # # create model from subsampled
-        # model = se.Model(model_bos, locs=mo_locs)
-        #
-        # # brain object locations subsetted entirely from model locations - for this m > n
-        # sub_locs = mo_locs.sample(n).sort_values(['x', 'y', 'z'])
-        #
-        # # create a brain object with all gray locations
-        # bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
-        #
-        # # get indices for unknown locations (where we wish to predict) indices for gray_locs - sub_locs
-        # unknown_loc = gray_locs[~gray_locs.index.isin(sub_locs.index)]
-        #
-        # # parse brain object to create synthetic patient data
-        # data = bo.data.T.drop(unknown_loc.index).T
-        #
-        # # put data and locations together in new sample brain object
-        # bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs)
-        #
-        # # predict activity at all unknown locations
-        # recon = model.predict(bo_sample)
-        #
-        # # sample actual data at reconstructed locations
-        # actual = bo.data.iloc[:, recon.locs.index]
-        #
-        # corr_vals = corr_column(actual.as_matrix(), recon.data.as_matrix())
-
-############################
-
-        ### 3: some locations in the brain object overlap with the model locations
-
-        ### bypassing making the model from brain objects
         #
         # mo_locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])
         #
@@ -165,46 +126,82 @@ for p, m, n in param_grid:
         # data = c[:, mo_locs.index][mo_locs.index, :]
         #
         # model = se.Model(numerator=data, denominator=np.ones(np.shape(data)), locs=mo_locs, n_subs=1)
+        #
+        # # create brain object from the remaining locations - first find remaining locations
+        # sub_locs = mo_locs.sample(n).sort_values(['x', 'y', 'z'])
+        #
+        # # create a brain object with all gray locations
+        # bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
+        #
+        # # get indices for unknown locations (where we wish to predict)
+        # #unknown_loc = gray_locs[~gray_locs.index.isin(sub_locs.index)]
+        #
+        # # parse brain object to create synthetic patient data
+        # data = bo.data.iloc[:, sub_locs.index]
+        #
+        # # put data and locations together in new sample brain object
+        # bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
+        #
+        # # predict activity at all unknown locations
+        # recon = model.predict(bo_sample)
+        #
+        # actual = bo.data.iloc[:, recon.locs.index]
+        #
+        # corr_vals = corr_column(actual.as_matrix(), recon.data.as_matrix())
+        #
+        # corr_vals_sample = np.random.choice(corr_vals, 5)
 
-        ### create with brain objects:
+############################
 
-        #create brain objects with m_patients and loop over the number of model locations
-        model_bos = [se.simulate_model_bos(n_samples=10000, sample_rate=1000, locs=gray_locs, sample_locs = m) for x in range(p)]
-
-        #model_bos = [se.simulate_bo(n_samples=10000, sample_rate=1000, locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])) for x in range(p)]
-
-        # model_locs = pd.DataFrame()
-        # for i in range(len(model_bos)):
-        #     #locats = model_bos[i].locs
-        #     model_locs = model_locs.append(model_bos[i].locs, ignore_index = True)
-
-        # create model from subsampled gray locations
-        model = se.Model(model_bos, locs=gray_locs)
-
-
+        # ### 3: some locations in the brain object overlap with the model locations
+        #
+        # ### bypassing making the model from brain objects
+        #
+        # mo_locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])
+        #
+        # c = se.create_cov(cov='random', n_elecs=170)
+        #
+        # data = c[:, mo_locs.index][mo_locs.index, :]
+        #
+        # model = se.Model(numerator=data, denominator=np.ones(np.shape(data)), locs=mo_locs, n_subs=1)
+        #
+        #
+        # ## test first case:
+        #
+        #
+        # ### create with brain objects:
+        #
+        # ##create brain objects with m_patients and loop over the number of model locations - this is exanding only to the gray locations now
+        # # model_bos = [se.simulate_model_bos(n_samples=10000, sample_rate=1000, locs=gray_locs, sample_locs = m) for x in range(p)]
+        #
+        # #model_bos = [se.simulate_bo(n_samples=10000, sample_rate=1000, locs = mo_locs) for x in range(p)]
+        #
+        # # create model from subsampled gray locations
+        # #model = se.Model(model_bos, locs=mo_locs)
+        #
+        #
         # # brain object locations subsetted entirely from both model and gray locations - for this n > m (this isn't necessarily true, but this ensures overlap)
-        sub_locs = gray_locs.sample(n).sort_values(['x', 'y', 'z'])
-
-
-        # for the case where you want both subset and disjoint locations - get indices for unknown locations (where we wish to predict)
-        unknown_loc = gray_locs[~gray_locs.index.isin(sub_locs.index)]
-
-        bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
-
-        data = bo.data.T.drop(unknown_loc.index).T
-        bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
-
-        recon = model.predict(bo_sample)
-
-        # sample actual data at reconstructed locations
-        actual = bo.data.iloc[:, unknown_loc.index]
-
-        #correlate reconstruction with actual data
-        corr_vals = corr_column(actual.as_matrix(),recon.data.as_matrix())
-        corr_vals_sample = np.random.choice(corr_vals, 5)
-
-        ### with model locations
-        #d.append({'Numbder of Patients in Model': p, 'Number of Model Locations': m, 'Number of Patient Locations': n, 'Average Correlation': corr_vals_sample.mean(), 'Correlations': corr_vals, 'Model Locations': model_locs.values, 'Patient Locations': bo_sample.locs.values})
+        #
+        # sub_locs = gray_locs.sample(n).sort_values(['x', 'y', 'z'])
+        #
+        # # for the case where you want both subset and disjoint locations - get indices for unknown locations (where we wish to predict)
+        #
+        # #unknown_locs = mo_locs[~mo_locs.index.isin(sub_locs.index)]
+        #
+        # bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
+        #
+        # data = bo.data.iloc[:, sub_locs.index]
+        #
+        # bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
+        #
+        # recon = model.predict(bo_sample)
+        #
+        # # sample actual data at reconstructed locations
+        # #actual = bo.data.iloc[:, unknown_locs.index]
+        # actual = bo.data.iloc[:, recon.locs.index]
+        # #correlate reconstruction with actual data
+        # corr_vals = corr_column(actual.as_matrix(),recon.data.as_matrix())
+        # corr_vals_sample = np.random.choice(corr_vals, 5)
 
         d.append({'Numbder of Patients in Model': p, 'Number of Model Locations': m, 'Number of Patient Locations': n,
                   'Average Correlation': corr_vals_sample.mean(), 'Correlations': corr_vals, 'Patient Locations': bo_sample.locs.values})
@@ -239,7 +236,7 @@ if len(np.unique(new_df['Numbder of Patients in Model'])) > 1:
         data_plot = append_d[append_d['Numbder of Patients in Model'] == i].pivot_table(index=['Number of Model Locations'], columns='Number of Patient Locations',
                                                               values='Average Correlation')
         axs[axs_iter].set_title('Patients = '+ str(i))
-        sns.heatmap(data_plot, cmap="coolwarm", cbar = axs_iter == 0, ax = axs[axs_iter], cbar_ax = None if axs_iter else cbar_ax)
+        sns.heatmap(data_plot, cbar = axs_iter == 0, ax = axs[axs_iter], cbar_ax = None if axs_iter else cbar_ax)
         axs[axs_iter].invert_yaxis()
         axs_iter+=1
 
@@ -248,7 +245,7 @@ else:
         data_plot = append_d[append_d['Numbder of Patients in Model'] == i].pivot_table(
             index=['Number of Model Locations'], columns='Number of Patient Locations',
             values='Average Correlation')
-        ax = sns.heatmap(data_plot, cmap="coolwarm", vmin=0, vmax=1)
+        ax = sns.heatmap(data_plot, vmin=0, vmax=1)
         ax.invert_yaxis()
         ax.set(xlabel='Number of electrodes from to-be-reconstructed patient', ylabel=' Number of electrodes from patients used to construct model')
         #axs_iter += 1
@@ -261,3 +258,14 @@ plt.savefig(os.path.join(config['resultsdir'],'average_correlation_heatmap.pdf')
 ## put in locations of electrodes as well
 
 # sns.jointplot(bo.data.iloc[:, unknown_ind].values.flatten(), predicted)
+
+
+### if want to retrieve model_bos added to the model:
+# model_bos = [se.simulate_bo(n_samples=10000, sample_rate=1000, locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])) for x in range(p)]
+
+# model_locs = pd.DataFrame()
+# for i in range(len(model_bos)):
+#     #locats = model_bos[i].locs
+#     model_locs = model_locs.append(model_bos[i].locs, ignore_index = True)
+### and at the end:
+# d.append({'Numbder of Patients in Model': p, 'Number of Model Locations': m, 'Number of Patient Locations': n, 'Average Correlation': corr_vals_sample.mean(), 'Correlations': corr_vals, 'Model Locations': model_locs.values, 'Patient Locations': bo_sample.locs.values})

@@ -269,8 +269,9 @@ class Model(object):
             bo.locs = bo.locs.iloc[bo_perm_inds]
             bo.data = bo.data[bo_perm_inds]
 
-            # replace bo_perm_inds with only those unknown
+            # permuted indices for unknown model locations
             perm_inds_unknown = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds))
+
             # expanded rbf weights
             #model_rbf_weights = rbf(pd.concat([model_locs_permuted, bo.locs]), model_locs_permuted)
             model_rbf_weights = rbf(pd.concat([model_locs_permuted, sub_bo]), model_locs_permuted)
