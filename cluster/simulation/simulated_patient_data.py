@@ -35,24 +35,13 @@ except:
 # n_samples
 n_samples = 1000
 
-# n_electrodes - number of electrodes for reconstructed patient - need to loop over 5:5:130
-
-#n_elecs = range(5, 95, )
-#n_elecs = [5,15, 25, 45, 65, 85,  50, 95]
-#n_elecs = [ast.literal_eval(n_elecs)]
-
-### debug with input:
-
-#n_elecs = [ast.literal_eval(sys.argv[1])]
-
-# m_patients - number of patients in the model - need to loop over 10:10:50
+# n_electrodes - number of electrodes for reconstructed patient
+# m_electrodes - number of electrodes for each patient in the model
+# m_patients - number of patients in the model
 m_patients = [1, 5, 10]
 
-# m_electrodes - number of electrodes for each patient in the model -  25:25:100
-#m_elecs = range(5, 165, 50)
-#m_elecs = [100]
-
-iter_val = 5
+# iterations
+iter_val = 10
 
 # load nifti to get locations
 gray = se.load('mini_model')
@@ -63,13 +52,13 @@ gray_locs = gray.locs
 d = []
 append_d = pd.DataFrame()
 if str(sys.argv [1]) == 'location_case_1':
-    param_grid = [(p, m, n) for p in m_patients for m in range(10, 170, 50) for n in range(10, 170 - m, 50)]
+    param_grid = [(p, m, n) for p in m_patients for m in range(10, 170, 10) for n in range(10, 170 - m, 10)]
 
 if str(sys.argv [1]) == 'location_case_2':
-    param_grid = [(p, m, n) for p in m_patients for m in range(10, 170, 50) for n in range(10, m, 50)]
+    param_grid = [(p, m, n) for p in m_patients for m in range(10, 170, 10) for n in range(10, m, 10)]
 
 if str(sys.argv [1]) == 'location_case_3':
-    param_grid = [(p,m,n) for p in m_patients for m in range(10,170,50) for n in range(10,170,50)]
+    param_grid = [(p,m,n) for p in m_patients for m in range(10,170,10) for n in range(10,170,10)]
 else:
     print('need to input script paramter to deliniate special location cases')
 #for p, m, n in [(10,10,160)]:
@@ -94,7 +83,7 @@ for p, m, n in param_grid:
             #data = c[:, mo_locs.index][mo_locs.index, :]
             data = c[:, mo_locs.index][mo_locs.index, :]
 
-            model = se.Model(numerator=data*p, denominator=np.ones(np.shape(data))*p, locs=mo_locs, n_subs=p)
+            model = se.Model(numerator=p*np.array(data), denominator=np.ones(np.shape(data))*p, locs=mo_locs, n_subs=p)
 
             # create brain object from the remaining locations - first find remaining locations
             possible_sub_locs = gray_locs[~gray_locs.index.isin(mo_locs.index)]
@@ -133,7 +122,7 @@ for p, m, n in param_grid:
 
             data = c[:, mo_locs.index][mo_locs.index, :]
 
-            model = se.Model(numerator=data * p, denominator=np.ones(np.shape(data)) * p, locs=mo_locs, n_subs=p)
+            model = se.Model(numerator=p*np.array(data), denominator=np.ones(np.shape(data)) * p, locs=mo_locs, n_subs=p)
 
             # create brain object from the remaining locations - first find remaining locations
             sub_locs = mo_locs.sample(n).sort_values(['x', 'y', 'z'])
@@ -174,7 +163,7 @@ for p, m, n in param_grid:
 
             data = c[:, mo_locs.index][mo_locs.index, :]
 
-            model = se.Model(numerator=data * p, denominator=np.ones(np.shape(data)) * p, locs=mo_locs, n_subs=p)
+            model = se.Model(numerator=p*np.array(data), denominator=np.ones(np.shape(data)) * p, locs=mo_locs, n_subs=p)
 
             # brain object locations subsetted entirely from both model and gray locations - for this n > m (this isn't necessarily true, but this ensures overlap)
 
@@ -255,11 +244,10 @@ else:
         ax.invert_yaxis()
         ax.set(xlabel='Number of electrodes from to-be-reconstructed patient', ylabel=' Number of electrodes from patients used to construct model')
         #axs_iter += 1
-#
-#
 
-#
 plt.savefig(os.path.join(config['resultsdir'], str(sys.argv[1]) + '_heatmap.pdf'))
+
+
 
 ## put in locations of electrodes as well
 

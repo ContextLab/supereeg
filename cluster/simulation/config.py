@@ -7,14 +7,14 @@ config['template'] = 'run_job.sh'
 
 # ====== MODIFY ONLY THE CODE BETWEEN THESE LINES ======
 if (socket.gethostname() == 'Lucys-MacBook-Pro-3.local') or (socket.gethostname() == 'vertex.kiewit.dartmouth.edu') or (socket.gethostname() == 'vertex.local'):
-    config['datadir'] = '/Users/lucyowen/Desktop/supereeg_env'
+    config['datadir'] = '/Users/lucyowen/Desktop/supereeg_env/simulations'
     config['workingdir'] = config['datadir']
     config['startdir'] = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))  # directory to start the job in
     config['template'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'run_job_local.sh')
 else:
-    config['datadir'] = '/idata/cdl/data/ECoG/pyFR/data/npz'
-    config['workingdir'] = '/idata/cdl/lowen/new_config'
-    config['startdir'] = '/ihome/lowen/repos/superEEG/examples'
+    config['datadir'] = '/idata/cdl/lowen/simulations'
+    config['workingdir'] = '/idata/cdl/lowen/simulations'
+    config['startdir'] = '/idata/cdl/lowen'
     config['template'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'run_job.sh')
 
 # job creation options

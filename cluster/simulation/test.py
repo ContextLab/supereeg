@@ -14,7 +14,7 @@ try:
 except:
     os.makedirs(config['resultsdir'])
 
-gray = se.load('mini_model_nifti')
+gray = se.load('mini_model')
 print(gray.locs)
 results_file = os.path.join(config['resultsdir'], sys.argv[1]+'.results')
 
