@@ -86,5 +86,10 @@ def test_rbf():
     assert isinstance(weights, np.ndarray)
     assert np.allclose(weights_same, np.eye(np.shape(weights_same)[0]))
 
+def test_tal2mni():
+    tal_vals = tal2mni(locs)
+    assert isinstance(tal_vals, np.ndarray)
+
+
 
 

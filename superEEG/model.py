@@ -144,7 +144,10 @@ class Model(object):
                 sub_rbf_weights = rbf(self.locs, bo.locs)
 
                 #  get subject expanded correlation matrix
-                num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(sub_corrmat_z, sub_rbf_weights)
+                #num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(sub_corrmat_z, sub_rbf_weights)
+
+                #  get subject expanded correlation matrix
+                num_corrmat_x, denom_corrmat_x = expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
 
                 # add in new subj data to numerator
                 numerator += num_corrmat_x
@@ -343,8 +346,8 @@ class Model(object):
             sub_rbf_weights = rbf(m.locs, bo.locs)
 
             #  get subject expanded correlation matrix
-            num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(sub_corrmat, sub_rbf_weights)
-
+            #num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(sub_corrmat, sub_rbf_weights)
+            num_corrmat_x, denom_corrmat_x = expand_corrmat_fit(sub_corrmat, sub_rbf_weights)
             # set weights equal to zero where the numerator is equal to nan
             denom_corrmat_x[np.isnan(num_corrmat_x)] = 0
 

@@ -223,38 +223,38 @@ def tal2mni(r):
 #     result = k / w
 #
 #     return sess.run(result)
-
-def get_expanded_corrmat_tf(C, weights):
-    """
-    Gets full correlation matrix
-
-    Parameters
-    ----------
-    bo : Brain data object
-        Contains subject data, locs, other info
-
-    corrmat : len(n_elecs) x len(n_elecs) Numpy array
-        Subject's correlation matrix
-
-    weights : len()
-        Weights matrix calculated using rbf function - (len(R_subj)xlen(R_subj)) matrix
-
-    C_sub : ndarray
-        Subject level correlation matrix - (len(R_subj)xlen(R_subj)) matrix
-
-    """
-
-    # slice and dice
-    sliced_up = [(x, y) for x in range(weights.shape[0]) for y in range(x)]
-
-    Z = r2z(C)
-    Z[np.isnan(Z)] = 0
-
-    sess = tf.Session()
-
-    results = [compute_coord_tf(coord, weights, Z, sess) for coord in sliced_up]
-
-    return expand_matrix(results, weights)
+#
+# def get_expanded_corrmat_tf(C, weights):
+#     """
+#     Gets full correlation matrix
+#
+#     Parameters
+#     ----------
+#     bo : Brain data object
+#         Contains subject data, locs, other info
+#
+#     corrmat : len(n_elecs) x len(n_elecs) Numpy array
+#         Subject's correlation matrix
+#
+#     weights : len()
+#         Weights matrix calculated using rbf function - (len(R_subj)xlen(R_subj)) matrix
+#
+#     C_sub : ndarray
+#         Subject level correlation matrix - (len(R_subj)xlen(R_subj)) matrix
+#
+#     """
+#
+#     # slice and dice
+#     sliced_up = [(x, y) for x in range(weights.shape[0]) for y in range(x)]
+#
+#     Z = r2z(C)
+#     Z[np.isnan(Z)] = 0
+#
+#     sess = tf.Session()
+#
+#     results = [compute_coord_tf(coord, weights, Z, sess) for coord in sliced_up]
+#
+#     return expand_matrix(results, weights)
 
 
 def uniquerows(x):
@@ -340,72 +340,72 @@ def uniquerows(x):
 #
 #     return (K + K.T), (W + W.T)
 
-
-def get_expanded_corrmat(C, weights, mode='fit'):
-    """
-    Gets full correlation matrix
-
-    Parameters
-    ----------
-    C : Numpy array
-        Subject's correlation matrix
-
-    weights : Numpy array
-        Weights matrix calculated using rbf function matrix
-
-    mode : str
-        Specifies whether to compute over all elecs (fit mode) or just new elecs
-        (predict mode)
-
-    Returns
-    ----------
-    numerator : Numpy array
-        Numerator for the expanded correlation matrix
-    denominator : Numpy array
-        Denominator for the expanded correlation matrix
-
-    """
-    C[np.eye(C.shape[0]) == 1] = 0
-    C[np.where(np.isnan(C))] = 0
-
-    n = weights.shape[0]
-    K = np.zeros([n, n])
-    W = np.zeros([n, n])
-    Z = C
-
-    if mode=='fit':
-        s = 0
-
-        vals = range(s, n)
-        for x in vals:
-            xweights = weights[x, :]
-
-            vals = range(x)
-            for y in vals:
-
-                yweights = weights[y, :]
-
-                next_weights = np.outer(xweights, yweights)
-                next_weights = next_weights - np.triu(next_weights)
-
-                W[x, y] = np.sum(next_weights)
-                K[x, y] = np.sum(Z * next_weights)
-        return (K + K.T), (W + W.T)
-
-    elif mode=='predict':
-        s = C.shape[0]
-        sliced_up = [(x, y) for x in range(s, n) for y in range(x)]
-
-        results = Parallel(n_jobs=multiprocessing.cpu_count())(
-            delayed(compute_coord)(coord, weights, Z) for coord in sliced_up)
-
-        W[map(lambda x: x[0], sliced_up), map(lambda x: x[1], sliced_up)] = map(lambda x: x[0], results)
-        K[map(lambda x: x[0], sliced_up), map(lambda x: x[1], sliced_up)] = map(lambda x: x[1], results)
-
-        return (K + K.T), (W + W.T)
-
-    else:
-        return 'error: unknown mode entered for get_expand_corrmat'
+#
+# def get_expanded_corrmat(C, weights, mode='fit'):
+#     """
+#     Gets full correlation matrix
+#
+#     Parameters
+#     ----------
+#     C : Numpy array
+#         Subject's correlation matrix
+#
+#     weights : Numpy array
+#         Weights matrix calculated using rbf function matrix
+#
+#     mode : str
+#         Specifies whether to compute over all elecs (fit mode) or just new elecs
+#         (predict mode)
+#
+#     Returns
+#     ----------
+#     numerator : Numpy array
+#         Numerator for the expanded correlation matrix
+#     denominator : Numpy array
+#         Denominator for the expanded correlation matrix
+#
+#     """
+#     C[np.eye(C.shape[0]) == 1] = 0
+#     C[np.where(np.isnan(C))] = 0
+#
+#     n = weights.shape[0]
+#     K = np.zeros([n, n])
+#     W = np.zeros([n, n])
+#     Z = C
+#
+#     if mode=='fit':
+#         s = 0
+#
+#         vals = range(s, n)
+#         for x in vals:
+#             xweights = weights[x, :]
+#
+#             vals = range(x)
+#             for y in vals:
+#
+#                 yweights = weights[y, :]
+#
+#                 next_weights = np.outer(xweights, yweights)
+#                 next_weights = next_weights - np.triu(next_weights)
+#
+#                 W[x, y] = np.sum(next_weights)
+#                 K[x, y] = np.sum(Z * next_weights)
+#         return (K + K.T), (W + W.T)
+#
+#     elif mode=='predict':
+#         s = C.shape[0]
+#         sliced_up = [(x, y) for x in range(s, n) for y in range(x)]
+#
+#         results = Parallel(n_jobs=multiprocessing.cpu_count())(
+#             delayed(compute_coord)(coord, weights, Z) for coord in sliced_up)
+#
+#         W[map(lambda x: x[0], sliced_up), map(lambda x: x[1], sliced_up)] = map(lambda x: x[0], results)
+#         K[map(lambda x: x[0], sliced_up), map(lambda x: x[1], sliced_up)] = map(lambda x: x[1], results)
+#
+#         return (K + K.T), (W + W.T)
+#
+#     else:
+#         return 'error: unknown mode entered for get_expand_corrmat'
 
 def expand_corrmat_fit(C, weights):
     """

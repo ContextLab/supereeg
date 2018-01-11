@@ -5,7 +5,7 @@ import superEEG as se
 import numpy as np
 import scipy
 import pandas as pd
-from superEEG._helpers.stats import get_expanded_corrmat, rbf
+from superEEG._helpers.stats import rbf
 import seaborn as sns
 from sklearn import datasets
 
