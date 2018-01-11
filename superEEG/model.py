@@ -245,7 +245,6 @@ class Model(object):
             perm_locs = self.locs.iloc[perm_inds]
 
         # else if some of the subject and model locations overlap
-        # else:
         elif sum(bool_mask) != bo.locs.shape[0]:
 
             # get subject indices where subject locs do not overlap with model locs
