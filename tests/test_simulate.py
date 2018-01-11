@@ -103,13 +103,13 @@ def test_electrode_contingencies_1_null_set():
     # extract locations
     gray_locs = gray.locs
 
-    mo_locs = gray_locs.sample(150).sort_values(['x', 'y', 'z'])
+    mo_locs = gray_locs.sample(100).sort_values(['x', 'y', 'z'])
 
     c = se.create_cov(cov='random', n_elecs=170)
 
     data = c[:, mo_locs.index][mo_locs.index, :]
 
-    model = se.Model(numerator=data * 10, denominator=np.ones(np.shape(data)) * 10, locs=mo_locs, n_subs=1 * 10)
+    model = se.Model(numerator=10*np.array(data), denominator=10*np.ones(np.shape(data)), locs=mo_locs, n_subs=10)
 
     # create brain object from the remaining locations - first find remaining locations
     sub_locs = gray_locs[~gray_locs.index.isin(mo_locs.index)]
@@ -141,16 +141,16 @@ def test_electrode_contingencies_2_subset():
     # extract locations
     gray_locs = gray.locs
 
-    mo_locs = gray_locs.sample(150).sort_values(['x', 'y', 'z'])
+    mo_locs = gray_locs.sample(100).sort_values(['x', 'y', 'z'])
 
     c = se.create_cov(cov='random', n_elecs=170)
 
-    data = np.dot(c[:, mo_locs.index][mo_locs.index, :], 10)
+    data = c[:, mo_locs.index][mo_locs.index, :]
 
-    model = se.Model(numerator=data*10, denominator=np.ones(np.shape(data)) * 10, locs=mo_locs, n_subs=1 * 10)
+    model = se.Model(numerator=10*np.array(data), denominator=10*np.ones(np.shape(data)), locs=mo_locs, n_subs=10)
 
     # create brain object from the remaining locations - first find remaining locations
-    sub_locs = mo_locs.sample(20).sort_values(['x', 'y', 'z'])
+    sub_locs = mo_locs.sample(70).sort_values(['x', 'y', 'z'])
 
     # create a brain object with all gray locations
     bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
@@ -180,17 +180,17 @@ def test_electrode_contingencies_3_locations_can_subset():
     # extract locations
     gray_locs = gray.locs
 
-    mo_locs = gray_locs.sample(150).sort_values(['x', 'y', 'z'])
+    mo_locs = gray_locs.sample(100).sort_values(['x', 'y', 'z'])
 
     c = se.create_cov(cov='random', n_elecs=170)
 
     data = c[:, mo_locs.index][mo_locs.index, :]
 
-    model = se.Model(numerator=data*10, denominator=np.ones(np.shape(data))*10, locs=mo_locs, n_subs=1*10)
+    model = se.Model(numerator=10*np.array(data), denominator=10*np.ones(np.shape(data)), locs=mo_locs, n_subs=10)
 
     # brain object locations subsetted entirely from both model and gray locations - for this n > m (this isn't necessarily true, but this ensures overlap)
 
-    sub_locs = gray_locs.sample(20).sort_values(['x', 'y', 'z'])
+    sub_locs = gray_locs.sample(70).sort_values(['x', 'y', 'z'])
 
 
     bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
@@ -201,21 +201,19 @@ def test_electrode_contingencies_3_locations_can_subset():
 
     try:
         recon = model.predict(bo_sample)
-    except:
-        overlap = mo_locs[~mo_locs.index.isin(sub_locs.index)]
-        if overlap.empty:
-            print('no overlap')
-        print('SVD issue')
+        # sample actual data at reconstructed locations
+        actual = bo.data.iloc[:, recon.locs.index]
 
-    actual = bo.data.iloc[:, recon.locs.index]
-    corr_vals = corr_column(actual.as_matrix(), recon.data.as_matrix())
-    try:
-        corr_val_mean = corr_vals.mean()
-    except ValueError:
-        corr_val_mean = float('nan')
-        overlap = mo_locs[~mo_locs.index.isin(sub_locs.index)]
-        if overlap.empty:
-            print('no overlap')
-        print('corr_sample_issue')
+        # correlate reconstruction with actual data
+        corr_vals = corr_column(actual.as_matrix(), recon.data.as_matrix())
+
+        corr_vals_sample = np.random.choice(corr_vals, 5)
+        corr_val_mean = corr_vals_sample.mean()
+
+    except:
+
+        print('SVD issue')
+        corr_vals = float('nan')
+        corr_vals_mean = float('nan')
 
     assert corr_val_mean > .75

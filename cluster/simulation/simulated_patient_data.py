@@ -52,7 +52,7 @@ m_patients = [1, 5, 10]
 #m_elecs = range(5, 165, 50)
 #m_elecs = [100]
 
-iter_val = 1
+iter_val = 5
 
 # load nifti to get locations
 gray = se.load('mini_model')
@@ -150,9 +150,6 @@ for p, m, n in param_grid:
             # put data and locations together in new sample brain object
             bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
 
-            print(bo_sample.locs.shape)
-            print(model.locs.shape)
-            print(gray_locs[~gray_locs.index.isin(sub_locs.index)])
             # predict activity at all unknown locations
             recon = model.predict(bo_sample)
 
@@ -205,7 +202,8 @@ for p, m, n in param_grid:
                 corr_val_mean = corr_vals_sample.mean()
 
             except:
-                print('m:' + str(m), 'n:' + str(n))
+
+                print('p:' + str(p), 'm:' + str(m), 'n:' + str(n))
                 print('SVD issue')
                 corr_vals = float('nan')
                 corr_vals_mean = float('nan')
