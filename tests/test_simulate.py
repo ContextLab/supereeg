@@ -199,18 +199,23 @@ def test_electrode_contingencies_3_locations_can_subset():
 
     bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
 
-    recon = model.predict(bo_sample)
+    try:
+        recon = model.predict(bo_sample)
+    except:
+        overlap = mo_locs[~mo_locs.index.isin(sub_locs.index)]
+        if overlap.empty:
+            print('no overlap')
+        print('SVD issue')
 
-    # sample actual data at reconstructed locations
     actual = bo.data.iloc[:, recon.locs.index]
-
-    # correlate reconstruction with actual data
     corr_vals = corr_column(actual.as_matrix(), recon.data.as_matrix())
+    try:
+        corr_val_mean = corr_vals.mean()
+    except ValueError:
+        corr_val_mean = float('nan')
+        overlap = mo_locs[~mo_locs.index.isin(sub_locs.index)]
+        if overlap.empty:
+            print('no overlap')
+        print('corr_sample_issue')
 
-    overlap = mo_locs[~mo_locs.index.isin(sub_locs.index)]
-
-    # print(mo_locs.shape)
-    # print(sub_locs.shape)
-    # print(overlap)
-    # print(np.shape(overlap))
-    assert corr_vals.mean() > .75
+    assert corr_val_mean > .75

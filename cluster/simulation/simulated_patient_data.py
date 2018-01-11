@@ -75,7 +75,6 @@ else:
 #for p, m, n in [(10,10,160)]:
 for p, m, n in param_grid:
     d = []
-    print(p,m,n)
     for i in range(iter_val):
 
 
@@ -121,6 +120,8 @@ for p, m, n in param_grid:
 
             corr_vals_sample = np.random.choice(corr_vals, 5)
 
+            corr_val_mean = corr_vals_sample.mean()
+
 ####################################
         ### 2: all brain object locations are also model locations ( B is a subset of A)
 
@@ -159,11 +160,9 @@ for p, m, n in param_grid:
 
             corr_vals = corr_column(actual.as_matrix(), recon.data.as_matrix())
 
-            try:
-                corr_vals_sample = np.random.choice(corr_vals, 5)
-            except ValueError:
-                print('m:' + str(m), 'n:'+ str(n))
-                corr_vals_sample=None
+            corr_vals_sample = np.random.choice(corr_vals, 5)
+
+            corr_val_mean = corr_vals_sample.mean()
 
 
 ############################
@@ -194,17 +193,26 @@ for p, m, n in param_grid:
 
             bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
 
-            recon = model.predict(bo_sample)
+            try:
+                recon = model.predict(bo_sample)
+                # sample actual data at reconstructed locations
+                actual = bo.data.iloc[:, recon.locs.index]
 
-            # sample actual data at reconstructed locations
-            #actual = bo.data.iloc[:, unknown_locs.index]
-            actual = bo.data.iloc[:, recon.locs.index]
-            #correlate reconstruction with actual data
-            corr_vals = corr_column(actual.as_matrix(),recon.data.as_matrix())
-            corr_vals_sample = np.random.choice(corr_vals, 5)
+                # correlate reconstruction with actual data
+                corr_vals = corr_column(actual.as_matrix(), recon.data.as_matrix())
+
+                corr_vals_sample = np.random.choice(corr_vals, 5)
+                corr_val_mean = corr_vals_sample.mean()
+
+            except:
+                print('m:' + str(m), 'n:' + str(n))
+                print('SVD issue')
+                corr_vals = float('nan')
+                corr_vals_mean = float('nan')
+
 
         d.append({'Numbder of Patients in Model': p, 'Number of Model Locations': m, 'Number of Patient Locations': n,
-                  'Average Correlation': corr_vals_sample.mean(), 'Correlations': corr_vals, 'Patient Locations': bo_sample.locs.values})
+                  'Average Correlation': corr_val_mean, 'Correlations': corr_vals, 'Patient Locations': bo_sample.locs.values})
 
     append_d = append_d.append(d)
     append_d.index.rename('Iteration', inplace=True)
@@ -253,7 +261,7 @@ else:
 #
 
 #
-plt.savefig(os.path.join(config['resultsdir'], str(sys.argv[1], + '_heatmap.pdf')))
+plt.savefig(os.path.join(config['resultsdir'], str(sys.argv[1]) + '_heatmap.pdf'))
 
 ## put in locations of electrodes as well
 

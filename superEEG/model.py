@@ -218,6 +218,7 @@ class Model(object):
         unknown_inds = np.where(~bool_mask)[0]
         joint_model_inds = np.where(bool_mask)[0]
 
+        assert not all(bool_mask),"model is a complete subset of patient locations"
         # if there are no unknown inds, keep going
         if not any(bool_mask):
 
