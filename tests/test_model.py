@@ -53,10 +53,4 @@ def test_update():
     assert np.allclose(mo.numerator, test_model.numerator)
     assert np.allclose(mo.denominator, test_model.denominator)
 
-### need to finish this test I think and put it in test helpers
-# def test_expand_corrmat():
-#     R = scipy.linalg.toeplitz(np.linspace(0, 1, 3)[::-1])
-#     model_locs = np.array([[0, 0, 0], [0, 0, 1], [0, 0, 2]])
-#     subject_locs = np.array([[0,0,3], [0,0,4]])
-#     weights = rbf(np.vstack([model_locs, subject_locs]), model_locs, width=2)
-#     fit_num, fit_denom = get_expanded_corrmat(R, weights)
+

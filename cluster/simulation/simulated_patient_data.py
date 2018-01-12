@@ -52,13 +52,13 @@ gray_locs = gray.locs
 d = []
 append_d = pd.DataFrame()
 if str(sys.argv [1]) == 'location_case_1':
-    param_grid = [(p, m, n) for p in m_patients for m in range(10, 170, 10) for n in range(10, 170 - m, 10)]
+    param_grid = [(p, m, n) for p in m_patients for m in range(10, 170, 50) for n in range(10, 170 - m, 50)]
 
 if str(sys.argv [1]) == 'location_case_2':
-    param_grid = [(p, m, n) for p in m_patients for m in range(10, 170, 10) for n in range(10, m, 10)]
+    param_grid = [(p, m, n) for p in m_patients for m in range(10, 170, 50) for n in range(10, m, 50)]
 
 if str(sys.argv [1]) == 'location_case_3':
-    param_grid = [(p,m,n) for p in m_patients for m in range(10,170,10) for n in range(10,170,10)]
+    param_grid = [(p,m,n) for p in m_patients for m in range(10,170,50) for n in range(10,170,50)]
 else:
     print('need to input script paramter to deliniate special location cases')
 #for p, m, n in [(10,10,160)]:

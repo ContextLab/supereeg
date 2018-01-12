@@ -353,32 +353,7 @@ def round_it(locs, places):
     """
     return np.round(locs, decimals=places)
 
-def expand_matrix(output_list, R_full):
-    """
-    This function expands output from the pooled RBF-weighted averages at each coordinate (index in the full matrix)
 
-    Parameters
-    ----------
-    output_list : list
-        results from pooled expand_corrmat
-
-    R_full : ndarray
-        Full list of coordinates that pass kurtosis threshold
-
-    Returns
-    ----------
-    results : ndarray
-        Expanded full matrix (len(R_full) x len(R_full))
-
-    """
-    ### convert output list to array
-    output_array = np.array(output_list)
-    ### initialize a full matrix (len(R_full) x len(R_full))
-    C_full = np.zeros([R_full.shape[0], R_full.shape[0]])
-    ### find indices of for the top triangle in the full matrix - use those indices to fill in the correponding values from output array to full matrix
-    C_full[np.tril_indices(R_full.shape[0], -1)] = output_array
-    ### expand to full matrix
-    return C_full + C_full.T + np.eye(C_full.shape[0])
 
 def filter_elecs(bo, measure='kurtosis', threshold=10):
     """
@@ -841,3 +816,29 @@ def normalize_Y(Y_matrix):
 #
 #     else:
 #         return 'error: unknown mode entered for get_expand_corrmat'
+# def expand_matrix(output_list, R_full):
+#     """
+#     This function expands output from the pooled RBF-weighted averages at each coordinate (index in the full matrix)
+#
+#     Parameters
+#     ----------
+#     output_list : list
+#         results from pooled expand_corrmat
+#
+#     R_full : ndarray
+#         Full list of coordinates that pass kurtosis threshold
+#
+#     Returns
+#     ----------
+#     results : ndarray
+#         Expanded full matrix (len(R_full) x len(R_full))
+#
+#     """
+#     ### convert output list to array
+#     output_array = np.array(output_list)
+#     ### initialize a full matrix (len(R_full) x len(R_full))
+#     C_full = np.zeros([R_full.shape[0], R_full.shape[0]])
+#     ### find indices of for the top triangle in the full matrix - use those indices to fill in the correponding values from output array to full matrix
+#     C_full[np.tril_indices(R_full.shape[0], -1)] = output_array
+#     ### expand to full matrix
+#     return C_full + C_full.T + np.eye(C_full.shape[0])

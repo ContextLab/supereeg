@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from superEEG._helpers.stats import *
 from scipy.stats import kurtosis
+import seaborn as sns
 
 locs = se.load('example_locations')
 # number of timeseries samples
@@ -12,6 +13,13 @@ n_samples = 1000
 n_subs = 5
 # number of electrodes
 n_elecs = 10
+# full brain object to parse and compare
+bo_full = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=locs)
+# create brain object from subset of locations
+sub_locs = bo_full.locs.iloc[160:]
+sub_data = bo_full.data.iloc[:, sub_locs.index]
+bo = se.Brain(data=sub_data.as_matrix(), locs=sub_locs, sample_rate=1000)
+
 # simulate correlation matrix
 data = [se.simulate_model_bos(n_samples=10000, sample_rate=1000, locs=locs, sample_locs = n_elecs) for x in range(n_subs)]
 # test model to compare
@@ -99,46 +107,73 @@ def test_uniquerows():
     assert isinstance(test_fun, np.ndarray)
     assert np.shape(test_fun)==np.shape(locs)
 
-### still would like to have a better test than this:
 def test_expand_corrmat_fit():
-    sub_locs = locs[:10]
-    mod_locs = locs[10:]
-    R = se.create_cov('random', len(sub_locs))
-    weights = rbf(mod_locs, sub_locs)
-    expanded_num, expanded_denom = expand_corrmat_fit(R, weights)
-    assert isinstance(expanded_num, np.ndarray)
-    assert isinstance(expanded_denom, np.ndarray)
-    assert np.shape(expanded_num)[0] == np.shape(mod_locs)[0]
+
+    sub_corrmat = get_corrmat(bo)
+    np.fill_diagonal(sub_corrmat, 0)
+    sub_corrmat = r2z(sub_corrmat)
+    weights = rbf(test_model.locs, bo.locs)
+    expanded_num_f, expanded_denom_f = expand_corrmat_fit(sub_corrmat, weights)
+
+    assert isinstance(expanded_num_f, np.ndarray)
+    assert isinstance(expanded_denom_f, np.ndarray)
+    assert np.shape(expanded_num_f)[0] == test_model.locs.shape[0]
 
 def test_expand_corrmat_predict():
-    sub_locs = locs[:10]
-    mod_locs = locs[10:]
-    R = se.create_cov('random', len(sub_locs))
-    weights = rbf(mod_locs, sub_locs)
-    expanded_num, expanded_denom = expand_corrmat_predict(R, weights)
-    assert isinstance(expanded_num, np.ndarray)
-    assert isinstance(expanded_denom, np.ndarray)
-    assert np.shape(expanded_num)[0] == np.shape(mod_locs)[0]
+
+    sub_corrmat = get_corrmat(bo)
+    np.fill_diagonal(sub_corrmat, 0)
+    sub_corrmat = r2z(sub_corrmat)
+    weights = rbf(test_model.locs, bo.locs)
+    expanded_num_p, expanded_denom_p = expand_corrmat_predict(sub_corrmat, weights)
+
+    assert isinstance(expanded_num_p, np.ndarray)
+    assert isinstance(expanded_denom_p, np.ndarray)
+    assert np.shape(expanded_num_p)[0] == test_model.locs.shape[0]
 
 def test_expand_corrmats_same():
-    sub_locs = locs[:10]
-    print(np.shape(sub_locs))
-    mod_locs = locs[10:]
-    print(np.shape(mod_locs))
-    R = se.create_cov('random', len(sub_locs))
-    weights = rbf(mod_locs, sub_locs)
-    expanded_num_p, expanded_denom_p = expand_corrmat_predict(R, weights)
+
+    sub_corrmat = get_corrmat(bo)
+    np.fill_diagonal(sub_corrmat, 0) # <- possible failpoint
+    sub_corrmat_z = r2z(sub_corrmat)
+    weights = rbf(test_model.locs, bo.locs)
+
+    expanded_num_p, expanded_denom_p = expand_corrmat_predict(sub_corrmat_z, weights)
     model_corrmat_p = np.divide(expanded_num_p, expanded_denom_p)
-    expanded_num_f, expanded_denom_f = expand_corrmat_predict(R, weights)
+    expanded_num_f, expanded_denom_f = expand_corrmat_predict(sub_corrmat_z, weights)
     model_corrmat_f = np.divide(expanded_num_f, expanded_denom_f)
-    s = R.shape[0]-np.shape(sub_locs)[0]
+
+
+    np.fill_diagonal(model_corrmat_f, 0)
+    np.fill_diagonal(model_corrmat_p, 0)
+
+    s = test_model.locs.shape[0]-bo.locs.shape[0]
+    print(s)
     Kba_p = model_corrmat_p[:s,s:]
     Kba_f = model_corrmat_f[:s, s:]
     Kaa_p = model_corrmat_p[s:,s:]
     Kaa_f = model_corrmat_f[s:, s:]
-    print(np.shape(model_corrmat_p))
-    print(np.shape(Kaa_p))
-    print(np.shape(Kaa_f))
+
     assert isinstance(Kaa_p, np.ndarray)
+    assert isinstance(Kaa_f, np.ndarray)
     assert np.allclose(Kaa_p, Kaa_f)
+    assert np.allclose(Kba_p, Kba_f)
+
+def test_reconstruct():
+
+    recon_test = test_model.predict(bo)
+    actual_test = bo_full.data.iloc[:, recon_test.locs.index]
+
+    mo = test_model.update(bo)
+    model_corrmat_x = np.divide(mo.numerator, mo.denominator)
+    model_corrmat_x = z2r(model_corrmat_x)
+    np.fill_diagonal(model_corrmat_x, 0)
+    recon_data = reconstruct_activity(bo, model_corrmat_x)
+    corr_vals = corr_column(actual_test.as_matrix(), recon_test.data.as_matrix())
+    assert isinstance(recon_data, np.ndarray)
+    assert np.allclose(recon_data, recon_test.data)
+    assert corr_vals.mean() >.7
+
+### better way to test accuracy??
+
 
