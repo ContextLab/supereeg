@@ -23,7 +23,7 @@ import pickle
 import seaborn as sns
 from superEEG._helpers.stats import r2z, z2r, corr_column
 import matplotlib.pyplot as plt
-#plt.switch_backend('agg')
+plt.switch_backend('agg')
 
 from config import config
 try:
