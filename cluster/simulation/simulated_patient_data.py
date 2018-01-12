@@ -40,6 +40,9 @@ n_samples = 1000
 # m_patients - number of patients in the model
 m_patients = [1, 5, 10]
 
+# increments for reconstruction
+incs = 50
+
 # iterations
 iter_val = 10
 
@@ -52,13 +55,13 @@ gray_locs = gray.locs
 d = []
 append_d = pd.DataFrame()
 if str(sys.argv [1]) == 'location_case_1':
-    param_grid = [(p, m, n) for p in m_patients for m in range(10, 170, 50) for n in range(10, 170 - m, 50)]
+    param_grid = [(p, m, n) for p in m_patients for m in range(10, 170, incs) for n in range(10, 170 - m, incs)]
 
 if str(sys.argv [1]) == 'location_case_2':
-    param_grid = [(p, m, n) for p in m_patients for m in range(10, 170, 50) for n in range(10, m, 50)]
+    param_grid = [(p, m, n) for p in m_patients for m in range(10, 170, incs) for n in range(10, m, incs)]
 
 if str(sys.argv [1]) == 'location_case_3':
-    param_grid = [(p,m,n) for p in m_patients for m in range(10,170,50) for n in range(10,170,50)]
+    param_grid = [(p,m,n) for p in m_patients for m in range(10,170,incs) for n in range(10,170,incs)]
 else:
     print('need to input script paramter to deliniate special location cases')
 #for p, m, n in [(10,10,160)]:
