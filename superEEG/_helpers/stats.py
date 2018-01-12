@@ -338,7 +338,7 @@ def round_it(locs, places):
 
     Parameters
     ----------
-    locs : float
+    locs : array or float
         Number be rounded
 
     places : int
@@ -346,7 +346,7 @@ def round_it(locs, places):
 
     Returns
     ----------
-    result : float
+    result : array or float
         Rounded number
 
 
@@ -371,108 +371,19 @@ def filter_subj(bo, measure='kurtosis', threshold=10):
     """
     Filter subjects based on filter measure (use only if 2 or more electrodes pass thresholding)
     """
-    thresh_bool = bo.kurtosis > threshold
-    if sum(~thresh_bool)<2:
-        print(bo.meta + ': not enough electrodes pass threshold')
-    else:
-        return bo.meta
-
-class BrainData:
-    def __init__(self, fname, mask_strategy='background'):
-        self.fname = fname
-        if len(self.fname) == 0:
-            self.Y = []
-            self.R = []
-            self.N = 0
-            self.V = 0
-            self.vox_size = (0, 0, 0)
-            self.im_size = (0, 0, 0)
-            self.mask = []
-            self.img = []
+    if not bo.meta is None:
+        thresh_bool = bo.kurtosis > threshold
+        if sum(~thresh_bool)<2:
+            print(bo.meta + ': not enough electrodes pass threshold')
         else:
-            img = nb.load(self.fname)
-            if not hasattr(img, 'dataobj'):
-                print("Loading: " + self.fname + " [DISK READ]")
-            else:
-                print("Loading: " + self.fname + " [RAM CACHE]")
-
-            self.mask = NiftiMasker(mask_strategy=mask_strategy)
-            self.mask.fit(self.fname)
-
-            hdr = img.get_header()
-            S = img.get_sform()
-            self.vox_size = hdr.get_zooms()
-            self.im_size = img.shape
-
-            if len(img.shape) > 3:
-                self.N = img.shape[3]
-            else:
-                self.N = 1
-
-            self.Y = self.mask.transform(self.fname)
-            self.V = self.Y.shape[1]
-            vmask = np.nonzero(np.array(np.reshape(self.mask.mask_img_.dataobj, (1, np.prod(self.mask.mask_img_.shape)), order='F')))[1]
-
-            vox_coords = fullfact(img.shape[0:3])[vmask, :]
-            self.matrix_coordinates = vox_coords
-
-            self.R = np.array(vox_coords*S[0:3, 0:3] + np.tile(S[0:3, 3].T, (self.V, 1)))
-
-
-def loadnii(fname, mask_strategy='background'):
-    #if mask_strategy is 'background', treat uniformly valued voxels at the outer parts of the images as background
-    #if mask_strategy is 'epi', use nilearn's background detection strategy: find the least dense point of the histogram, between fractions lower_cutoff and upper_cutoff of the total image histogram
-    return BrainData(fname, mask_strategy)
-
-
-def fullfact(dims):
-    '''
-    Replicates MATLAB's fullfact function (behaves the same way)
-    '''
-    vals = np.asmatrix(range(1, dims[0] + 1)).T
-    if len(dims) == 1:
-        return vals
+            return bo.meta
     else:
-        aftervals = np.asmatrix(fullfact(dims[1:]))
-        inds = np.asmatrix(np.zeros((np.prod(dims), len(dims))))
-        row = 0
-        for i in range(aftervals.shape[0]):
-            inds[row:(row + len(vals)), 0] = vals
-            inds[row:(row + len(vals)), 1:] = np.tile(aftervals[i, :], (len(vals), 1))
-            row += len(vals)
-        return inds
+        print('no meta data for brain object')
 
 
 def corr_column(X, Y):
     return np.array([pearsonr(x, y)[0] for x, y in zip(X.T, Y.T)])
 
-
-
-def recon_no_expand(bo_sub, mo):
-    """
-    """
-    model = z2r(np.divide(mo.numerator, mo.denominator))
-    model[np.eye(model.shape[0]) == 1] = 1
-    known_locs = bo_sub.locs
-    known_inds = bo_sub.locs.index.values
-    unknown_locs = mo.locs.drop(known_inds)
-    unknown_inds = unknown_locs.index.values
-    Kba = model[unknown_inds, :][:, known_inds]
-    Kaa = model[:,known_inds][known_inds,:]
-    Y = zscore(bo_sub.get_data())
-    return np.squeeze(np.dot(np.dot(Kba, np.linalg.pinv(Kaa)), Y.T).T)
-
-def recon(bo_sub, mo):
-    """
-    """
-    mo[np.eye(mo.shape[0]) == 1] = 1
-    known_inds = bo_sub.locs.index.values
-    locs_inds = range(mo.shape[0])
-    unknown_inds = np.sort(list(set(locs_inds) - set(known_inds)))
-    Kba = mo[unknown_inds, :][:, known_inds]
-    Kaa = mo[:,known_inds][known_inds,:]
-    Y = zscore(bo_sub.get_data())
-    return np.squeeze(np.dot(np.dot(Kba, np.linalg.pinv(Kaa)), Y.T).T)
 
 def normalize_Y(Y_matrix):
     """
@@ -498,6 +409,70 @@ def normalize_Y(Y_matrix):
     added = mat.repmat(0.5 + np.arange(Y.shape[1]), Y.shape[0], 1)
     Y = Y + added
     return pd.DataFrame(Y)
+
+    class BrainData:
+        def __init__(self, fname, mask_strategy='background'):
+            self.fname = fname
+            if len(self.fname) == 0:
+                self.Y = []
+                self.R = []
+                self.N = 0
+                self.V = 0
+                self.vox_size = (0, 0, 0)
+                self.im_size = (0, 0, 0)
+                self.mask = []
+                self.img = []
+            else:
+                img = nb.load(self.fname)
+                if not hasattr(img, 'dataobj'):
+                    print("Loading: " + self.fname + " [DISK READ]")
+                else:
+                    print("Loading: " + self.fname + " [RAM CACHE]")
+
+                self.mask = NiftiMasker(mask_strategy=mask_strategy)
+                self.mask.fit(self.fname)
+
+                hdr = img.get_header()
+                S = img.get_sform()
+                self.vox_size = hdr.get_zooms()
+                self.im_size = img.shape
+
+                if len(img.shape) > 3:
+                    self.N = img.shape[3]
+                else:
+                    self.N = 1
+
+                self.Y = self.mask.transform(self.fname)
+                self.V = self.Y.shape[1]
+                vmask = np.nonzero(np.array(
+                    np.reshape(self.mask.mask_img_.dataobj, (1, np.prod(self.mask.mask_img_.shape)), order='F')))[1]
+
+                vox_coords = fullfact(img.shape[0:3])[vmask, :]
+                self.matrix_coordinates = vox_coords
+
+                self.R = np.array(vox_coords * S[0:3, 0:3] + np.tile(S[0:3, 3].T, (self.V, 1)))
+
+    def loadnii(fname, mask_strategy='background'):
+        # if mask_strategy is 'background', treat uniformly valued voxels at the outer parts of the images as background
+        # if mask_strategy is 'epi', use nilearn's background detection strategy: find the least dense point of the histogram, between fractions lower_cutoff and upper_cutoff of the total image histogram
+        return BrainData(fname, mask_strategy)
+
+    def fullfact(dims):
+        '''
+        Replicates MATLAB's fullfact function (behaves the same way)
+        '''
+        vals = np.asmatrix(range(1, dims[0] + 1)).T
+        if len(dims) == 1:
+            return vals
+        else:
+            aftervals = np.asmatrix(fullfact(dims[1:]))
+            inds = np.asmatrix(np.zeros((np.prod(dims), len(dims))))
+            row = 0
+            for i in range(aftervals.shape[0]):
+                inds[row:(row + len(vals)), 0] = vals
+                inds[row:(row + len(vals)), 1:] = np.tile(aftervals[i, :], (len(vals), 1))
+                row += len(vals)
+            return inds
 
 # def compute_coord(coord, weights, Z):
 #
@@ -842,3 +817,30 @@ def normalize_Y(Y_matrix):
 #     C_full[np.tril_indices(R_full.shape[0], -1)] = output_array
 #     ### expand to full matrix
 #     return C_full + C_full.T + np.eye(C_full.shape[0])
+##### both recons below were just used for debugging purposes
+#
+# def recon_no_expand(bo_sub, mo):
+#     """
+#     """
+#     model = z2r(np.divide(mo.numerator, mo.denominator))
+#     model[np.eye(model.shape[0]) == 1] = 1
+#     known_locs = bo_sub.locs
+#     known_inds = bo_sub.locs.index.values
+#     unknown_locs = mo.locs.drop(known_inds)
+#     unknown_inds = unknown_locs.index.values
+#     Kba = model[unknown_inds, :][:, known_inds]
+#     Kaa = model[:,known_inds][known_inds,:]
+#     Y = zscore(bo_sub.get_data())
+#     return np.squeeze(np.dot(np.dot(Kba, np.linalg.pinv(Kaa)), Y.T).T)
+#
+# def recon(bo_sub, mo):
+#     """
+#     """
+#     mo[np.eye(mo.shape[0]) == 1] = 1
+#     known_inds = bo_sub.locs.index.values
+#     locs_inds = range(mo.shape[0])
+#     unknown_inds = np.sort(list(set(locs_inds) - set(known_inds)))
+#     Kba = mo[unknown_inds, :][:, known_inds]
+#     Kaa = mo[:,known_inds][known_inds,:]
+#     Y = zscore(bo_sub.get_data())
+#     return np.squeeze(np.dot(np.dot(Kba, np.linalg.pinv(Kaa)), Y.T).T)

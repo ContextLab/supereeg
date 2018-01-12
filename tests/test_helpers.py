@@ -18,7 +18,7 @@ bo_full = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=locs)
 # create brain object from subset of locations
 sub_locs = bo_full.locs.iloc[160:]
 sub_data = bo_full.data.iloc[:, sub_locs.index]
-bo = se.Brain(data=sub_data.as_matrix(), locs=sub_locs, sample_rate=1000)
+bo = se.Brain(data=sub_data.as_matrix(), locs=sub_locs, sample_rate=1000, meta = {'brain object locs sampled': 160})
 
 # simulate correlation matrix
 data = [se.simulate_model_bos(n_samples=10000, sample_rate=1000, locs=locs, sample_locs = n_elecs) for x in range(n_subs)]
@@ -172,8 +172,36 @@ def test_reconstruct():
     corr_vals = corr_column(actual_test.as_matrix(), recon_test.data.as_matrix())
     assert isinstance(recon_data, np.ndarray)
     assert np.allclose(recon_data, recon_test.data)
-    assert corr_vals.mean() >.7
+    assert corr_vals.mean() >.5
 
 ### better way to test accuracy??
 
+def test_round_it():
+    rounded_array = round_it(np.array([1.0001, 1.99999]), 3)
+    rounded_float = round_it(1.0009, 3)
+    assert isinstance(rounded_array, (int, float, np.ndarray))
+    assert np.allclose(rounded_array, np.array([1,2]))
+    assert rounded_float == 1.001
+
+def test_filter_elecs():
+    bo_f = filter_elecs(bo)
+    assert isinstance(bo_f, se.Brain)
+
+def test_filter_subj():
+    bo_s = filter_subj(bo)
+    bo_f = filter_subj(bo_full)
+    assert isinstance(bo_s, (str, dict, type(None)))
+    assert isinstance(bo_f, (str, dict, type(None)))
+
+def test_corr_column():
+    X = np.matrix([[1, 2, 3], [1, 2, 3]])
+    print(X)
+    print(X.T)
+    corr_vals = corr_column(np.matrix([[1,2,3], [1,2,3]]), np.matrix([[1,2,3], [1,2,3]]))
+    print(corr_vals)
+    assert isinstance(corr_vals, int)
+
+
+
+### not sure how to write tests for the Nifti conversion functions
 
