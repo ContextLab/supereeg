@@ -17,6 +17,9 @@ data = [se.simulate_model_bos(n_samples=10000, sample_rate=1000, locs=locs, samp
 # test model to compare
 test_model = se.Model(data=data, locs=locs)
 
+
+##### _helpers/stats ########
+
 def test_apply_by_file_index():
 
     def aggregate(prev, next):
@@ -53,30 +56,30 @@ def test_int_z2r():
 def test_array_z2r():
     z = [1,2,3]
     test_val = (np.exp(2 * z) - 1) / (np.exp(2 * z) + 1)
-    input_val = z2r(z)
-    assert isinstance(input_val, np.ndarray)
-    assert np.allclose(test_val,input_val)
+    test_fun = z2r(z)
+    assert isinstance(test_fun, np.ndarray)
+    assert np.allclose(test_val,test_fun)
 
 def r2z_z2r():
     z = np.array([1,2,3])
-    input_val = r2z(z2r(z))
-    assert isinstance(input_val, (int, np.ndarray))
-    assert z==input_val
+    test_fun = r2z(z2r(z))
+    assert isinstance(test_fun, (int, np.ndarray))
+    assert z==test_fun
 
 
 def test_int_r2z():
     r = .1
     test_val = 0.5 * (np.log(1 + r) - np.log(1 - r))
-    input_val = r2z(r)
-    assert isinstance(input_val, (float, int))
-    assert test_val==input_val
+    test_fun = r2z(r)
+    assert isinstance(test_fun, (float, int))
+    assert test_val==test_fun
 
 def test_array_r2z():
     r = np.array([.1,.2,.3])
     test_val = 0.5 * (np.log(1 + r) - np.log(1 - r))
-    input_val = r2z(r)
-    assert isinstance(input_val, np.ndarray)
-    assert np.allclose(test_val,input_val)
+    test_fun = r2z(r)
+    assert isinstance(test_fun, np.ndarray)
+    assert np.allclose(test_val,test_fun)
 
 def test_rbf():
     weights = rbf(locs, locs[:10])
@@ -90,6 +93,52 @@ def test_tal2mni():
     tal_vals = tal2mni(locs)
     assert isinstance(tal_vals, np.ndarray)
 
+def test_uniquerows():
+    full_locs = np.concatenate((locs, locs[:10]), axis=0)
+    test_fun = uniquerows(full_locs)
+    assert isinstance(test_fun, np.ndarray)
+    assert np.shape(test_fun)==np.shape(locs)
 
+### still would like to have a better test than this:
+def test_expand_corrmat_fit():
+    sub_locs = locs[:10]
+    mod_locs = locs[10:]
+    R = se.create_cov('random', len(sub_locs))
+    weights = rbf(mod_locs, sub_locs)
+    expanded_num, expanded_denom = expand_corrmat_fit(R, weights)
+    assert isinstance(expanded_num, np.ndarray)
+    assert isinstance(expanded_denom, np.ndarray)
+    assert np.shape(expanded_num)[0] == np.shape(mod_locs)[0]
 
+def test_expand_corrmat_predict():
+    sub_locs = locs[:10]
+    mod_locs = locs[10:]
+    R = se.create_cov('random', len(sub_locs))
+    weights = rbf(mod_locs, sub_locs)
+    expanded_num, expanded_denom = expand_corrmat_predict(R, weights)
+    assert isinstance(expanded_num, np.ndarray)
+    assert isinstance(expanded_denom, np.ndarray)
+    assert np.shape(expanded_num)[0] == np.shape(mod_locs)[0]
+
+def test_expand_corrmats_same():
+    sub_locs = locs[:10]
+    print(np.shape(sub_locs))
+    mod_locs = locs[10:]
+    print(np.shape(mod_locs))
+    R = se.create_cov('random', len(sub_locs))
+    weights = rbf(mod_locs, sub_locs)
+    expanded_num_p, expanded_denom_p = expand_corrmat_predict(R, weights)
+    model_corrmat_p = np.divide(expanded_num_p, expanded_denom_p)
+    expanded_num_f, expanded_denom_f = expand_corrmat_predict(R, weights)
+    model_corrmat_f = np.divide(expanded_num_f, expanded_denom_f)
+    s = R.shape[0]-np.shape(sub_locs)[0]
+    Kba_p = model_corrmat_p[:s,s:]
+    Kba_f = model_corrmat_f[:s, s:]
+    Kaa_p = model_corrmat_p[s:,s:]
+    Kaa_f = model_corrmat_f[s:, s:]
+    print(np.shape(model_corrmat_p))
+    print(np.shape(Kaa_p))
+    print(np.shape(Kaa_f))
+    assert isinstance(Kaa_p, np.ndarray)
+    assert np.allclose(Kaa_p, Kaa_f)
 
