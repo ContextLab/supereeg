@@ -12,3 +12,4 @@ future
 scikit-learn
 joblib
 tensorflow
+deepdish

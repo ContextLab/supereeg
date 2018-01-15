@@ -19,6 +19,7 @@ setup(
     url='https://www.context-lab.com',
     license=license,
 	install_requires=[
+   'deepdish',
    'scikit-learn>=0.18.1',
    'pandas',
    'seaborn>=0.7.1',
@@ -27,7 +28,7 @@ setup(
    'numpy>=1.10.4',
    'nilearn',
    'nibabel',
-   'tensorflow',
+   'tensorflow'
    ],
     packages=find_packages(exclude=('tests', 'docs')),
     include_package_data=True,
