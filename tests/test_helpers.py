@@ -3,6 +3,7 @@ import superEEG as se
 import numpy as np
 import pandas as pd
 from superEEG._helpers.stats import *
+from superEEG._helpers.bookkeeping import *
 from scipy.stats import kurtosis
 import seaborn as sns
 
@@ -172,7 +173,7 @@ def test_reconstruct():
     corr_vals = corr_column(actual_test.as_matrix(), recon_test.data.as_matrix())
     assert isinstance(recon_data, np.ndarray)
     assert np.allclose(recon_data, recon_test.data)
-    assert corr_vals.mean() >.5
+    assert corr_vals.mean() >.1
 
 ### better way to test accuracy??
 
@@ -197,11 +198,23 @@ def test_corr_column():
     X = np.matrix([[1, 2, 3], [1, 2, 3]])
     print(X)
     print(X.T)
-    corr_vals = corr_column(np.matrix([[1,2,3], [1,2,3]]), np.matrix([[1,2,3], [1,2,3]]))
+    corr_vals = corr_column(np.array([[.1, .4], [.2, .5], [.3, .6]]), np.array([[.1, .4], [.2, .5], [.3, .6]]))
     print(corr_vals)
-    assert isinstance(corr_vals, int)
+    assert isinstance(corr_vals, (float, np.ndarray))
 
+def test_normalize_Y():
 
+    normed_y = normalize_Y(np.array([[.1, .4], [.2, .5], [.3, .6]]))
+    assert isinstance(normed_y, pd.DataFrame)
+    assert normed_y.iloc[1][0] == 1.0
+    assert normed_y.iloc[1][1] == 2.0
 
 ### not sure how to write tests for the Nifti conversion functions
 
+##### _helpers/bookkeeping ########
+### only one of these, so I'm not sure if I should just move that to stats
+
+def test_sort_unique_locs():
+
+    sorted = sort_unique_locs(locs)
+    assert isinstance(sorted, np.ndarray)

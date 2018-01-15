@@ -247,7 +247,7 @@ if len(np.unique(new_df['Numbder of Patients in Model'])) > 1:
         data_plot = append_d[append_d['Numbder of Patients in Model'] == i].pivot_table(index=['Number of Model Locations'], columns='Number of Patient Locations',
                                                               values='Average Correlation')
         axs[axs_iter].set_title('Patients = '+ str(i))
-        sns.heatmap(data_plot, cbar = axs_iter == 0, ax = axs[axs_iter], cbar_ax = None if axs_iter else cbar_ax)
+        sns.heatmap(data_plot, cbar = axs_iter == 0, ax = axs[axs_iter], mask=data_plot.isnull(), cbar_ax = None if axs_iter else cbar_ax)
         axs[axs_iter].invert_yaxis()
         axs_iter+=1
 
@@ -256,7 +256,7 @@ else:
         data_plot = append_d[append_d['Numbder of Patients in Model'] == i].pivot_table(
             index=['Number of Model Locations'], columns='Number of Patient Locations',
             values='Average Correlation')
-        ax = sns.heatmap(data_plot, vmin=0, vmax=1)
+        ax = sns.heatmap(data_plot, vmin=0, vmax=1, mask=data_plot.isnull())
         ax.invert_yaxis()
         ax.set(xlabel='Number of electrodes from to-be-reconstructed patient', ylabel=' Number of electrodes from patients used to construct model')
         #axs_iter += 1
