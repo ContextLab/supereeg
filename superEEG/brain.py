@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import pandas as pd
 import time
 import os
-import numpy as np
-import pickle
-import nibabel as nib
 import warnings
+import numpy as np
+import pandas as pd
+import nibabel as nib
+import deepdish as dd
 from ._helpers.stats import *
 from scipy.stats import zscore
 
@@ -84,7 +84,8 @@ class Brain(object):
 
     """
 
-    def __init__(self, data=None, locs=None, sessions=None, sample_rate=None, meta=None):
+    def __init__(self, data=None, locs=None, sessions=None, sample_rate=None,
+                 meta=None, date_created=None):
 
         # convert data to df
         self.data = pd.DataFrame(data)
@@ -119,9 +120,13 @@ class Brain(object):
         # meta
         self.meta = meta
 
+        if not date_created:
+            self.date_created = time.strftime("%c")
+        else:
+            self.date_created = date_created
+
         # compute attrs
         self.n_elecs = self.data.shape[1] # needs to be calculated by sessions
-        self.date_created = time.strftime("%c")
         self.n_sessions = len(self.sessions.unique())
 
         # add kurtosis
@@ -183,21 +188,44 @@ class Brain(object):
         # vals = ax.get_xticks()
         # ax.set_xticklabels([round_it(x/npz_data['samplerate'].mean(),3) for x in vals])
 
-    def save(self, filepath):
+    def save(self, fname, compression='blosc'):
         """
-        Save brain object as a pickle
+        Save method for the brain object
 
+        The data will be saved as a 'bo' file, which is a dictionary containing
+        the elements of a brain object saved in the hd5 format using
+        `deepdish`.
 
         Parameters
         ----------
 
-        filepath : str
-            Path to save the pickled brain, mwuahahahah
+        fname : str
+            A name for the file.  If the file extension (.bo) is not specified,
+            it will be appended.
+
+        compression : str
+            The kind of compression to use.  See the deepdish documentation for
+            options: http://deepdish.readthedocs.io/en/latest/api_io.html#deepdish.io.save
 
         """
-        with open(filepath + '.bo', 'wb') as f:
-            pickle.dump(self, f)
-            print('Brain object saved as pickle.')
+
+
+        # put bo vars into a dict
+        bo = {
+            'data' : self.data.as_matrix(),
+            'locs' : self.locs.as_matrix(),
+            'sessions' : self.sessions,
+            'sample_rate' : self.sample_rate,
+            'meta' : self.meta,
+            'date_created' : self.date_created
+        }
+
+        # if extension wasn't included, add it
+        if fname[-3:]!='.bo':
+            fname+='.bo'
+
+        # save
+        dd.io.save(fname, bo, compression=compression)
 
     def to_nii(self, filepath=None,
                  template=None):

@@ -1,12 +1,13 @@
 from __future__ import division
+import time
+import copy
 import pandas as pd
 import seaborn as sns
 import nibabel as nib
-import pickle
-import time
-import copy
+import deepdish as dd
 from ._helpers.stats import *
 from .brain import Brain
+
 
 class Model(object):
     """
@@ -74,7 +75,7 @@ class Model(object):
 
     def __init__(self, data=None, locs=None, template=None,
                  measure='kurtosis', threshold=10, numerator=None, denominator=None,
-                 n_subs=None, meta=None):
+                 n_subs=None, meta=None, date_created=None):
 
         # if all of these fields are not none, shortcut the model creation
         if all(v is not None for v in [numerator, denominator, locs, n_subs]):
@@ -168,7 +169,10 @@ class Model(object):
         self.n_locs = self.locs.shape[0]
 
         # date created
-        self.date_created = time.strftime("%c")
+        if not date_created:
+            self.date_created = time.strftime("%c")
+        else:
+            self.date_created = date_created
 
         # meta
         self.meta = meta
@@ -389,18 +393,41 @@ class Model(object):
         sns.heatmap(z2r(np.divide(self.numerator, self.denominator)), **kwargs)
         # sns.plt.show()
 
-    def save(self, filepath):
+    def save(self, fname, compression='blosc'):
         """
-        Save the model object
+        Save method for the model object
 
+        The data will be saved as a 'mo' file, which is a dictionary containing
+        the elements of a model object saved in the hd5 format using
+        `deepdish`.
 
         Parameters
         ----------
 
-        filepath : str
-            Path to save the model object
+        fname : str
+            A name for the file.  If the file extension (.mo) is not specified,
+            it will be appended.
+
+        compression : str
+            The kind of compression to use.  See the deepdish documentation for
+            options: http://deepdish.readthedocs.io/en/latest/api_io.html#deepdish.io.save
 
         """
-        with open(filepath + '.mo', 'wb') as f:
-            pickle.dump(self, f)
-            print('Model object saved.')
+
+
+        # put geo vars into a dict
+        mo = {
+            'numerator' : self.numerator,
+            'denominator' : self.denominator,
+            'locs' : self.locs,
+            'n_subs' : self.n_subs,
+            'meta' : self.meta,
+            'date_created' : self.date_created
+        }
+
+        # if extension wasn't included, add it
+        if fname[-3:]!='.mo':
+            fname+='.mo'
+
+        # save
+        dd.io.save(fname, mo, compression=compression)

@@ -1,9 +1,11 @@
 import os
 import sys
 import pickle
+import scipy
 import numpy as np
 import nibabel as nb
-import scipy
+import deepdish as dd
+import pandas as pd
 from nilearn.input_data import NiftiMasker
 from scipy.spatial.distance import squareform
 from .brain import Brain
@@ -11,8 +13,6 @@ from .model import Model
 from ._helpers.stats import tal2mni
 from ._helpers.stats import z2r
 from ._helpers.stats import r2z
-import pandas as pd
-
 
 def load(fname):
     """
@@ -121,27 +121,19 @@ def load(fname):
         bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_mask_6mm_brain.nii')
         return bo
 
-
     # load brain object
     elif fname.split('.')[-1]=='bo':
-        try:
-            with open(fname, 'rb') as f:
-                bo = pickle.load(f)
-            return bo
-        except:
-            bo = pd.read_pickle(fname)
-            return bo
-
+        bo = dd.io.load(fname)
+        return Brain(data=bo['data'], locs=bo['locs'], sessions=bo['sessions'],
+                     sample_rate=bo['sample_rate'], meta=bo['meta'],
+                     date_created=bo['date_created'])
 
     # load model object
     elif fname.split('.')[-1]=='mo':
-        try:
-            with open(fname, 'rb') as f:
-                model = pickle.load(f)
-            return model
-        except:
-            model = pd.read_pickle(fname)
-            return model
+        mo = dd.io.load(fname)
+        return Model(numerator=mo['numerator'], denominator=mo['denominator'],
+                     locs=mo['locs'], n_subs=mo['n_subs'], meta=mo['meta'],
+                     date_created=mo['date_created'])
 
     # load nifti
     elif fname.split('.')[-1]=='nii' or '.'.join(fname.split('.')[-2:])=='nii.gz':
