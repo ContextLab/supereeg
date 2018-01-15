@@ -61,7 +61,7 @@ except:
 #     gray = se.load('mini_model')
 #     gray_locs = gray.locs
 
-gray = se.load(model_template)
+gray = se.load(intern(model_template))
 gray_locs = gray.locs
 
 file_name = os.path.basename(os.path.splitext(fname)[0])

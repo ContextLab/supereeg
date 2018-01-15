@@ -47,13 +47,13 @@ def test_load_gray_mask_6mm_brain():
 
 def test_bo_load(tmpdir):
     p = tmpdir.mkdir("sub").join("example")
-    test_bo.save(filepath=str(p))
+    test_bo.save(fname=str(p))
     bo = se.load(os.path.join(str(p) + '.bo'))
     assert isinstance(bo, se.Brain)
 
 def test_mo_load(tmpdir):
     p = tmpdir.mkdir("sub").join("example")
-    test_model.save(filepath=str(p))
+    test_model.save(fname=str(p))
     bo = se.load(os.path.join(str(p) + '.mo'))
     assert isinstance(bo, se.Model)
 
@@ -67,7 +67,7 @@ def test_model_compile(tmpdir):
     p = tmpdir.mkdir("sub")
     for m in range(len(data)):
         model = se.Model(data=data[m], locs=locs)
-        model.save(filepath=os.path.join(str(p), "example_" + str(m)))
+        model.save(fname=os.path.join(str(p), "example_" + str(m)))
 
     model_data = glob.glob(os.path.join(str(p), '*.mo'))
     mo = se.model_compile(model_data)

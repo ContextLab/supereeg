@@ -5,7 +5,7 @@ import glob
 import sys
 import os
 import matplotlib.pyplot as plt
-#plt.switch_backend('agg')
+plt.switch_backend('agg')
 from config import config
 
 
@@ -32,7 +32,7 @@ model_data = glob.glob(os.path.join(model_dir,'*.mo'))
 
 ave_model = se.model_compile(model_data)
 
-ave_model.save(filepath=os.path.join(results_dir, model_template))
+ave_model.save(fname=os.path.join(results_dir, model_template))
 
 ave_model.plot()
 

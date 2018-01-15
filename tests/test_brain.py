@@ -28,7 +28,7 @@ def test_bo_nelecs_int():
     assert isinstance(bo.n_elecs, int)
 
 def test_bo_nsecs_list():
-    assert (bo.n_secs is None) or (type(bo.n_secs) is np.ndarray)
+    assert (bo.n_secs is None) or (type(bo.n_secs) is (np.ndarray, int))
 
 def test_bo_nsessions_int():
     assert isinstance(bo.n_sessions, int)
@@ -50,7 +50,7 @@ def test_bo_get_locs_nparray():
 
 def test_bo_save(tmpdir):
     p = tmpdir.mkdir("sub").join("example")
-    bo.save(filepath=str(p))
+    bo.save(fname=str(p))
     test_bo = se.load(os.path.join(str(p) + '.bo'))
     assert isinstance(test_bo, se.Brain)
 

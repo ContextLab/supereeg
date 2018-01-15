@@ -114,6 +114,8 @@ class Brain(object):
             self.sample_rate = sample_rate
         elif isinstance(sessions, list):
             self.sample_rate = [sample_rate for s in self.sessions.values]
+        elif sample_rate is None:
+            self.sample_rate = None
         else:
             self.sample_rate = [sample_rate]
 
