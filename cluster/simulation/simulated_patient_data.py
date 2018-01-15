@@ -102,17 +102,23 @@ for p, m, n in param_grid:
             # put data and locations together in new sample brain object
             bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
 
-            # predict activity at all unknown locations
-            recon = model.predict(bo_sample)
+            try:
+                recon = model.predict(bo_sample)
+                # sample actual data at reconstructed locations
+                actual = bo.data.iloc[:, recon.locs.index]
 
-            # actual = bo.data.iloc[:, unknown_ind]
-            actual = bo.data.iloc[:, recon.locs.index]
+                # correlate reconstruction with actual data
+                corr_vals = corr_column(actual.as_matrix(), recon.data.as_matrix())
 
-            corr_vals = corr_column(actual.as_matrix(), recon.data.as_matrix())
+                corr_vals_sample = np.random.choice(corr_vals, 5)
+                corr_val_mean = corr_vals_sample.mean()
 
-            corr_vals_sample = np.random.choice(corr_vals, 5)
+            except:
 
-            corr_val_mean = corr_vals_sample.mean()
+                print('p:' + str(p), 'm:' + str(m), 'n:' + str(n))
+                print('SVD issue')
+                corr_vals = float('nan')
+                corr_vals_mean = float('nan')
 
 ####################################
         ### 2: all brain object locations are also model locations ( B is a subset of A)
@@ -142,16 +148,23 @@ for p, m, n in param_grid:
             # put data and locations together in new sample brain object
             bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
 
-            # predict activity at all unknown locations
-            recon = model.predict(bo_sample)
+            try:
+                recon = model.predict(bo_sample)
+                # sample actual data at reconstructed locations
+                actual = bo.data.iloc[:, recon.locs.index]
 
-            actual = bo.data.iloc[:, recon.locs.index]
+                # correlate reconstruction with actual data
+                corr_vals = corr_column(actual.as_matrix(), recon.data.as_matrix())
 
-            corr_vals = corr_column(actual.as_matrix(), recon.data.as_matrix())
+                corr_vals_sample = np.random.choice(corr_vals, 5)
+                corr_val_mean = corr_vals_sample.mean()
 
-            corr_vals_sample = np.random.choice(corr_vals, 5)
+            except:
 
-            corr_val_mean = corr_vals_sample.mean()
+                print('p:' + str(p), 'm:' + str(m), 'n:' + str(n))
+                print('SVD issue')
+                corr_vals = float('nan')
+                corr_vals_mean = float('nan')
 
 
 ############################
