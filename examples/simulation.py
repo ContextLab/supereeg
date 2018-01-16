@@ -168,7 +168,7 @@ def main(n_elecs):
             # for the case where you want both subset and disjoint locations - get indices for unknown locations (where we wish to predict)
             unknown_loc = gray_locs[~gray_locs.index.isin(sub_locs.index)]
 
-            bo = se.simulate_bo_random(n_samples=1000, sample_rate=1000, locs=gray_locs)
+            bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
 
             data = bo.data.T.drop(unknown_loc.index).T
             bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs)
@@ -228,14 +228,9 @@ def main(n_elecs):
             ax = sns.heatmap(data_plot, cmap="coolwarm", vmin=-1, vmax=1)
             ax.invert_yaxis()
             ax.set(xlabel='Number of electrodes from to-be-reconstructed patient', ylabel=' Number of electrodes from patients used to construct model')
-            #axs_iter += 1
-    #
-    #
 
-    #
     plt.savefig('average_correlation_heatmap.pdf')
 
-    ## put in locations of electrodes as well
 
     # sns.jointplot(bo.data.iloc[:, unknown_ind].values.flatten(), predicted)
 if __name__ == "__main__":

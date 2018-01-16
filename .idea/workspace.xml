@@ -3,8 +3,13 @@
   <component name="ChangeListManager">
     <list default="true" id="72de947b-ed70-4f88-b013-460cd0bdb63e" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/requirements.txt" afterPath="$PROJECT_DIR$/requirements.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/setup.py" afterPath="$PROJECT_DIR$/setup.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cluster/full_mats/full_mats.py" afterPath="$PROJECT_DIR$/cluster/full_mats/full_mats.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/plot_load_example_data.py" afterPath="$PROJECT_DIR$/examples/plot_load_example_data.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/plot_load_nifti.py" afterPath="$PROJECT_DIR$/examples/plot_load_nifti.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/plot_reconstruct_correlation_matrix.py" afterPath="$PROJECT_DIR$/examples/plot_reconstruct_correlation_matrix.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/simulation.py" afterPath="$PROJECT_DIR$/examples/simulation.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/brain.py" afterPath="$PROJECT_DIR$/superEEG/brain.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/model.py" afterPath="$PROJECT_DIR$/superEEG/model.py" />
     </list>
     <ignored path="superEEG.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -24,13 +29,45 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="test_brain.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/test_brain.py">
+      <file leaf-file-name="plot_reconstruct_correlation_matrix.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/examples/plot_reconstruct_correlation_matrix.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="152">
-              <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="11" selection-end-column="35" />
+            <state relative-caret-position="224">
+              <caret line="62" column="67" selection-start-line="62" selection-start-column="67" selection-end-line="62" selection-end-column="67" />
               <folding>
-                <element signature="e#25#38#0" expanded="true" />
+                <element signature="e#694#706#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="simulation.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/examples/simulation.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="3701">
+              <caret line="233" column="0" selection-start-line="233" selection-start-column="0" selection-end-line="233" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="plot_update_model.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/examples/plot_update_model.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="19">
+              <caret line="36" column="0" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="59" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="simulated_patient_data.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cluster/simulation/simulated_patient_data.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2105">
+              <caret line="221" column="0" selection-start-line="221" selection-start-column="0" selection-end-line="221" selection-end-column="0" />
+              <folding>
+                <element signature="e#343#364#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -39,22 +76,10 @@
       <file leaf-file-name="brain.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/superEEG/brain.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="566">
-              <caret line="282" column="0" selection-start-line="282" selection-start-column="0" selection-end-line="282" selection-end-column="0" />
+            <state relative-caret-position="323">
+              <caret line="157" column="30" selection-start-line="157" selection-start-column="30" selection-end-line="157" selection-end-column="30" />
               <folding>
                 <element signature="e#25#36#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="test_load.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/test_load.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="566">
-              <caret line="76" column="0" selection-start-line="76" selection-start-column="0" selection-end-line="76" selection-end-column="0" />
-              <folding>
-                <element signature="e#0#13#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -63,8 +88,8 @@
       <file leaf-file-name="full_mats.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cluster/full_mats/full_mats.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-23">
-              <caret line="54" column="0" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
+            <state relative-caret-position="551">
+              <caret line="74" column="42" selection-start-line="74" selection-start-column="42" selection-end-line="74" selection-end-column="42" />
               <folding>
                 <element signature="e#1#22#0" expanded="true" />
               </folding>
@@ -75,20 +100,10 @@
       <file leaf-file-name="model.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/superEEG/model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-931">
-              <caret line="7" column="29" selection-start-line="7" selection-start-column="29" selection-end-line="7" selection-end-column="29" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ave_mats.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cluster/ave_mats/ave_mats.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="494">
-              <caret line="38" column="44" selection-start-line="38" selection-start-column="44" selection-end-line="38" selection-end-column="44" />
+            <state relative-caret-position="-6920">
+              <caret line="27" column="65" selection-start-line="27" selection-start-column="65" selection-end-line="27" selection-end-column="65" />
               <folding>
-                <element signature="e#1#22#0" expanded="true" />
+                <element signature="e#0#31#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -97,8 +112,8 @@
       <file leaf-file-name="load.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/superEEG/load.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="503">
-              <caret line="154" column="26" selection-start-line="154" selection-start-column="26" selection-end-line="154" selection-end-column="26" />
+            <state relative-caret-position="311">
+              <caret line="104" column="19" selection-start-line="104" selection-start-column="19" selection-end-line="104" selection-end-column="32" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -106,34 +121,24 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="setup.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/setup.py">
+      <file leaf-file-name="union_locs.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cluster/pyFR_locs/union_locs.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="665">
-              <caret line="35" column="0" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
+            <state relative-caret-position="132">
+              <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="38" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="file_io.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cluster/file_io/file_io.py">
+      <file leaf-file-name="simulate.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/superEEG/simulate.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="585">
-              <caret line="34" column="0" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
+            <state relative-caret-position="437">
+              <caret line="30" column="70" selection-start-line="30" selection-start-column="70" selection-end-line="30" selection-end-column="74" />
               <folding>
-                <element signature="e#1#22#0" expanded="true" />
+                <element signature="e#0#12#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="requirements.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/requirements.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="266">
-              <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -165,11 +170,9 @@
         <option value="$PROJECT_DIR$/code/corr_mats.py" />
         <option value="$PROJECT_DIR$/cluster/union_locs/union_locs.py" />
         <option value="$PROJECT_DIR$/superEEG/__init__.py" />
-        <option value="$PROJECT_DIR$/examples/plot_load_example_data.py" />
         <option value="$USER_HOME$/Downloads/rhino_loader.py" />
         <option value="$PROJECT_DIR$/superEEG/simulate.py" />
         <option value="$PROJECT_DIR$/tests/test_simulate.py" />
-        <option value="$PROJECT_DIR$/superEEG/model.py" />
         <option value="$PROJECT_DIR$/tests/test_model.py" />
         <option value="$PROJECT_DIR$/cluster/simulation/simulate_job_submit.py" />
         <option value="$PROJECT_DIR$/superEEG/_helpers/stats.py" />
@@ -179,15 +182,21 @@
         <option value="$PROJECT_DIR$/tests/test_helpers.py" />
         <option value="$PROJECT_DIR$/superEEG/load.py" />
         <option value="$PROJECT_DIR$/cluster/recon/recon.py" />
-        <option value="$PROJECT_DIR$/cluster/simulation/simulated_patient_data.py" />
         <option value="$PROJECT_DIR$/cluster/file_io/file_io.py" />
         <option value="$PROJECT_DIR$/tests/test_brain.py" />
-        <option value="$PROJECT_DIR$/cluster/full_mats/full_mats.py" />
-        <option value="$PROJECT_DIR$/superEEG/brain.py" />
         <option value="$PROJECT_DIR$/tests/test_load.py" />
         <option value="$PROJECT_DIR$/cluster/ave_mats/ave_mats.py" />
         <option value="$PROJECT_DIR$/requirements.txt" />
         <option value="$PROJECT_DIR$/setup.py" />
+        <option value="$PROJECT_DIR$/superEEG/model.py" />
+        <option value="$PROJECT_DIR$/superEEG/brain.py" />
+        <option value="$PROJECT_DIR$/cluster/full_mats/full_mats.py" />
+        <option value="$PROJECT_DIR$/examples/plot_load_example_data.py" />
+        <option value="$PROJECT_DIR$/examples/plot_load_nifti.py" />
+        <option value="$PROJECT_DIR$/examples/plot_update_model.py" />
+        <option value="$PROJECT_DIR$/cluster/simulation/simulated_patient_data.py" />
+        <option value="$PROJECT_DIR$/examples/plot_reconstruct_correlation_matrix.py" />
+        <option value="$PROJECT_DIR$/examples/simulation.py" />
       </list>
     </option>
   </component>
@@ -229,7 +238,7 @@
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Font" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
   </component>
-  <component name="RunManager" selected="Python.full_mats">
+  <component name="RunManager" selected="Python.plot_reconstruct_correlation_matrix">
     <configuration default="false" name="full_mats" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -244,23 +253,6 @@
       <module name="superEEG" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/cluster/full_mats/full_mats.py" />
       <option name="PARAMETERS" value="$USER_HOME$/Desktop/supereeg_env/bo/BW001.bo mini_model" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="ave_mats" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/cluster/ave_mats" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="superEEG" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/cluster/ave_mats/ave_mats.py" />
-      <option name="PARAMETERS" value="mini_model" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
     </configuration>
@@ -317,6 +309,23 @@
       <option name="USE_PATTERN" value="false" />
       <option name="PARAMS" value="" />
       <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="plot_reconstruct_correlation_matrix" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="/System/Library/Frameworks/Python.framework/Versions/2.7/bin/python2.7" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/examples" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="superEEG" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/examples/plot_reconstruct_correlation_matrix.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
     </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
@@ -509,18 +518,18 @@
       <item index="1" class="java.lang.String" itemvalue="Python.predict_example_data.py" />
       <item index="2" class="java.lang.String" itemvalue="Python.load_example_data.py" />
       <item index="3" class="java.lang.String" itemvalue="Python.full_mats" />
-      <item index="4" class="java.lang.String" itemvalue="Python.ave_mats" />
-      <item index="5" class="java.lang.String" itemvalue="Python.simulated_patient_data" />
-      <item index="6" class="java.lang.String" itemvalue="Python.simulate" />
-      <item index="7" class="java.lang.String" itemvalue="Python tests.Nosetest test_bo_load" />
+      <item index="4" class="java.lang.String" itemvalue="Python.simulated_patient_data" />
+      <item index="5" class="java.lang.String" itemvalue="Python.simulate" />
+      <item index="6" class="java.lang.String" itemvalue="Python tests.Nosetest test_bo_load" />
+      <item index="7" class="java.lang.String" itemvalue="Python.plot_reconstruct_correlation_matrix" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.full_mats" />
-        <item index="1" class="java.lang.String" itemvalue="Python.simulated_patient_data" />
-        <item index="2" class="java.lang.String" itemvalue="Python.simulate" />
-        <item index="3" class="java.lang.String" itemvalue="Python tests.Nosetest test_bo_load" />
-        <item index="4" class="java.lang.String" itemvalue="Python.ave_mats" />
+        <item index="0" class="java.lang.String" itemvalue="Python.plot_reconstruct_correlation_matrix" />
+        <item index="1" class="java.lang.String" itemvalue="Python.full_mats" />
+        <item index="2" class="java.lang.String" itemvalue="Python.simulated_patient_data" />
+        <item index="3" class="java.lang.String" itemvalue="Python.simulate" />
+        <item index="4" class="java.lang.String" itemvalue="Python tests.Nosetest test_bo_load" />
       </list>
     </recent_temporary>
   </component>
@@ -694,7 +703,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/cluster/full_mats/full_mats.py</url>
-          <line>82</line>
+          <line>81</line>
           <option name="timeStamp" value="291" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -709,7 +718,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/superEEG/model.py</url>
-          <line>331</line>
+          <line>332</line>
           <option name="timeStamp" value="311" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -755,16 +764,6 @@
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$USER_HOME$/Downloads/rhino_loader.py</url>
           <option name="timeStamp" value="329" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/cluster/full_mats/full_mats.py</url>
-          <line>40</line>
-          <option name="timeStamp" value="332" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/cluster/full_mats/full_mats.py</url>
-          <line>29</line>
-          <option name="timeStamp" value="335" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/tests/test_load.py</url>
@@ -817,14 +816,24 @@
           <option name="timeStamp" value="395" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/cluster/full_mats/full_mats.py</url>
-          <line>60</line>
-          <option name="timeStamp" value="400" />
+          <url>file://$PROJECT_DIR$/superEEG/brain.py</url>
+          <line>175</line>
+          <option name="timeStamp" value="404" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/superEEG/brain.py</url>
-          <line>104</line>
-          <option name="timeStamp" value="401" />
+          <url>file://$PROJECT_DIR$/cluster/full_mats/full_mats.py</url>
+          <line>60</line>
+          <option name="timeStamp" value="407" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/examples/plot_reconstruct_correlation_matrix.py</url>
+          <line>72</line>
+          <option name="timeStamp" value="409" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/examples/plot_reconstruct_correlation_matrix.py</url>
+          <line>30</line>
+          <option name="timeStamp" value="410" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
@@ -837,33 +846,11 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="402" />
+      <option name="time" value="411" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/code/recon_with_model.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="675">
-          <caret line="55" column="74" selection-start-line="55" selection-start-column="74" selection-end-line="55" selection-end-column="74" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Library/Python/2.7/site-packages/pandas/core/generic.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="134">
-          <caret line="3250" column="0" selection-start-line="3250" selection-start-column="0" selection-end-line="3250" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Library/Python/2.7/site-packages/pandas/core/frame.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="12901">
-          <caret line="769" column="0" selection-start-line="769" selection-start-column="0" selection-end-line="769" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/examples/simulated_patient_data.py" />
     <entry file="file://$PROJECT_DIR$/examples/sim_pat_test.py" />
     <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
@@ -911,25 +898,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/examples/plot_reconstruct_correlation_matrix.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-570">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/examples/simulated_analysis.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="304">
           <caret line="16" column="12" selection-start-line="16" selection-start-column="12" selection-end-line="16" selection-end-column="12" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/code/plt_corrs.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="171">
-          <caret line="9" column="72" selection-start-line="9" selection-start-column="61" selection-end-line="9" selection-end-column="72" />
         </state>
       </provider>
     </entry>
@@ -940,29 +913,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/examples/simulation.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="66">
-          <caret line="150" column="12" selection-start-line="150" selection-start-column="12" selection-end-line="150" selection-end-column="133" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/Downloads/rhino_loader.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="275">
           <caret line="87" column="45" selection-start-line="87" selection-start-column="45" selection-end-line="87" selection-end-column="45" />
           <folding>
             <element signature="e#0#57#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/examples/plot_load_example_data.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="570">
-          <caret line="30" column="0" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
-          <folding>
-            <element signature="e#254#275#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1057,16 +1013,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/superEEG/simulate.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-703">
-          <caret line="63" column="0" selection-start-line="63" selection-start-column="0" selection-end-line="63" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#12#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cluster/simulation/simulate_job_submit.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="418">
@@ -1091,16 +1037,6 @@
           <caret line="44" column="4" selection-start-line="44" selection-start-column="4" selection-end-line="44" selection-end-column="35" />
           <folding>
             <element signature="e#25#38#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/superEEG/_helpers/stats.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="456">
-          <caret line="387" column="4" selection-start-line="387" selection-start-column="4" selection-end-line="387" selection-end-column="15" />
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1139,88 +1075,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cluster/pyFR_locs/union_locs.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="10" column="0" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#21#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cluster/simulation/simulated_patient_data.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="570">
-          <caret line="225" column="83" selection-start-line="225" selection-start-column="83" selection-end-line="225" selection-end-column="83" />
-          <folding>
-            <element signature="e#343#364#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/superEEG/model.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-931">
-          <caret line="7" column="29" selection-start-line="7" selection-start-column="29" selection-end-line="7" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_brain.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="152">
-          <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="11" selection-end-column="35" />
-          <folding>
-            <element signature="e#25#38#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/superEEG/load.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="503">
-          <caret line="154" column="26" selection-start-line="154" selection-start-column="26" selection-end-line="154" selection-end-column="26" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/superEEG/brain.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="566">
-          <caret line="282" column="0" selection-start-line="282" selection-start-column="0" selection-end-line="282" selection-end-column="0" />
-          <folding>
-            <element signature="e#25#36#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_load.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="566">
-          <caret line="76" column="0" selection-start-line="76" selection-start-column="0" selection-end-line="76" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cluster/ave_mats/ave_mats.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="494">
           <caret line="38" column="44" selection-start-line="38" selection-start-column="44" selection-end-line="38" selection-end-column="44" />
-          <folding>
-            <element signature="e#1#22#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cluster/full_mats/full_mats.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-23">
-          <caret line="54" column="0" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
           <folding>
             <element signature="e#1#22#0" expanded="true" />
           </folding>
@@ -1247,9 +1105,171 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/setup.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="665">
+        <state relative-caret-position="566">
           <caret line="35" column="0" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_brain.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="338">
+          <caret line="45" column="55" selection-start-line="45" selection-start-column="55" selection-end-line="45" selection-end-column="55" />
+          <folding>
+            <element signature="e#25#38#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_load.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="566">
+          <caret line="76" column="0" selection-start-line="76" selection-start-column="0" selection-end-line="76" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/superEEG/_helpers/stats.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="403" column="0" selection-start-line="403" selection-start-column="0" selection-end-line="403" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/code/plt_corrs.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="281">
+          <caret line="291" column="67" selection-start-line="291" selection-start-column="67" selection-end-line="291" selection-end-column="73" />
+          <folding>
+            <element signature="e#1#12#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cluster/pyFR_locs/union_locs.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/plot_load_example_data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="509">
+          <caret line="29" column="14" selection-start-line="29" selection-start-column="14" selection-end-line="29" selection-end-column="14" />
+          <folding>
+            <element signature="e#254#275#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/plot_load_nifti.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="437">
+          <caret line="23" column="17" selection-start-line="23" selection-start-column="17" selection-end-line="23" selection-end-column="17" />
+          <folding>
+            <element signature="e#256#277#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/plot_model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/plot_update_model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="19">
+          <caret line="36" column="0" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="59" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/superEEG/load.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="311">
+          <caret line="104" column="19" selection-start-line="104" selection-start-column="19" selection-end-line="104" selection-end-column="32" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/superEEG/brain.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="157" column="30" selection-start-line="157" selection-start-column="30" selection-end-line="157" selection-end-column="30" />
+          <folding>
+            <element signature="e#25#36#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/superEEG/simulate.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="437">
+          <caret line="30" column="70" selection-start-line="30" selection-start-column="70" selection-end-line="30" selection-end-column="74" />
+          <folding>
+            <element signature="e#0#12#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/superEEG/model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-6920">
+          <caret line="27" column="65" selection-start-line="27" selection-start-column="65" selection-end-line="27" selection-end-column="65" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cluster/full_mats/full_mats.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="551">
+          <caret line="74" column="42" selection-start-line="74" selection-start-column="42" selection-end-line="74" selection-end-column="42" />
+          <folding>
+            <element signature="e#1#22#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/simulation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3701">
+          <caret line="233" column="0" selection-start-line="233" selection-start-column="0" selection-end-line="233" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cluster/simulation/simulated_patient_data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2105">
+          <caret line="221" column="0" selection-start-line="221" selection-start-column="0" selection-end-line="221" selection-end-column="0" />
+          <folding>
+            <element signature="e#343#364#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/plot_reconstruct_correlation_matrix.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="224">
+          <caret line="62" column="67" selection-start-line="62" selection-start-column="67" selection-end-line="62" selection-end-column="67" />
+          <folding>
+            <element signature="e#694#706#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

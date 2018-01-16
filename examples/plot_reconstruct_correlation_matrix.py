@@ -28,8 +28,9 @@ import superEEG as se
 # load example model to get locations
 locs = se.load('example_locations')
 
+locs=pd.DataFrame(locs, columns=['x', 'y', 'z'])
 # simulate correlation matrix
-R = scipy.linalg.toeplitz(np.linspace(0,1,len(locs))[::-1])
+R = se.create_cov(cov='toeplitz', n_elecs=len(locs))
 
 # n_samples
 n_samples = 1000
@@ -43,29 +44,37 @@ for isub, n_subs in enumerate([10, 25, 50, 100]):
     # loop over simulated electrodes
     for ielec, n_elecs in enumerate([10, 25, 50, 100]):
 
-        # initialize data list
-        data = []
+        # # initialize data list
+        # data = []
+        #
+        # # loop over simulated subjects
+        # for i in range(n_subs):
+        #     # for each subject, randomly choose n_elecs electrode locations
+        #     #p = np.random.choice(range(len(locs)), n_elecs, replace=False)
+        #     p = locs.sample(n_elecs).sort_values(['x', 'y', 'z'])
+        #     # generate some random data
+        #     rand_dist = np.random.multivariate_normal(np.zeros(len(locs)), np.eye(len(locs)), size=n_samples)
+        #
+        #     # impose R correlational structure on the random data, create the brain object and append to data
+        #     data.append(se.Brain(data=np.dot(rand_dist, scipy.linalg.cholesky(R))[:, p.index], locs=p))
+        # # create the model object
+        # model = se.Model(data=data, locs=locs)
 
-        # loop over simulated subjects
-        for i in range(n_subs):
+        #### should I use this instead?? they give the same results
 
-            # for each subject, randomly choose n_elecs electrode locations
-            p = np.random.choice(range(len(locs)), n_elecs, replace=False)
-
-            # generate some random data
-            rand_dist = np.random.multivariate_normal(np.zeros(len(locs)), np.eye(len(locs)), size=n_samples)
-
-            # impose R correlational structure on the random data, create the brain object and append to data
-            data.append(se.Brain(data=np.dot(rand_dist, scipy.linalg.cholesky(R))[:,p], locs=pd.DataFrame(locs[p,:], columns=['x', 'y', 'z'])))
+        # simulate brain objects for the model
+        model_bos = [se.simulate_model_bos(n_samples=10000, sample_rate=1000, locs=locs, sample_locs=n_elecs, cov='toeplitz') for x in
+                     range(n_subs)]
 
         # create the model object
-        model = se.Model(data=data, locs=locs)
+        model = se.Model(data=model_bos, locs=locs)
 
         # plot it
-        sns.heatmap(np.divide(model.numerator,model.denominator), ax=axarr[isub,ielec], yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=False, vmin=0, vmax=3)
+        sns.heatmap(np.divide(model.numerator, model.denominator), ax=axarr[isub, ielec], yticklabels=False,
+                    xticklabels=False, cmap='RdBu_r', cbar=False, vmin=0, vmax=3)
 
         # set the title
-        axarr[isub,ielec].set_title(str(n_subs) + ' Subjects, ' + str(n_elecs) + ' Electrodes')
+        axarr[isub, ielec].set_title(str(n_subs) + ' Subjects, ' + str(n_elecs) + ' Electrodes')
 
-sns.plt.tight_layout()
-sns.plt.show()
+plt.tight_layout()
+plt.show()

@@ -1,6 +1,7 @@
 from __future__ import division
 import time
 import copy
+import os
 import pandas as pd
 import seaborn as sns
 import nibabel as nib

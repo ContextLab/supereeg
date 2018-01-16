@@ -27,9 +27,6 @@ try:
 except:
     os.makedirs(fig_dir)
 
-data = np.random.multivariate_normal(np.zeros(10), np.eye(10), size=100)
-locs = np.random.multivariate_normal(np.zeros(3), np.eye(3), size=10)
-bo = se.Brain(data=data, locs=locs)
 
 # load locations for model
 ### this weird work around is necessary because there's an issue using a variable for a string in an argument
@@ -60,6 +57,8 @@ file_name = os.path.basename(os.path.splitext(fname)[0])
 if fname.split('.')[-1]=='bo':
     bo = se.load(fname)
     if se.filter_subj(bo):
+        #bo.plot_data(time_min=500, time_max= 1000, filtered=False)
+        bo.plot_locs()
         model = se.Model(bo, locs=gray_locs)
         model.save(fname=os.path.join(results_dir, file_name))
         model.plot()

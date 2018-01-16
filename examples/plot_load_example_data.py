@@ -22,10 +22,13 @@ bo = se.load('example_data')
 # check out the brain object (bo)
 bo.info()
 
-
 # look data, stored as pandas dataframe
 bo.data.head()
 
 # and visualize the data
 
-bo.plot()
+bo.plot_data()
+
+# then can visualize locations
+bo.plot_locs()
+

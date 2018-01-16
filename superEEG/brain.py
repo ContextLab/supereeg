@@ -9,6 +9,8 @@ import nibabel as nib
 import deepdish as dd
 from ._helpers.stats import *
 from scipy.stats import zscore
+import matplotlib.pyplot as plt
+from nilearn import plotting as ni_plt
 
 class Brain(object):
     """
@@ -165,30 +167,43 @@ class Brain(object):
         """
         return self.locs.as_matrix()
 
-    def plot(self):
+    def plot_data(self, filepath= None, time_min = None, time_max = None, title = None, electrode = None, threshold = 10, filtered = True):
         """
         Normalizes and plots data from brain object
         # ideally would like this to start and stop at default first 5 seconds unless specified
         # plot all channels as default but set index if channels = all else plot but index out
         """
         Y = normalize_Y(self.data)
-        ax = Y.plot(legend=False, color='k', lw=.6)
+        if filtered:
+            thresh_bool = self.kurtosis > threshold
+            Y = Y.iloc[:, ~thresh_bool]
+        if electrode is not None:
+            Y = Y.columns[int(electrode)]
+        Y.index = Y.index / np.mean(self.sample_rate)
+        if all([time_min, time_max]):
+            mask = (Y.index > time_min) & (Y.index < time_max)
+            Y = Y[mask]
+        else:
+            time_min = 0
+            time_max =  500
+            mask = (Y.index >= time_min) & (Y.index <= time_max)
+            Y= Y[mask]
+        ax = Y.plot(legend=False, title=title, color='k', lw=.6)
         ax.set_axis_bgcolor('w')
         ax.set_xlabel("time")
         ax.set_ylabel("electrode")
         ax.set_ylim([0,len(Y.columns) + 1])
-        # Y['time'] = Y.index / npz_data['samplerate'].mean()
-        # ##### create time mask ######
-        # mask = (Y['time'] > lower_time) & (Y['time'] < upper_time)
-        # ax = Y[Y.columns[k_flat_removed]][mask].plot(legend=False, title='electrode activity for ' + file_name, color='k', lw=.6)
-        # Y[Y.columns[int(electrode)]][mask].plot(color='r', lw=.8)
-        # ax = Y.plot(color='k', lw=.6)
-        # ax.set_axis_bgcolor('w')
-        # ax.set_xlabel("time")
-        # ax.set_ylabel("electrode")
-        # ax.set_ylim([0,len(Y.columns) + 1])
-        # vals = ax.get_xticks()
-        # ax.set_xticklabels([round_it(x/npz_data['samplerate'].mean(),3) for x in vals])
+        ax.set_axis_bgcolor('w')
+        ax.set_xlabel("time")
+        ax.set_ylabel("electrode")
+        ax.set_ylim([0,len(Y.columns) + 1])
+        if filepath:
+            plt.savefig(filename = filepath)
+
+    def plot_locs(self, pdfpath = None):
+        ni_plt.plot_connectome(np.eye(self.locs.shape[0]), self.locs, display_mode='lyrz', output_file=pdfpath,
+                               node_kwargs={'alpha': 0.5, 'edgecolors': None}, node_size=10,
+                               node_color=np.ones(self.locs.shape[0]))
 
     def save(self, fname, compression='blosc'):
         """
