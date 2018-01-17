@@ -3,9 +3,10 @@ import superEEG as se
 import numpy as np
 import glob
 import sys
+import pandas as pd
 import os
 import matplotlib.pyplot as plt
-#plt.switch_backend('agg')
+plt.switch_backend('agg')
 from config import config
 
 
@@ -18,20 +19,26 @@ results_dir = os.path.join(config['resultsdir'], model_template)
 fig_dir = os.path.join(results_dir, 'figs')
 
 try:
-    os.stat(results_dir)
-except:
-    os.makedirs(results_dir)
+    if not os.path.exists(os.path.dirname(results_dir)):
+        os.makedirs(results_dir)
+except OSError as err:
+   print(err)
 
 try:
-    os.stat(fig_dir)
-except:
-    os.makedirs(fig_dir)
-
+    if not os.path.exists(os.path.dirname(fig_dir)):
+        os.makedirs(fig_dir)
+except OSError as err:
+   print(err)
 
 # load locations for model
+if model_template == 'pyFR_union':
+    data = np.load(os.path.join(config['pyFRlocsdir'],'pyFR_k10_locs.npz'))
+    locs = data['locs']
+    gray_locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
+else:
+    gray = se.load(intern(model_template))
+    gray_locs = gray.locs
 
-gray = se.load(intern(model_template))
-gray_locs = gray.locs
 
 file_name = os.path.basename(os.path.splitext(fname)[0])
 

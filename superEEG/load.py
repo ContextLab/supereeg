@@ -110,7 +110,7 @@ def load(fname):
         with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/pyFR_k10_locs.npz', 'rb') as handle:
             data = np.load(handle)
             locs = data['locs']
-            print('number of subjects = ', data['subjs'])
+            print('subjects = ', data['subjs'])
         return locs
 
     elif fname is 'mini_model':
