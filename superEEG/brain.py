@@ -3,14 +3,11 @@
 import time
 import os
 import warnings
-import numpy as np
-import pandas as pd
 import nibabel as nib
 import deepdish as dd
-from ._helpers.stats import *
-from scipy.stats import zscore
 import matplotlib.pyplot as plt
 from nilearn import plotting as ni_plt
+from ._helpers.stats import *
 
 class Brain(object):
     """
@@ -26,10 +23,10 @@ class Brain(object):
     Parameters
     ----------
 
-    data : numpy.ndarray
+    data : numpy.ndarray or pandas.DataFrame
         Samples x electrodes array containing the EEG data
 
-    locs : numpy.ndarray
+    locs : numpy.ndarray or pandas.DataFrame
         MNI coordinate (x,y,z) by electrode array containing electrode locations
 
     session : numpy.ndarray
@@ -89,37 +86,49 @@ class Brain(object):
     def __init__(self, data=None, locs=None, sessions=None, sample_rate=None,
                  meta=None, date_created=None):
 
-        # convert data to df
-        self.data = pd.DataFrame(data)
+        # convert data to df if not imported as df
+        if isinstance(locs, pd.DataFrame):
+            self.data = data
+        else:
+            self.data = pd.DataFrame(data)
 
-        # locs
-        self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
+        # convert locs to df if not imported as df
+        if isinstance(locs, pd.DataFrame):
+            self.locs = locs
+        else:
+            self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
         # session
         if isinstance(sessions, str) or isinstance(sessions, int):
             self.sessions = pd.Series([sessions for i in range(self.data.shape[0])])
-        ### check this out... I'm not sure what this does
+
         elif sessions is None:
             self.sessions = pd.Series([1 for i in range(self.data.shape[0])])
         else:
             self.sessions = pd.Series(sessions.ravel())
 
-        if sample_rate is None:
+        # sample rate
+        if isinstance(sample_rate, list):
+            if isinstance(sample_rate[0], np.ndarray):
+                self.sample_rate = list(sample_rate[0][0])
+            else:
+                self.sample_rate = sample_rate
+            assert len(self.sample_rate) ==  len(self.sessions.unique()), 'Should be one sample rate for each session.'
+
+        elif sample_rate is None:
             self.sample_rate = None
             self.n_secs = None
             warnings.warn('No sample rate given.  Number of seconds cant be computed')
-        else:
-            self.n_secs = self.data.shape[0] / np.array(sample_rate)
 
-        # sample rate
-        if isinstance(sample_rate, list):
-            self.sample_rate = sample_rate
-        elif isinstance(sessions, list):
-            self.sample_rate = [sample_rate for s in self.sessions.values]
-        elif sample_rate is None:
-            self.sample_rate = None
-        else:
+        elif type(sample_rate) in [int, float]:
             self.sample_rate = [sample_rate]
+        else:
+            self.sample_rate = None
+            warnings.warn('Format of sample rate not recognized. Number of seconds cannot be computed.'
+                          'Setting sample rate to None')
+
+        if sample_rate is not None:
+            self.n_secs = self.data.shape[0] / np.array(sample_rate)
 
         # meta
         self.meta = meta
@@ -167,11 +176,11 @@ class Brain(object):
         """
         return self.locs.as_matrix()
 
-    def plot_data(self, filepath= None, time_min = None, time_max = None, title = None, electrode = None, threshold = 10, filtered = True):
+    def plot_data(self, filepath=None, time_min=None, time_max=None, title=None, electrode=None, threshold=10,
+                  filtered=True):
         """
         Normalizes and plots data from brain object
-        # ideally would like this to start and stop at default first 5 seconds unless specified
-        # plot all channels as default but set index if channels = all else plot but index out
+
         """
         Y = normalize_Y(self.data)
         if filtered:
