@@ -277,7 +277,7 @@ class Brain(object):
         data = np.zeros(tuple(list(img.shape)+[self.data.shape[0]]))
 
         # convert coords from matrix coords to voxel indices
-        R = self.locs.as_matrix()
+        R = self.get_locs()
         S =  img.affine
         locs = pd.DataFrame(np.dot(R-S[:3, 3], np.linalg.inv(S[0:3, 0:3]))).astype(int)
 
