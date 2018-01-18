@@ -48,8 +48,11 @@ model, the better the true correlational structure can be recovered.
     # load example model to get locations
     locs = se.load('example_locations')
 
+    # convert to pandas
+    locs=pd.DataFrame(locs, columns=['x', 'y', 'z'])
+
     # simulate correlation matrix
-    R = scipy.linalg.toeplitz(np.linspace(0,1,len(locs))[::-1])
+    R = se.create_cov(cov='toeplitz', n_elecs=len(locs))
 
     # number of timeseries samples
     n_samples = 1000
@@ -59,43 +62,69 @@ model, the better the true correlational structure can be recovered.
 
     # number of electrodes
     n_elecs = 20
+    #
+    # data = []
+    #
+    # # loop over simulated subjects
+    # for i in range(n_subs):
+    #
+    #     # for each subject, randomly choose n_elecs electrode locations
+    #     p = np.random.choice(range(len(locs)), n_elecs, replace=False)
+    #
+    #     # generate some random data
+    #     rand_dist = np.random.multivariate_normal(np.zeros(len(locs)), np.eye(len(locs)), size=n_samples)
+    #
+    #     # impose R correlational structure on the random data, create the brain object and append to data
+    #     data.append(se.Brain(data=np.dot(rand_dist, scipy.linalg.cholesky(R))[:,p], locs=pd.DataFrame(locs[p,:], columns=['x', 'y', 'z'])))
+    #
+    # # create the model object
+    # model = se.Model(data=data, locs=locs)
+    #
+    # new_data = []
+    #
+    # # loop over simulated subjects
+    # for i in range(n_subs):
+    #
+    #     # for each subject, randomly choose n_elecs electrode locations
+    #     p = np.random.choice(range(len(locs)), n_elecs, replace=False)
+    #
+    #     # generate some random data
+    #     rand_dist = np.random.multivariate_normal(np.zeros(len(locs)), np.eye(len(locs)), size=n_samples)
+    #
+    #     # new brain object
+    #     new_data.append(se.Brain(data=np.dot(rand_dist, scipy.linalg.cholesky(R))[:,p], locs=pd.DataFrame(locs[p,:], columns=['x', 'y', 'z'])))
+    #
+    # # update the model
+    # new_model = model.update(new_data)
 
-    data = []
 
-    # loop over simulated subjects
-    for i in range(n_subs):
+    ### with new simulate functions:
 
-        # for each subject, randomly choose n_elecs electrode locations
-        p = np.random.choice(range(len(locs)), n_elecs, replace=False)
-
-        # generate some random data
-        rand_dist = np.random.multivariate_normal(np.zeros(len(locs)), np.eye(len(locs)), size=n_samples)
-
-        # impose R correlational structure on the random data, create the brain object and append to data
-        data.append(se.Brain(data=np.dot(rand_dist, scipy.linalg.cholesky(R))[:,p], locs=pd.DataFrame(locs[p,:], columns=['x', 'y', 'z'])))
+    # simulate brain objects for the model that subsample n_elecs for each synthetic patient
+    model_bos = [se.simulate_model_bos(n_samples=10000, sample_rate=1000, locs=locs, sample_locs=n_elecs, cov='toeplitz') for x in
+                         range(n_subs)]
 
     # create the model object
-    model = se.Model(data=data, locs=locs)
+    model = se.Model(data=model_bos, locs=locs)
 
-    new_data = []
+    # brain object locations subsetted entirely from both model and gray locations - for this n > m (this isn't necessarily true, but this ensures overlap)
+    sub_locs = locs.sample(n_elecs).sort_values(['x', 'y', 'z'])
 
-    # loop over simulated subjects
-    for i in range(n_subs):
-
-        # for each subject, randomly choose n_elecs electrode locations
-        p = np.random.choice(range(len(locs)), n_elecs, replace=False)
-
-        # generate some random data
-        rand_dist = np.random.multivariate_normal(np.zeros(len(locs)), np.eye(len(locs)), size=n_samples)
-
-        # new brain object
-        new_data.append(se.Brain(data=np.dot(rand_dist, scipy.linalg.cholesky(R))[:,p], locs=pd.DataFrame(locs[p,:], columns=['x', 'y', 'z'])))
+    # simulate a new brain object using the same covariance matrix
+    bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=sub_locs, cov='toeplitz')
 
     # update the model
-    new_model = model.update(new_data)
+    new_model = model.update(bo)
+
+    # simulate brain objects for the model that subsample n_elecs for each synthetic patient
+    model_update_bos = [se.simulate_model_bos(n_samples=10000, sample_rate=1000, locs=locs, sample_locs=n_elecs, cov='toeplitz') for y in
+                         range(n_subs)]
+
+    # update the model
+    better_model = model.update(model_update_bos)
 
     # initialize subplots
-    f, (ax1, ax2) = plt.subplots(1, 2)
+    f, (ax1, ax2, ax3) = plt.subplots(1, 3)
 
     # plot it and set the title
     model.plot(ax=ax1, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
@@ -103,11 +132,15 @@ model, the better the true correlational structure can be recovered.
 
     # plot it and set the title
     new_model.plot(ax=ax2, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
-    ax2.set_title('After updating model: 20 subjects total')
+    ax2.set_title('After updating model: 11 subjects total')
 
-    sns.plt.show()
+    # plot it and set the title
+    better_model.plot(ax=ax3, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
+    ax3.set_title('After updating model: 20 subjects total')
 
-**Total running time of the script:** ( 0 minutes  6.306 seconds)
+    plt.show()
+
+**Total running time of the script:** ( 0 minutes  12.849 seconds)
 
 
 

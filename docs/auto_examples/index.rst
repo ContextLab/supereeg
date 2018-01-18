@@ -9,26 +9,6 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Here, we load an example dataset and then print out some information about it.">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_load_example_data_thumb.png
-
-        :ref:`sphx_glr_auto_examples_plot_load_example_data.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/plot_load_example_data
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="Here we load the example model, and then plot it.">
 
 .. only:: html
@@ -49,26 +29,6 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we load in a single subject example, remove electrodes that exceed a kurtosis ...">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_predict_thumb.png
-
-        :ref:`sphx_glr_auto_examples_predict.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/predict
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="This example loads a nifti file and converts it into a brain object.">
 
 .. only:: html
@@ -86,6 +46,46 @@ Gallery of Examples
    :hidden:
 
    /auto_examples/plot_load_nifti
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Here, we load an example dataset and then print out some information about it.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_load_example_data_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_load_example_data.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_load_example_data
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we load in a single subject example, remove electrodes that exceed a kurtosis ...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_predict_thumb.png
+
+        :ref:`sphx_glr_auto_examples_predict.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/predict
 
 .. raw:: html
 
@@ -129,27 +129,7 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we load in a single subject example, remove electrodes that exceed a kurtosis ...">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_simulated_analysis_thumb.png
-
-        :ref:`sphx_glr_auto_examples_simulated_analysis.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/simulated_analysis
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we load in a single subject example, remove electrodes that exceed a kurtosis ...">
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we demonstrate the simulate functions. First, we'll load in some example locat...">
 
 .. only:: html
 

@@ -62,15 +62,3 @@ def test_nii_load(tmpdir):
     test_bo.to_nii(filepath=str(p))
     bo = se.load(os.path.join(str(p) + '.nii'))
     assert isinstance(bo, se.Brain)
-
-def test_model_compile(tmpdir):
-    p = tmpdir.mkdir("sub")
-    for m in range(len(data)):
-        model = se.Model(data=data[m], locs=locs)
-        model.save(fname=os.path.join(str(p), "example_" + str(m)))
-
-    model_data = glob.glob(os.path.join(str(p), '*.mo'))
-    mo = se.model_compile(model_data)
-    assert isinstance(mo, se.Model)
-    assert np.allclose(mo.numerator, test_model.numerator)
-    assert np.allclose(mo.denominator, test_model.denominator)

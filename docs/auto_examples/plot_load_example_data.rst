@@ -13,16 +13,29 @@ Here, we load an example dataset and then print out some information about it.
 
 
 
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image:: /auto_examples/images/sphx_glr_plot_load_example_data_001.png
+            :scale: 47
+
+    *
+
+      .. image:: /auto_examples/images/sphx_glr_plot_load_example_data_002.png
+            :scale: 47
+
 
 .. rst-class:: sphx-glr-script-out
 
  Out::
 
-    Number of electrodes: 11
-    Recording time in seconds: [[ 1000.  1000.]]
+    Number of electrodes: 64
+    Recording time in seconds: [[19 19 19]]
     Number of sessions: 1
-    Date created: Thu Jul  6 09:49:28 2017
-    Meta data: None
+    Date created: Thu Jan 18 15:23:49 2018
+    Meta data: CH003
 
 
 
@@ -38,14 +51,27 @@ Here, we load an example dataset and then print out some information about it.
 
     # import
     import superEEG as se
+    import seaborn as sns
+    import matplotlib.pyplot as plt
 
     # load example data
     bo = se.load('example_data')
 
-    # check out the bo
+    # check out the brain object (bo)
     bo.info()
 
-**Total running time of the script:** ( 0 minutes  0.118 seconds)
+    # look data, stored as pandas dataframe
+    bo.data.head()
+
+    # and visualize the data
+
+    bo.plot_data()
+
+    # then can visualize locations
+    bo.plot_locs()
+
+
+**Total running time of the script:** ( 0 minutes  1.080 seconds)
 
 
 

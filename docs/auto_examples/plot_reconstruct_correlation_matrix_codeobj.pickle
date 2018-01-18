@@ -1,3 +1,4 @@
-€}q(Unp.eye}q(Umodule_shortqUnumpyqUnameqUeyeUmoduleqhuUsns.plt.tight_layout}q(hUseaborn.plthUtight_layouthUseaborn.pltuUsns.plt.show}q(hUseaborn.plthUshowhUseaborn.pltuUse.Brain}q	(hUsuperEEGq
-hUBrainhh
-uUpd.DataFrame}q(hUpandasqhU	DataFramehhuUplt.subplots}q(hUmatplotlib.pyplothUsubplotshUmatplotlib.pyplotuU	np.divide}q(hUnumpyqhUdividehhuUsns.heatmap}q(hUseabornqhUheatmaphhuUse.load}q(hUsuperEEGqhUloadhhuUscipy.linalg.toeplitz}q(hUscipy.linalghUtoeplitzhUscipy.linalguUse.Model}q(hUsuperEEGqhUModelhhuUscipy.linalg.cholesky}q(hUscipy.linalghUcholeskyhUscipy.linalguUnp.linspace}q(hUnumpyqhUlinspacehhuUnp.random.multivariate_normal}q(hUnumpy.randomhUmultivariate_normalhUnumpy.randomuUnp.random.choice}q(hUnumpy.randomhUchoicehUnumpy.randomuUnp.zeros}q(hUnumpyqhUzeroshhuUnp.dot}q(hUnumpyqhUdothhuu.
+€}q(Upd.DataFrame}q(Umodule_shortqUpandasqUnameqU	DataFrameUmoduleqhuUplt.subplots}q(hUmatplotlib.pyplothUsubplotshUmatplotlib.pyplotuUse.create_cov}q(hUsuperEEGq	hU
+create_covhh	uUsns.heatmap}q
+(hUseabornqhUheatmaphhuUse.load}q(hUsuperEEGqhUloadhhuUplt.show}q(hUmatplotlib.pyplothUshowhUmatplotlib.pyplotuUse.Model}q(hUsuperEEGqhUModelhhuUse.simulate_model_bos}q(hUsuperEEGqhUsimulate_model_boshhuUplt.tight_layout}q(hU
+matplotlibhUtight_layouthUmatplotlib.pyplotuU	np.divide}q(hUnumpyqhUdividehhuu.

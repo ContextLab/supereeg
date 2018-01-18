@@ -12,6 +12,7 @@ from joblib import Parallel, delayed
 import nibabel as nb
 import numpy as np
 from nilearn.input_data import NiftiMasker
+
 #from sklearn.neighbors import NearestNeighbors
 #from sklearn.decomposition import PCA
 #import seaborn as sns
@@ -474,6 +475,44 @@ def fullfact(dims):
             inds[row:(row + len(vals)), 1:] = np.tile(aftervals[i, :], (len(vals), 1))
             row += len(vals)
         return inds
+
+def model_compile(data):
+    """
+    Compile existing expanded correlation matrices.
+
+    Parameters
+    ----------
+
+    data : list of model object file directories
+        Compiles model objects
+
+    Returns
+    ----------
+
+    model : Model object
+        A new updated model object
+
+    """
+    from ..load import load
+    from ..model import Model
+
+    m = load(data[0])
+    numerator = m.numerator
+    denominator = m.denominator
+    n_subs = 1
+
+    for mo in data[1:]:
+        m = load(mo)
+        # numerator = np.nansum(np.dstack((numerator, m.numerator)), 2)
+        numerator += m.numerator
+        denominator += m.denominator
+        n_subs += 1
+
+    return Model(numerator=numerator, denominator=denominator,
+                 locs=m.locs, n_subs=n_subs)
+    ### this concatenation of locations doesn't work when updating an existing model (but would be necessary for a build)
+    # return Model(numerator=numerator, denominator=denominator,
+    #              locs=pd.concat([m.locs, bo.locs]), n_subs=n_subs)
 
 # def compute_coord(coord, weights, Z):
 #

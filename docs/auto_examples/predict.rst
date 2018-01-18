@@ -34,6 +34,13 @@ model locations.
     # print out info on new brain object
     reconstructed_bo.info()
 
+    # save as nifti
+    reconstructed_nifti = reconstructed_bo.to_nii()
+
+
+
+
+
 **Total running time of the script:** ( 0 minutes  0.000 seconds)
 
 

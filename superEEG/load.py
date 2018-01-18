@@ -10,24 +10,29 @@ from nilearn.input_data import NiftiMasker
 from scipy.spatial.distance import squareform
 from .brain import Brain
 from .model import Model
-from ._helpers.stats import tal2mni
-from ._helpers.stats import z2r
-from ._helpers.stats import r2z
+from ._helpers.stats import tal2mni, fullfact
 
 def load(fname):
     """
     Load nifti file, brain or model object, or example data.
 
-    This function can load in example data, as well as nifti files, brain objects
-    and model objects by detecting the extension and calling the appropriate
+    This function can load in example data, as well as nifti files, brain objects (.bo)
+    and model objects (.mo) by detecting the extension and calling the appropriate
     load function.  Thus, be sure to include the file extension in the fname
     parameter.
 
     Parameters
     ----------
     fname : string
-        The name of the example data or a filepath.  Example data includes:
-        example_data, example_model and example_locations
+        The name of the example data or a filepath.
+
+        Example data includes:
+        example_data - example brain object (n = 64)
+        example_model - example model object with locations from gray_mask_20mm_brain.nii (n = 170)
+        example_locations - example location from gray_mask_20mm_brain.nii (n = 170)
+        example_nifti - example nifti file from gray_mask_8mm_brain.nii (n = 3968)
+        pyFR_k10r20_6mm - model used for analyses from `Owen LLW and Manning JR (2017) Towards Human Super EEG.  bioRxiv: 121020`
+
 
     Returns
     ----------
@@ -35,16 +40,6 @@ def load(fname):
         Data to be returned
 
     """
-    # if sys.version_info[0]==3:
-    #     pickle_options = {
-    #         'encoding' : 'latin1'
-    #     }
-    # else:
-    #     pickle_options = {}
-    # if dataset is 'example_data':
-    #     fileid = '0B7Ycm4aSYdPPREJrZ2stdHBFdjg'
-    #     url = 'https://docs.google.com/uc?export=download&id=' + fileid
-    #     data = pickle.loads(requests.get(url, stream=True).content, **pickle_options)
 
     # load example data
     if fname is 'example_data':
@@ -142,6 +137,18 @@ def load(fname):
 def load_nifti(fname, mask_strategy='background'):
     """
     Load nifti file and convert to brain object
+
+    Parameters
+    ----------
+    fname : string
+        Filepath to nifti file.
+
+
+    Returns
+    ----------
+    data : nibabel.Nifti1
+        Data to be returned
+
     """
 
     # load image
@@ -179,55 +186,4 @@ def load_nifti(fname, mask_strategy='background'):
     return Brain(data=Y, locs=locs, meta={'header' : hdr})
 
 
-def fullfact(dims):
-    '''
-    Replicates MATLAB's fullfact function (behaves the same way)
-    '''
-    vals = np.asmatrix(range(1, dims[0] + 1)).T
-    if len(dims) == 1:
-        return vals
-    else:
-        aftervals = np.asmatrix(fullfact(dims[1:]))
-        inds = np.asmatrix(np.zeros((np.prod(dims), len(dims))))
-        row = 0
-        for i in range(aftervals.shape[0]):
-            inds[row:(row + len(vals)), 0] = vals
-            inds[row:(row + len(vals)), 1:] = np.tile(aftervals[i, :], (len(vals), 1))
-            row += len(vals)
-        return inds
 
-
-def model_compile(data):
-    """
-    Compile existing expanded correlation matrices.
-
-    Parameters
-    ----------
-
-    data : list of model object file directories
-        This is specific for data replication and probably shouldn't be in the package release
-
-    Returns
-    ----------
-
-    model : Model object
-        A new updated model object
-
-    """
-    m = load(data[0])
-    numerator = m.numerator
-    denominator = m.denominator
-    n_subs = 1
-
-    for mo in data[1:]:
-        m = load(mo)
-        #numerator = np.nansum(np.dstack((numerator, m.numerator)), 2)
-        numerator += m.numerator
-        denominator += m.denominator
-        n_subs += 1
-
-    return Model(numerator=numerator, denominator=denominator,
-                 locs=m.locs, n_subs=n_subs)
-    ### this concatenation of locations doesn't work when updating an existing model (but would be necessary for a build)
-    # return Model(numerator=numerator, denominator=denominator,
-    #              locs=pd.concat([m.locs, bo.locs]), n_subs=n_subs)
