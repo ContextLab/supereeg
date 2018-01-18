@@ -98,19 +98,8 @@ for p, m, n in param_grid:
     append_d.index.rename('Iteration', inplace=True)
 
 
-append_d
-
-
-if os.path.isfile('ave_corrs'):
-    f = open('ave_corrs', 'a')
-    append_d.to_csv(f, mode='a', header=False)
-    f.close()
-else:
-    f = open('ave_corrs', 'a')
-    append_d.to_csv(f, mode='a', header=True)
-    f.close()
-
 new_df=append_d.groupby('Average Correlation').mean()
+
 
 if len(np.unique(new_df['Numbder of Patients in Model'])) > 1:
 
