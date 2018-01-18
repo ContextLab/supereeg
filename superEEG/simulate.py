@@ -130,6 +130,15 @@ def simulate_bo(n_samples=1000, n_elecs=10, locs=None, cov='random',
     n_elecs : int
         Number of electrodes
 
+    cov : str or np.array
+    The covariance structure of the data.
+    If 'eye', the covariance will be the identity matrix.
+    If 'toeplitz', the covariance will be a toeplitz matrix.
+    If 'random', uses a random semidefinite matrix with a set random seed.
+    If 'distance'calculates the euclidean distance between each electrode.
+    You can also pass a custom covariance matrix by simply passing
+    numpy array that is n_elecs by n_elecs
+
     Returns
     ----------
 
