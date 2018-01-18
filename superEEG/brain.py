@@ -87,7 +87,7 @@ class Brain(object):
                  meta=None, date_created=None):
 
         # convert data to df if not imported as df
-        if isinstance(locs, pd.DataFrame):
+        if isinstance(data, pd.DataFrame):
             self.data = data
         else:
             self.data = pd.DataFrame(data)
