@@ -2,48 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="72de947b-ed70-4f88-b013-460cd0bdb63e" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/auto_examples_jupyter.zip" afterPath="$PROJECT_DIR$/docs/auto_examples/auto_examples_jupyter.zip" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/auto_examples_python.zip" afterPath="$PROJECT_DIR$/docs/auto_examples/auto_examples_python.zip" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/images/sphx_glr_plot_reconstruct_correlation_matrix_001.png" afterPath="$PROJECT_DIR$/docs/auto_examples/images/sphx_glr_plot_reconstruct_correlation_matrix_001.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/images/sphx_glr_plot_update_model_001.png" afterPath="$PROJECT_DIR$/docs/auto_examples/images/sphx_glr_plot_update_model_001.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/images/thumb/sphx_glr_plot_load_example_data_thumb.png" afterPath="$PROJECT_DIR$/docs/auto_examples/images/thumb/sphx_glr_plot_load_example_data_thumb.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/images/thumb/sphx_glr_plot_load_nifti_thumb.png" afterPath="$PROJECT_DIR$/docs/auto_examples/images/thumb/sphx_glr_plot_load_nifti_thumb.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/images/thumb/sphx_glr_plot_reconstruct_correlation_matrix_thumb.png" afterPath="$PROJECT_DIR$/docs/auto_examples/images/thumb/sphx_glr_plot_reconstruct_correlation_matrix_thumb.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/images/thumb/sphx_glr_plot_update_model_thumb.png" afterPath="$PROJECT_DIR$/docs/auto_examples/images/thumb/sphx_glr_plot_update_model_thumb.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_load_nifti_codeobj.pickle" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_load_nifti_codeobj.pickle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_reconstruct_correlation_matrix_codeobj.pickle" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_reconstruct_correlation_matrix_codeobj.pickle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_update_model_codeobj.pickle" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_update_model_codeobj.pickle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/simulation_codeobj.pickle" afterPath="$PROJECT_DIR$/docs/auto_examples/simulation_codeobj.pickle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cluster/full_mats/full_mats.py" afterPath="$PROJECT_DIR$/cluster/full_mats/full_mats.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/index.rst" afterPath="$PROJECT_DIR$/docs/auto_examples/index.rst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_load_example_data.ipynb" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_load_example_data.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_load_example_data.py" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_load_example_data.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_load_example_data.py.md5" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_load_example_data.py.md5" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_load_example_data.rst" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_load_example_data.rst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_load_nifti.ipynb" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_load_nifti.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_load_nifti.py" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_load_nifti.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_load_nifti.rst" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_load_nifti.rst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_reconstruct_correlation_matrix.ipynb" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_reconstruct_correlation_matrix.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_reconstruct_correlation_matrix.py" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_reconstruct_correlation_matrix.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_reconstruct_correlation_matrix.py.md5" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_reconstruct_correlation_matrix.py.md5" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_reconstruct_correlation_matrix.rst" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_reconstruct_correlation_matrix.rst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_update_model.ipynb" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_update_model.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_update_model.py" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_update_model.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_update_model.py.md5" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_update_model.py.md5" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_update_model.rst" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_update_model.rst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/predict.ipynb" afterPath="$PROJECT_DIR$/docs/auto_examples/predict.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/predict.py" afterPath="$PROJECT_DIR$/docs/auto_examples/predict.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/predict.rst" afterPath="$PROJECT_DIR$/docs/auto_examples/predict.rst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/simulation.ipynb" afterPath="$PROJECT_DIR$/docs/auto_examples/simulation.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/simulation.py" afterPath="$PROJECT_DIR$/docs/auto_examples/simulation.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/simulation.rst" afterPath="$PROJECT_DIR$/docs/auto_examples/simulation.rst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/__init__.py" afterPath="$PROJECT_DIR$/superEEG/__init__.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/_helpers/stats.py" afterPath="$PROJECT_DIR$/superEEG/_helpers/stats.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/load.py" afterPath="$PROJECT_DIR$/superEEG/load.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/test_helpers.py" afterPath="$PROJECT_DIR$/tests/test_helpers.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/test_load.py" afterPath="$PROJECT_DIR$/tests/test_load.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/test_simulate.py" afterPath="$PROJECT_DIR$/tests/test_simulate.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cluster/simulation/simulated_patient_data.py" afterPath="$PROJECT_DIR$/cluster/simulation/simulated_patient_data.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/model.py" afterPath="$PROJECT_DIR$/superEEG/model.py" />
     </list>
     <ignored path="superEEG.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -63,18 +23,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="stats.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/superEEG/_helpers/stats.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="437">
-              <caret line="496" column="29" selection-start-line="496" selection-start-column="29" selection-end-line="496" selection-end-column="29" />
-              <folding>
-                <element signature="e#0#31#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="test_load.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/test_load.py">
           <provider selected="true" editor-type-id="text-editor">
@@ -87,11 +35,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="test_helpers.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="test_helpers.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/test_helpers.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="265">
-              <caret line="223" column="27" selection-start-line="223" selection-start-column="27" selection-end-line="223" selection-end-column="27" />
+            <state relative-caret-position="56">
+              <caret line="212" column="66" selection-start-line="212" selection-start-column="66" selection-end-line="212" selection-end-column="66" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -99,11 +47,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="model.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="model.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/superEEG/model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="265">
-              <caret line="83" column="23" selection-start-line="83" selection-start-column="23" selection-end-line="83" selection-end-column="23" />
+            <state relative-caret-position="-644">
+              <caret line="372" column="0" selection-start-line="372" selection-start-column="0" selection-end-line="372" selection-end-column="0" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -155,24 +103,22 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="load.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/superEEG/load.py">
+      <file leaf-file-name="simulated_patient_data.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cluster/simulation/simulated_patient_data.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="228">
-              <caret line="12" column="43" selection-start-line="12" selection-start-column="43" selection-end-line="12" selection-end-column="43" />
+            <state relative-caret-position="-894">
+              <caret line="80" column="0" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="plot_load_nifti.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/examples/plot_load_nifti.py">
+      <file leaf-file-name="full_mats.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cluster/full_mats/full_mats.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="418">
-              <caret line="22" column="0" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
-              <folding>
-                <element signature="e#256#277#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="455">
+              <caret line="62" column="27" selection-start-line="62" selection-start-column="27" selection-end-line="62" selection-end-column="27" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -217,7 +163,6 @@
         <option value="$PROJECT_DIR$/examples/plot_load_example_data.py" />
         <option value="$PROJECT_DIR$/examples/plot_load_nifti.py" />
         <option value="$PROJECT_DIR$/examples/predict.py" />
-        <option value="$PROJECT_DIR$/cluster/simulation/simulated_patient_data.py" />
         <option value="$PROJECT_DIR$/examples/plot_reconstruct_correlation_matrix.py" />
         <option value="$PROJECT_DIR$/superEEG/simulate.py" />
         <option value="$PROJECT_DIR$/examples/plot_update_model.py" />
@@ -226,17 +171,18 @@
         <option value="$PROJECT_DIR$/superEEG/brain.py" />
         <option value="$PROJECT_DIR$/superEEG/__init__.py" />
         <option value="$PROJECT_DIR$/cluster/ave_mats/ave_mats.py" />
-        <option value="$PROJECT_DIR$/superEEG/model.py" />
         <option value="$PROJECT_DIR$/superEEG/load.py" />
         <option value="$PROJECT_DIR$/superEEG/_helpers/stats.py" />
         <option value="$PROJECT_DIR$/tests/test_load.py" />
         <option value="$PROJECT_DIR$/tests/test_helpers.py" />
         <option value="$PROJECT_DIR$/tests/test_simulate.py" />
+        <option value="$PROJECT_DIR$/cluster/simulation/simulated_patient_data.py" />
+        <option value="$PROJECT_DIR$/superEEG/model.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1858" />
+    <option name="x" value="1857" />
     <option name="y" value="-197" />
     <option name="width" value="1650" />
     <option name="height" value="1027" />
@@ -292,7 +238,7 @@
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Font" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
   </component>
-  <component name="RunManager" selected="Python.plot_load_example_data">
+  <component name="RunManager" selected="Python.simulated_patient_data">
     <configuration default="false" name="full_mats" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -307,23 +253,6 @@
       <module name="superEEG" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/cluster/full_mats/full_mats.py" />
       <option name="PARAMETERS" value="$USER_HOME$/Desktop/supereeg_env/bo/BW001.bo mini_model" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="simulation" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="/System/Library/Frameworks/Python.framework/Versions/2.7/bin/python2.7" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/examples" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="superEEG" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/examples/simulation.py" />
-      <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
     </configuration>
@@ -375,6 +304,23 @@
       <module name="superEEG" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/examples/plot_load_example_data.py" />
       <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="simulated_patient_data" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/cluster/simulation" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="superEEG" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/cluster/simulation/simulated_patient_data.py" />
+      <option name="PARAMETERS" value="location_case_3" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
     </configuration>
@@ -568,18 +514,18 @@
       <item index="1" class="java.lang.String" itemvalue="Python.predict_example_data.py" />
       <item index="2" class="java.lang.String" itemvalue="Python.load_example_data.py" />
       <item index="3" class="java.lang.String" itemvalue="Python.full_mats" />
-      <item index="4" class="java.lang.String" itemvalue="Python.simulation" />
-      <item index="5" class="java.lang.String" itemvalue="Python.plot_update_model" />
-      <item index="6" class="java.lang.String" itemvalue="Python.plot_load_nifti" />
-      <item index="7" class="java.lang.String" itemvalue="Python.plot_load_example_data" />
+      <item index="4" class="java.lang.String" itemvalue="Python.plot_update_model" />
+      <item index="5" class="java.lang.String" itemvalue="Python.plot_load_nifti" />
+      <item index="6" class="java.lang.String" itemvalue="Python.plot_load_example_data" />
+      <item index="7" class="java.lang.String" itemvalue="Python.simulated_patient_data" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.plot_load_example_data" />
-        <item index="1" class="java.lang.String" itemvalue="Python.full_mats" />
-        <item index="2" class="java.lang.String" itemvalue="Python.plot_load_nifti" />
-        <item index="3" class="java.lang.String" itemvalue="Python.plot_update_model" />
-        <item index="4" class="java.lang.String" itemvalue="Python.simulation" />
+        <item index="0" class="java.lang.String" itemvalue="Python.simulated_patient_data" />
+        <item index="1" class="java.lang.String" itemvalue="Python.plot_load_example_data" />
+        <item index="2" class="java.lang.String" itemvalue="Python.full_mats" />
+        <item index="3" class="java.lang.String" itemvalue="Python.plot_load_nifti" />
+        <item index="4" class="java.lang.String" itemvalue="Python.plot_update_model" />
       </list>
     </recent_temporary>
   </component>
@@ -641,7 +587,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="1858" y="-197" width="1650" height="1027" extended-state="0" />
+    <frame x="1857" y="-197" width="1650" height="1027" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24862888" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -653,7 +599,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.13605443" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34323433" sideWeight="0.8781893" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.339934" sideWeight="0.8781893" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -811,16 +757,6 @@
           <option name="timeStamp" value="393" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/cluster/simulation/simulated_patient_data.py</url>
-          <line>52</line>
-          <option name="timeStamp" value="394" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/cluster/simulation/simulated_patient_data.py</url>
-          <line>49</line>
-          <option name="timeStamp" value="395" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/superEEG/brain.py</url>
           <line>175</line>
           <option name="timeStamp" value="404" />
@@ -890,6 +826,11 @@
           <line>19</line>
           <option name="timeStamp" value="433" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/superEEG/model.py</url>
+          <line>257</line>
+          <option name="timeStamp" value="435" />
+        </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
@@ -901,18 +842,11 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="434" />
+      <option name="time" value="436" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/code/corr_mats.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-266">
-          <caret line="17" column="44" selection-start-line="17" selection-start-column="44" selection-end-line="17" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/code/compile_ful_cov_mats.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="359">
@@ -1091,24 +1025,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="452">
-          <caret line="1579" column="0" selection-start-line="1579" selection-start-column="0" selection-end-line="1579" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cluster/simulation/simulated_patient_data.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2831">
-          <caret line="149" column="0" selection-start-line="149" selection-start-column="0" selection-end-line="150" selection-end-column="58" />
-          <folding>
-            <element signature="e#343#364#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/examples/predict.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="608">
@@ -1191,14 +1107,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cluster/full_mats/full_mats.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="341">
-          <caret line="50" column="30" selection-start-line="50" selection-start-column="30" selection-end-line="50" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/setup.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="665">
@@ -1217,16 +1125,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/superEEG/model.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="265">
-          <caret line="83" column="23" selection-start-line="83" selection-start-column="23" selection-end-line="83" selection-end-column="23" />
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/examples/plot_load_nifti.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="418">
@@ -1241,14 +1139,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="228">
           <caret line="12" column="43" selection-start-line="12" selection-start-column="43" selection-end-line="12" selection-end-column="43" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/superEEG/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="95">
-          <caret line="5" column="68" selection-start-line="5" selection-start-column="68" selection-end-line="5" selection-end-column="68" />
           <folding />
         </state>
       </provider>
@@ -1303,10 +1193,60 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/test_helpers.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="265">
-          <caret line="223" column="27" selection-start-line="223" selection-start-column="27" selection-end-line="223" selection-end-column="27" />
+        <state relative-caret-position="56">
+          <caret line="212" column="66" selection-start-line="212" selection-start-column="66" selection-end-line="212" selection-end-column="66" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/superEEG/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="95">
+          <caret line="5" column="68" selection-start-line="5" selection-start-column="68" selection-end-line="5" selection-end-column="68" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Library/Python/2.7/site-packages/numpy/core/fromnumeric.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="189">
+          <caret line="1602" column="0" selection-start-line="1602" selection-start-column="0" selection-end-line="1602" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cluster/simulation/simulated_patient_data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-894">
+          <caret line="80" column="0" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="344">
+          <caret line="1579" column="0" selection-start-line="1579" selection-start-column="0" selection-end-line="1579" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cluster/full_mats/full_mats.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="455">
+          <caret line="62" column="27" selection-start-line="62" selection-start-column="27" selection-end-line="62" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/superEEG/model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-644">
+          <caret line="372" column="0" selection-start-line="372" selection-start-column="0" selection-end-line="372" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
           </folding>
         </state>
       </provider>

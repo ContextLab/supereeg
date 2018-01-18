@@ -1,10 +1,7 @@
 from __future__ import division
 import time
-import copy
 import os
-import pandas as pd
 import seaborn as sns
-import nibabel as nib
 import deepdish as dd
 from ._helpers.stats import *
 from .brain import Brain
@@ -51,6 +48,9 @@ class Model(object):
 
     meta : dict
         Optional dict containing whatever you want
+
+    date created : str
+        Time created
 
     Attributes
     ----------
@@ -220,14 +220,15 @@ class Model(object):
             model_corrmat_x = np.divide(np.add(self.numerator, num_corrmat_x), np.add(self.denominator, denom_corrmat_x))
 
         # get model indices where subject locs overlap with model locs
+        bool_mask = np.sum([(self.locs == y).all(1) for idy, y in bo.locs.iterrows()], 0).astype(bool)
 
-        mask = np.sum([(self.locs == y).all(1) for idy, y in bo.locs.iterrows()], 0)
-        bool_mask = mask.astype(bool)
-        unknown_inds = np.where(~bool_mask)[0]
+        # if model locs is a subset of patient locs, nothing to reconstruct
+        assert not all(bool_mask),"model is a complete subset of patient locations"
+
+        # indices of the mask (where there is overlap
         joint_model_inds = np.where(bool_mask)[0]
 
-        assert not all(bool_mask),"model is a complete subset of patient locations"
-        # if there are no unknown inds, keep going
+        # if there is no overlap, expand the model and predict at unknown locs
         if not any(bool_mask):
 
             # expanded rbf weights
@@ -240,39 +241,35 @@ class Model(object):
             with np.errstate(invalid='ignore'):
                 model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
 
+            # grab the locs
             perm_locs = self.locs
 
         # else if all of the subject locations are in the set of model locations
         elif sum(bool_mask) == bo.locs.shape[0]:
 
             # permute the correlation matrix so that the inds to reconstruct are on the right edge of the matrix
-
             perm_inds = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds)) + sorted(set(joint_model_inds))
-
             model_corrmat_x = model_corrmat_x[:, perm_inds][perm_inds, :]
 
+            # grab permuted locations
             perm_locs = self.locs.iloc[perm_inds]
 
         # else if some of the subject and model locations overlap
         elif sum(bool_mask) != bo.locs.shape[0]:
 
             # get subject indices where subject locs do not overlap with model locs
-            bo_mask = np.sum([(bo.locs == y).all(1) for idy, y in self.locs.iterrows()], 0)
-            bool_bo_mask = bo_mask.astype(bool)
+            bool_bo_mask= np.sum([(bo.locs == y).all(1) for idy, y in self.locs.iterrows()], 0).astype(bool)
             disjoint_bo_inds = np.where(~bool_bo_mask)[0]
 
             # permute the correlation matrix so that the inds to reconstruct are on the right edge of the matrix
-
             perm_inds = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds)) + sorted(set(joint_model_inds))
             model_permuted = model_corrmat_x[:, perm_inds][perm_inds, :]
 
-            # permute the model locations (important for the rbf calculation later
+            # permute the model locations (important for the rbf calculation later)
             model_locs_permuted = self.locs.iloc[perm_inds]
 
             # permute the subject locations arranging them
             bo_perm_inds = sorted(set(range(bo.locs.shape[0])) - set(disjoint_bo_inds)) + sorted(set(disjoint_bo_inds))
-           # bo_perm_sub_inds = sorted(set(disjoint_bo_inds))
-            #bo.locs = bo.locs.iloc[disjoint_bo_inds]
             sub_bo = bo.locs.iloc[disjoint_bo_inds]
             bo.locs = bo.locs.iloc[bo_perm_inds]
             bo.data = bo.data[bo_perm_inds]
@@ -291,6 +288,7 @@ class Model(object):
             with np.errstate(invalid='ignore'):
                 model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
 
+            # add back the permuted correlation matrix for complete subject prediction
             model_corrmat_x[:model_permuted.shape[0], :model_permuted.shape[0]] = model_permuted
 
             perm_locs = self.locs.iloc[perm_inds_unknown]
@@ -367,9 +365,6 @@ class Model(object):
 
         return Model(numerator=numerator, denominator=denominator,
                      locs=m.locs, n_subs=n_subs)
-        ### this concatenation of locations doesn't work when updating an existing model (but would be necessary for a build)
-        # return Model(numerator=numerator, denominator=denominator,
-        #              locs=pd.concat([m.locs, bo.locs]), n_subs=n_subs)
 
 
     def info(self):
