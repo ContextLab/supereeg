@@ -139,9 +139,6 @@ for p, m, n in param_grid:
             # create a brain object with all gray locations
             bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
 
-            # get indices for unknown locations (where we wish to predict)
-            #unknown_loc = gray_locs[~gray_locs.index.isin(sub_locs.index)]
-
             # parse brain object to create synthetic patient data
             data = bo.data.iloc[:, sub_locs.index]
 
