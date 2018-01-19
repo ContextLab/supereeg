@@ -42,16 +42,8 @@ else:
 
 file_name = os.path.basename(os.path.splitext(fname)[0])
 
-data = np.random.multivariate_normal(np.zeros(11), np.eye(11), size=100)
-locs = np.random.multivariate_normal(np.zeros(3), np.eye(3), size=11)
-bo = se.Brain(data=data, locs=locs)
-
-nii = bo.to_nii()
-
 if fname.split('.')[-1]=='bo':
-    bo_load = se.load(fname)
-    bo_try = se.Brain(data = bo_load.data[:100], locs = bo_load.locs)
-    nii = bo_try.to_nii()
+    bo = se.load(fname)
     if se.filter_subj(bo):
         model = se.Model(bo, locs=gray_locs)
         model.save(fname=os.path.join(results_dir, file_name))

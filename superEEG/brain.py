@@ -181,27 +181,66 @@ class Brain(object):
         """
         Normalizes and plots data from brain object
 
+
+        Parameters
+        ----------
+        filepath : str
+        A name for the file.  If the file extension (.png) is not specified, it will be appended.
+
+        time_min : int
+        Minimum value for desired time window
+
+        time_max : int
+        Maximum value for desired time window
+
+        title : str
+        Title for plot
+
+        electrode : int
+        Location in MNI coordinate (x,y,z) by electrode df containing electrode locations
+        ## should add functionality that matches the coordinate instead of location in matrix
+
+        threshold : int
+        Value of kurtosis threshold
+
+        filtered : True
+        Default to filter by kurtosis threshold.  If False, will show all original data.
+
         """
+
+
+        # normalizes the samples x electrodes array containing the EEG data and adds 1 to each row
+        # so that the y-axis value corresponds to electrode location in the MNI coordinate (x,y,z)
+        # by electrode df containing electrode locations
+
         Y = normalize_Y(self.data)
+
+        # if filtered in passed, filter by electrodes that do not pass kurtosis thresholding
         if filtered:
             thresh_bool = self.kurtosis > threshold
             Y = Y.iloc[:, ~thresh_bool]
+
+        # if electrode is included, index data at electrode location
         if electrode is not None:
             Y = Y.columns[int(electrode)]
+
+        # divde index by sample rate so that index corresponds to time
         Y.index = Y.index / np.mean(self.sample_rate)
+
+        # if a time window is designated index data in that window
         if all([time_min, time_max]):
             mask = (Y.index > time_min) & (Y.index < time_max)
             Y = Y[mask]
+
+        # if a time window is not designated, default to the first 500 seconds
         else:
             time_min = 0
             time_max =  500
             mask = (Y.index >= time_min) & (Y.index <= time_max)
             Y= Y[mask]
+
+        # plot data
         ax = Y.plot(legend=False, title=title, color='k', lw=.6)
-        ax.set_axis_bgcolor('w')
-        ax.set_xlabel("time")
-        ax.set_ylabel("electrode")
-        ax.set_ylim([0,len(Y.columns) + 1])
         ax.set_axis_bgcolor('w')
         ax.set_xlabel("time")
         ax.set_ylabel("electrode")
@@ -210,6 +249,19 @@ class Brain(object):
             plt.savefig(filename = filepath)
 
     def plot_locs(self, pdfpath = None):
+        """
+        Plots electrode locations from brain object
+
+
+        Parameters
+        ----------
+
+        pdfpath : str
+        A name for the file.  If the file extension (.pdf) is not specified, it will be appended.
+
+
+        """
+
         ni_plt.plot_connectome(np.eye(self.locs.shape[0]), self.locs, display_mode='lyrz', output_file=pdfpath,
                                node_kwargs={'alpha': 0.5, 'edgecolors': None}, node_size=10,
                                node_color=np.ones(self.locs.shape[0]))
@@ -252,58 +304,6 @@ class Brain(object):
 
         # save
         dd.io.save(fname, bo, compression=compression)
-
-    # def to_nii(self, filepath=None,
-    #              template=None):
-    #     """
-    #     Save brain object as a nifti file
-    #
-    #
-    #     Parameters
-    #     ----------
-    #
-    #     filepath : str
-    #         Path to save the nifti file
-    #
-    #     template : str
-    #         Path to template nifti file
-    #
-    #     Returns
-    #     ----------
-    #
-    #     nifti : nibabel.Nifti1Image
-    #         A nibabel nifti image
-    #
-    #     """
-    #
-    #     if template is None:
-    #         template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_20mm_brain.nii'
-    #
-    #     # load template
-    #     img = nib.load(template)
-    #
-    #     # initialize data
-    #     data = np.zeros(tuple(list(img.shape)+[self.data.shape[0]]))
-    #
-    #     # convert coords from matrix coords to voxel indices
-    #     R = self.get_locs()
-    #     S =  img.affine
-    #     locs = pd.DataFrame(np.dot(R-S[:3, 3], np.linalg.inv(S[0:3, 0:3]))).astype(int)
-    #
-    #     # loop over data and locations to fill in activations
-    #     for i, row in self.data.iterrows():
-    #         for j, loc in locs.iterrows():
-    #             a,b,c,d = np.array(loc.values.tolist()+[i])
-    #             data[a, b, c, d] = row.loc[j]
-    #
-    #     # create nifti object
-    #     nifti = nib.Nifti1Image(data, affine=img.affine)
-    #
-    #     # save if filepath
-    #     if filepath:
-    #         nifti.to_filename(filepath)
-    #
-    #     return nifti
 
 
     def to_nii(self, filepath=None, template=None):
