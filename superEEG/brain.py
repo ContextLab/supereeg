@@ -253,8 +253,61 @@ class Brain(object):
         # save
         dd.io.save(fname, bo, compression=compression)
 
-    def to_nii(self, filepath=None,
-                 template=None):
+    # def to_nii(self, filepath=None,
+    #              template=None):
+    #     """
+    #     Save brain object as a nifti file
+    #
+    #
+    #     Parameters
+    #     ----------
+    #
+    #     filepath : str
+    #         Path to save the nifti file
+    #
+    #     template : str
+    #         Path to template nifti file
+    #
+    #     Returns
+    #     ----------
+    #
+    #     nifti : nibabel.Nifti1Image
+    #         A nibabel nifti image
+    #
+    #     """
+    #
+    #     if template is None:
+    #         template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_20mm_brain.nii'
+    #
+    #     # load template
+    #     img = nib.load(template)
+    #
+    #     # initialize data
+    #     data = np.zeros(tuple(list(img.shape)+[self.data.shape[0]]))
+    #
+    #     # convert coords from matrix coords to voxel indices
+    #     R = self.get_locs()
+    #     S =  img.affine
+    #     locs = pd.DataFrame(np.dot(R-S[:3, 3], np.linalg.inv(S[0:3, 0:3]))).astype(int)
+    #
+    #     # loop over data and locations to fill in activations
+    #     for i, row in self.data.iterrows():
+    #         for j, loc in locs.iterrows():
+    #             a,b,c,d = np.array(loc.values.tolist()+[i])
+    #             data[a, b, c, d] = row.loc[j]
+    #
+    #     # create nifti object
+    #     nifti = nib.Nifti1Image(data, affine=img.affine)
+    #
+    #     # save if filepath
+    #     if filepath:
+    #         nifti.to_filename(filepath)
+    #
+    #     return nifti
+
+
+    def to_nii(self, filepath=None, template=None):
+
         """
         Save brain object as a nifti file
 
@@ -275,29 +328,32 @@ class Brain(object):
             A nibabel nifti image
 
         """
-
         if template is None:
             template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_20mm_brain.nii'
 
         # load template
         img = nib.load(template)
 
-        # initialize data
-        data = np.zeros(tuple(list(img.shape)+[self.data.shape[0]]))
-
-        # convert coords from matrix coords to voxel indices
         R = self.get_locs()
-        S =  img.affine
-        locs = pd.DataFrame(np.dot(R-S[:3, 3], np.linalg.inv(S[0:3, 0:3]))).astype(int)
+        Y = self.data.as_matrix()
+        Y = np.array(Y, ndmin=2)
+        img = nib.load(template)
+        S = img.affine
+        locs = np.array(np.dot(R - S[:3, 3], np.linalg.inv(S[0:3, 0:3])), dtype='int')
+
+        shape = np.max(np.vstack([np.max(locs, axis=0) + 1, img.shape[0:3]]), axis=0)
+        data = np.zeros(tuple(list(shape) + [Y.shape[0]]))
+        counts = np.zeros(data.shape)
 
         # loop over data and locations to fill in activations
-        for i, row in self.data.iterrows():
-            for j, loc in locs.iterrows():
-                a,b,c,d = np.array(loc.values.tolist()+[i])
-                data[a, b, c, d] = row.loc[j]
+        for i in range(Y.shape[0]):
+            for j in range(R.shape[0]):
+                data[locs[j, 0], locs[j, 1], locs[j, 2], i] += Y[i, j]
+                counts[locs[j, 0], locs[j, 1], locs[j, 2], i] += 1
 
-        # create nifti object
-        nifti = nib.Nifti1Image(data, affine=img.affine)
+        data = np.divide(data, counts)
+        data[np.isnan(data)] = 0
+        nifti =  nib.Nifti1Image(data, affine=img.affine)
 
         # save if filepath
         if filepath:

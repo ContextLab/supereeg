@@ -6,6 +6,9 @@ import numpy as np
 import nibabel as nb
 import deepdish as dd
 import pandas as pd
+import warnings
+warnings.simplefilter(action='ignore', category=UserWarning)
+import nibabel as nib
 from nilearn.input_data import NiftiMasker
 from scipy.spatial.distance import squareform
 from .brain import Brain
@@ -134,7 +137,60 @@ def load(fname):
     elif fname.split('.')[-1]=='nii' or '.'.join(fname.split('.')[-2:])=='nii.gz':
         return load_nifti(fname)
 
-def load_nifti(fname, mask_strategy='background'):
+# def load_nifti(fname, mask_strategy='background'):
+#     """
+#     Load nifti file and convert to brain object
+#
+#     Parameters
+#     ----------
+#     fname : string
+#         Filepath to nifti file.
+#
+#
+#     Returns
+#     ----------
+#     data : nibabel.Nifti1
+#         Data to be returned
+#
+#     """
+#
+#     # load image
+#     img = nb.load(fname)
+#
+#     # mask image
+#     mask = NiftiMasker(mask_strategy=mask_strategy)
+#     mask.fit(fname)
+#
+#     # get header
+#     hdr = img.get_header()
+#
+#     # get affine
+#     S = img.get_sform()
+#
+#     # get voxel size
+#     vox_size = hdr.get_zooms()
+#
+#     # get image shape
+#     im_size = img.shape
+#
+#     #
+#     if len(img.shape) > 3:
+#         N = img.shape[3]
+#     else:
+#         N = 1
+#
+#     Y = mask.transform(fname)
+#     V = Y.shape[1]
+#     vmask = np.nonzero(np.array(np.reshape(mask.mask_img_.dataobj, (1, np.prod(mask.mask_img_.shape)), order='C')))[1]
+#     vox_coords = fullfact(img.shape[0:3])[vmask, ::-1]-1
+#
+#     locs = np.array(np.dot(vox_coords, S[0:3, 0:3])) + S[:3, 3]
+#
+#     return Brain(data=Y, locs=locs, meta={'header' : hdr})
+
+
+
+def load_nifti(nifti_file, mask_file=None):
     """
     Load nifti file and convert to brain object
 
@@ -151,39 +207,31 @@ def load_nifti(fname, mask_strategy='background'):
 
     """
 
-    # load image
-    img = nb.load(fname)
 
-    # mask image
-    mask = NiftiMasker(mask_strategy=mask_strategy)
-    mask.fit(fname)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
 
-    # get header
-    hdr = img.get_header()
+        img = nib.load(nifti_file)
+        mask = NiftiMasker(mask_strategy='background')
+        if mask_file is None:
+            mask.fit(nifti_file)
+        else:
+            mask.fit(mask_file)
 
-    # get affine
+    hdr = img.header
     S = img.get_sform()
-
-    # get voxel size
     vox_size = hdr.get_zooms()
-
-    # get image shape
     im_size = img.shape
 
-    #
     if len(img.shape) > 3:
         N = img.shape[3]
     else:
         N = 1
 
-    Y = mask.transform(fname)
-    V = Y.shape[1]
+    Y = np.float64(mask.transform(nifti_file)).copy()
     vmask = np.nonzero(np.array(np.reshape(mask.mask_img_.dataobj, (1, np.prod(mask.mask_img_.shape)), order='C')))[1]
     vox_coords = fullfact(img.shape[0:3])[vmask, ::-1]-1
 
-    locs = np.array(np.dot(vox_coords, S[0:3, 0:3])) + S[:3, 3]
+    R = np.array(np.dot(vox_coords, S[0:3, 0:3])) + S[:3, 3]
 
-    return Brain(data=Y, locs=locs, meta={'header' : hdr})
-
-
-
+    return Brain(data=Y, locs=R, meta={'header': hdr})
