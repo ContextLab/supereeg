@@ -525,14 +525,44 @@ def model_compile(data):
     #              locs=pd.concat([m.locs, bo.locs]), n_subs=n_subs)
 
 
-def near_neighbor(bo_locs, mo_locs, voxel_size=False):
-    if voxel_size:
-        pass
+def near_neighbor(bo, mo, match_threshold = 'auto'):
+
+    nbo = copy.copy(bo)
+    d = cdist(nbo.locs, mo.locs, metric='Euclidean')
+    for i in range(len(nbo.locs)):
+        min_ind = zip(*np.where(d == d.min()))[0]
+        nbo.locs.iloc[min_ind[0], :] = mo.locs.iloc[min_ind[1], :]
+        d[min_ind[0]] = np.inf
+        d[:, min_ind[1]] = np.inf
+    if not match_threshold is 0 or None:
+
+        if match_threshold is 'auto':
+            n_dims = mo.locs.shape[1]
+            v_size = np.zeros([1, n_dims])
+            for i in np.arange(n_dims):
+                a = np.unique(mo.locs.iloc[:, i])
+                dists = pdist([a])
+                v_size[i] = np.min(dists[dists > 0])
+            thresh_bool = abs(nbo.locs - bo.locs) > v_size
+        else:
+            thresh_bool = abs(nbo.locs - bo.locs) > match_threshold
+            assert match_threshold > 0, 'Negative Euclidean distances are not allowed'
+        nbo.data = bo.data.loc[:, ~thresh_bool]
+        nbo.locs = bo.locs.loc[~thresh_bool]
+        nbo.n_elecs = bo.data.shape[1]
+        return nbo
     else:
-        d = cdist(bo_locs, mo_locs, metric='Euclidean')
-        for i in range(len(bo_locs)):
-            min_ind = zip(*np.where(d == d.min()))[0]
-            bo_locs.iloc[min_ind[0], :] = mo_locs.iloc[min_ind[1], :]
-            d[min_ind[0]] = np.inf
-            d[:, min_ind[1]] = np.inf
-    return bo_locs
+        return nbo
+
+    # # if none, don't apply any threshold
+    # elif match_threshold is None:
+    # pass
+    #
+    # # if 0, set nearest_neighbor = False and proceed (only exact matches will be used)
+    # elif match_threshold == 0:
+    # pass
+    # # if greater than zero, include only electrodes that are within a distance of match_threshold
+    # # of the matched voxel
+    # elif match_threshold > 0:
+    # pass
+    # is less than zero, throw an error

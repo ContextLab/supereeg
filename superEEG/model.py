@@ -213,22 +213,7 @@ class Model(object):
         if nearest_neighbor:
             # if match_threshold auto, ignore all electrodes whose distance from the nearest matching voxel is
             # greater than the maximum voxel dimension
-            if match_threshold is 'auto':
-                vox_size = self.meta['voxel size']
-                bo.locs = near_neighbor(bo.locs, self.locs)
-
-            # if none, don't apply any threshold
-            elif match_threshold is None:
-                pass
-            # if 0, set nearest_neighbor = False and proceed (only exact matches will be used)
-            elif match_threshold == 0:
-                pass
-            # if greater than zero, include only electrodes that are within a distance of match_threshold
-            # of the matched voxel
-            elif match_threshold > 0:
-                pass
-            # is less than zero, throw an error
-            assert match_threshold >0, 'Negative Euclidean distances are not allowed'
+            bo = near_neighbor(bo, self, match_threshold = match_threshold)
 
         # filter bad electrodes
         bo = filter_elecs(bo, measure='kurtosis', threshold=kthreshold)
