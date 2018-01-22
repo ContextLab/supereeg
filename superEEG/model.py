@@ -178,7 +178,7 @@ class Model(object):
         # meta
         self.meta = meta
 
-    def predict(self, bo, kthreshold=10):
+    def predict(self, bo, nearest_neighbor = True, match_threshold = 'auto', kthreshold=10):
         """
         Takes a brain object and a 'full' covariance model, fills in all
         electrode timeseries for all missing locations and returns the new brain object
@@ -189,6 +189,20 @@ class Model(object):
         bo : Brain data object or a list of Brain objects
             The brain data object that you want to predict
 
+        nearest_neighbor : True
+            Default finds the nearest voxel for each subject's electrode location and
+            uses that as revised electrodes location matrix in the prediction.
+
+        match_threshold : 'auto' or int
+
+            auto: if match_threshold auto, ignore all electrodes whose distance from the nearest matching voxel is
+            greater than the maximum voxel dimension
+
+            If value is greater than 0, inlcudes only electrodes that are within that distance of matched voxel
+
+        kthreshold : 10 or int
+            Kurtosis threshold
+
         Returns
         ----------
 
@@ -196,6 +210,25 @@ class Model(object):
             New brain data object with missing electrode locations filled in
 
         """
+        if nearest_neighbor:
+            # if match_threshold auto, ignore all electrodes whose distance from the nearest matching voxel is
+            # greater than the maximum voxel dimension
+            if match_threshold is 'auto':
+                vox_size = self.meta['voxel size']
+                bo.locs = near_neighbor(bo.locs, self.locs)
+
+            # if none, don't apply any threshold
+            elif match_threshold is None:
+                pass
+            # if 0, set nearest_neighbor = False and proceed (only exact matches will be used)
+            elif match_threshold == 0:
+                pass
+            # if greater than zero, include only electrodes that are within a distance of match_threshold
+            # of the matched voxel
+            elif match_threshold > 0:
+                pass
+            # is less than zero, throw an error
+            assert match_threshold >0, 'Negative Euclidean distances are not allowed'
 
         # filter bad electrodes
         bo = filter_elecs(bo, measure='kurtosis', threshold=kthreshold)

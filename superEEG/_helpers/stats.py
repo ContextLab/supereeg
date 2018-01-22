@@ -13,14 +13,14 @@ import nibabel as nb
 import numpy as np
 from nilearn.input_data import NiftiMasker
 
-#from sklearn.neighbors import NearestNeighbors
-#from sklearn.decomposition import PCA
-#import seaborn as sns
-#import tensorflow as tf
+
+# from sklearn.neighbors import NearestNeighbors
+# from sklearn.decomposition import PCA
+# import seaborn as sns
+# import tensorflow as tf
 
 
 def apply_by_file_index(bo, xform, aggregator):
-
     """
     Session dependent function application and aggregation
 
@@ -44,11 +44,12 @@ def apply_by_file_index(bo, xform, aggregator):
 
     for idx, session in enumerate(bo.sessions.unique()):
         if idx is 0:
-            results = xform(bo.get_data()[bo.sessions==session, :])
+            results = xform(bo.get_data()[bo.sessions == session, :])
         else:
-            results = aggregator(results, xform(bo.get_data()[bo.sessions==session, :]))
+            results = aggregator(results, xform(bo.get_data()[bo.sessions == session, :]))
 
     return results
+
 
 def kurt_vals(bo):
     """
@@ -71,10 +72,12 @@ def kurt_vals(bo):
 
 
     """
+
     def aggregate(prev, next):
         return np.max(np.vstack((prev, next)), axis=0)
 
     return apply_by_file_index(bo, kurtosis, aggregate)
+
 
 def get_corrmat(bo):
     """
@@ -97,8 +100,9 @@ def get_corrmat(bo):
 
 
     """
+
     def aggregate(p, n):
-        return p+n
+        return p + n
 
     def zcorr(x):
         return r2z(1 - squareform(pdist(x.T, 'correlation')))
@@ -106,6 +110,7 @@ def get_corrmat(bo):
     summed_zcorrs = apply_by_file_index(bo, zcorr, aggregate)
 
     return z2r(summed_zcorrs / len(bo.sessions.unique()))
+
 
 def z2r(z):
     """
@@ -171,6 +176,7 @@ def rbf(x, center, width=20):
     """
     return np.exp(-cdist(x, center, metric='euclidean') ** 2 / float(width))
 
+
 def tal2mni(r):
     """
     Convert coordinates (electrode locations) from Talairach to MNI space
@@ -192,11 +198,11 @@ def tal2mni(r):
     down = np.array([[0.9900, 0, 0, 0], [0, 0.9700, 0, 0], [0, 0, 0.8400, 0], [0, 0, 0, 1.0000]])
 
     inpoints = np.c_[r, np.ones(r.shape[0], dtype=np.float)].T
-    tmp = inpoints[2,:] < 0
-    inpoints[:,tmp] = linalg.solve(np.dot(rotmat, down), inpoints[:, tmp])
-    inpoints[:,~tmp] = linalg.solve(np.dot(rotmat, up), inpoints[:, ~tmp])
+    tmp = inpoints[2, :] < 0
+    inpoints[:, tmp] = linalg.solve(np.dot(rotmat, down), inpoints[:, tmp])
+    inpoints[:, ~tmp] = linalg.solve(np.dot(rotmat, up), inpoints[:, ~tmp])
 
-    return round_it(inpoints[0:3, :].T,2)
+    return round_it(inpoints[0:3, :].T, 2)
 
 
 def uniquerows(x):
@@ -219,6 +225,7 @@ def uniquerows(x):
     _, idx = np.unique(y, return_index=True)
 
     return x[idx]
+
 
 def expand_corrmat_fit(C, weights):
     """
@@ -260,7 +267,6 @@ def expand_corrmat_fit(C, weights):
 
         vals = range(x)
         for y in vals:
-
             yweights = weights[y, :]
 
             next_weights = np.outer(xweights, yweights)
@@ -269,6 +275,7 @@ def expand_corrmat_fit(C, weights):
             W[x, y] = np.sum(next_weights)
             K[x, y] = np.sum(Z * next_weights)
     return (K + K.T), (W + W.T)
+
 
 def expand_corrmat_predict(C, weights):
     """
@@ -314,8 +321,8 @@ def expand_corrmat_predict(C, weights):
 
     return (K + K.T), (W + W.T)
 
-def compute_coord(coord, weights, Z):
 
+def compute_coord(coord, weights, Z):
     next_weights = np.outer(weights[coord[0], :], weights[coord[1], :])
     next_weights = next_weights - np.triu(next_weights)
 
@@ -326,9 +333,9 @@ def reconstruct_activity(bo, K):
     """
     Reconstruct activity - need to add chunking option here
     """
-    s = K.shape[0]-bo.locs.shape[0]
-    Kba = K[:s,s:]
-    Kaa = K[s:,s:]
+    s = K.shape[0] - bo.locs.shape[0]
+    Kba = K[:s, s:]
+    Kaa = K[s:, s:]
     Y = zscore(bo.get_data())
     return np.squeeze(np.dot(np.dot(Kba, np.linalg.pinv(Kaa)), Y.T).T)
 
@@ -355,7 +362,6 @@ def round_it(locs, places):
     return np.round(locs, decimals=places)
 
 
-
 def filter_elecs(bo, measure='kurtosis', threshold=10):
     """
     Filter bad electrodes
@@ -374,7 +380,7 @@ def filter_subj(bo, measure='kurtosis', threshold=10):
     """
     if not bo.meta is None:
         thresh_bool = bo.kurtosis > threshold
-        if sum(~thresh_bool)<2:
+        if sum(~thresh_bool) < 2:
             print(bo.meta + ': not enough electrodes pass threshold')
         else:
             return bo.meta
@@ -403,10 +409,10 @@ def normalize_Y(Y_matrix):
 
          """
     Y = Y_matrix
-    m = mat.repmat(np.min(Y, axis = 0), Y.shape[0], 1)
+    m = mat.repmat(np.min(Y, axis=0), Y.shape[0], 1)
     Y = Y - m
-    m = mat.repmat(np.max(Y, axis = 0), Y.shape[0], 1)
-    Y = np.divide(Y,m)
+    m = mat.repmat(np.max(Y, axis=0), Y.shape[0], 1)
+    Y = np.divide(Y, m)
     added = mat.repmat(0.5 + np.arange(Y.shape[1]), Y.shape[0], 1)
     Y = Y + added
     return pd.DataFrame(Y)
@@ -454,11 +460,13 @@ class BrainData:
 
             self.R = np.array(vox_coords * S[0:3, 0:3] + np.tile(S[0:3, 3].T, (self.V, 1)))
 
+
 def loadnii(fname, mask_strategy='background'):
     # if mask_strategy is 'background', treat uniformly valued voxels at the outer parts of the images as background
     # if mask_strategy is 'epi', use nilearn's background detection strategy: find the least dense point
     # of the histogram, between fractions lower_cutoff and upper_cutoff of the total image histogram
     return BrainData(fname, mask_strategy)
+
 
 def fullfact(dims):
     '''
@@ -476,6 +484,7 @@ def fullfact(dims):
             inds[row:(row + len(vals)), 1:] = np.tile(aftervals[i, :], (len(vals), 1))
             row += len(vals)
         return inds
+
 
 def model_compile(data):
     """
@@ -514,3 +523,16 @@ def model_compile(data):
     ### this concatenation of locations doesn't work when updating an existing model (but would be necessary for a build)
     # return Model(numerator=numerator, denominator=denominator,
     #              locs=pd.concat([m.locs, bo.locs]), n_subs=n_subs)
+
+
+def near_neighbor(bo_locs, mo_locs, voxel_size=False):
+    if voxel_size:
+        pass
+    else:
+        d = cdist(bo_locs, mo_locs, metric='Euclidean')
+        for i in range(len(bo_locs)):
+            min_ind = zip(*np.where(d == d.min()))[0]
+            bo_locs.iloc[min_ind[0], :] = mo_locs.iloc[min_ind[1], :]
+            d[min_ind[0]] = np.inf
+            d[:, min_ind[1]] = np.inf
+    return bo_locs

@@ -62,9 +62,12 @@ def load(fname):
         try:
             with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/mini_model.mo', 'rb') as handle:
                 example_model = pickle.load(handle)
+            example_model.meta = {'voxel size': np.array([9, 11, 9])}
             return example_model
         except:
             model = pd.read_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/mini_model.mo')
+            ### is this a good place to have this??
+            model.meta = {'voxel size': np.array([ 9, 11,  9])}
             return model
 
     elif fname is 'pyFR_k10r20_20mm':

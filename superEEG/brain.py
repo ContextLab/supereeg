@@ -350,7 +350,6 @@ class Brain(object):
         R = self.get_locs()
         Y = self.data.as_matrix()
         Y = np.array(Y, ndmin=2)
-        img = nib.load(template)
         S = img.affine
         locs = np.array(np.dot(R - S[:3, 3], np.linalg.inv(S[0:3, 0:3])), dtype='int')
 
