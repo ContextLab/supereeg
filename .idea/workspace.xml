@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="72de947b-ed70-4f88-b013-460cd0bdb63e" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cluster/full_mats/full_mats.py" afterPath="$PROJECT_DIR$/cluster/full_mats/full_mats.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/_helpers/stats.py" afterPath="$PROJECT_DIR$/superEEG/_helpers/stats.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/CH003.npz" afterPath="$PROJECT_DIR$/superEEG/data/CH003.npz" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/brain.py" afterPath="$PROJECT_DIR$/superEEG/brain.py" />
     </list>
     <ignored path="superEEG.iws" />
@@ -36,11 +36,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="brain.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="brain.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/superEEG/brain.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="247">
-              <caret line="255" column="18" selection-start-line="255" selection-start-column="18" selection-end-line="255" selection-end-column="18" />
+            <state relative-caret-position="534">
+              <caret line="272" column="0" selection-start-line="272" selection-start-column="0" selection-end-line="272" selection-end-column="0" />
               <folding>
                 <element signature="e#25#36#0" expanded="true" />
               </folding>
@@ -58,11 +58,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="plot_load_example_data.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="plot_load_example_data.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/examples/plot_load_example_data.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="420">
-              <caret line="32" column="0" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
+            <state relative-caret-position="477">
+              <caret line="34" column="0" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -125,8 +125,8 @@
       <file leaf-file-name="load.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/superEEG/load.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="190">
-              <caret line="103" column="0" selection-start-line="103" selection-start-column="0" selection-end-line="103" selection-end-column="0" />
+            <state relative-caret-position="323">
+              <caret line="56" column="0" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="0" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -193,8 +193,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="2342" />
-    <option name="y" value="-207" />
+    <option name="x" value="2057" />
+    <option name="y" value="-215" />
     <option name="width" value="1650" />
     <option name="height" value="1027" />
   </component>
@@ -249,7 +249,7 @@
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Font" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
   </component>
-  <component name="RunManager" selected="Python.full_mats">
+  <component name="RunManager" selected="Python.plot_load_example_data">
     <configuration default="false" name="full_mats" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -532,11 +532,11 @@
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.full_mats" />
-        <item index="1" class="java.lang.String" itemvalue="Python.plot_load_nifti" />
-        <item index="2" class="java.lang.String" itemvalue="Python.predict" />
-        <item index="3" class="java.lang.String" itemvalue="Python.simulated_patient_data" />
-        <item index="4" class="java.lang.String" itemvalue="Python.plot_load_example_data" />
+        <item index="0" class="java.lang.String" itemvalue="Python.plot_load_example_data" />
+        <item index="1" class="java.lang.String" itemvalue="Python.full_mats" />
+        <item index="2" class="java.lang.String" itemvalue="Python.plot_load_nifti" />
+        <item index="3" class="java.lang.String" itemvalue="Python.predict" />
+        <item index="4" class="java.lang.String" itemvalue="Python.simulated_patient_data" />
       </list>
     </recent_temporary>
   </component>
@@ -598,7 +598,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="2342" y="-207" width="1650" height="1027" extended-state="0" />
+    <frame x="2057" y="-215" width="1650" height="1027" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24862888" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -719,11 +719,6 @@
           <option name="timeStamp" value="325" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/examples/plot_load_example_data.py</url>
-          <line>22</line>
-          <option name="timeStamp" value="326" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/tests/test_model.py</url>
           <line>12</line>
           <option name="timeStamp" value="327" />
@@ -768,11 +763,6 @@
           <option name="timeStamp" value="393" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/superEEG/brain.py</url>
-          <line>215</line>
-          <option name="timeStamp" value="404" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/examples/plot_reconstruct_correlation_matrix.py</url>
           <line>72</line>
           <option name="timeStamp" value="409" />
@@ -803,11 +793,6 @@
           <option name="timeStamp" value="419" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/examples/plot_load_example_data.py</url>
-          <line>19</line>
-          <option name="timeStamp" value="433" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/superEEG/model.py</url>
           <line>257</line>
           <option name="timeStamp" value="435" />
@@ -816,6 +801,11 @@
           <url>file://$PROJECT_DIR$/examples/predict.py</url>
           <line>30</line>
           <option name="timeStamp" value="438" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/examples/plot_load_example_data.py</url>
+          <line>32</line>
+          <option name="timeStamp" value="457" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
@@ -828,7 +818,7 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="456" />
+      <option name="time" value="458" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -1144,16 +1134,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_brain.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="418">
-          <caret line="30" column="4" selection-start-line="30" selection-start-column="4" selection-end-line="30" selection-end-column="30" />
-          <folding>
-            <element signature="e#25#38#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/examples/plot_reconstruct_correlation_matrix.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="192">
@@ -1166,24 +1146,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="363">
           <caret line="30" column="0" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/superEEG/load.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="103" column="0" selection-start-line="103" selection-start-column="0" selection-end-line="103" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/examples/plot_load_example_data.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="32" column="0" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1224,13 +1186,41 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_brain.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="418">
+          <caret line="30" column="4" selection-start-line="30" selection-start-column="4" selection-end-line="30" selection-end-column="30" />
+          <folding>
+            <element signature="e#25#38#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/superEEG/load.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="56" column="0" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/superEEG/brain.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="247">
-          <caret line="255" column="18" selection-start-line="255" selection-start-column="18" selection-end-line="255" selection-end-column="18" />
+        <state relative-caret-position="534">
+          <caret line="272" column="0" selection-start-line="272" selection-start-column="0" selection-end-line="272" selection-end-column="0" />
           <folding>
             <element signature="e#25#36#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/plot_load_example_data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="477">
+          <caret line="34" column="0" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>

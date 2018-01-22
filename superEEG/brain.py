@@ -108,7 +108,11 @@ class Brain(object):
             self.sessions = pd.Series(sessions.ravel())
 
         # sample rate
-        if isinstance(sample_rate, list):
+        if isinstance(sample_rate, np.ndarray):
+            self.sample_rate = [sample_rate[0]]
+            assert len(self.sample_rate) ==  len(self.sessions.unique()), 'Should be one sample rate for each session.'
+
+        elif isinstance(sample_rate, list):
             if isinstance(sample_rate[0], np.ndarray):
                 self.sample_rate = list(sample_rate[0][0])
             else:
@@ -265,6 +269,8 @@ class Brain(object):
         ni_plt.plot_connectome(np.eye(self.locs.shape[0]), self.locs, display_mode='lyrz', output_file=pdfpath,
                                node_kwargs={'alpha': 0.5, 'edgecolors': None}, node_size=10,
                                node_color=np.ones(self.locs.shape[0]))
+        if not pdfpath:
+            ni_plt.show()
 
     def save(self, fname, compression='blosc'):
         """
