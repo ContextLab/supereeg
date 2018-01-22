@@ -109,7 +109,10 @@ class Brain(object):
 
         # sample rate
         if isinstance(sample_rate, np.ndarray):
-            self.sample_rate = [sample_rate[0]]
+            if np.shape(sample_rate)[1]>1:
+                self.sample_rate = list(sample_rate[0])
+            elif np.shape(sample_rate)[1] == 1:
+                self.sample_rate = [sample_rate[0]]
             assert len(self.sample_rate) ==  len(self.sessions.unique()), 'Should be one sample rate for each session.'
 
         elif isinstance(sample_rate, list):
@@ -132,7 +135,11 @@ class Brain(object):
                           'Setting sample rate to None')
 
         if sample_rate is not None:
-            self.n_secs = self.data.shape[0] / np.array(sample_rate)
+            ## this is quite right... needs to be the number of trials in sessions
+            index, counts = np.unique(self.sessions, return_counts=True)
+            # self.n_secs = self.data.shape[0] / np.array(sample_rate)
+            self.n_secs = counts / np.array(sample_rate)
+
 
         # meta
         self.meta = meta
