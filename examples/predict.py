@@ -22,7 +22,7 @@ bo = se.load('example_data')
 model = se.load('example_model')
 
 # fill in the missing timeseries data
-reconstructed_bo = model.predict(bo)
+reconstructed_bo = model.predict(bo, nearest_neighbor = True, match_threshold=0)
 
 # print out info on new brain object
 reconstructed_bo.info()

@@ -215,6 +215,8 @@ class Model(object):
             # greater than the maximum voxel dimension
             bo = near_neighbor(bo, self, match_threshold = match_threshold)
 
+        ### do i need to reset the index here??
+
         # filter bad electrodes
         bo = filter_elecs(bo, measure='kurtosis', threshold=kthreshold)
 

@@ -346,6 +346,8 @@ class Brain(object):
 
         # load template
         img = nib.load(template)
+        hdr = img.get_header()
+        vox_size = hdr.get_zooms()[0:3]
 
         R = self.get_locs()
         Y = self.data.as_matrix()

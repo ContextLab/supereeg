@@ -527,7 +527,7 @@ def model_compile(data):
 
 def near_neighbor(bo, mo, match_threshold = 'auto'):
 
-    nbo = copy.copy(bo)
+    nbo = copy.deepcopy(bo)
     d = cdist(nbo.locs, mo.locs, metric='Euclidean')
     for i in range(len(nbo.locs)):
         min_ind = zip(*np.where(d == d.min()))[0]
@@ -541,15 +541,18 @@ def near_neighbor(bo, mo, match_threshold = 'auto'):
             v_size = np.zeros([1, n_dims])
             for i in np.arange(n_dims):
                 a = np.unique(mo.locs.iloc[:, i])
-                dists = pdist([a])
-                v_size[i] = np.min(dists[dists > 0])
+                dists = pdist(np.atleast_2d(a).T, 'euclidean')
+                v_size[0][i] = np.min(dists[dists > 0])
             thresh_bool = abs(nbo.locs - bo.locs) > v_size
+            thresh_bool = thresh_bool.any(1).ravel()
         else:
             thresh_bool = abs(nbo.locs - bo.locs) > match_threshold
+            thresh_bool = thresh_bool.any(1).ravel()
             assert match_threshold > 0, 'Negative Euclidean distances are not allowed'
-        nbo.data = bo.data.loc[:, ~thresh_bool]
-        nbo.locs = bo.locs.loc[~thresh_bool]
-        nbo.n_elecs = bo.data.shape[1]
+        nbo.data = nbo.data.loc[:, ~thresh_bool]
+        nbo.locs = nbo.locs.loc[~thresh_bool]
+        nbo.n_elecs = nbo.data.shape[1]
+        nbo.kurtosis = nbo.kurtosis[~thresh_bool]
         return nbo
     else:
         return nbo
