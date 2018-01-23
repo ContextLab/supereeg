@@ -163,14 +163,14 @@ def test_expand_corrmats_same():
 
 def test_reconstruct():
 
-    recon_test = test_model.predict(bo)
+    recon_test = test_model.predict(bo, nearest_neighbor=False)
     actual_test = bo_full.data.iloc[:, recon_test.locs.index]
 
     mo = test_model.update(bo)
     model_corrmat_x = np.divide(mo.numerator, mo.denominator)
     model_corrmat_x = z2r(model_corrmat_x)
     np.fill_diagonal(model_corrmat_x, 0)
-    recon_data = reconstruct_activity(bo, model_corrmat_x)
+    recon_data = np.hstack((reconstruct_activity(bo, model_corrmat_x), bo.data.as_matrix()))
     corr_vals = corr_column(actual_test.as_matrix(), recon_test.data.as_matrix())
     assert isinstance(recon_data, np.ndarray)
     assert np.allclose(recon_data, recon_test.data)

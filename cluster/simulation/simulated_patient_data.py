@@ -23,7 +23,7 @@ import pickle
 import seaborn as sns
 from superEEG._helpers.stats import r2z, z2r, corr_column
 import matplotlib.pyplot as plt
-plt.switch_backend('agg')
+#plt.switch_backend('agg')
 
 from config import config
 try:
@@ -38,13 +38,13 @@ n_samples = 1000
 # n_electrodes - number of electrodes for reconstructed patient
 # m_electrodes - number of electrodes for each patient in the model
 # m_patients - number of patients in the model
-m_patients = [1, 5, 10]
+m_patients = [10]
 
 # increments for reconstruction
 incs = 50
 
 # iterations
-iter_val = 10
+iter_val = 5
 
 # load nifti to get locations
 gray = se.load('mini_model')
@@ -131,7 +131,8 @@ for p, m, n in param_grid:
 
             data = c[:, mo_locs.index][mo_locs.index, :]
 
-            model = se.Model(numerator=p*np.array(data), denominator=np.ones(np.shape(data)) * p, locs=mo_locs, n_subs=p)
+            model = se.Model(numerator=p*np.array(data), denominator=np.ones(np.shape(data)) * p,
+                             locs=mo_locs, n_subs=p)
 
             # create brain object from the remaining locations - first find remaining locations
             sub_locs = mo_locs.sample(n).sort_values(['x', 'y', 'z'])
@@ -176,13 +177,16 @@ for p, m, n in param_grid:
 
             data = c[:, mo_locs.index][mo_locs.index, :]
 
-            model = se.Model(numerator=p*np.array(data), denominator=np.ones(np.shape(data)) * p, locs=mo_locs, n_subs=p)
+            model = se.Model(numerator=p*np.array(data), denominator=np.ones(np.shape(data)) * p,
+                             locs=mo_locs, n_subs=p)
 
-            # brain object locations subsetted entirely from both model and gray locations - for this n > m (this isn't necessarily true, but this ensures overlap)
+            # brain object locations subsetted entirely from both model and gray locations - for this n > m
+            # (this isn't necessarily true, but this ensures overlap)
 
             sub_locs = gray_locs.sample(n).sort_values(['x', 'y', 'z'])
 
-            # for the case where you want both subset and disjoint locations - get indices for unknown locations (where we wish to predict)
+            # for the case where you want both subset and disjoint locations - get indices for unknown locations
+            # (where we wish to predict)
 
             #unknown_locs = mo_locs[~mo_locs.index.isin(sub_locs.index)]
 
@@ -212,7 +216,8 @@ for p, m, n in param_grid:
 
 
         d.append({'Numbder of Patients in Model': p, 'Number of Model Locations': m, 'Number of Patient Locations': n,
-                  'Average Correlation': corr_val_mean, 'Correlations': corr_vals, 'Patient Locations': bo_sample.locs.values})
+                  'Average Correlation': corr_val_mean, 'Correlations': corr_vals,
+                  'Patient Locations': bo_sample.locs.values})
 
     append_d = append_d.append(d)
     append_d.index.rename('Iteration', inplace=True)

@@ -124,7 +124,7 @@ def test_electrode_contingencies_1_null_set():
     bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
 
     # predict activity at all unknown locations
-    recon = model.predict(bo_sample)
+    recon = model.predict(bo_sample, nearest_neighbor=False)
 
     # actual = bo.data.iloc[:, unknown_ind]
     actual = bo.data.iloc[:, recon.locs.index]
@@ -162,7 +162,7 @@ def test_electrode_contingencies_2_subset():
     bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
 
     # predict activity at all unknown locations
-    recon = model.predict(bo_sample)
+    recon = model.predict(bo_sample, nearest_neighbor=False)
 
     actual = bo.data.iloc[:, recon.locs.index]
 
@@ -200,7 +200,7 @@ def test_electrode_contingencies_3_locations_can_subset():
     bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
 
     try:
-        recon = model.predict(bo_sample)
+        recon = model.predict(bo_sample, nearest_neighbor=False)
         # sample actual data at reconstructed locations
         actual = bo.data.iloc[:, recon.locs.index]
 

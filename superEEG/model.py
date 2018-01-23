@@ -262,7 +262,7 @@ class Model(object):
                 model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
 
             # grab the locs
-            perm_locs = self.locs
+            perm_locs = self.locs + bo.locs
 
         # else if all of the subject locations are in the set of model locations
         elif sum(bool_mask) == bo.locs.shape[0]:
@@ -311,7 +311,7 @@ class Model(object):
             # add back the permuted correlation matrix for complete subject prediction
             model_corrmat_x[:model_permuted.shape[0], :model_permuted.shape[0]] = model_permuted
 
-            perm_locs = self.locs.iloc[perm_inds_unknown]
+            perm_locs = self.locs.iloc[perm_inds_unknown] + bo.locs
 
         #convert from z to r
         model_corrmat_x = z2r(model_corrmat_x)
@@ -322,8 +322,11 @@ class Model(object):
         # timeseries reconstruction
         reconstructed = reconstruct_activity(bo, model_corrmat_x)
 
-        # return reconstructed data
-        return Brain(data=reconstructed, locs=perm_locs, sessions=bo.sessions,
+        # join reconstructed and known activity
+        activations = np.hstack((reconstructed, bo.data.as_matrix()))
+
+        # return all data
+        return Brain(data=activations, locs=perm_locs, sessions=bo.sessions,
                     sample_rate=bo.sample_rate)
 
 
@@ -353,8 +356,6 @@ class Model(object):
 
         if type(data) is not list:
             data = [data]
-
-        #fname.split('.')[-1] == 'mo'
 
         # loop over brain objects
         for bo in data:

@@ -527,6 +527,38 @@ def model_compile(data):
 
 def near_neighbor(bo, mo, match_threshold = 'auto'):
 
+    """
+    Finds the nearest voxel for each subject's electrode location and uses
+    that as revised electrodes location matrix in the prediction.
+
+    Parameters
+    ----------
+
+    bo : Brain object
+        Brain object to update
+
+    mo : Model object
+        Model object for the nearests locations used to predict
+
+    match_threshold : 'auto', int, or None
+        Threshold used to find nearest neighbor
+
+        match_threshold = 'auto' : include only nearest neighbor if falls within one voxel distance
+
+        match_threshold = None or 0 : set nearest_neighbor = False and proceed (only exact matches will be used)
+
+        match_threshold > 0 : include only nearest neighbor that are within given distance
+
+
+
+    Returns
+    ----------
+
+    bo : Brain object
+        A new updated brain object
+
+    """
+
     nbo = copy.deepcopy(bo)
     d = cdist(nbo.locs, mo.locs, metric='Euclidean')
     for i in range(len(nbo.locs)):
