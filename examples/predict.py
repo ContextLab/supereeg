@@ -15,30 +15,34 @@ model locations.
 
 import superEEG as se
 
+
 # load example data
 bo = se.load('example_data')
 
 # load example model
 model = se.load('example_model')
 
+
 # fill in the missing timeseries data with original set of locations
 reconstructed_bo = model.predict(bo, nearest_neighbor = False)
 
+
 # plot locations
-bo.plot_locs('/Users/lucyowen/Desktop/bo_no_nn.pdf')
+bo.plot_locs()
 
 # fill in the missing timeseries data
 reconstructed_bo_nn = model.predict(bo, nearest_neighbor = True)
 
-# plot new reconstructed locations using the nearest neighbor model location
-bo.plot_locs('/Users/lucyowen/Desktop/bo_nn.pdf')
+## this doesn't return the new altered bo locs
+# # plot new reconstructed locations using the nearest neighbor model location
+# bo.plot_locs('/Users/lucyowen/Desktop/bo_nn.pdf')
+
 
 # print out info on new brain object
 reconstructed_bo.info()
 
 # save as nifti
 reconstructed_nifti = reconstructed_bo.to_nii()
-
 
 
 

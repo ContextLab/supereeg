@@ -262,7 +262,7 @@ class Model(object):
                 model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
 
             # grab the locs
-            perm_locs = self.locs + bo.locs
+            perm_locs = self.locs.append(bo.locs)
 
         # else if all of the subject locations are in the set of model locations
         elif sum(bool_mask) == bo.locs.shape[0]:
@@ -311,7 +311,8 @@ class Model(object):
             # add back the permuted correlation matrix for complete subject prediction
             model_corrmat_x[:model_permuted.shape[0], :model_permuted.shape[0]] = model_permuted
 
-            perm_locs = self.locs.iloc[perm_inds_unknown] + bo.locs
+            ## unclear if this will return too many locations
+            perm_locs = self.locs.iloc[perm_inds_unknown].append(bo.locs)
 
         #convert from z to r
         model_corrmat_x = z2r(model_corrmat_x)
