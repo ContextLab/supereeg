@@ -57,6 +57,7 @@ class Model(object):
     date created : str
         Time created
 
+
     Attributes
     ----------
 
@@ -183,7 +184,8 @@ class Model(object):
         # meta
         self.meta = meta
 
-    def predict(self, bo, nearest_neighbor = True, match_threshold = 'auto', kthreshold=10):
+
+    def predict(self, bo, nearest_neighbor=True, match_threshold='auto', kthreshold=10):
         """
         Takes a brain object and a 'full' covariance model, fills in all
         electrode timeseries for all missing locations and returns the new brain object
@@ -218,9 +220,7 @@ class Model(object):
         if nearest_neighbor:
             # if match_threshold auto, ignore all electrodes whose distance from the nearest matching voxel is
             # greater than the maximum voxel dimension
-            bo = near_neighbor(bo, self, match_threshold = match_threshold)
-
-        ### do i need to reset the index here??
+            bo = near_neighbor(bo, self, match_threshold=match_threshold)
 
         # filter bad electrodes
         bo = filter_elecs(bo, measure='kurtosis', threshold=kthreshold)
@@ -267,7 +267,7 @@ class Model(object):
                 model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
 
             # make a new field that labels each locations as either predicted or known
-            act_label = ['predicted'] * len(self.locs) + ['actual'] * len(bo.locs)
+            loc_label = ['reconstructed'] * len(self.locs) + ['observed'] * len(bo.locs)
 
             # grab the locs
             perm_locs = self.locs.append(bo.locs)
@@ -279,7 +279,7 @@ class Model(object):
             perm_inds = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds)) + sorted(set(joint_model_inds))
             model_corrmat_x = model_corrmat_x[:, perm_inds][perm_inds, :]
 
-            act_label = ['predicted'] * (len(self.locs)-len(bo.locs)) + ['actual'] * len(bo.locs)
+            loc_label = ['reconstructed'] * (len(self.locs)-len(bo.locs)) + ['observed'] * len(bo.locs)
             # grab permuted locations
             perm_locs = self.locs.iloc[perm_inds]
 
@@ -320,7 +320,7 @@ class Model(object):
             # add back the permuted correlation matrix for complete subject prediction
             model_corrmat_x[:model_permuted.shape[0], :model_permuted.shape[0]] = model_permuted
 
-            act_label = ['predicted'] * len(self.locs.iloc[perm_inds_unknown]) + ['actual'] * len(bo.locs)
+            loc_label = ['reconstructed'] * len(self.locs.iloc[perm_inds_unknown]) + ['observed'] * len(bo.locs)
 
             ## unclear if this will return too many locations
             perm_locs = self.locs.iloc[perm_inds_unknown].append(bo.locs)
@@ -339,7 +339,7 @@ class Model(object):
 
         # return all data
         return Brain(data=activations, locs=perm_locs, sessions=bo.sessions,
-                    sample_rate=bo.sample_rate)
+                    sample_rate=bo.sample_rate, label=loc_label)
 
 
     def update(self, data, measure='kurtosis', threshold=10):

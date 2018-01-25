@@ -570,13 +570,6 @@ def near_neighbor(bo, mo, match_threshold = 'auto'):
 
         if match_threshold is 'auto':
             v_size = vox_size(mo.locs)
-            # n_dims = mo.locs.shape[1]
-            # v_size = np.zeros([1, n_dims])
-            # # make voxel function
-            # for i in np.arange(n_dims):
-            #     a = np.unique(mo.locs.iloc[:, i])
-            #     dists = pdist(np.atleast_2d(a).T, 'euclidean')
-            #     v_size[0][i] = np.min(dists[dists > 0])
             thresh_bool = abs(nbo.locs - bo.locs) > v_size
             thresh_bool = thresh_bool.any(1).ravel()
         else:

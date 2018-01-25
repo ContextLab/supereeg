@@ -3,11 +3,13 @@
 import time
 import os
 import warnings
+import numpy as np
+import pandas as pd
 import nibabel as nib
 import deepdish as dd
 import matplotlib.pyplot as plt
 from nilearn import plotting as ni_plt
-from ._helpers.stats import *
+from ._helpers.stats import kurt_vals, zscore, normalize_Y, vox_size
 
 class Brain(object):
     """
@@ -38,6 +40,12 @@ class Brain(object):
 
     meta : dict
         Optional dict containing whatever you want
+
+    date created : str
+        Time created
+
+    label : list
+        List delineating if location was reconstructed or observed. Computed in reconstruction, do not change.
 
     Attributes
     ----------
@@ -84,7 +92,7 @@ class Brain(object):
     """
 
     def __init__(self, data=None, locs=None, sessions=None, sample_rate=None,
-                 meta=None, date_created=None):
+                 meta=None, date_created=None, label=None):
 
         # convert data to df if not imported as df
         if isinstance(data, pd.DataFrame):
@@ -155,6 +163,8 @@ class Brain(object):
 
         # add kurtosis
         self.kurtosis = kurt_vals(self)
+
+        self.label = len(self.locs) * ['observed']
 
     def info(self):
         """
@@ -341,12 +351,25 @@ class Brain(object):
             A nibabel nifti image
 
         """
-        if template is None:
-            template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_20mm_brain.nii'
 
         # recontructed voxel size:
         recon_v_size = vox_size(self.locs)
 
+        if template is None:
+
+            if int(recon_v_size[0][0]) not in [20, 8, 6]:
+                warnings.warn('Voxel sizes of reconstruction and template do not match. '
+                              'Default to using a template with 20mm voxels.')
+                template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_20mm_brain.nii'
+
+            elif int(recon_v_size[0][0]) in [20, 8, 6]:
+                template = os.path.dirname(os.path.abspath(__file__)) + \
+                           '/data/gray_mask_'+ str(int(recon_v_size[0][0]))+'mm_brain.nii'
+
+        elif int(recon_v_size[0][0]) in [20, 8, 6]:
+                warnings.warn(
+                    'Voxel sizes of reconstruction and template do not match. '
+                    'Try '+'/data/gray_mask_'+ str(int(recon_v_size[0][0]))+'mm_brain.nii'+ ' to match voxel sizes.')
 
         # load template
         img = nib.load(template)
@@ -355,9 +378,9 @@ class Brain(object):
         # template voxel size:
         temp_v_size = hdr.get_zooms()[0:3]
 
-        if temp_v_size != recon_v_size:
+        if not np.array_equal(temp_v_size, recon_v_size.ravel()):
             warnings.warn('Voxel sizes of reconstruction and template do not match. '
-                          'Voxel sizes calculated from reconstructed data.')
+                          'Voxel sizes calculated from model locations.')
 
         R = self.get_locs()
         Y = self.data.as_matrix()
@@ -374,7 +397,7 @@ class Brain(object):
             for j in range(R.shape[0]):
                 data[locs[j, 0], locs[j, 1], locs[j, 2], i] += Y[i, j]
                 counts[locs[j, 0], locs[j, 1], locs[j, 2], i] += 1
-        # possibly add warning with count > 1
+
         data = np.divide(data, counts)
         data[np.isnan(data)] = 0
         nifti =  nib.Nifti1Image(data, affine=img.affine)

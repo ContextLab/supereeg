@@ -107,11 +107,13 @@ The preferred way to contribute to quail is to fork the main repository on GitHu
 
 + Changes (both new features and bugfixes) should be tested using `pytest`.  Add tests for your new feature to the `tests/` repo folder.
 
++ Please note that the code is currently in beta thus the API may change at any time. BE WARNED.
+
 <h2>Testing</h2>
 
 <!-- [![Build Status](https://travis-ci.com/ContextLab/quail.svg?token=hxjzzuVkr2GZrDkPGN5n&branch=master) -->
 
-To test supereeg, install pytest (`pip install pytest`) and run `pytest` in the quail folder
+To test supereeg, install pytest (`pip install pytest`) and run `pytest` in the superEEG folder
 
 <!-- <h2>Examples</h2> -->
 

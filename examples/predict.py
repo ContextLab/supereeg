@@ -29,7 +29,7 @@ model = se.load('example_model')
 # fill in the missing timeseries data with nearest neighbor locations
 reconstructed_bo_nn = model.predict(bo)
 
-
+reconstructed_nifti = reconstructed_bo_nn.to_nii('/Users/lucyowen/Desktop/try_nii_high_res')
 # fill in the missing timeseries data with original set of locations
 reconstructed_bo = model.predict(bo, nearest_neighbor = False)
 
