@@ -344,10 +344,20 @@ class Brain(object):
         if template is None:
             template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_20mm_brain.nii'
 
+        # recontructed voxel size:
+        recon_v_size = vox_size(self.locs)
+
+
         # load template
         img = nib.load(template)
         hdr = img.get_header()
-        vox_size = hdr.get_zooms()[0:3]
+
+        # template voxel size:
+        temp_v_size = hdr.get_zooms()[0:3]
+
+        if temp_v_size != recon_v_size:
+            warnings.warn('Voxel sizes of reconstruction and template do not match. '
+                          'Voxel sizes calculated from reconstructed data.')
 
         R = self.get_locs()
         Y = self.data.as_matrix()

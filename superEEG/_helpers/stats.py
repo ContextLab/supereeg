@@ -593,7 +593,8 @@ def near_neighbor(bo, mo, match_threshold = 'auto'):
 
 
 def vox_size(locs):
-    # needs to be pandas dataframe
+    # needs to be pandas dataframe - document
+
 
     n_dims = locs.shape[1]
     v_size = np.zeros([1, n_dims])
