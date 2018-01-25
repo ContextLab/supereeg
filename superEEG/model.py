@@ -1,10 +1,14 @@
 from __future__ import division
 import time
 import os
+import copy
+import pandas as pd
+import numpy as np
 import seaborn as sns
 import deepdish as dd
 from scipy.stats import zscore
-from ._helpers.stats import *
+from ._helpers.stats import filter_elecs, get_corrmat, r2z, z2r, rbf, expand_corrmat_fit, expand_corrmat_predict,\
+    near_neighbor,reconstruct_activity
 from .brain import Brain
 
 
