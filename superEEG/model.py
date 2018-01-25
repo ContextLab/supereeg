@@ -3,6 +3,7 @@ import time
 import os
 import seaborn as sns
 import deepdish as dd
+from scipy.stats import zscore
 from ._helpers.stats import *
 from .brain import Brain
 
@@ -261,6 +262,9 @@ class Model(object):
             with np.errstate(invalid='ignore'):
                 model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
 
+            # make a new field that labels each locations as either predicted or known
+            act_label = ['predicted'] * len(self.locs) + ['actual'] * len(bo.locs)
+
             # grab the locs
             perm_locs = self.locs.append(bo.locs)
 
@@ -271,6 +275,7 @@ class Model(object):
             perm_inds = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds)) + sorted(set(joint_model_inds))
             model_corrmat_x = model_corrmat_x[:, perm_inds][perm_inds, :]
 
+            act_label = ['predicted'] * (len(self.locs)-len(bo.locs)) + ['actual'] * len(bo.locs)
             # grab permuted locations
             perm_locs = self.locs.iloc[perm_inds]
 
@@ -311,6 +316,8 @@ class Model(object):
             # add back the permuted correlation matrix for complete subject prediction
             model_corrmat_x[:model_permuted.shape[0], :model_permuted.shape[0]] = model_permuted
 
+            act_label = ['predicted'] * len(self.locs.iloc[perm_inds_unknown]) + ['actual'] * len(bo.locs)
+
             ## unclear if this will return too many locations
             perm_locs = self.locs.iloc[perm_inds_unknown].append(bo.locs)
 
@@ -324,7 +331,7 @@ class Model(object):
         reconstructed = reconstruct_activity(bo, model_corrmat_x)
 
         # join reconstructed and known activity
-        activations = np.hstack((reconstructed, bo.data.as_matrix()))
+        activations = np.hstack((reconstructed, zscore(bo.data.as_matrix())))
 
         # return all data
         return Brain(data=activations, locs=perm_locs, sessions=bo.sessions,

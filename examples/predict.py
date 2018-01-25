@@ -23,19 +23,17 @@ bo = se.load('example_data')
 model = se.load('example_model')
 
 
+# # plot locations
+# bo.plot_locs()
+
 # fill in the missing timeseries data with original set of locations
 reconstructed_bo = model.predict(bo, nearest_neighbor = False)
 
+# fill in the missing timeseries data with nearest neighbor locations
+reconstructed_bo_nn = model.predict(bo)
 
-# plot locations
-bo.plot_locs()
 
-# fill in the missing timeseries data
-reconstructed_bo_nn = model.predict(bo, nearest_neighbor = True)
-
-## this doesn't return the new altered bo locs
-# # plot new reconstructed locations using the nearest neighbor model location
-# bo.plot_locs('/Users/lucyowen/Desktop/bo_nn.pdf')
+reconstructed_bo_nn_40 = model.predict(bo, nearest_neighbor = True, match_threshold=40)
 
 
 # print out info on new brain object

@@ -103,7 +103,7 @@ for p, m, n in param_grid:
             bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
 
             try:
-                recon = model.predict(bo_sample)
+                recon = model.predict(bo_sample, nearest_neighbor=False)
                 # sample actual data at reconstructed locations
                 actual = bo.data.iloc[:, recon.locs.index]
 
@@ -147,7 +147,7 @@ for p, m, n in param_grid:
             bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
 
             try:
-                recon = model.predict(bo_sample)
+                recon = model.predict(bo_sample, nearest_neighbor=False)
                 # sample actual data at reconstructed locations
                 actual = bo.data.iloc[:, recon.locs.index]
 
@@ -197,7 +197,7 @@ for p, m, n in param_grid:
             bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
 
             try:
-                recon = model.predict(bo_sample)
+                recon = model.predict(bo_sample, nearest_neighbor=False)
                 # sample actual data at reconstructed locations
                 actual = bo.data.iloc[:, recon.locs.index]
 
