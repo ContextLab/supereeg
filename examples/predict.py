@@ -26,12 +26,12 @@ model = se.load('example_model')
 # # plot locations
 # bo.plot_locs()
 
-# fill in the missing timeseries data with original set of locations
-reconstructed_bo = model.predict(bo, nearest_neighbor = False)
-
 # fill in the missing timeseries data with nearest neighbor locations
 reconstructed_bo_nn = model.predict(bo)
 
+
+# fill in the missing timeseries data with original set of locations
+reconstructed_bo = model.predict(bo, nearest_neighbor = False)
 
 reconstructed_bo_nn_40 = model.predict(bo, nearest_neighbor = True, match_threshold=40)
 

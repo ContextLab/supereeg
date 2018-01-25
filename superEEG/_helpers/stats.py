@@ -569,12 +569,14 @@ def near_neighbor(bo, mo, match_threshold = 'auto'):
     if not match_threshold is 0 or None:
 
         if match_threshold is 'auto':
-            n_dims = mo.locs.shape[1]
-            v_size = np.zeros([1, n_dims])
-            for i in np.arange(n_dims):
-                a = np.unique(mo.locs.iloc[:, i])
-                dists = pdist(np.atleast_2d(a).T, 'euclidean')
-                v_size[0][i] = np.min(dists[dists > 0])
+            v_size = vox_size(mo.locs)
+            # n_dims = mo.locs.shape[1]
+            # v_size = np.zeros([1, n_dims])
+            # # make voxel function
+            # for i in np.arange(n_dims):
+            #     a = np.unique(mo.locs.iloc[:, i])
+            #     dists = pdist(np.atleast_2d(a).T, 'euclidean')
+            #     v_size[0][i] = np.min(dists[dists > 0])
             thresh_bool = abs(nbo.locs - bo.locs) > v_size
             thresh_bool = thresh_bool.any(1).ravel()
         else:
@@ -589,15 +591,16 @@ def near_neighbor(bo, mo, match_threshold = 'auto'):
     else:
         return nbo
 
-    # # if none, don't apply any threshold
-    # elif match_threshold is None:
-    # pass
-    #
-    # # if 0, set nearest_neighbor = False and proceed (only exact matches will be used)
-    # elif match_threshold == 0:
-    # pass
-    # # if greater than zero, include only electrodes that are within a distance of match_threshold
-    # # of the matched voxel
-    # elif match_threshold > 0:
-    # pass
-    # is less than zero, throw an error
+
+def vox_size(locs):
+    # needs to be pandas dataframe
+
+    n_dims = locs.shape[1]
+    v_size = np.zeros([1, n_dims])
+    # make voxel function
+    for i in np.arange(n_dims):
+        a = np.unique(locs.iloc[:, i])
+        dists = pdist(np.atleast_2d(a).T, 'euclidean')
+        v_size[0][i] = np.min(dists[dists > 0])
+
+    return v_size

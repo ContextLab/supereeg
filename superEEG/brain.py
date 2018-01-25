@@ -364,7 +364,7 @@ class Brain(object):
             for j in range(R.shape[0]):
                 data[locs[j, 0], locs[j, 1], locs[j, 2], i] += Y[i, j]
                 counts[locs[j, 0], locs[j, 1], locs[j, 2], i] += 1
-
+        # possibly add warning with count > 1
         data = np.divide(data, counts)
         data[np.isnan(data)] = 0
         nifti =  nib.Nifti1Image(data, affine=img.affine)
