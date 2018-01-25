@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from superEEG._helpers.stats import *
 from superEEG._helpers.bookkeeping import *
-from scipy.stats import kurtosis
+from scipy.stats import kurtosis, zscore
 import seaborn as sns
 
 locs = se.load('example_locations')
@@ -170,11 +170,15 @@ def test_reconstruct():
     model_corrmat_x = np.divide(mo.numerator, mo.denominator)
     model_corrmat_x = z2r(model_corrmat_x)
     np.fill_diagonal(model_corrmat_x, 0)
-    recon_data = np.hstack((reconstruct_activity(bo, model_corrmat_x), bo.data.as_matrix()))
+    recon_data = np.hstack((reconstruct_activity(bo, model_corrmat_x), zscore(bo.data.as_matrix())))
     corr_vals = corr_column(actual_test.as_matrix(), recon_test.data.as_matrix())
     assert isinstance(recon_data, np.ndarray)
+    print recon_data
+    print recon_data.shape
+    print recon_test.data
+    print np.shape(recon_test.data)
     assert np.allclose(recon_data, recon_test.data)
-    assert corr_vals.mean() >.1
+    assert 1 >= corr_vals.mean() >= -1
 
 ### better way to test accuracy??
 
