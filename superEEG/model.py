@@ -185,7 +185,7 @@ class Model(object):
         self.meta = meta
 
 
-    def predict(self, bo, nearest_neighbor=True, match_threshold='auto', kthreshold=10):
+    def predict(self, bo, nearest_neighbor=True, match_threshold='auto', force_update=False, kthreshold=10):
         """
         Takes a brain object and a 'full' covariance model, fills in all
         electrode timeseries for all missing locations and returns the new brain object
@@ -225,24 +225,31 @@ class Model(object):
         # filter bad electrodes
         bo = filter_elecs(bo, measure='kurtosis', threshold=kthreshold)
 
-        # get subject-specific correlation matrix
-        sub_corrmat = get_corrmat(bo)
+        # if force_update is True it will update the model with subject's correlation matrix
+        if force_update:
 
-        # fill diag with zeros
-        np.fill_diagonal(sub_corrmat, 0) # <- possible failpoint
+            # get subject-specific correlation matrix
+            sub_corrmat = get_corrmat(bo)
 
-        # z-score the corrmat
-        sub_corrmat_z = r2z(sub_corrmat)
+            # fill diag with zeros
+            np.fill_diagonal(sub_corrmat, 0) # <- possible failpoint
 
-        # get rbf weights
-        sub_rbf_weights = rbf(self.locs, bo.locs)
+            # z-score the corrmat
+            sub_corrmat_z = r2z(sub_corrmat)
 
-        #  get subject expanded correlation matrix
-        num_corrmat_x, denom_corrmat_x = expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
+            # get rbf weights
+            sub_rbf_weights = rbf(self.locs, bo.locs)
 
-        # add in new subj data
-        with np.errstate(invalid='ignore'):
-            model_corrmat_x = np.divide(np.add(self.numerator, num_corrmat_x), np.add(self.denominator, denom_corrmat_x))
+            #  get subject expanded correlation matrix
+            num_corrmat_x, denom_corrmat_x = expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
+
+            # add in new subj data
+            with np.errstate(invalid='ignore'):
+                model_corrmat_x = np.divide(np.add(self.numerator, num_corrmat_x), np.add(self.denominator, denom_corrmat_x))
+
+        else:
+
+            model_corrmat_x = np.divide(self.numerator,self.denominator)
 
         # get model indices where subject locs overlap with model locs
         bool_mask = np.sum([(self.locs == y).all(1) for idy, y in bo.locs.iterrows()], 0).astype(bool)

@@ -163,7 +163,7 @@ def test_expand_corrmats_same():
 
 def test_reconstruct():
 
-    recon_test = test_model.predict(bo, nearest_neighbor=False)
+    recon_test = test_model.predict(bo, nearest_neighbor=False, force_update=True)
     actual_test = bo_full.data.iloc[:, recon_test.locs.index]
 
     mo = test_model.update(bo)
