@@ -14,11 +14,6 @@ import numpy as np
 from nilearn.input_data import NiftiMasker
 
 
-# from sklearn.neighbors import NearestNeighbors
-# from sklearn.decomposition import PCA
-# import seaborn as sns
-# import tensorflow as tf
-
 
 def apply_by_file_index(bo, xform, aggregator):
     """
@@ -57,17 +52,12 @@ def kurt_vals(bo):
 
     Parameters
     ----------
-    fname :  Data matrix (npz file)
-        The data to be analyzed.
-        Filename containing fields:
-            Y - time series
-            R - electrode locations
-            fname_labels - session number
-            sample_rate - sampling rate
+    bo : Brain object
+        Contains data
 
     Returns
     ----------
-    results: 1D ndarray(len(R_subj))
+    results: 1D ndarray
         Maximum kurtosis across sessions for each channel
 
 
@@ -81,21 +71,17 @@ def kurt_vals(bo):
 
 def get_corrmat(bo):
     """
-    Function that calculates the average subject level correlation matrix for filename across session
+    Function that calculates the average subject level correlation matrix for brain object across session
 
     Parameters
     ----------
-    fname :  Data matrix (npz file)
-        The data to be analyzed.
-        Filename containing fields:
-            Y - time series
-            R - electrode locations
-            fname_labels - session number
-            sample_rate - sampling rate
+    bo : Brain object
+        Contains data
+
 
     Returns
     ----------
-    results: 2D ndarray(len(R_subj)xlen(R_subj)) matrix
+    results: 2D np.ndarray
         The average correlation matrix across sessions
 
 
@@ -169,8 +155,8 @@ def rbf(x, center, width=20):
 
     Returns
     ----------
-    results : ndarray(len(R_subj)xlen(R_subj))
-        Matrix of RBF weights for each location in R_full
+    results : ndarray
+        Matrix of RBF weights for each subject coordinate for all coordinates
 
 
     """
@@ -329,14 +315,113 @@ def compute_coord(coord, weights, Z):
     return np.sum(next_weights), np.sum(Z * next_weights)
 
 
-def reconstruct_activity(bo, K):
+def chunk_bo(bo, chunk):
+    """
+    Chunk brain object by session for reconstruction. Returns chunked indices
+    """
+
+    # index only places where not none
+    l = [i for i in chunk if i is not None]
+
+    # make a copy of the brain object which z_scores the entirety of the data
+    nbo = copy.copy(bo)
+    nbo.data = pd.DataFrame(bo.get_zscore_data()[l, :])
+    return nbo
+
+
+def timeseries_recon(bo, K, chunk_size):
+    """
+    Reconstruction done by chunking by session
+
+        Parameters
+    ----------
+    bo : brain object
+        Copied brain object with zscored data
+
+    K : correlation matrix
+        Correlation matix including observed and predicted locations
+
+    chunksize : int
+        Size to break data into
+
+    Returns
+    ----------
+    results : ndarray
+        Compiled reconstructed timeseries
+
+
+    """
+    results = []
+    for idx, session in enumerate(bo.sessions.unique()):
+            block_results = []
+            if idx is 0:
+                for each in chunker(bo.sessions[bo.sessions == session].index.tolist(), chunk_size):
+                    z_bo = chunk_bo(bo, each)
+                    block = reconstruct_activity(z_bo, K, zscored=True)
+                    if block_results==[]:
+                        block_results = block
+                    else:
+                        block_results = np.vstack((block_results, block))
+                results = block_results
+            else:
+                for each in chunker(bo.sessions[bo.sessions == session].index.tolist(), chunk_size):
+                    z_bo = chunk_bo(bo, each)
+                    block = reconstruct_activity(z_bo, K, zscored=True)
+                    if block_results==[]:
+                        block_results = block
+                    else:
+                        block_results = np.vstack((block_results, block))
+                results = np.vstack((results, block_results))
+    return results
+
+
+def chunker(iterable, chunksize):
+    """
+        Chunks longer sequence by regular interval
+
+        Parameters
+        ----------
+        iterable : list or ndarray
+            Use would be a long timeseries that needs to be broken down
+
+        chunksize : int
+            Size to break down
+
+        Returns
+        ----------
+        results : ndarray
+            Chunked timeseries
+
+        """
+    return map(None, *[iter(iterable)] * chunksize)
+
+def reconstruct_activity(bo, K, zscored=False):
     """
     Reconstruct activity - need to add chunking option here
-    """
+
+        Parameters
+        ----------
+        bo : brain object
+            brain object with zscored data
+
+        K : correlation matrix
+            Correlation matix including observed and predicted locations
+
+        zscore = False
+
+        Returns
+        ----------
+        results : ndarray
+            Reconstructed timeseries
+
+        """
     s = K.shape[0] - bo.locs.shape[0]
     Kba = K[:s, s:]
     Kaa = K[s:, s:]
-    Y = zscore(bo.get_data())
+    if zscored:
+        Y = bo.get_data()
+    else:
+        Y = bo.get_zscore_data()
     return np.squeeze(np.dot(np.dot(Kba, np.linalg.pinv(Kaa)), Y.T).T)
 
 

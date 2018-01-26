@@ -45,7 +45,7 @@ class Brain(object):
         Time created
 
     label : list
-        List delineating if location was reconstructed or observed. Computed in reconstruction, do not change.
+        List delineating if location was reconstructed or observed. This is computed in reconstruction.
 
     Attributes
     ----------
@@ -71,7 +71,7 @@ class Brain(object):
         Number of electrodes
 
     n_secs : float
-        Amount of data in seconds
+        Amount of data in seconds for each session
 
     n_sessions : int
         Number of sessions

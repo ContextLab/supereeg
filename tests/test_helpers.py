@@ -235,3 +235,6 @@ def test_model_compile(tmpdir):
     assert isinstance(mo, se.Model)
     assert np.allclose(mo.numerator, test_model.numerator)
     assert np.allclose(mo.denominator, test_model.denominator)
+
+
+# def test_timeseries_recon():

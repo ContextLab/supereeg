@@ -8,7 +8,7 @@ import seaborn as sns
 import deepdish as dd
 from scipy.stats import zscore
 from ._helpers.stats import filter_elecs, get_corrmat, r2z, z2r, rbf, expand_corrmat_fit, expand_corrmat_predict,\
-    near_neighbor,reconstruct_activity
+    near_neighbor, timeseries_recon
 from .brain import Brain
 
 
@@ -339,7 +339,8 @@ class Model(object):
         np.fill_diagonal(model_corrmat_x, 0)
 
         # timeseries reconstruction
-        reconstructed = reconstruct_activity(bo, model_corrmat_x)
+        reconstructed = timeseries_recon(bo, model_corrmat_x, 1000)
+        # timeseries reconstruction
 
         # join reconstructed and known activity
         activations = np.hstack((reconstructed, zscore(bo.data.as_matrix())))
