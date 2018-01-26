@@ -29,7 +29,7 @@ def simulate_locations(n_elecs=10):
     return pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
 def simulate_model_bos(n_samples=1000, locs=None, sample_locs = None, cov='random',
-                sample_rate=1000, sessions=None, meta=None):
+                sample_rate=1000, sessions=None, meta=None, noise=.1, random_seed=False):
     """
     Simulate brain object
 
@@ -61,13 +61,13 @@ def simulate_model_bos(n_samples=1000, locs=None, sample_locs = None, cov='rando
         Instance of Brain data object containing simulated subject data and locations
     """
 
-    data, sub_locs= simulate_model_data(n_samples=n_samples, locs=locs, sample_locs=sample_locs, cov=cov)
+    data, sub_locs= simulate_model_data(n_samples=n_samples, locs=locs, sample_locs=sample_locs, cov=cov, noise=noise, random_seed=random_seed)
 
     return Brain(data=data, locs=sub_locs, sample_rate=sample_rate,
                  sessions=sessions, meta=meta)
 
 
-def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None, cov='random'):
+def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None, cov='random', noise=.1, random_seed=False):
     """
     Simulate iEEG data
 
@@ -99,6 +99,13 @@ def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None
         A location by coordinate (x,y,z) matrix of simulated electrode locations
 
     """
+    if random_seed:
+        if isinstance(random_seed, int):
+            np.random.seed(random_seed)
+        else:
+            np.random.seed(123)
+
+
     if type(locs) is np.ndarray:
         locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
     if locs is not None and cov is 'distance':
@@ -108,8 +115,8 @@ def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None
         cov = 2*R - 1
     if sample_locs is not None:
         R = create_cov(cov, n_elecs=len(locs))
-        noise = np.random.normal(0, .1, len(locs))
-        R = R+noise*noise.T
+        n = np.random.normal(0, noise, len(locs))
+        R = R+n*n.T
         sub_locs = locs.sample(sample_locs).sort_values(['x', 'y', 'z'])
         full_data = np.random.multivariate_normal(np.zeros(n_elecs), R, size=n_samples)
         data = full_data[:, sub_locs.index]
@@ -120,7 +127,7 @@ def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None
         return np.random.multivariate_normal(np.zeros(n_elecs), R, size=n_samples), locs
 
 def simulate_bo(n_samples=1000, n_elecs=10, locs=None, cov='random',
-                sample_rate=1000, sessions=None, meta=None):
+                sample_rate=1000, sessions=None, meta=None, noise=.1, random_seed=False):
     """
     Simulate brain object
 
@@ -150,7 +157,7 @@ def simulate_bo(n_samples=1000, n_elecs=10, locs=None, cov='random',
     else:
         n_elecs=locs.shape[0]
 
-    data, locs = simulate_model_data(n_samples=n_samples, n_elecs=n_elecs, locs=locs, cov=cov)
+    data, locs = simulate_model_data(n_samples=n_samples, n_elecs=n_elecs, locs=locs, cov=cov, noise=noise, random_seed=random_seed)
 
     return Brain(data=data, locs=locs, sample_rate=sample_rate,
                  sessions=sessions, meta=meta)

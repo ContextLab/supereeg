@@ -339,8 +339,7 @@ class Model(object):
         np.fill_diagonal(model_corrmat_x, 0)
 
         # timeseries reconstruction
-        reconstructed = timeseries_recon(bo, model_corrmat_x, 1000)
-        # timeseries reconstruction
+        reconstructed = timeseries_recon(bo, model_corrmat_x)
 
         # join reconstructed and known activity
         activations = np.hstack((reconstructed, zscore(bo.data.as_matrix())))

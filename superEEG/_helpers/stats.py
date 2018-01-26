@@ -329,7 +329,7 @@ def chunk_bo(bo, chunk):
     return nbo
 
 
-def timeseries_recon(bo, K, chunk_size):
+def timeseries_recon(bo, K, chunk_size=1000):
     """
     Reconstruction done by chunking by session
 
@@ -341,7 +341,7 @@ def timeseries_recon(bo, K, chunk_size):
     K : correlation matrix
         Correlation matix including observed and predicted locations
 
-    chunksize : int
+    chunk_size : int
         Size to break data into
 
     Returns
