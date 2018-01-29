@@ -23,8 +23,8 @@ def simulate_locations(n_elecs=10):
         A location by coordinate (x,y,z) matrix of simulated electrode locations
     """
 
-    locs = np.array([[np.random.randint(-80, 80), np.random.randint(-80, 80),
-               np.random.randint(-80, 80)] for i in range(n_elecs)])
+    locs = np.array([[np.random.randint(-50, 50), np.random.randint(-50, 50),
+               np.random.randint(-50, 50)] for i in range(n_elecs)])
 
     return pd.DataFrame(locs, columns=['x', 'y', 'z'])
 

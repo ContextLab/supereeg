@@ -152,9 +152,6 @@ class Model(object):
                 sub_rbf_weights = rbf(self.locs, bo.locs)
 
                 #  get subject expanded correlation matrix
-                #num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(sub_corrmat_z, sub_rbf_weights)
-
-                #  get subject expanded correlation matrix
                 num_corrmat_x, denom_corrmat_x = expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
 
                 # add in new subj data to numerator
@@ -273,7 +270,7 @@ class Model(object):
             with np.errstate(invalid='ignore'):
                 model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
 
-            # make a new field that labels each locations as either predicted or known
+            # label locations as reconstructed or observed
             loc_label = ['reconstructed'] * len(self.locs) + ['observed'] * len(bo.locs)
 
             # grab the locs
@@ -286,8 +283,11 @@ class Model(object):
             perm_inds = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds)) + sorted(set(joint_model_inds))
             model_corrmat_x = model_corrmat_x[:, perm_inds][perm_inds, :]
 
+            # label locations as reconstructed or observed
             loc_label = ['reconstructed'] * (len(self.locs)-len(bo.locs)) + ['observed'] * len(bo.locs)
+
             # grab permuted locations
+
             perm_locs = self.locs.iloc[perm_inds]
 
         # else if some of the subject and model locations overlap
@@ -327,6 +327,7 @@ class Model(object):
             # add back the permuted correlation matrix for complete subject prediction
             model_corrmat_x[:model_permuted.shape[0], :model_permuted.shape[0]] = model_permuted
 
+            # label locations as reconstructed or observed
             loc_label = ['reconstructed'] * len(self.locs.iloc[perm_inds_unknown]) + ['observed'] * len(bo.locs)
 
             ## unclear if this will return too many locations
