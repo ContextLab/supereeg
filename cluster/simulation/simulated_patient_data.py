@@ -16,13 +16,11 @@ model locations.
 import superEEG as se
 import os
 import sys
-import ast
 import pandas as pd
 import numpy as np
-import pickle
 import seaborn as sns
-from superEEG._helpers.stats import r2z, z2r, corr_column
 import matplotlib.pyplot as plt
+from superEEG._helpers.stats import corr_column
 #plt.switch_backend('agg')
 
 from config import config
@@ -273,18 +271,3 @@ else:
 plt.savefig(os.path.join(config['resultsdir'], str(sys.argv[1]) + '_heatmap.pdf'))
 
 
-
-## put in locations of electrodes as well
-
-# sns.jointplot(bo.data.iloc[:, unknown_ind].values.flatten(), predicted)
-
-
-### if want to retrieve model_bos added to the model:
-# model_bos = [se.simulate_bo(n_samples=10000, sample_rate=1000, locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])) for x in range(p)]
-
-# model_locs = pd.DataFrame()
-# for i in range(len(model_bos)):
-#     #locats = model_bos[i].locs
-#     model_locs = model_locs.append(model_bos[i].locs, ignore_index = True)
-### and at the end:
-# d.append({'Numbder of Patients in Model': p, 'Number of Model Locations': m, 'Number of Patient Locations': n, 'Average Correlation': corr_vals_sample.mean(), 'Correlations': corr_vals, 'Model Locations': model_locs.values, 'Patient Locations': bo_sample.locs.values})

@@ -1,9 +1,9 @@
 import scipy
 import numpy as np
-from .brain import Brain
-from .model import Model
 from sklearn import datasets
 import pandas as pd
+from .brain import Brain
+from .model import Model
 
 
 def simulate_locations(n_elecs=10):

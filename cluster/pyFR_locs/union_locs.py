@@ -1,13 +1,13 @@
 import superEEG as se
 import numpy as np
-from superEEG._helpers.stats import sort_unique_locs
 import glob
 import os
-from config import config
 import pandas as pd
-from nilearn import plotting as ni_plt
 import matplotlib.pyplot as plt
 plt.switch_backend('agg')
+from superEEG._helpers.stats import sort_unique_locs
+from config import config
+from nilearn import plotting as ni_plt
 
 ## this script iterates over brain objects, filters them based on kurtosis value,
 ## then compiles the clean electrodes into a numpy array as well as a list of the contributing brain objects

@@ -1,14 +1,11 @@
 import os
-import sys
 import pickle
-import scipy
 import numpy as np
-import nibabel as nb
 import deepdish as dd
 import pandas as pd
+import nibabel as nib
 import warnings
 warnings.simplefilter(action='ignore', category=UserWarning)
-import nibabel as nib
 from nilearn.input_data import NiftiMasker
 from scipy.spatial.distance import squareform
 from .brain import Brain
