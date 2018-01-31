@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import pytest
+import os
 import superEEG as se
 import numpy as np
 import pandas as pd
 import nibabel as nib
-import os
+import matplotlib.pyplot as plt
 
 data = np.random.multivariate_normal(np.zeros(10), np.eye(10), size=100)
 locs = np.random.multivariate_normal(np.zeros(3), np.eye(3), size=10)
@@ -56,3 +57,19 @@ def test_bo_save(tmpdir):
 
 def test_nii_nifti():
     assert isinstance(bo.to_nii(), nib.nifti1.Nifti1Image)
+
+
+## can't get tests for plots to work
+
+# def test_bo_plot_locs(tmpdir):
+#     p = tmpdir.mkdir("sub").join("example")
+#     fig = bo.plot_locs(pdfpath=str(p))
+#     assert os.path.exists(os.path.join(str(p), '.pdf'))
+#     assert isinstance(fig, plt.Figure)
+#
+#
+# def test_bo_plot_data(tmpdir):
+#     p = tmpdir.mkdir("sub").join("example")
+#     fig = bo.plot_data(filepath=str(p))
+#     assert os.path.exists(os.path.join(str(p), '.png'))
+#     assert isinstance(fig, plt.Figure)

@@ -1,6 +1,6 @@
 import superEEG as se
 import numpy as np
-from superEEG._helpers.bookkeeping import sort_unique_locs
+from superEEG._helpers.stats import sort_unique_locs
 import glob
 import os
 from config import config

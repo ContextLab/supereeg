@@ -1,18 +1,19 @@
 from __future__ import division
+
 import multiprocessing
 import copy
 import numpy.matlib as mat
+import pandas as pd
+import nibabel as nb
+import numpy as np
+
+from nilearn.input_data import NiftiMasker
 from scipy.stats import kurtosis, zscore, pearsonr
 from scipy.spatial.distance import pdist
 from scipy.spatial.distance import cdist
 from scipy.spatial.distance import squareform
-import pandas as pd
 from scipy import linalg
 from joblib import Parallel, delayed
-import nibabel as nb
-import numpy as np
-from nilearn.input_data import NiftiMasker
-
 
 
 def apply_by_file_index(bo, xform, aggregator):
@@ -683,3 +684,13 @@ def vox_size(locs):
         v_size[0][i] = np.min(dists[dists > 0])
 
     return v_size
+
+def sort_unique_locs(locs):
+    if isinstance(locs, pd.DataFrame):
+        unique_full_locs = np.vstack(set(map(tuple, locs.as_matrix())))
+    elif isinstance(locs, np.ndarray):
+        unique_full_locs = np.vstack(set(map(tuple, locs)))
+    else:
+        print('unknown location type')
+
+    return unique_full_locs[unique_full_locs[:, 0].argsort(),]

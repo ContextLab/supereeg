@@ -228,13 +228,13 @@ import pandas as pd
 # def partition_jobs(matrix_width, n_chunks=500):
 #     idxs = np.array([(x, y) for x in range(matrix_width) for y in range(x)])
 #     return np.array_split(idxs, n_chunks)
+# #
+# def sort_unique_locs(locs):
+#     if isinstance(locs, pd.DataFrame):
+#         unique_full_locs = np.vstack(set(map(tuple, locs.as_matrix())))
+#     elif isinstance(locs, np.ndarray):
+#         unique_full_locs = np.vstack(set(map(tuple, locs)))
+#     else:
+#         print('unknown location type')
 #
-def sort_unique_locs(locs):
-    if isinstance(locs, pd.DataFrame):
-        unique_full_locs = np.vstack(set(map(tuple, locs.as_matrix())))
-    elif isinstance(locs, np.ndarray):
-        unique_full_locs = np.vstack(set(map(tuple, locs)))
-    else:
-        print('unknown location type')
-
-    return unique_full_locs[unique_full_locs[:, 0].argsort(),]
+#     return unique_full_locs[unique_full_locs[:, 0].argsort(),]

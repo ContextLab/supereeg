@@ -104,7 +104,9 @@ def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None
             np.random.seed(random_seed)
         else:
             np.random.seed(123)
-
+            random_seed = 123
+    else:
+        random_seed = None
 
     if type(locs) is np.ndarray:
         locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
@@ -117,7 +119,7 @@ def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None
         R = create_cov(cov, n_elecs=len(locs))
         n = np.random.normal(0, noise, len(locs))
         R = R+n*n.T
-        sub_locs = locs.sample(sample_locs).sort_values(['x', 'y', 'z'])
+        sub_locs = locs.sample(sample_locs, random_state=random_seed).sort_values(['x', 'y', 'z'])
         full_data = np.random.multivariate_normal(np.zeros(n_elecs), R, size=n_samples)
         data = full_data[:, sub_locs.index]
         return data, sub_locs

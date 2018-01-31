@@ -52,6 +52,9 @@ gray = se.load('mini_model')
 # extract locations
 gray_locs = gray.locs
 
+# random state, default False, but can set to True for default random_seed=123 or int value
+random_seed = True
+
 d = []
 append_d = pd.DataFrame()
 if str(sys.argv [1]) == 'location_case_1':
@@ -78,12 +81,21 @@ for p, m, n in param_grid:
 
         ### 1: no intersection of model locations and brain object locations ( intersection of A and B is null
 
+        if random_seed:
+            random_seed = 123
+            noise = 0
+        else:
+            random_seed = False
+            noise = .1
+
+
         if str(sys.argv [1]) == 'location_case_1':
-            mo_locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])
+
+
+            mo_locs = gray_locs.sample(m, random_state=random_seed).sort_values(['x', 'y', 'z'])
 
             c = se.create_cov(cov='random', n_elecs=170)
 
-            #data = c[:, mo_locs.index][mo_locs.index, :]
             data = c[:, mo_locs.index][mo_locs.index, :]
 
             model = se.Model(numerator=p*np.array(data), denominator=np.ones(np.shape(data))*p, locs=mo_locs, n_subs=p)
@@ -91,10 +103,10 @@ for p, m, n in param_grid:
             # create brain object from the remaining locations - first find remaining locations
             possible_sub_locs = gray_locs[~gray_locs.index.isin(mo_locs.index)]
 
-            sub_locs = possible_sub_locs.sample(n).sort_values(['x', 'y', 'z'])
+            sub_locs = possible_sub_locs.sample(n, random_state=random_seed).sort_values(['x', 'y', 'z'])
 
             # create a brain object with all gray locations
-            bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
+            bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs, noise=noise, random_seed=random_seed)
 
             # parse brain object to create synthetic patient data
             data = bo.data.iloc[:, sub_locs.index]
@@ -125,7 +137,7 @@ for p, m, n in param_grid:
 
         if str(sys.argv [1]) == 'location_case_2':
 
-            mo_locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])
+            mo_locs = gray_locs.sample(m, random_state=random_seed).sort_values(['x', 'y', 'z'])
 
             c = se.create_cov(cov='random', n_elecs=170)
 
@@ -135,10 +147,10 @@ for p, m, n in param_grid:
                              locs=mo_locs, n_subs=p)
 
             # create brain object from the remaining locations - first find remaining locations
-            sub_locs = mo_locs.sample(n).sort_values(['x', 'y', 'z'])
+            sub_locs = mo_locs.sample(n, random_state=random_seed).sort_values(['x', 'y', 'z'])
 
             # create a brain object with all gray locations
-            bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
+            bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs, noise=noise, random_seed=random_seed)
 
             # parse brain object to create synthetic patient data
             data = bo.data.iloc[:, sub_locs.index]
@@ -171,7 +183,7 @@ for p, m, n in param_grid:
         if str(sys.argv[1]) == 'location_case_3':
             ### bypassing making the model from brain objects
 
-            mo_locs = gray_locs.sample(m).sort_values(['x', 'y', 'z'])
+            mo_locs = gray_locs.sample(m, random_state=random_seed).sort_values(['x', 'y', 'z'])
 
             c = se.create_cov(cov='random', n_elecs=170)
 
@@ -183,14 +195,9 @@ for p, m, n in param_grid:
             # brain object locations subsetted entirely from both model and gray locations - for this n > m
             # (this isn't necessarily true, but this ensures overlap)
 
-            sub_locs = gray_locs.sample(n).sort_values(['x', 'y', 'z'])
+            sub_locs = gray_locs.sample(n, random_state=random_seed).sort_values(['x', 'y', 'z'])
 
-            # for the case where you want both subset and disjoint locations - get indices for unknown locations
-            # (where we wish to predict)
-
-            #unknown_locs = mo_locs[~mo_locs.index.isin(sub_locs.index)]
-
-            bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs)
+            bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=gray_locs, noise=noise, random_seed=random_seed)
 
             data = bo.data.iloc[:, sub_locs.index]
 
