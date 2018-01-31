@@ -44,24 +44,6 @@ for isub, n_subs in enumerate([10, 25, 50, 100]):
     # loop over simulated electrodes
     for ielec, n_elecs in enumerate([10, 25, 50, 100]):
 
-        # # initialize data list
-        # data = []
-        #
-        # # loop over simulated subjects
-        # for i in range(n_subs):
-        #     # for each subject, randomly choose n_elecs electrode locations
-        #     #p = np.random.choice(range(len(locs)), n_elecs, replace=False)
-        #     p = locs.sample(n_elecs).sort_values(['x', 'y', 'z'])
-        #     # generate some random data
-        #     rand_dist = np.random.multivariate_normal(np.zeros(len(locs)), np.eye(len(locs)), size=n_samples)
-        #
-        #     # impose R correlational structure on the random data, create the brain object and append to data
-        #     data.append(se.Brain(data=np.dot(rand_dist, scipy.linalg.cholesky(R))[:, p.index], locs=p))
-        # # create the model object
-        # model = se.Model(data=data, locs=locs)
-
-        #### should I use this instead?? they give the same results
-
         # simulate brain objects for the model
         model_bos = [se.simulate_model_bos(n_samples=10000, sample_rate=1000, locs=locs, sample_locs=n_elecs, cov='toeplitz') for x in
                      range(n_subs)]
