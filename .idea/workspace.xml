@@ -4,9 +4,6 @@
     <list default="true" id="72de947b-ed70-4f88-b013-460cd0bdb63e" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/tutorial/brain_objects.ipynb" afterPath="$PROJECT_DIR$/docs/tutorial/brain_objects.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/tutorial/model_objects.ipynb" afterPath="$PROJECT_DIR$/docs/tutorial/model_objects.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/data/mini_model.mo" afterPath="$PROJECT_DIR$/superEEG/data/mini_model.mo" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/load.py" afterPath="$PROJECT_DIR$/superEEG/load.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/model.py" afterPath="$PROJECT_DIR$/superEEG/model.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/simulate.py" afterPath="$PROJECT_DIR$/superEEG/simulate.py" />
     </list>
     <ignored path="superEEG.iws" />
@@ -61,10 +58,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="model.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="model.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/superEEG/model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="247">
+            <state relative-caret-position="1862">
               <caret line="239" column="54" selection-start-line="239" selection-start-column="54" selection-end-line="239" selection-end-column="54" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
@@ -127,11 +124,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="simulate.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="simulate.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/superEEG/simulate.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2620">
-              <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
+            <state relative-caret-position="-798">
+              <caret line="15" column="17" selection-start-line="15" selection-start-column="17" selection-end-line="15" selection-end-column="17" />
               <folding />
             </state>
           </provider>
@@ -191,9 +188,9 @@
         <option value="$PROJECT_DIR$/superEEG/brain.py" />
         <option value="$PROJECT_DIR$/tests/test_helpers.py" />
         <option value="$PROJECT_DIR$/superEEG/_helpers/stats.py" />
-        <option value="$PROJECT_DIR$/superEEG/simulate.py" />
         <option value="$PROJECT_DIR$/superEEG/load.py" />
         <option value="$PROJECT_DIR$/superEEG/model.py" />
+        <option value="$PROJECT_DIR$/superEEG/simulate.py" />
       </list>
     </option>
   </component>
@@ -1210,14 +1207,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/superEEG/simulate.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2620">
-          <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/examples/plot_update_model.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-76">
@@ -1240,11 +1229,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/superEEG/model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="247">
+        <state relative-caret-position="1862">
           <caret line="239" column="54" selection-start-line="239" selection-start-column="54" selection-end-line="239" selection-end-column="54" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/superEEG/simulate.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-798">
+          <caret line="15" column="17" selection-start-line="15" selection-start-column="17" selection-end-line="15" selection-end-column="17" />
+          <folding />
         </state>
       </provider>
     </entry>
