@@ -1,32 +1,33 @@
 import pytest
 import superEEG as se
 import glob
-import numpy as np
-import pandas as pd
 from superEEG._helpers.stats import *
-from superEEG._helpers.bookkeeping import *
 from scipy.stats import kurtosis, zscore
-import seaborn as sns
+import os
 
-locs = se.load('example_locations')
+locs = se.load('example_locations')[0::17]
 # number of timeseries samples
-n_samples = 1000
+n_samples = 10
 # number of subjects
-n_subs = 5
+n_subs = 3
 # number of electrodes
-n_elecs = 10
+n_elecs = 5
 # full brain object to parse and compare
-bo_full = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=locs)
+bo_full = se.simulate_bo(n_samples=10, sessions=2, sample_rate=1000, locs=locs)
 # create brain object from subset of locations
-sub_locs = bo_full.locs.iloc[160:]
+sub_locs = bo_full.locs.iloc[6:]
 sub_data = bo_full.data.iloc[:, sub_locs.index]
-bo = se.Brain(data=sub_data.as_matrix(), locs=sub_locs, sample_rate=1000, meta = {'brain object locs sampled': 160})
+
+bo = se.Brain(data=sub_data.as_matrix(), sessions=bo_full.sessions, locs=sub_locs, sample_rate=1000, meta = {'brain object locs sampled': 2})
 
 # simulate correlation matrix
-data = [se.simulate_model_bos(n_samples=10000, sample_rate=1000, locs=locs, sample_locs = n_elecs) for x in range(n_subs)]
+data = [se.simulate_model_bos(n_samples=10, sample_rate=1000, locs=locs, sample_locs = n_elecs) for x in range(n_subs)]
 # test model to compare
 test_model = se.Model(data=data, locs=locs)
 
+mo = np.divide(test_model.numerator, test_model.denominator)
+np.fill_diagonal(mo, 0)
+recon = timeseries_recon(bo, mo, 2)
 
 ##### _helpers/stats ########
 
@@ -216,8 +217,6 @@ def test_normalize_Y():
 
 ### not sure how to write tests for the Nifti conversion functions
 
-##### _helpers/bookkeeping ########
-### only one of these, so I'm not sure if I should just move that to stats
 
 def test_sort_unique_locs():
 
@@ -236,5 +235,15 @@ def test_model_compile(tmpdir):
     assert np.allclose(mo.numerator, test_model.numerator)
     assert np.allclose(mo.denominator, test_model.denominator)
 
+def test_chunk_bo():
+    chunk = tuple([1,2,3])
+    chunked_bo = chunk_bo(bo_full, chunk)
+    assert isinstance(chunked_bo, se.Brain)
+    assert np.shape(chunked_bo.data)[0]==np.shape(chunk)[0]
 
-# def test_timeseries_recon():
+def test_timeseries_recon():
+    mo = np.divide(test_model.numerator, test_model.denominator)
+    np.fill_diagonal(mo, 0)
+    recon = timeseries_recon(bo, mo)
+    assert isinstance(recon, np.ndarray)
+    assert np.shape(recon)[1] == (np.shape(mo)[1]- np.shape(bo.get_data())[1])

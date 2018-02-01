@@ -54,6 +54,21 @@ def simulate_model_bos(n_samples=1000, locs=None, sample_locs = None, cov='rando
         You can also pass a custom covariance matrix by simply passing
         numpy array that is n_elecs by n_elecs
 
+    sample_rate : int
+        Sample rate
+
+    sessions : list
+        Sesssions
+
+    meta : str
+        Meta info
+
+    noise : int or float
+        Noise added to simulation
+
+    random_seed : bool or int
+        Default False.  If True, set random seed to 123.  If int, set random seed to value.
+
     Returns
     ----------
 
@@ -120,7 +135,7 @@ def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None
         n = np.random.normal(0, noise, len(locs))
         R = R+n*n.T
         sub_locs = locs.sample(sample_locs, random_state=random_seed).sort_values(['x', 'y', 'z'])
-        full_data = np.random.multivariate_normal(np.zeros(n_elecs), R, size=n_samples)
+        full_data = np.random.multivariate_normal(np.zeros(len(locs)), R, size=n_samples)
         data = full_data[:, sub_locs.index]
         return data, sub_locs
     else:
@@ -158,6 +173,9 @@ def simulate_bo(n_samples=1000, n_elecs=10, locs=None, cov='random',
         locs =  simulate_locations(n_elecs=n_elecs)
     else:
         n_elecs=locs.shape[0]
+
+    if type(sessions) is int:
+        sessions = np.sort([x + 1 for x in range(sessions)] * (n_samples / sessions))
 
     data, locs = simulate_model_data(n_samples=n_samples, n_elecs=n_elecs, locs=locs, cov=cov, noise=noise, random_seed=random_seed)
 

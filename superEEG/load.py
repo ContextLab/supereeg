@@ -54,45 +54,32 @@ def load(fname):
         return Brain(data=data, locs=locs, sessions=sessions, sample_rate=sample_rate, meta= meta)
 
     # load example model
-    ## the example model needs to be replaced with the one on the cluster
     elif fname is 'example_model':
         try:
             with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/mini_model.mo', 'rb') as handle:
                 example_model = pickle.load(handle)
-            example_model.meta = {'voxel size': np.array([9, 11, 9])}
             return example_model
         except:
             model = pd.read_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/mini_model.mo')
-            ### is this a good place to have this??
-            model.meta = {'voxel size': np.array([ 9, 11,  9])}
             return model
 
     elif fname is 'pyFR_k10r20_20mm':
-        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/example_model_k_10_r_20.npz', 'rb') as handle:
-            f = np.load(handle)
-            numerator = squareform(f['Numerator'].flatten())
-            denominator = squareform(f['Denominator'].flatten())
-            n_subs = f['n']
+        try:
+            with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/mini_model.mo', 'rb') as handle:
+                example_model = pickle.load(handle)
+            return example_model
+        except:
+            model = pd.read_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/mini_model.mo')
+            return model
 
-        with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_20mm_locs.npy', 'rb') as handle:
-            l = np.load(handle)
-
-        return Model(numerator=numerator, denominator=denominator, n_subs=n_subs, locs=pd.DataFrame(l, columns=['x', 'y', 'z']))
-
-    ## This should be replaced with the new 10K model and named pyFR_k10r20_6mm
-
-    # elif fname is 'pyFR_k10r20_8mm':
-    #     with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/pyFR_k10r20.npz', 'rb') as handle:
-    #         f = np.load(handle)
-    #         numerator = squareform(f['Numerator'].flatten())
-    #         denominator = squareform(f['Denominator'].flatten())
-    #         n_subs = f['n']
-    #
-    #     with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_8mm_locs.npy', 'rb') as handle:
-    #         l = np.load(handle)
-    #
-    #     return Model(numerator=numerator, denominator=denominator, n_subs=n_subs, locs=pd.DataFrame(l, columns=['x', 'y', 'z']))
-
+    elif fname is 'pyFR_k10r20_6mm':
+        try:
+            with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_mask_6mm_brain.mo', 'rb') as handle:
+                example_model = pickle.load(handle)
+            return example_model
+        except:
+            model = pd.read_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_mask_6mm_brain.mo')
+            return model
 
     # load example locations
     elif fname is 'example_locations':
@@ -101,7 +88,7 @@ def load(fname):
         return locs
 
     elif fname is 'example_nifti':
-        bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_mask_8mm_brain.nii')
+        bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_mask_20mm_brain.nii')
         return bo
 
     elif fname is 'pyFR_union':

@@ -10,13 +10,13 @@ import seaborn as sns
 from sklearn import datasets
 
 # load example model to get locations
-locs = se.load('example_locations')
+locs = se.load('example_locations')[0::17]
 # number of timeseries samples
 n_samples = 10
 # number of subjects
 n_subs = 3
 # number of electrodes
-n_elecs = 10
+n_elecs = 5
 # simulate correlation matrix
 data = [se.simulate_model_bos(n_samples=10, sample_rate=1000, locs=locs, sample_locs = n_elecs) for x in range(n_subs)]
 # test model to compare
@@ -41,7 +41,7 @@ def test_create_model_superuser():
 
 def test_model_predict():
     model = se.Model(data=data[0:2], locs=locs)
-    bo = model.predict(data[0])
+    bo = model.predict(data[0], nearest_neighbor=False)
     assert isinstance(bo, se.Brain)
 
 def test_update():

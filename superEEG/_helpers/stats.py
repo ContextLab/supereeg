@@ -319,6 +319,20 @@ def compute_coord(coord, weights, Z):
 def chunk_bo(bo, chunk):
     """
     Chunk brain object by session for reconstruction. Returns chunked indices
+
+        Parameters
+    ----------
+    bo : brain object
+        Brain object used to reconstruct and data to chunk
+
+    chunk : tuple
+        Chunked indices
+
+
+    Returns
+    ----------
+    nbo : brain object
+        Chunked brain object with chunked zscored data in the data field
     """
 
     # index only places where not none
@@ -628,6 +642,8 @@ def near_neighbor(bo, mo, match_threshold = 'auto'):
 
     match_threshold : 'auto', int, or None
         Threshold used to find nearest neighbor
+
+        options:
 
         match_threshold = 'auto' : include only nearest neighbor if falls within one voxel distance
 

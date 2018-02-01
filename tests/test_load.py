@@ -4,11 +4,11 @@ import numpy as np
 import os
 import glob
 
-locs = se.load('example_locations')
-n_samples = 1000
-n_subs = 5
+locs = se.load('example_locations')[0::17]
+n_samples = 10
+n_subs = 3
 n_elecs = 10
-data = [se.simulate_model_bos(n_samples=10000, sample_rate=1000, locs=locs, sample_locs = n_elecs) for x in range(n_subs)]
+data = [se.simulate_model_bos(n_samples=10, sample_rate=1000, locs=locs, sample_locs = n_elecs) for x in range(n_subs)]
 test_bo = data[0]
 test_model = se.Model(data=data, locs=locs)
 
@@ -28,9 +28,11 @@ def test_load_nifti():
     bo = se.load('example_nifti')
     assert isinstance(bo, se.Brain)
 
-## this should be replaced with test_load_pyFR_k10r20_6mm()
-# def test_load_pyFR_k10r20_8mm():
-#     bo = se.load('pyFR_k10r20_8mm')
+
+# # this makes the test super long, from 5 secs to 73 secs
+#
+# def test_load_pyFR_k10r20_6mm():
+#     bo = se.load('pyFR_k10r20_6mm')
 #     assert isinstance(bo, se.Model)
 
 def test_load_pyFR_union():
