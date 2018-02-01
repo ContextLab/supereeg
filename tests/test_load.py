@@ -4,6 +4,7 @@ import numpy as np
 import os
 import glob
 
+# downsample locations
 locs = se.load('example_locations')[0::17]
 n_samples = 10
 n_subs = 3

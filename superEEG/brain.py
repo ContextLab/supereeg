@@ -136,7 +136,7 @@ class Brain(object):
             warnings.warn('No sample rate given.  Number of seconds cant be computed')
 
         elif type(sample_rate) in [int, float]:
-            self.sample_rate = [sample_rate]
+            self.sample_rate = [sample_rate]*len(self.sessions.unique())
         else:
             self.sample_rate = None
             warnings.warn('Format of sample rate not recognized. Number of seconds cannot be computed.'
@@ -145,9 +145,7 @@ class Brain(object):
         if sample_rate is not None:
             ## this is quite right... needs to be the number of trials in sessions
             index, counts = np.unique(self.sessions, return_counts=True)
-            # self.n_secs = self.data.shape[0] / np.array(sample_rate)
-            self.n_secs = counts / np.array(sample_rate)
-
+            self.n_secs = np.true_divide(counts, np.array(sample_rate))
 
         # meta
         self.meta = meta

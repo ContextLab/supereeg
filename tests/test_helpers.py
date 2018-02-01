@@ -13,21 +13,23 @@ n_subs = 3
 # number of electrodes
 n_elecs = 5
 # full brain object to parse and compare
-bo_full = se.simulate_bo(n_samples=10, sessions=2, sample_rate=1000, locs=locs)
+bo_full = se.simulate_bo(n_samples=10, sessions=2, sample_rate=10, locs=locs)
 # create brain object from subset of locations
 sub_locs = bo_full.locs.iloc[6:]
 sub_data = bo_full.data.iloc[:, sub_locs.index]
 
-bo = se.Brain(data=sub_data.as_matrix(), sessions=bo_full.sessions, locs=sub_locs, sample_rate=1000, meta = {'brain object locs sampled': 2})
+bo = se.Brain(data=sub_data.as_matrix(), sessions=bo_full.sessions, locs=sub_locs, sample_rate=10, meta = {'brain object locs sampled': 2})
 
 # simulate correlation matrix
-data = [se.simulate_model_bos(n_samples=10, sample_rate=1000, locs=locs, sample_locs = n_elecs) for x in range(n_subs)]
+data = [se.simulate_model_bos(n_samples=10, sample_rate=10, locs=locs, sample_locs = n_elecs) for x in range(n_subs)]
 # test model to compare
 test_model = se.Model(data=data, locs=locs)
+#
+# mo = np.divide(test_model.numerator, test_model.denominator)
+# np.fill_diagonal(mo, 0)
+# recon = timeseries_recon(bo, mo, 2)
 
-mo = np.divide(test_model.numerator, test_model.denominator)
-np.fill_diagonal(mo, 0)
-recon = timeseries_recon(bo, mo, 2)
+recon_test = test_model.predict(bo, nearest_neighbor=False, force_update=True)
 
 ##### _helpers/stats ########
 
@@ -181,7 +183,6 @@ def test_reconstruct():
     assert np.allclose(recon_data, recon_test.data)
     assert 1 >= corr_vals.mean() >= -1
 
-### better way to test accuracy??
 
 def test_round_it():
     rounded_array = round_it(np.array([1.0001, 1.99999]), 3)
@@ -244,6 +245,12 @@ def test_chunk_bo():
 def test_timeseries_recon():
     mo = np.divide(test_model.numerator, test_model.denominator)
     np.fill_diagonal(mo, 0)
-    recon = timeseries_recon(bo, mo)
+    recon = timeseries_recon(bo, mo, 2)
     assert isinstance(recon, np.ndarray)
     assert np.shape(recon)[1] == (np.shape(mo)[1]- np.shape(bo.get_data())[1])
+
+
+def test_chunker():
+    chunked = chunker([1,2,3,4,5], 2)
+    assert isinstance(chunked, list)
+    assert chunked == [(1, 2), (3, 4), (5, None)]
