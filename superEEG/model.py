@@ -8,7 +8,7 @@ import seaborn as sns
 import deepdish as dd
 from scipy.stats import zscore
 from ._helpers.stats import filter_elecs, get_corrmat, r2z, z2r, rbf, expand_corrmat_fit, expand_corrmat_predict,\
-    near_neighbor, timeseries_recon
+    near_neighbor, timeseries_recon, count_overlapping
 from .brain import Brain
 
 
@@ -251,6 +251,9 @@ class Model(object):
 
             model_corrmat_x = np.divide(self.numerator,self.denominator)
 
+        # find overlapping locations
+        overlap_bo_in_mo = count_overlapping(self, bo)
+
         # get model indices where subject locs overlap with model locs
         bool_mask = np.sum([(self.locs == y).all(1) for idy, y in bo.locs.iterrows()], 0).astype(bool)
 
@@ -438,7 +441,6 @@ class Model(object):
         """
         sns.heatmap(z2r(np.divide(self.numerator, self.denominator)), **kwargs)
 
-        # sns.plt.show()
 
     def save(self, fname, compression='blosc'):
         """

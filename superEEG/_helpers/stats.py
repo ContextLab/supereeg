@@ -738,3 +738,25 @@ def sort_unique_locs(locs):
         print('unknown location type')
 
     return unique_full_locs[unique_full_locs[:, 0].argsort(),]
+
+def count_overlapping(X, Y):
+    """
+    Finds overlapping locations (Y in X)
+
+        Parameters
+    ----------
+    X : brain object or model object
+        Electrode locations
+
+    Y : brain object or model object
+        Electrode locations
+
+    Returns
+    ----------
+    results : ndarray
+        Array of length(X.locs) with 0s and 1s, where 1s denote overlapping locations Y in X
+
+
+    """
+
+    return np.sum([(X.locs == y).all(1) for idy, y in Y.locs.iterrows()], 0).astype(bool)
