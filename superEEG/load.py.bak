@@ -1,4 +1,3 @@
-from __future__ import print_function
 import os
 import pickle
 import warnings
@@ -93,7 +92,7 @@ def load(fname):
         with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/pyFR_k10_locs.npz', 'rb') as handle:
             data = np.load(handle)
             locs = data['locs']
-            print(('subjects = ', data['subjs']))
+            print('subjects = ', data['subjs'])
         return locs
 
     elif fname is 'gray_mask_20mm_brain':
