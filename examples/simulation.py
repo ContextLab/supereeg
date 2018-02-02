@@ -45,7 +45,7 @@ m_elecs = range(5, 165, 50)
 iter_val = 1
 
 # load nifti to get locations
-gray = se.load('mini_model')
+gray = se.load('gray_mask_20mm_brain')
 
 # extract locations
 gray_locs = gray.locs

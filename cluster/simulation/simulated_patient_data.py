@@ -45,7 +45,7 @@ incs = 50
 iter_val = 5
 
 # load nifti to get locations
-gray = se.load('example_nifti')
+gray = se.load('gray_mask_20mm_brain')
 
 # extract locations
 gray_locs = gray.locs

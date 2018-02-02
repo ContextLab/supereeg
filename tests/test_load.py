@@ -39,6 +39,9 @@ def test_load_pyFR_union():
     data = se.load('pyFR_union')
     assert isinstance(data, np.ndarray)
 
+def test_load_mini_model():
+    bo = se.load('gray_mask_20mm_brain')
+    assert isinstance(bo, se.Brain)
 
 def test_load_gray_mask_6mm_brain():
     bo = se.load('gray_mask_6mm_brain')

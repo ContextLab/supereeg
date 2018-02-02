@@ -18,6 +18,8 @@ data = [se.simulate_model_bos(n_samples=10, sample_rate=1000, locs=locs, sample_
 test_model = se.Model(data=data, locs=locs)
 R = se.create_cov('random', len(locs))
 
+
+
 recon_1 = np.matrix([[ 0.82919399,  0.3047186 ,  0.82919399,  0.94488569, -0.1156917 ],
                      [-0.39653203, -0.14572065, -0.39653203,  0.77469247, -1.1712245 ],
                      [-0.16080707, -0.05909462, -0.16080707,  0.72329345, -0.88410052],
@@ -121,7 +123,7 @@ def test_electrode_contingencies_1_null_set():
     noise = 0
 
     # load mini model
-    gray = se.load('example_nifti')
+    gray = se.load('gray_mask_20mm_brain')
 
     # extract 20 locations
     gray_locs = gray.locs.iloc[:5]
@@ -168,7 +170,7 @@ def test_electrode_contingencies_2_subset():
 
     noise = 0
 
-    gray = se.load('example_nifti')
+    gray = se.load('gray_mask_20mm_brain')
 
     # extract locations
     gray_locs = gray.locs.iloc[:5]
@@ -208,7 +210,7 @@ def test_electrode_contingencies_3_locations_can_subset():
     noise = 0
 
     # load mini model
-    gray = se.load('example_nifti')
+    gray = se.load('gray_mask_20mm_brain')
 
     # extract 20 locations
     gray_locs = gray.locs.iloc[:5]
