@@ -28,7 +28,7 @@ def simulate_locations(n_elecs=10):
 
     return pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
-def simulate_model_bos(n_samples=1000, locs=None, sample_locs = None, cov='random',
+def simulate_model_bos(n_samples=1000, locs=None, sample_locs=None, cov='random',
                 sample_rate=1000, sessions=None, meta=None, noise=.1, random_seed=False):
     """
     Simulate brain object

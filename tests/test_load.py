@@ -9,7 +9,7 @@ locs = se.load('example_locations')[0::17]
 n_samples = 10
 n_subs = 3
 n_elecs = 10
-data = [se.simulate_model_bos(n_samples=10, sample_rate=1000, locs=locs, sample_locs = n_elecs) for x in range(n_subs)]
+data = [se.simulate_model_bos(n_samples=10, sample_rate=10, locs=locs, sample_locs = n_elecs) for x in range(n_subs)]
 test_bo = data[0]
 test_model = se.Model(data=data, locs=locs)
 

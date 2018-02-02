@@ -86,7 +86,7 @@ class Brain(object):
     Returns
     ----------
 
-    bo : Brain data object
+    bo : superEEG.Brain instance
         Instance of Brain data object containing subject data
 
     """

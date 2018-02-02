@@ -18,28 +18,25 @@ bo_full = se.simulate_bo(n_samples=10, sessions=2, sample_rate=10, locs=locs)
 sub_locs = bo_full.locs.iloc[6:]
 sub_data = bo_full.data.iloc[:, sub_locs.index]
 
-bo = se.Brain(data=sub_data.as_matrix(), sessions=bo_full.sessions, locs=sub_locs, sample_rate=10, meta = {'brain object locs sampled': 2})
+bo = se.Brain(data=sub_data.as_matrix(), sessions=bo_full.sessions, locs=sub_locs, sample_rate=10,
+              meta={'brain object locs sampled': 2})
 
 # simulate correlation matrix
-data = [se.simulate_model_bos(n_samples=10, sample_rate=10, locs=locs, sample_locs = n_elecs) for x in range(n_subs)]
+data = [se.simulate_model_bos(n_samples=10, locs=locs, sample_locs=n_elecs) for x in range(n_subs)]
+
 # test model to compare
 test_model = se.Model(data=data, locs=locs)
-#
-# mo = np.divide(test_model.numerator, test_model.denominator)
-# np.fill_diagonal(mo, 0)
-# recon = timeseries_recon(bo, mo, 2)
 
-recon_test = test_model.predict(bo, nearest_neighbor=False, force_update=True)
 
 ##### _helpers/stats ########
 
 def test_apply_by_file_index():
-
     def aggregate(prev, next):
         return np.max(np.vstack((prev, next)), axis=0)
 
     kurts_1 = apply_by_file_index(data[0], kurtosis, aggregate)
     assert isinstance(kurts_1, np.ndarray)
+
 
 def test_kurt_vals():
     kurts_2 = kurt_vals(data[0])
@@ -52,32 +49,35 @@ def test_kurt_vals_compare():
 
     kurts_1 = apply_by_file_index(data[0], kurtosis, aggregate)
     kurts_2 = kurt_vals(data[0])
-    assert np.allclose(kurts_1,kurts_2)
+    assert np.allclose(kurts_1, kurts_2)
 
 
 def test_get_corrmat():
     corrmat = get_corrmat(data[0])
     assert isinstance(corrmat, np.ndarray)
 
+
 def test_int_z2r():
     z = 1
     test_val = (np.exp(2 * z) - 1) / (np.exp(2 * z) + 1)
     input_val = z2r(z)
     assert isinstance(input_val, (float, int))
-    assert test_val==input_val
+    assert test_val == input_val
+
 
 def test_array_z2r():
-    z = [1,2,3]
+    z = [1, 2, 3]
     test_val = (np.exp(2 * z) - 1) / (np.exp(2 * z) + 1)
     test_fun = z2r(z)
     assert isinstance(test_fun, np.ndarray)
-    assert np.allclose(test_val,test_fun)
+    assert np.allclose(test_val, test_fun)
+
 
 def r2z_z2r():
-    z = np.array([1,2,3])
+    z = np.array([1, 2, 3])
     test_fun = r2z(z2r(z))
     assert isinstance(test_fun, (int, np.ndarray))
-    assert z==test_fun
+    assert z == test_fun
 
 
 def test_int_r2z():
@@ -85,35 +85,37 @@ def test_int_r2z():
     test_val = 0.5 * (np.log(1 + r) - np.log(1 - r))
     test_fun = r2z(r)
     assert isinstance(test_fun, (float, int))
-    assert test_val==test_fun
+    assert test_val == test_fun
+
 
 def test_array_r2z():
-    r = np.array([.1,.2,.3])
+    r = np.array([.1, .2, .3])
     test_val = 0.5 * (np.log(1 + r) - np.log(1 - r))
     test_fun = r2z(r)
     assert isinstance(test_fun, np.ndarray)
-    assert np.allclose(test_val,test_fun)
+    assert np.allclose(test_val, test_fun)
+
 
 def test_rbf():
     weights = rbf(locs, locs[:10])
     weights_same = rbf(locs[:10], locs[:10], 1)
-    print (weights_same)
-    print(np.zeros(np.shape(weights_same)))
     assert isinstance(weights, np.ndarray)
     assert np.allclose(weights_same, np.eye(np.shape(weights_same)[0]))
+
 
 def test_tal2mni():
     tal_vals = tal2mni(locs)
     assert isinstance(tal_vals, np.ndarray)
 
+
 def test_uniquerows():
     full_locs = np.concatenate((locs, locs[:10]), axis=0)
     test_fun = uniquerows(full_locs)
     assert isinstance(test_fun, np.ndarray)
-    assert np.shape(test_fun)==np.shape(locs)
+    assert np.shape(test_fun) == np.shape(locs)
+
 
 def test_expand_corrmat_fit():
-
     sub_corrmat = get_corrmat(bo)
     np.fill_diagonal(sub_corrmat, 0)
     sub_corrmat = r2z(sub_corrmat)
@@ -124,8 +126,8 @@ def test_expand_corrmat_fit():
     assert isinstance(expanded_denom_f, np.ndarray)
     assert np.shape(expanded_num_f)[0] == test_model.locs.shape[0]
 
-def test_expand_corrmat_predict():
 
+def test_expand_corrmat_predict():
     sub_corrmat = get_corrmat(bo)
     np.fill_diagonal(sub_corrmat, 0)
     sub_corrmat = r2z(sub_corrmat)
@@ -136,10 +138,10 @@ def test_expand_corrmat_predict():
     assert isinstance(expanded_denom_p, np.ndarray)
     assert np.shape(expanded_num_p)[0] == test_model.locs.shape[0]
 
-def test_expand_corrmats_same():
 
+def test_expand_corrmats_same():
     sub_corrmat = get_corrmat(bo)
-    np.fill_diagonal(sub_corrmat, 0) # <- possible failpoint
+    np.fill_diagonal(sub_corrmat, 0)  # <- possible failpoint
     sub_corrmat_z = r2z(sub_corrmat)
     weights = rbf(test_model.locs, bo.locs)
 
@@ -148,15 +150,14 @@ def test_expand_corrmats_same():
     expanded_num_f, expanded_denom_f = expand_corrmat_predict(sub_corrmat_z, weights)
     model_corrmat_f = np.divide(expanded_num_f, expanded_denom_f)
 
-
     np.fill_diagonal(model_corrmat_f, 0)
     np.fill_diagonal(model_corrmat_p, 0)
 
-    s = test_model.locs.shape[0]-bo.locs.shape[0]
+    s = test_model.locs.shape[0] - bo.locs.shape[0]
     print(s)
-    Kba_p = model_corrmat_p[:s,s:]
+    Kba_p = model_corrmat_p[:s, s:]
     Kba_f = model_corrmat_f[:s, s:]
-    Kaa_p = model_corrmat_p[s:,s:]
+    Kaa_p = model_corrmat_p[s:, s:]
     Kaa_f = model_corrmat_f[s:, s:]
 
     assert isinstance(Kaa_p, np.ndarray)
@@ -164,8 +165,8 @@ def test_expand_corrmats_same():
     assert np.allclose(Kaa_p, Kaa_f)
     assert np.allclose(Kba_p, Kba_f)
 
-def test_reconstruct():
 
+def test_reconstruct():
     recon_test = test_model.predict(bo, nearest_neighbor=False, force_update=True)
     actual_test = bo_full.data.iloc[:, recon_test.locs.index]
 
@@ -176,10 +177,6 @@ def test_reconstruct():
     recon_data = np.hstack((reconstruct_activity(bo, model_corrmat_x), zscore(bo.data.as_matrix())))
     corr_vals = corr_column(actual_test.as_matrix(), recon_test.data.as_matrix())
     assert isinstance(recon_data, np.ndarray)
-    print recon_data
-    print recon_data.shape
-    print recon_test.data
-    print np.shape(recon_test.data)
     assert np.allclose(recon_data, recon_test.data)
     assert 1 >= corr_vals.mean() >= -1
 
@@ -188,12 +185,14 @@ def test_round_it():
     rounded_array = round_it(np.array([1.0001, 1.99999]), 3)
     rounded_float = round_it(1.0009, 3)
     assert isinstance(rounded_array, (int, float, np.ndarray))
-    assert np.allclose(rounded_array, np.array([1,2]))
+    assert np.allclose(rounded_array, np.array([1, 2]))
     assert rounded_float == 1.001
+
 
 def test_filter_elecs():
     bo_f = filter_elecs(bo)
     assert isinstance(bo_f, se.Brain)
+
 
 def test_filter_subj():
     bo_s = filter_subj(bo)
@@ -201,28 +200,23 @@ def test_filter_subj():
     assert isinstance(bo_s, (str, dict, type(None)))
     assert isinstance(bo_f, (str, dict, type(None)))
 
+
 def test_corr_column():
     X = np.matrix([[1, 2, 3], [1, 2, 3]])
-    print(X)
-    print(X.T)
     corr_vals = corr_column(np.array([[.1, .4], [.2, .5], [.3, .6]]), np.array([[.1, .4], [.2, .5], [.3, .6]]))
     print(corr_vals)
     assert isinstance(corr_vals, (float, np.ndarray))
 
-def test_normalize_Y():
 
+def test_normalize_Y():
     normed_y = normalize_Y(np.array([[.1, .4], [.2, .5], [.3, .6]]))
     assert isinstance(normed_y, pd.DataFrame)
     assert normed_y.iloc[1][0] == 1.0
     assert normed_y.iloc[1][1] == 2.0
 
+
 ### not sure how to write tests for the Nifti conversion functions
 
-
-def test_sort_unique_locs():
-
-    sorted = sort_unique_locs(locs)
-    assert isinstance(sorted, np.ndarray)
 
 def test_model_compile(tmpdir):
     p = tmpdir.mkdir("sub")
@@ -236,11 +230,13 @@ def test_model_compile(tmpdir):
     assert np.allclose(mo.numerator, test_model.numerator)
     assert np.allclose(mo.denominator, test_model.denominator)
 
+
 def test_chunk_bo():
     chunk = tuple([1,2,3])
     chunked_bo = chunk_bo(bo_full, chunk)
     assert isinstance(chunked_bo, se.Brain)
     assert np.shape(chunked_bo.data)[0]==np.shape(chunk)[0]
+
 
 def test_timeseries_recon():
     mo = np.divide(test_model.numerator, test_model.denominator)
@@ -254,3 +250,28 @@ def test_chunker():
     chunked = chunker([1,2,3,4,5], 2)
     assert isinstance(chunked, list)
     assert chunked == [(1, 2), (3, 4), (5, None)]
+
+
+def test_near_neighbor_auto():
+    new_bo = near_neighbor(bo, test_model, match_threshold='auto')
+    assert isinstance(new_bo, se.Brain)
+
+
+def test_near_neighbor_none():
+    new_bo = near_neighbor(bo, test_model, match_threshold=0)
+    assert isinstance(new_bo, se.Brain)
+
+
+def test_near_neighbor_int():
+    new_bo = near_neighbor(bo, test_model, match_threshold=10)
+    assert isinstance(new_bo, se.Brain)
+
+
+def test_vox_size():
+    v_size = vox_size(test_model.locs)
+    assert isinstance(v_size, np.ndarray)
+
+
+def test_sort_unique_locs():
+    sorted = sort_unique_locs(locs)
+    assert isinstance(sorted, np.ndarray)

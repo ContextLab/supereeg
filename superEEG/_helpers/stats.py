@@ -688,9 +688,21 @@ def near_neighbor(bo, mo, match_threshold = 'auto'):
 
 
 def vox_size(locs):
-    # needs to be pandas dataframe - document
+    """
+    Finds voxel size
+
+        Parameters
+    ----------
+    locs : pandas DataFrame
+        Locations in brain extracted from nifti
+
+    Returns
+    ----------
+    results : ndarray
+        1 x n_dims of voxel size
 
 
+    """
     n_dims = locs.shape[1]
     v_size = np.zeros([1, n_dims])
     # make voxel function
@@ -702,6 +714,21 @@ def vox_size(locs):
     return v_size
 
 def sort_unique_locs(locs):
+    """
+    Sorts unique locations
+
+        Parameters
+    ----------
+    locs : pandas DataFrame or ndarray
+        Electrode locations
+
+    Returns
+    ----------
+    results : ndarray
+        Array of unique locations
+
+
+    """
     if isinstance(locs, pd.DataFrame):
         unique_full_locs = np.vstack(set(map(tuple, locs.as_matrix())))
     elif isinstance(locs, np.ndarray):
