@@ -1,8 +1,8 @@
 import scipy
 import numpy as np
-from sklearn import datasets
 import pandas as pd
 from .brain import Brain
+from sklearn import datasets
 from .model import Model
 
 
