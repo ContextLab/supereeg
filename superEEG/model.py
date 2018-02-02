@@ -1,5 +1,8 @@
 from __future__ import division
 from __future__ import print_function
+from builtins import str
+from builtins import range
+from builtins import object
 import time
 import os
 import copy
@@ -348,6 +351,8 @@ class Model(object):
 
         # timeseries reconstruction
         reconstructed = timeseries_recon(bo, model_corrmat_x)
+
+        print(reconstructed)
 
         # join reconstructed and known activity
         activations = np.hstack((reconstructed, zscore(bo.data.as_matrix())))

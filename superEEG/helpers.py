@@ -1,6 +1,10 @@
 from __future__ import division
 from __future__ import print_function
 
+#from builtins import zip
+from builtins import map
+from builtins import range
+from builtins import object
 import multiprocessing
 import copy
 import numpy.matlib as mat
@@ -249,11 +253,11 @@ def expand_corrmat_fit(C, weights):
 
     s = 0
 
-    vals = range(s, n)
+    vals = list(range(s, n))
     for x in vals:
         xweights = weights[x, :]
 
-        vals = range(x)
+        vals = list(range(x))
         for y in vals:
             yweights = weights[y, :]
 
@@ -304,8 +308,8 @@ def expand_corrmat_predict(C, weights):
     results = Parallel(n_jobs=multiprocessing.cpu_count())(
         delayed(compute_coord)(coord, weights, Z) for coord in sliced_up)
 
-    W[map(lambda x: x[0], sliced_up), map(lambda x: x[1], sliced_up)] = map(lambda x: x[0], results)
-    K[map(lambda x: x[0], sliced_up), map(lambda x: x[1], sliced_up)] = map(lambda x: x[1], results)
+    W[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[0] for x in results]
+    K[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[1] for x in results]
 
     return (K + K.T), (W + W.T)
 
@@ -392,7 +396,7 @@ def timeseries_recon(bo, K, chunk_size=1000):
     return results
 
 
-def chunker(iterable, chunksize):
+def chunker(iterable, chunksize, fillvalue=None):
     """
         Chunks longer sequence by regular interval
 
@@ -410,7 +414,13 @@ def chunker(iterable, chunksize):
             Chunked timeseries
 
         """
-    return map(None, *[iter(iterable)] * chunksize)
+    try:
+        from itertools import zip_longest as zip_longest
+    except:
+        from itertools import izip_longest as zip_longest
+
+    args = [iter(iterable)] * chunksize
+    return list(zip_longest(*args, fillvalue=fillvalue))
 
 
 def reconstruct_activity(bo, K, zscored=False):
@@ -521,7 +531,7 @@ def normalize_Y(Y_matrix):
     return pd.DataFrame(Y)
 
 
-class BrainData:
+class BrainData(object):
     def __init__(self, fname, mask_strategy='background'):
         self.fname = fname
         if len(self.fname) == 0:
@@ -575,7 +585,7 @@ def fullfact(dims):
     '''
     Replicates MATLAB's fullfact function (behaves the same way)
     '''
-    vals = np.asmatrix(range(1, dims[0] + 1)).T
+    vals = np.asmatrix(list(range(1, dims[0] + 1))).T
     if len(dims) == 1:
         return vals
     else:

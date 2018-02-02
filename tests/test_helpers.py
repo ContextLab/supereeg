@@ -1,4 +1,7 @@
 from __future__ import print_function
+from __future__ import division
+from past.utils import old_div
+from builtins import bytes
 import pytest
 import superEEG as se
 import glob
@@ -56,7 +59,7 @@ def test_get_corrmat():
 
 def test_int_z2r():
     z = 1
-    test_val = (np.exp(2 * z) - 1) / (np.exp(2 * z) + 1)
+    test_val = old_div((np.exp(2 * z) - 1), (np.exp(2 * z) + 1))
     input_val = z2r(z)
     assert isinstance(input_val, (float, int))
     assert test_val == input_val
@@ -64,7 +67,7 @@ def test_int_z2r():
 
 def test_array_z2r():
     z = [1, 2, 3]
-    test_val = (np.exp(2 * z) - 1) / (np.exp(2 * z) + 1)
+    test_val = old_div((np.exp(2 * z) - 1), (np.exp(2 * z) + 1))
     test_fun = z2r(z)
     assert isinstance(test_fun, np.ndarray)
     assert np.allclose(test_val, test_fun)
@@ -219,9 +222,9 @@ def test_model_compile(tmpdir):
     p = tmpdir.mkdir("sub")
     for m in range(len(data)):
         model = se.Model(data=data[m], locs=locs)
-        model.save(fname=os.path.join(str(p), "example_" + str(m)))
+        model.save(fname=os.path.join(p.strpath, str(m)))
 
-    model_data = glob.glob(os.path.join(str(p), '*.mo'))
+    model_data = glob.glob(os.path.join(p.strpath, '*.mo'))
     mo = se.model_compile(model_data)
     assert isinstance(mo, se.Model)
     assert np.allclose(mo.numerator, test_model.numerator)
@@ -231,6 +234,7 @@ def test_model_compile(tmpdir):
 def test_chunk_bo():
     chunk = tuple([1,2,3])
     chunked_bo = chunk_bo(bo_full, chunk)
+    print(type(chunk_bo))
     assert isinstance(chunked_bo, se.Brain)
     assert np.shape(chunked_bo.data)[0]==np.shape(chunk)[0]
 
@@ -245,6 +249,7 @@ def test_timeseries_recon():
 
 def test_chunker():
     chunked = chunker([1,2,3,4,5], 2)
+    print(chunked)
     assert isinstance(chunked, list)
     assert chunked == [(1, 2), (3, 4), (5, None)]
 

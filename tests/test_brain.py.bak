@@ -1,4 +1,3 @@
-from builtins import str
 import pytest
 import os
 import superEEG as se
@@ -49,10 +48,8 @@ def test_bo_get_locs_nparray():
 
 def test_bo_save(tmpdir):
     p = tmpdir.mkdir("sub").join("example")
-    print(p)
-    print(type(p))
-    bo.save(fname=p.strpath)
-    test_bo = se.load(os.path.join(p.strpath + '.bo'))
+    bo.save(fname=str(p))
+    test_bo = se.load(os.path.join(str(p) + '.bo'))
     assert isinstance(test_bo, se.Brain)
 
 def test_nii_nifti():

@@ -1,5 +1,3 @@
-from builtins import str
-from builtins import range
 import pytest
 import superEEG as se
 import numpy as np
@@ -50,18 +48,18 @@ def test_load_gray_mask_6mm_brain():
 
 def test_bo_load(tmpdir):
     p = tmpdir.mkdir("sub").join("example")
-    test_bo.save(fname=p.strpath)
-    bo = se.load(os.path.join(p.strpath + '.bo'))
+    test_bo.save(fname=str(p))
+    bo = se.load(os.path.join(str(p) + '.bo'))
     assert isinstance(bo, se.Brain)
 
 def test_mo_load(tmpdir):
     p = tmpdir.mkdir("sub").join("example")
-    test_model.save(fname=p.strpath)
-    bo = se.load(os.path.join(p.strpath + '.mo'))
+    test_model.save(fname=str(p))
+    bo = se.load(os.path.join(str(p) + '.mo'))
     assert isinstance(bo, se.Model)
 
 def test_nii_load(tmpdir):
     p = tmpdir.mkdir("sub").join("example")
-    test_bo.to_nii(filepath=p.strpath)
-    bo = se.load(os.path.join(p.strpath + '.nii'))
+    test_bo.to_nii(filepath=str(p))
+    bo = se.load(os.path.join(str(p) + '.nii'))
     assert isinstance(bo, se.Brain)
