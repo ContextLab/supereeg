@@ -331,7 +331,7 @@ def chunk_bo(bo, chunk):
     bo : brain object
         Brain object used to reconstruct and data to chunk
 
-    chunk : tuple
+    chunk : list
         Chunked indices
 
 
