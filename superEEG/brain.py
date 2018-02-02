@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-
+from __future__ import division
 import time
 import os
 import warnings
@@ -9,7 +8,7 @@ import nibabel as nib
 import deepdish as dd
 import matplotlib.pyplot as plt
 from nilearn import plotting as ni_plt
-from ._helpers.stats import kurt_vals, zscore, normalize_Y, vox_size
+from .helpers import kurt_vals, zscore, normalize_Y, vox_size
 
 class Brain(object):
     """
@@ -242,7 +241,7 @@ class Brain(object):
             Y = Y.columns[int(electrode)]
 
         # divide index by sample rate so that index corresponds to time
-        Y.index = Y.index / np.mean(self.sample_rate)
+        Y.index = Y.index/np.mean(self.sample_rate)
 
         # if a time window is designated index data in that window
         if all([time_min, time_max]):

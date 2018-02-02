@@ -2,7 +2,6 @@ import pytest
 import superEEG as se
 import numpy as np
 import os
-import glob
 
 # downsample locations
 locs = se.load('example_locations')[0::17]

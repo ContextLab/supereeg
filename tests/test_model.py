@@ -4,10 +4,6 @@ import pytest
 import superEEG as se
 import numpy as np
 import scipy
-import pandas as pd
-import seaborn as sns
-from superEEG._helpers.stats import rbf
-from sklearn import datasets
 
 # load example model to get locations
 locs = se.load('example_locations')[0::17]

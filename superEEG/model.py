@@ -7,7 +7,7 @@ import numpy as np
 import seaborn as sns
 import deepdish as dd
 from scipy.stats import zscore
-from ._helpers.stats import filter_elecs, get_corrmat, r2z, z2r, rbf, expand_corrmat_fit, expand_corrmat_predict,\
+from .helpers import filter_elecs, get_corrmat, r2z, z2r, rbf, expand_corrmat_fit, expand_corrmat_predict,\
     near_neighbor, timeseries_recon, count_overlapping
 from .brain import Brain
 

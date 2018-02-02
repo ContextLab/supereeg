@@ -411,6 +411,7 @@ def chunker(iterable, chunksize):
         """
     return map(None, *[iter(iterable)] * chunksize)
 
+
 def reconstruct_activity(bo, K, zscored=False):
     """
     Reconstruct activity - need to add chunking option here
@@ -604,8 +605,8 @@ def model_compile(data):
         A new updated model object
 
     """
-    from ..load import load
-    from ..model import Model
+    from .load import load
+    from .model import Model
 
     m = load(data[0])
     numerator = m.numerator

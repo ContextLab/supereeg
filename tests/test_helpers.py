@@ -1,7 +1,7 @@
 import pytest
 import superEEG as se
 import glob
-from superEEG._helpers.stats import *
+from superEEG.helpers import *
 from scipy.stats import kurtosis, zscore
 import os
 

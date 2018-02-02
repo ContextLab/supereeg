@@ -1,15 +1,14 @@
 import os
 import pickle
+import warnings
 import numpy as np
 import deepdish as dd
 import pandas as pd
 import nibabel as nib
-import warnings
-warnings.simplefilter(action='ignore', category=UserWarning)
 from nilearn.input_data import NiftiMasker
 from .brain import Brain
 from .model import Model
-from ._helpers.stats import tal2mni, fullfact
+from .helpers import tal2mni, fullfact
 
 def load(fname):
     """

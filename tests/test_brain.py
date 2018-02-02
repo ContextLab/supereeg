@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
-
 import pytest
 import os
 import superEEG as se
 import numpy as np
 import pandas as pd
 import nibabel as nib
-import matplotlib.pyplot as plt
 
 data = np.random.multivariate_normal(np.zeros(10), np.eye(10), size=100)
 locs = np.random.multivariate_normal(np.zeros(3), np.eye(3), size=10)

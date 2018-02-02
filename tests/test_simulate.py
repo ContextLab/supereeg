@@ -2,7 +2,7 @@ import pytest
 import superEEG as se
 import numpy as np
 import pandas as pd
-from superEEG._helpers.stats import corr_column
+from superEEG.helpers import corr_column
 
 
 locs = se.load('example_locations')

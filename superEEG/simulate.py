@@ -1,10 +1,9 @@
+from __future__ import division
 import scipy
 import numpy as np
 import pandas as pd
-from .brain import Brain
 from sklearn import datasets
-from .model import Model
-
+from .brain import Brain
 
 def simulate_locations(n_elecs=10):
     """
@@ -195,7 +194,7 @@ def simulate_bo(n_samples=1000, n_elecs=10, locs=None, cov='random',
         n_elecs=locs.shape[0]
 
     if type(sessions) is int:
-        sessions = np.sort([x + 1 for x in range(sessions)] * (n_samples / sessions))
+        sessions = np.sort([x + 1 for x in range(sessions)] * int(np.floor(np.divide(n_samples, sessions))))
 
     data, locs = simulate_model_data(n_samples=n_samples, n_elecs=n_elecs, locs=locs, cov=cov, noise=noise, random_seed=random_seed)
 
