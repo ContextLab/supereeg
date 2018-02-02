@@ -143,7 +143,6 @@ class Brain(object):
                           'Setting sample rate to None')
 
         if sample_rate is not None:
-            ## this is quite right... needs to be the number of trials in sessions
             index, counts = np.unique(self.sessions, return_counts=True)
             self.n_secs = np.true_divide(counts, np.array(sample_rate))
 
@@ -231,7 +230,6 @@ class Brain(object):
         # normalizes the samples x electrodes array containing the EEG data and adds 1 to each row
         # so that the y-axis value corresponds to electrode location in the MNI coordinate (x,y,z)
         # by electrode df containing electrode locations
-
         Y = normalize_Y(self.data)
 
         # if filtered in passed, filter by electrodes that do not pass kurtosis thresholding

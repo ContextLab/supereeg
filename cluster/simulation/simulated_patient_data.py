@@ -45,7 +45,7 @@ incs = 50
 iter_val = 5
 
 # load nifti to get locations
-gray = se.load('mini_model')
+gray = se.load('example_nifti')
 
 # extract locations
 gray_locs = gray.locs

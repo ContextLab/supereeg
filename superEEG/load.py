@@ -7,7 +7,6 @@ import nibabel as nib
 import warnings
 warnings.simplefilter(action='ignore', category=UserWarning)
 from nilearn.input_data import NiftiMasker
-from scipy.spatial.distance import squareform
 from .brain import Brain
 from .model import Model
 from ._helpers.stats import tal2mni, fullfact
@@ -30,9 +29,11 @@ def load(fname):
         example_data - example brain object (n = 64)
         example_model - example model object with locations from gray_mask_20mm_brain.nii (n = 170)
         example_locations - example location from gray_mask_20mm_brain.nii (n = 170)
-        example_nifti - example nifti file from gray_mask_8mm_brain.nii (n = 3968)
-        pyFR_k10r20_6mm - model used for analyses from `Owen LLW and Manning JR (2017) Towards Human Super EEG.  bioRxiv: 121020`
-
+        example_nifti - example nifti file from gray_mask_20mm_brain.nii (n = 170)
+        pyFR_k10r20_20mm - model used for analyses from
+        `Owen LLW and Manning JR (2017) Towards Human Super EEG.  bioRxiv: 121020` with 20mm resolution (n = 170)
+        pyFR_k10r20_6mm - model used for analyses from
+        `Owen LLW and Manning JR (2017) Towards Human Super EEG.  bioRxiv: 121020` with 6 mm resolution (n = 10K)
 
     Returns
     ----------
@@ -41,7 +42,6 @@ def load(fname):
 
     """
 
-    # load example data
     if fname is 'example_data':
         with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/CH003.npz', 'rb') as handle:
             f = np.load(handle)
@@ -53,7 +53,6 @@ def load(fname):
 
         return Brain(data=data, locs=locs, sessions=sessions, sample_rate=sample_rate, meta= meta)
 
-    # load example model
     elif fname is 'example_model':
         try:
             with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/mini_model.mo', 'rb') as handle:
@@ -81,7 +80,6 @@ def load(fname):
             model = pd.read_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_mask_6mm_brain.mo')
             return model
 
-    # load example locations
     elif fname is 'example_locations':
         with open(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_20mm_locs.npy', 'rb') as handle:
             locs = np.load(handle)

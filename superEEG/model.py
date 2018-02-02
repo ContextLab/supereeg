@@ -204,6 +204,9 @@ class Model(object):
 
             If value is greater than 0, inlcudes only electrodes that are within that distance of matched voxel
 
+        force_update : False
+            If True, will update model with patient's correlation matrix.
+
         kthreshold : 10 or int
             Kurtosis threshold
 
@@ -360,6 +363,12 @@ class Model(object):
         data : Brain object, list of Brain objects, Model object, or list of Model objects
             New subject data
 
+        measure : kurtosis
+            Measure for filtering electrodes.  Only option currently supported is kurtosis.
+
+        threshold : 10 or int
+            Kurtosis threshold
+
         Returns
         ----------
 
@@ -390,8 +399,8 @@ class Model(object):
             sub_rbf_weights = rbf(m.locs, bo.locs)
 
             #  get subject expanded correlation matrix
-            #num_corrmat_x, denom_corrmat_x = get_expanded_corrmat(sub_corrmat, sub_rbf_weights)
             num_corrmat_x, denom_corrmat_x = expand_corrmat_fit(sub_corrmat, sub_rbf_weights)
+
             # set weights equal to zero where the numerator is equal to nan
             denom_corrmat_x[np.isnan(num_corrmat_x)] = 0
 

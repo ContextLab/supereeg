@@ -310,6 +310,7 @@ def expand_corrmat_predict(C, weights):
 
 
 def compute_coord(coord, weights, Z):
+
     next_weights = np.outer(weights[coord[0], :], weights[coord[1], :])
     next_weights = next_weights - np.triu(next_weights)
 
