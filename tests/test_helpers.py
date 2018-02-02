@@ -28,6 +28,9 @@ data = [se.simulate_model_bos(n_samples=10, locs=locs, sample_locs=n_elecs) for 
 # test model to compare
 test_model = se.Model(data=data, locs=locs)
 
+mo = np.divide(test_model.numerator, test_model.denominator)
+np.fill_diagonal(mo, 0)
+recon = timeseries_recon(bo, mo, 2)
 
 
 def test_apply_by_file_index():

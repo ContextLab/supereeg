@@ -343,10 +343,10 @@ def chunk_bo(bo, chunk):
 
     # index only places where not none
     l = [i for i in chunk if i is not None]
-
-    # make a copy of the brain object which z_scores the entirety of the data
     nbo = copy.copy(bo)
-    nbo.data = pd.DataFrame(bo.get_zscore_data()[l, :])
+    # make a copy of the brain object which z_scores the entirety of the data
+    nbo.data = pd.DataFrame(nbo.get_data()[l, :])
+
     return nbo
 
 
@@ -372,12 +372,15 @@ def timeseries_recon(bo, K, chunk_size=1000):
 
 
     """
+    zbo = copy.copy(bo)
+    zbo.data = pd.DataFrame(bo.get_zscore_data())
+
     results = []
     for idx, session in enumerate(bo.sessions.unique()):
             block_results = []
             if idx is 0:
-                for each in chunker(bo.sessions[bo.sessions == session].index.tolist(), chunk_size):
-                    z_bo = chunk_bo(bo, each)
+                for each in chunker(zbo.sessions[bo.sessions == session].index.tolist(), chunk_size):
+                    z_bo = chunk_bo(zbo, each)
                     block = reconstruct_activity(z_bo, K, zscored=True)
                     if block_results==[]:
                         block_results = block
@@ -385,8 +388,8 @@ def timeseries_recon(bo, K, chunk_size=1000):
                         block_results = np.vstack((block_results, block))
                 results = block_results
             else:
-                for each in chunker(bo.sessions[bo.sessions == session].index.tolist(), chunk_size):
-                    z_bo = chunk_bo(bo, each)
+                for each in chunker(zbo.sessions[bo.sessions == session].index.tolist(), chunk_size):
+                    z_bo = chunk_bo(zbo, each)
                     block = reconstruct_activity(z_bo, K, zscored=True)
                     if block_results==[]:
                         block_results = block
@@ -677,7 +680,7 @@ def near_neighbor(bo, mo, match_threshold = 'auto'):
     nbo = copy.deepcopy(bo)
     d = cdist(nbo.locs, mo.locs, metric='Euclidean')
     for i in range(len(nbo.locs)):
-        min_ind = zip(*np.where(d == d.min()))[0]
+        min_ind = list(zip(*np.where(d == d.min())))[0]
         nbo.locs.iloc[min_ind[0], :] = mo.locs.iloc[min_ind[1], :]
         d[min_ind[0]] = np.inf
         d[:, min_ind[1]] = np.inf
