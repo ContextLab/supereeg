@@ -1,18 +1,18 @@
-# # -*- coding: utf-8 -*-
-# """
-# =============================
-# Simulate data
-# =============================
-#
-# In this example, we demonstrate the simulate functions.
-# First, we'll load in some example locations. We simulate
-# 10 brain objects using a subset of locations and the correlational structure
-# (a toeplitz matrix) to create the model. We then update that model with
-# one simulated brain object, also create from a subset of locations and the
-# correlational structure (a toeplitz matrix). Finally, we update the model with
-# 10 more brain objects following the same simulation procedure above.
-# 
-# """
+# -*- coding: utf-8 -*-
+"""
+=============================
+Simulate data
+=============================
+
+In this example, we demonstrate the simulate functions.
+First, we'll load in some example locations. We simulate
+10 brain objects using a subset of locations and the correlational structure
+(a toeplitz matrix) to create the model. We then update that model with
+one simulated brain object, also create from a subset of locations and the
+correlational structure (a toeplitz matrix). Finally, we update the model with
+10 more brain objects following the same simulation procedure above.
+
+"""
 #
 # # Code source: Andrew Heusser & Lucy Owen
 # # License: MIT

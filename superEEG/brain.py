@@ -264,6 +264,8 @@ class Brain(object):
         ax.set_ylim([0,len(Y.columns) + 1])
         if filepath:
             plt.savefig(filename = filepath)
+        else:
+            plt.show()
 
     def plot_locs(self, pdfpath = None):
         """

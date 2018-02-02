@@ -123,7 +123,7 @@ data as a brain object. First, let’s load in an example subjects data:
     Number of electrodes: 64
     Recording time in seconds: [[  5.3984375  14.1328125]]
     Number of sessions: 2
-    Date created: Fri Feb  2 10:21:18 2018
+    Date created: Fri Feb  2 10:38:22 2018
     Meta data: CH003
 
 
@@ -139,7 +139,7 @@ Now you can update the model with that brain object:
 
     Number of locations: 170
     Number of subjects: 67
-    Date created: Fri Feb  2 10:21:19 2018
+    Date created: Fri Feb  2 10:38:23 2018
     Meta data: None
 
 
@@ -186,7 +186,7 @@ construct the model from that data:
     Number of electrodes: 10
     Recording time in seconds: [ 1.]
     Number of sessions: 1
-    Date created: Fri Feb  2 10:21:19 2018
+    Date created: Fri Feb  2 10:38:23 2018
     Meta data: None
 
 
@@ -205,7 +205,7 @@ new model will be generated:
 
     Number of locations: 170
     Number of subjects: 10
-    Date created: Fri Feb  2 10:21:24 2018
+    Date created: Fri Feb  2 10:38:28 2018
     Meta data: None
 
 
@@ -302,7 +302,7 @@ reconstruct:
     Number of electrodes: 64
     Recording time in seconds: [[  5.3984375  14.1328125]]
     Number of sessions: 2
-    Date created: Fri Feb  2 10:21:18 2018
+    Date created: Fri Feb  2 10:38:22 2018
     Meta data: CH003
 
 
@@ -323,7 +323,7 @@ reconstruct:
     Number of electrodes: 170
     Recording time in seconds: [  5.3984375  14.1328125]
     Number of sessions: 2
-    Date created: Fri Feb  2 10:21:27 2018
+    Date created: Fri Feb  2 10:38:31 2018
     Meta data: None
 
 

@@ -32,3 +32,14 @@ Model data object
   :toctree:
 
   Model
+
+Simulations
+------------------
+
+.. autosummary::
+  :toctree:
+
+  simulate_locations
+  simulate_model_bos
+  simulate_bo
+  create_cov

@@ -2,36 +2,32 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="72de947b-ed70-4f88-b013-460cd0bdb63e" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/tutorial/model_objects_files/model_objects_23_1.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/tutorial/model_objects_files/model_objects_23_4.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/tutorial/model_objects_files/model_objects_7_1.png" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/images/sphx_glr_plot_load_example_data_001.png" afterPath="$PROJECT_DIR$/docs/auto_examples/images/sphx_glr_plot_load_example_data_001.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/images/sphx_glr_plot_load_example_data_002.png" afterPath="$PROJECT_DIR$/docs/auto_examples/images/sphx_glr_plot_load_example_data_002.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/images/sphx_glr_plot_load_nifti_001.png" afterPath="$PROJECT_DIR$/docs/auto_examples/images/sphx_glr_plot_load_nifti_001.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/images/sphx_glr_plot_model_001.png" afterPath="$PROJECT_DIR$/docs/auto_examples/images/sphx_glr_plot_model_001.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/images/thumb/sphx_glr_plot_load_example_data_thumb.png" afterPath="$PROJECT_DIR$/docs/auto_examples/images/thumb/sphx_glr_plot_load_example_data_thumb.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/images/thumb/sphx_glr_plot_load_nifti_thumb.png" afterPath="$PROJECT_DIR$/docs/auto_examples/images/thumb/sphx_glr_plot_load_nifti_thumb.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/images/thumb/sphx_glr_plot_model_thumb.png" afterPath="$PROJECT_DIR$/docs/auto_examples/images/thumb/sphx_glr_plot_model_thumb.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/tutorial/brain_objects_files/brain_objects_4_0.png" afterPath="$PROJECT_DIR$/docs/tutorial/brain_objects_files/brain_objects_4_0.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_load_example_data.ipynb" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_load_example_data.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_load_example_data.py" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_load_example_data.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_load_example_data.py.md5" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_load_example_data.py.md5" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_load_example_data.rst" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_load_example_data.rst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_load_nifti.ipynb" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_load_nifti.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_load_nifti.py" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_load_nifti.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_load_nifti.py.md5" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_load_nifti.py.md5" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_load_nifti.rst" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_load_nifti.rst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_model.ipynb" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_model.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_model.py" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_model.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_model.py.md5" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_model.py.md5" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_model.rst" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_model.rst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/auto_examples_jupyter.zip" afterPath="$PROJECT_DIR$/docs/auto_examples/auto_examples_jupyter.zip" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/auto_examples_python.zip" afterPath="$PROJECT_DIR$/docs/auto_examples/auto_examples_python.zip" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/images/sphx_glr_plot_update_model_001.png" afterPath="$PROJECT_DIR$/docs/auto_examples/images/sphx_glr_plot_update_model_001.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/images/thumb/sphx_glr_plot_update_model_thumb.png" afterPath="$PROJECT_DIR$/docs/auto_examples/images/thumb/sphx_glr_plot_update_model_thumb.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/api.rst" afterPath="$PROJECT_DIR$/docs/api.rst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_reconstruct_correlation_matrix.ipynb" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_reconstruct_correlation_matrix.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_reconstruct_correlation_matrix.py" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_reconstruct_correlation_matrix.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/tutorial/brain_objects.ipynb" afterPath="$PROJECT_DIR$/docs/tutorial/brain_objects.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_reconstruct_correlation_matrix.py.md5" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_reconstruct_correlation_matrix.py.md5" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_reconstruct_correlation_matrix.rst" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_reconstruct_correlation_matrix.rst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_update_model.ipynb" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_update_model.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_update_model.py" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_update_model.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_update_model.py.md5" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_update_model.py.md5" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/plot_update_model.rst" afterPath="$PROJECT_DIR$/docs/auto_examples/plot_update_model.rst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/predict.ipynb" afterPath="$PROJECT_DIR$/docs/auto_examples/predict.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/predict.py" afterPath="$PROJECT_DIR$/docs/auto_examples/predict.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/predict.rst" afterPath="$PROJECT_DIR$/docs/auto_examples/predict.rst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/simulation.ipynb" afterPath="$PROJECT_DIR$/docs/auto_examples/simulation.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/simulation.py" afterPath="$PROJECT_DIR$/docs/auto_examples/simulation.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/simulation.rst" afterPath="$PROJECT_DIR$/docs/auto_examples/simulation.rst" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/tutorial/brain_objects.rst" afterPath="$PROJECT_DIR$/docs/tutorial/brain_objects.rst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/tutorial/model_objects.ipynb" afterPath="$PROJECT_DIR$/docs/tutorial/model_objects.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/tutorial/model_objects.rst" afterPath="$PROJECT_DIR$/docs/tutorial/model_objects.rst" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/plot_reconstruct_correlation_matrix.py" afterPath="$PROJECT_DIR$/examples/plot_reconstruct_correlation_matrix.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/simulation.py" afterPath="$PROJECT_DIR$/examples/simulation.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/brain.py" afterPath="$PROJECT_DIR$/superEEG/brain.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/simulate.py" afterPath="$PROJECT_DIR$/superEEG/simulate.py" />
     </list>
     <ignored path="superEEG.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -51,11 +47,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="simulation.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="simulation.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/examples/simulation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="247">
-              <caret line="13" column="2" selection-start-line="13" selection-start-column="2" selection-end-line="13" selection-end-column="2" />
+            <state relative-caret-position="456">
+              <caret line="24" column="20" selection-start-line="24" selection-start-column="20" selection-end-line="24" selection-end-column="20" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="api.rst" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/docs/api.rst">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="468">
+              <caret line="43" column="13" selection-start-line="43" selection-start-column="13" selection-end-line="43" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -74,8 +80,8 @@
       <file leaf-file-name="simulated_patient_data.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cluster/simulation/simulated_patient_data.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="361">
-              <caret line="236" column="5" selection-start-line="236" selection-start-column="5" selection-end-line="236" selection-end-column="5" />
+            <state relative-caret-position="57">
+              <caret line="220" column="0" selection-start-line="220" selection-start-column="0" selection-end-line="220" selection-end-column="0" />
               <folding>
                 <element signature="e#343#364#0" expanded="true" />
               </folding>
@@ -111,8 +117,32 @@
         <entry file="file://$PROJECT_DIR$/examples/plot_reconstruct_correlation_matrix.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="62" selection-end-column="0" />
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="14" selection-end-column="3" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="simulate.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/superEEG/simulate.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="723">
+              <caret line="151" column="14" selection-start-line="151" selection-start-column="14" selection-end-line="151" selection-end-column="14" />
+              <folding>
+                <element signature="e#0#12#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="brain.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/superEEG/brain.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="514">
+              <caret line="267" column="21" selection-start-line="267" selection-start-column="21" selection-end-line="267" selection-end-column="21" />
+              <folding>
+                <element signature="e#25#36#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -161,11 +191,9 @@
         <option value="$PROJECT_DIR$/tests/test_helpers.py" />
         <option value="$PROJECT_DIR$/tests/test_model.py" />
         <option value="$PROJECT_DIR$/examples/predict.py" />
-        <option value="$PROJECT_DIR$/superEEG/brain.py" />
         <option value="$PROJECT_DIR$/examples/plot_load_example_data.py" />
         <option value="$PROJECT_DIR$/examples/plot_model.py" />
         <option value="$PROJECT_DIR$/examples/plot_update_model.py" />
-        <option value="$PROJECT_DIR$/superEEG/simulate.py" />
         <option value="$PROJECT_DIR$/superEEG/load.py" />
         <option value="$PROJECT_DIR$/tests/test_load.py" />
         <option value="$PROJECT_DIR$/tests/test_simulate.py" />
@@ -175,6 +203,9 @@
         <option value="$PROJECT_DIR$/superEEG/model.py" />
         <option value="$PROJECT_DIR$/examples/plot_reconstruct_correlation_matrix.py" />
         <option value="$PROJECT_DIR$/examples/simulation.py" />
+        <option value="$PROJECT_DIR$/docs/api.rst" />
+        <option value="$PROJECT_DIR$/superEEG/simulate.py" />
+        <option value="$PROJECT_DIR$/superEEG/brain.py" />
       </list>
     </option>
   </component>
@@ -833,13 +864,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/cluster/simulation/simulate_job_submit.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="418">
-          <caret line="27" column="43" selection-start-line="27" selection-start-column="43" selection-end-line="27" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/requirements.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="266">
@@ -1121,24 +1145,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/superEEG/brain.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="268">
-          <caret line="264" column="20" selection-start-line="264" selection-start-column="20" selection-end-line="264" selection-end-column="20" />
-          <folding>
-            <element signature="e#25#36#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/superEEG/simulate.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="19">
-          <caret line="1" column="18" selection-start-line="1" selection-start-column="18" selection-end-line="1" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/superEEG/load.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="343">
@@ -1207,16 +1213,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cluster/simulation/simulated_patient_data.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="361">
-          <caret line="236" column="5" selection-start-line="236" selection-start-column="5" selection-end-line="236" selection-end-column="5" />
-          <folding>
-            <element signature="e#343#364#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/examples/predict.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="475">
@@ -1245,19 +1241,57 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/cluster/simulation/simulated_patient_data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="57">
+          <caret line="220" column="0" selection-start-line="220" selection-start-column="0" selection-end-line="220" selection-end-column="0" />
+          <folding>
+            <element signature="e#343#364#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/examples/plot_reconstruct_correlation_matrix.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="62" selection-end-column="0" />
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="14" selection-end-column="3" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/examples/simulation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="247">
-          <caret line="13" column="2" selection-start-line="13" selection-start-column="2" selection-end-line="13" selection-end-column="2" />
+        <state relative-caret-position="456">
+          <caret line="24" column="20" selection-start-line="24" selection-start-column="20" selection-end-line="24" selection-end-column="20" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/api.rst">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="468">
+          <caret line="43" column="13" selection-start-line="43" selection-start-column="13" selection-end-line="43" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/superEEG/simulate.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="723">
+          <caret line="151" column="14" selection-start-line="151" selection-start-column="14" selection-end-line="151" selection-end-column="14" />
+          <folding>
+            <element signature="e#0#12#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/superEEG/brain.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="514">
+          <caret line="267" column="21" selection-start-line="267" selection-start-column="21" selection-end-line="267" selection-end-column="21" />
+          <folding>
+            <element signature="e#25#36#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

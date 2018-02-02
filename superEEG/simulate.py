@@ -150,18 +150,38 @@ def simulate_bo(n_samples=1000, n_elecs=10, locs=None, cov='random',
 
     Parameters
     ----------
+    n_samples : int
+        Number of time samples
+
+    locs :  np.ndarray
+         A location by coordinate (x,y,z) matrix of simulated electrode locations
 
     n_elecs : int
         Number of electrodes
 
     cov : str or np.array
-    The covariance structure of the data.
-    If 'eye', the covariance will be the identity matrix.
-    If 'toeplitz', the covariance will be a toeplitz matrix.
-    If 'random', uses a random semidefinite matrix with a set random seed.
-    If 'distance'calculates the euclidean distance between each electrode.
-    You can also pass a custom covariance matrix by simply passing
-    numpy array that is n_elecs by n_elecs
+        The covariance structure of the data.
+        If 'eye', the covariance will be the identity matrix.
+        If 'toeplitz', the covariance will be a toeplitz matrix.
+        If 'random', uses a random semidefinite matrix with a set random seed.
+        If 'distance'calculates the euclidean distance between each electrode.
+        You can also pass a custom covariance matrix by simply passing
+        numpy array that is n_elecs by n_elecs
+
+    sample_rate : int
+        Sample rate
+
+    sessions : list
+        Sesssions
+
+    meta : str
+        Meta info
+
+    noise : int or float
+        Noise added to simulation
+
+    random_seed : bool or int
+        Default False.  If True, set random seed to 123.  If int, set random seed to value.
 
     Returns
     ----------
