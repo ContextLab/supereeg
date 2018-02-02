@@ -13,15 +13,8 @@ This example loads a nifti file and converts it into a brain object.
 
 
 
-.. code-block:: pytb
-
-    Traceback (most recent call last):
-      File "/Library/Python/2.7/site-packages/sphinx_gallery/gen_rst.py", line 475, in execute_code_block
-        exec(code_block, example_globals)
-      File "<string>", line 13, in <module>
-      File "/Users/lucyowen/repos/superEEG/superEEG/brain.py", line 288, in to_nii
-        data[a, b, c, d] = row.loc[j]
-    IndexError: index 10 is out of bounds for axis 1 with size 10
+.. image:: /auto_examples/images/sphx_glr_plot_load_nifti_001.png
+    :align: center
 
 
 
@@ -38,7 +31,7 @@ This example loads a nifti file and converts it into a brain object.
     from nilearn import plotting as ni_plt
 
     # load nifti -> brain object
-    bo = se.load('example_nifti')
+    bo = se.load('gray_mask_6mm_brain')
 
     # export brain object -> nifti
     nifti = bo.to_nii()
@@ -47,7 +40,7 @@ This example loads a nifti file and converts it into a brain object.
     ni_plt.plot_anat(nifti)
     ni_plt.show()
 
-**Total running time of the script:** ( 0 minutes  0.000 seconds)
+**Total running time of the script:** ( 0 minutes  0.653 seconds)
 
 
 

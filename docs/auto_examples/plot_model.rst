@@ -26,16 +26,15 @@ Here we load the example model, and then plot it.
     # Code source: Andrew Heusser & Lucy Owen
     # License: MIT
 
-    # import
     import superEEG as se
 
-    # load example data
+    # load example model
     model = se.load('example_model')
 
     # plot it
     model.plot(xticklabels=False, yticklabels=False)
 
-**Total running time of the script:** ( 0 minutes  0.308 seconds)
+**Total running time of the script:** ( 0 minutes  0.171 seconds)
 
 
 

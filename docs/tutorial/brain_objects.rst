@@ -2,11 +2,11 @@
 Building a brain object
 =======================
 
-Brain objects are superEEG's fundamental data structure for a single
-subject's iEEG data. To create one at minimum you'll need a matrix of
+Brain objects are superEEG’s fundamental data structure for a single
+subject’s iEEG data. To create one at minimum you’ll need a matrix of
 neural recordings (time samples by electrodes), electrode locations, and
 a sample rate. Additionally, you can include information about separate
-recording sessions and store custom meta data. In this tutorial, we'll
+recording sessions and store custom meta data. In this tutorial, we’ll
 build a brain object from scratch and get familiar with some of the
 methods.
 
@@ -18,11 +18,19 @@ Load in the required libraries
     import superEEG as se
     import numpy as np
     import seaborn as sns
+    import matplotlib.pyplot as plt
+
+
+.. parsed-literal::
+
+    /Library/Python/2.7/site-packages/sklearn/cross_validation.py:44: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the refactored classes and functions are moved. Also note that the interface of the new CV iterators are different from that of this module. This module will be removed in 0.20.
+      "This module will be removed in 0.20.", DeprecationWarning)
+
 
 Simulate some data
 ==================
 
-First, we'll use superEEG's built in simulation functions to simulate
+First, we’ll use superEEG’s built in simulation functions to simulate
 some data and electrodes. By default, the ``simualate_data`` function
 will return a 1000 samples by 10 electrodes matrix, but you can specify
 the number of time samples with ``n_samples`` and the number of
@@ -31,20 +39,38 @@ electrodes with ``n_elecs``:
 .. code:: ipython2
 
     # simulate some data
-    data = se.simulate_data(n_samples=10000, n_elecs=10)
+    data = se.simulate_bo(n_samples=1000, sessions=2, n_elecs=10).get_data()
     
     # plot it
-    sns.plt.plot(data)
-    sns.plt.xlabel('time samples')
-    sns.plt.ylabel('activation')
-    sns.plt.show()
+    plt.plot(data)
+    plt.xlabel('time samples')
+    plt.ylabel('activation')
+    plt.show()
 
 
 
 .. image:: brain_objects_files/brain_objects_4_0.png
 
 
-We'll also simulate some electrode locations
+.. code:: ipython2
+
+    # you can also specify a random seed and set the noise parameter to 0 
+    # if you want to simulate the same brain object again
+    
+    data1 = se.simulate_bo(n_samples=1000, sessions=2, n_elecs=5, random_seed=True, noise=0).get_data()
+    data2 = se.simulate_bo(n_samples=1000, sessions=2, n_elecs=5, random_seed=True, noise=0).get_data()
+    np.allclose(data1, data2)
+
+
+
+
+.. parsed-literal::
+
+    True
+
+
+
+We’ll also simulate some electrode locations
 
 .. code:: ipython2
 
@@ -54,16 +80,17 @@ We'll also simulate some electrode locations
 
 .. parsed-literal::
 
-    [[ 20  43  73]
-     [-64  70  -6]
-     [-57 -24 -39]
-     [-34   5 -76]
-     [-76 -20   4]
-     [-26   0 -53]
-     [-58 -50 -15]
-     [ 67  40  65]
-     [-33  51  67]
-     [-17 -61 -26]]
+        x   y   z
+    0 -26  37  17
+    1   2 -39 -34
+    2  19  49 -27
+    3 -11 -13 -16
+    4 -21  22   7
+    5  45 -47 -35
+    6 -48 -47 -28
+    7  35 -37  33
+    8 -40   6  42
+    9 -10 -11  -6
 
 
 Creating a brain object
@@ -74,7 +101,7 @@ the ``Brain`` class like this:
 
 .. code:: ipython2
 
-    bo = se.Brain(data=data, locs=locs, sample_rate=1000)
+    bo = se.Brain(data=data, locs=locs, sample_rate=100)
 
 To view a summary of the contents of the brain object, you can call the
 ``info`` function:
@@ -87,15 +114,15 @@ To view a summary of the contents of the brain object, you can call the
 .. parsed-literal::
 
     Number of electrodes: 10
-    Recording time in seconds: 10
+    Recording time in seconds: [ 10.]
     Number of sessions: 1
-    Date created: Wed Sep 13 20:44:14 2017
+    Date created: Fri Feb  2 10:21:05 2018
     Meta data: None
 
 
-Optionally, you can pass a ``sessions`` parameter, which is a numpy
-array the length of your data with a unique identifier for each session.
-For example:
+Optionally, you can pass a ``sessions`` parameter, which is can be a
+numpy array or list the length of your data with a unique identifier for
+each session. For example:
 
 .. code:: ipython2
 
@@ -107,9 +134,9 @@ For example:
 .. parsed-literal::
 
     Number of electrodes: 10
-    Recording time in seconds: 10
+    Recording time in seconds: [ 0.5  0.5]
     Number of sessions: 2
-    Date created: Wed Sep 13 20:44:14 2017
+    Date created: Fri Feb  2 10:21:05 2018
     Meta data: None
 
 
@@ -131,9 +158,9 @@ you want:
 .. parsed-literal::
 
     Number of electrodes: 10
-    Recording time in seconds: 10
+    Recording time in seconds: [ 0.5  0.5]
     Number of sessions: 2
-    Date created: Wed Sep 13 20:44:14 2017
+    Date created: Fri Feb  2 10:21:05 2018
     Meta data: {'Hospital': 'DHMC', 'subjectID': '123', 'Investigator': 'Andy'}
 
 
@@ -153,17 +180,17 @@ that can be accessed directly:
 .. raw:: html
 
     <div>
-    <style>
-        .dataframe thead tr:only-child th {
-            text-align: right;
-        }
-    
-        .dataframe thead th {
-            text-align: left;
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
         }
     
         .dataframe tbody tr th {
             vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
         }
     </style>
     <table border="1" class="dataframe">
@@ -185,68 +212,68 @@ that can be accessed directly:
       <tbody>
         <tr>
           <th>0</th>
-          <td>0.736689</td>
-          <td>-1.351790</td>
-          <td>-0.354450</td>
-          <td>0.097813</td>
-          <td>1.738638</td>
-          <td>-0.191214</td>
-          <td>0.430361</td>
-          <td>-1.533757</td>
-          <td>-2.669739</td>
-          <td>1.964575</td>
+          <td>1.402425</td>
+          <td>1.507506</td>
+          <td>1.509823</td>
+          <td>0.798233</td>
+          <td>0.309975</td>
+          <td>1.000785</td>
+          <td>0.714815</td>
+          <td>0.925150</td>
+          <td>0.940090</td>
+          <td>0.665643</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>-0.782859</td>
-          <td>-0.485609</td>
-          <td>0.774961</td>
-          <td>-0.044896</td>
-          <td>-0.066135</td>
-          <td>1.345479</td>
-          <td>-1.780028</td>
-          <td>-1.552078</td>
-          <td>0.493869</td>
-          <td>1.244928</td>
+          <td>0.393498</td>
+          <td>0.798619</td>
+          <td>0.352916</td>
+          <td>-0.501393</td>
+          <td>-0.112511</td>
+          <td>0.299668</td>
+          <td>-0.345194</td>
+          <td>-0.185758</td>
+          <td>-0.008669</td>
+          <td>0.486264</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>-1.477205</td>
-          <td>0.887424</td>
-          <td>-0.644102</td>
-          <td>-1.692734</td>
-          <td>0.478760</td>
-          <td>0.410642</td>
-          <td>1.296110</td>
-          <td>0.786275</td>
-          <td>0.283199</td>
-          <td>-0.621038</td>
+          <td>0.018856</td>
+          <td>0.098373</td>
+          <td>-0.061930</td>
+          <td>0.505044</td>
+          <td>0.062024</td>
+          <td>0.395689</td>
+          <td>0.401702</td>
+          <td>0.219433</td>
+          <td>0.496201</td>
+          <td>0.319220</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>0.460382</td>
-          <td>0.572336</td>
-          <td>1.025309</td>
-          <td>0.581930</td>
-          <td>-2.071887</td>
-          <td>-0.420389</td>
-          <td>1.007538</td>
-          <td>-0.441497</td>
-          <td>1.121191</td>
-          <td>0.050903</td>
+          <td>0.419532</td>
+          <td>0.535559</td>
+          <td>1.173978</td>
+          <td>-0.131416</td>
+          <td>1.077796</td>
+          <td>0.188323</td>
+          <td>0.358555</td>
+          <td>0.168001</td>
+          <td>0.343332</td>
+          <td>0.418130</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>1.105034</td>
-          <td>-2.549072</td>
-          <td>-0.363674</td>
-          <td>-0.613376</td>
-          <td>-1.379841</td>
-          <td>-0.473291</td>
-          <td>0.266435</td>
-          <td>-0.044713</td>
-          <td>-0.748226</td>
-          <td>0.823629</td>
+          <td>-0.905368</td>
+          <td>-1.239255</td>
+          <td>-1.538443</td>
+          <td>-0.108556</td>
+          <td>-0.048805</td>
+          <td>-0.696387</td>
+          <td>-0.184118</td>
+          <td>-0.285191</td>
+          <td>-0.841160</td>
+          <td>-1.698069</td>
         </tr>
       </tbody>
     </table>
@@ -265,19 +292,19 @@ or returned as a numpy array using the ``get_data`` method:
 
 .. parsed-literal::
 
-    array([[ 0.73668947, -1.35179023, -0.35445011, ..., -1.53375656,
-            -2.66973883,  1.96457473],
-           [-0.78285937, -0.48560937,  0.77496069, ..., -1.55207771,
-             0.49386939,  1.24492799],
-           [-1.47720453,  0.88742391, -0.64410235, ...,  0.78627512,
-             0.28319937, -0.621038  ],
+    array([[ 1.4024247 ,  1.50750589,  1.50982256, ...,  0.92515009,
+             0.94008997,  0.66564312],
+           [ 0.39349802,  0.79861949,  0.35291604, ..., -0.18575847,
+            -0.00866945,  0.48626406],
+           [ 0.01885617,  0.09837292, -0.06193032, ...,  0.21943324,
+             0.49620131,  0.31922024],
            ..., 
-           [-0.04787538,  0.72265132,  0.75719168, ...,  1.67286872,
-            -1.21309623,  1.40871669],
-           [ 0.15541992, -0.44662719, -0.21052171, ..., -0.01532474,
-             1.53284149,  0.33198072],
-           [ 0.61143495, -1.16511284,  1.20299687, ...,  1.58987572,
-            -1.89189214,  0.39488465]])
+           [ 0.72083748,  0.20572967,  0.30822715, ...,  0.94712354,
+             0.41900735,  0.75787876],
+           [-1.9247862 , -1.02016648, -1.25933994, ..., -0.02487984,
+            -0.96613633, -1.18037104],
+           [ 0.75922625,  0.89205645,  0.75038871, ...,  0.15272148,
+             0.59340917,  0.10053925]])
 
 
 
@@ -294,17 +321,17 @@ can be retrieved as a numpy array using the ``get_locs`` method:
 .. raw:: html
 
     <div>
-    <style>
-        .dataframe thead tr:only-child th {
-            text-align: right;
-        }
-    
-        .dataframe thead th {
-            text-align: left;
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
         }
     
         .dataframe tbody tr th {
             vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
         }
     </style>
     <table border="1" class="dataframe">
@@ -319,33 +346,33 @@ can be retrieved as a numpy array using the ``get_locs`` method:
       <tbody>
         <tr>
           <th>0</th>
-          <td>20</td>
-          <td>43</td>
-          <td>73</td>
+          <td>-26</td>
+          <td>37</td>
+          <td>17</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>-64</td>
-          <td>70</td>
-          <td>-6</td>
+          <td>2</td>
+          <td>-39</td>
+          <td>-34</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>-57</td>
-          <td>-24</td>
-          <td>-39</td>
+          <td>19</td>
+          <td>49</td>
+          <td>-27</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>-34</td>
-          <td>5</td>
-          <td>-76</td>
+          <td>-11</td>
+          <td>-13</td>
+          <td>-16</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>-76</td>
-          <td>-20</td>
-          <td>4</td>
+          <td>-21</td>
+          <td>22</td>
+          <td>7</td>
         </tr>
       </tbody>
     </table>
@@ -362,20 +389,47 @@ can be retrieved as a numpy array using the ``get_locs`` method:
 
 .. parsed-literal::
 
-    array([[ 20,  43,  73],
-           [-64,  70,  -6],
-           [-57, -24, -39],
-           [-34,   5, -76],
-           [-76, -20,   4],
-           [-26,   0, -53],
-           [-58, -50, -15],
-           [ 67,  40,  65],
-           [-33,  51,  67],
-           [-17, -61, -26]])
+    array([[-26,  37,  17],
+           [  2, -39, -34],
+           [ 19,  49, -27],
+           [-11, -13, -16],
+           [-21,  22,   7],
+           [ 45, -47, -35],
+           [-48, -47, -28],
+           [ 35, -37,  33],
+           [-40,   6,  42],
+           [-10, -11,  -6]])
 
 
 
-The other peices of the brain object are listed below:
+You can also plot both the data and the electrode locations:
+
+.. code:: ipython2
+
+    bo.plot_data()
+    plt.show()
+
+
+
+.. image:: brain_objects_files/brain_objects_24_0.png
+
+
+.. code:: ipython2
+
+    bo.plot_locs()
+
+
+.. parsed-literal::
+
+    /Library/Python/2.7/site-packages/nilearn/plotting/displays.py:1259: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
+      if node_color == 'auto':
+
+
+
+.. image:: brain_objects_files/brain_objects_25_1.png
+
+
+The other pieces of the brain object are listed below:
 
 .. code:: ipython2
 
@@ -391,7 +445,7 @@ The other peices of the brain object are listed below:
     # number of electrodes
     n_elecs = bo.n_elecs
     
-    # length of recording in seconds
+    # length of each recording session in seconds
     n_seconds = bo.n_secs
     
     # the date and time that the bo was created
@@ -402,6 +456,9 @@ The other peices of the brain object are listed below:
     
     # meta data
     meta = bo.meta
+    
+    # label delinieating observed and reconstructed locations
+    label = bo.label
 
 Brain object methods
 ====================
@@ -421,20 +478,27 @@ This method will give you a summary of the brain object:
 .. parsed-literal::
 
     Number of electrodes: 10
-    Recording time in seconds: 10
+    Recording time in seconds: [ 0.5  0.5]
     Number of sessions: 2
-    Date created: Wed Sep 13 20:44:14 2017
+    Date created: Fri Feb  2 10:21:05 2018
     Meta data: {'Hospital': 'DHMC', 'subjectID': '123', 'Investigator': 'Andy'}
 
 
 ``bo.get_data()``
 -----------------
 
-This method will return a numpy array of the data:
-
 .. code:: ipython2
 
     data_array = bo.get_data()
+
+``bo.get_zscore_data()``
+------------------------
+
+This method will return a numpy array of the zscored data:
+
+.. code:: ipython2
+
+    zdata_array = bo.get_zscore_data()
 
 ``bo.get_locs()``
 -----------------
@@ -445,20 +509,44 @@ This method will return a numpy array of the electrode locations:
 
     locs = bo.get_locs()
 
-``bo.save('filepath')``
------------------------
+``bo.plot_data()``
+------------------
 
-This method will save the brain object to the specified file location:
+This method normalizes and plots data from brain object:
 
 .. code:: ipython2
 
-    bo.save('brain_object')
+    bo.plot_data()
+
+``bo.plot_locs()``
+------------------
+
+This method plots electrode locations from brain object:
+
+.. code:: ipython2
+
+    bo.plot_locs()
 
 
-.. parsed-literal::
 
-    Brain object saved as pickle.
+.. image:: brain_objects_files/brain_objects_40_0.png
 
+
+
+.. image:: brain_objects_files/brain_objects_40_1.png
+
+
+``bo.save(fname='something')``
+------------------------------
+
+This method will save the brain object to the specified file location.
+The data will be saved as a ‘bo’ file, which is a dictionary containing
+the elements of a brain object saved in the hd5 format using
+``deepdish``.
+
+.. code:: ipython2
+
+    #bo.save(fname='brain_object')
 
 ``bo.to_nii()``
 ---------------
@@ -482,4 +570,11 @@ specify a nifti template with the ``template`` argument.
 .. parsed-literal::
 
     <class 'nibabel.nifti1.Nifti1Image'>
+
+
+.. parsed-literal::
+
+    /Users/lucyowen/repos/superEEG/superEEG/brain.py:397: RuntimeWarning: invalid value encountered in divide
+      data = np.divide(data, counts)
+
 

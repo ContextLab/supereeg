@@ -26,15 +26,20 @@ Here, we load an example dataset and then print out some information about it.
       .. image:: /auto_examples/images/sphx_glr_plot_load_example_data_002.png
             :scale: 47
 
+    *
+
+      .. image:: /auto_examples/images/sphx_glr_plot_load_example_data_003.png
+            :scale: 47
+
 
 .. rst-class:: sphx-glr-script-out
 
  Out::
 
     Number of electrodes: 64
-    Recording time in seconds: [[19 19 19]]
-    Number of sessions: 1
-    Date created: Thu Jan 18 15:23:49 2018
+    Recording time in seconds: [[  5.3984375  14.1328125]]
+    Number of sessions: 2
+    Date created: Fri Feb  2 10:22:12 2018
     Meta data: CH003
 
 
@@ -64,14 +69,16 @@ Here, we load an example dataset and then print out some information about it.
     bo.data.head()
 
     # and visualize the data
-
     bo.plot_data()
+
+    # the default time window is the first 10 seconds, but you can specify your own timewindow
+    bo.plot_data(time_min=10, time_max=15)
 
     # then can visualize locations
     bo.plot_locs()
 
 
-**Total running time of the script:** ( 0 minutes  1.080 seconds)
+**Total running time of the script:** ( 0 minutes  1.404 seconds)
 
 
 
