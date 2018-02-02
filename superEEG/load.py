@@ -96,10 +96,6 @@ def load(fname):
             print('subjects = ', data['subjs'])
         return locs
 
-    elif fname is 'mini_model':
-        bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_mask_20mm_brain.nii')
-        return bo
-
     elif fname is 'gray_mask_6mm_brain':
         bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_mask_6mm_brain.nii')
         return bo

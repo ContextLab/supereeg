@@ -121,7 +121,7 @@ def test_electrode_contingencies_1_null_set():
     noise = 0
 
     # load mini model
-    gray = se.load('mini_model')
+    gray = se.load('example_nifti')
 
     # extract 20 locations
     gray_locs = gray.locs.iloc[:5]
@@ -168,7 +168,7 @@ def test_electrode_contingencies_2_subset():
 
     noise = 0
 
-    gray = se.load('mini_model')
+    gray = se.load('example_nifti')
 
     # extract locations
     gray_locs = gray.locs.iloc[:5]
@@ -208,7 +208,7 @@ def test_electrode_contingencies_3_locations_can_subset():
     noise = 0
 
     # load mini model
-    gray = se.load('mini_model')
+    gray = se.load('example_nifti')
 
     # extract 20 locations
     gray_locs = gray.locs.iloc[:5]

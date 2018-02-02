@@ -203,20 +203,20 @@ class Brain(object):
         Parameters
         ----------
         filepath : str
-        A name for the file.  If the file extension (.png) is not specified, it will be appended.
+            A name for the file.  If the file extension (.png) is not specified, it will be appended.
 
         time_min : int
-        Minimum value for desired time window
+            Minimum value for desired time window
 
         time_max : int
-        Maximum value for desired time window
+            Maximum value for desired time window
 
         title : str
-        Title for plot
+            Title for plot
 
         electrode : int
-        Location in MNI coordinate (x,y,z) by electrode df containing electrode locations
-        ## should add functionality that matches the coordinate instead of location in matrix
+            Location in MNI coordinate (x,y,z) by electrode df containing electrode locations
+            ## should add functionality that matches the coordinate instead of location in matrix
 
         threshold : int
         Value of kurtosis threshold
@@ -241,18 +241,18 @@ class Brain(object):
         if electrode is not None:
             Y = Y.columns[int(electrode)]
 
-        # divde index by sample rate so that index corresponds to time
+        # divide index by sample rate so that index corresponds to time
         Y.index = Y.index / np.mean(self.sample_rate)
 
         # if a time window is designated index data in that window
         if all([time_min, time_max]):
-            mask = (Y.index > time_min) & (Y.index < time_max)
+            mask = (Y.index >= time_min) & (Y.index <= time_max)
             Y = Y[mask]
 
         # if a time window is not designated, default to the first 500 seconds
         else:
             time_min = 0
-            time_max =  500
+            time_max =  10
             mask = (Y.index >= time_min) & (Y.index <= time_max)
             Y= Y[mask]
 

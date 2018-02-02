@@ -32,7 +32,6 @@ reconstructed_bo_no_nn = model.predict(bo, nearest_neighbor = False)
 # this will match electrode to voxel if within 40 mms
 reconstructed_bo_nn_40 = model.predict(bo, nearest_neighbor = True, match_threshold=40)
 
-
 # another default is force_update=False.  if set to True, the model will update with the subject covariance matrix
 reconstructed_bo_fu = model.predict(bo, nearest_neighbor = False, force_update=True)
 
