@@ -266,7 +266,6 @@ else:
         ax = sns.heatmap(data_plot, vmin=0, vmax=1, mask=data_plot.isnull())
         ax.invert_yaxis()
         ax.set(xlabel='Number of electrodes from to-be-reconstructed patient', ylabel=' Number of electrodes from patients used to construct model')
-        #axs_iter += 1
 
 plt.savefig(os.path.join(config['resultsdir'], str(sys.argv[1]) + '_heatmap.pdf'))
 

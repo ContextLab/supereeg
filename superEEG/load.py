@@ -86,7 +86,7 @@ def load(fname):
         return locs
 
     elif fname is 'example_nifti':
-        bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_mask_20mm_brain.nii')
+        bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_mask_6mm_brain.nii')
         return bo
 
     elif fname is 'pyFR_union':

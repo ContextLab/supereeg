@@ -47,46 +47,9 @@ n_subs = 10
 
 # number of electrodes
 n_elecs = 20
-#
-# data = []
-#
-# # loop over simulated subjects
-# for i in range(n_subs):
-#
-#     # for each subject, randomly choose n_elecs electrode locations
-#     p = np.random.choice(range(len(locs)), n_elecs, replace=False)
-#
-#     # generate some random data
-#     rand_dist = np.random.multivariate_normal(np.zeros(len(locs)), np.eye(len(locs)), size=n_samples)
-#
-#     # impose R correlational structure on the random data, create the brain object and append to data
-#     data.append(se.Brain(data=np.dot(rand_dist, scipy.linalg.cholesky(R))[:,p], locs=pd.DataFrame(locs[p,:], columns=['x', 'y', 'z'])))
-#
-# # create the model object
-# model = se.Model(data=data, locs=locs)
-#
-# new_data = []
-#
-# # loop over simulated subjects
-# for i in range(n_subs):
-#
-#     # for each subject, randomly choose n_elecs electrode locations
-#     p = np.random.choice(range(len(locs)), n_elecs, replace=False)
-#
-#     # generate some random data
-#     rand_dist = np.random.multivariate_normal(np.zeros(len(locs)), np.eye(len(locs)), size=n_samples)
-#
-#     # new brain object
-#     new_data.append(se.Brain(data=np.dot(rand_dist, scipy.linalg.cholesky(R))[:,p], locs=pd.DataFrame(locs[p,:], columns=['x', 'y', 'z'])))
-#
-# # update the model
-# new_model = model.update(new_data)
-
-
-### with new simulate functions:
 
 # simulate brain objects for the model that subsample n_elecs for each synthetic patient
-model_bos = [se.simulate_model_bos(n_samples=10000, sample_rate=1000, locs=locs, sample_locs=n_elecs, cov='toeplitz') for x in
+model_bos = [se.simulate_model_bos(n_samples=1000, sample_rate=1000, locs=locs, sample_locs=n_elecs, cov='toeplitz') for x in
                      range(n_subs)]
 
 # create the model object
@@ -102,7 +65,7 @@ bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=sub_locs, cov='toepli
 new_model = model.update(bo)
 
 # simulate brain objects for the model that subsample n_elecs for each synthetic patient
-model_update_bos = [se.simulate_model_bos(n_samples=10000, sample_rate=1000, locs=locs, sample_locs=n_elecs, cov='toeplitz') for y in
+model_update_bos = [se.simulate_model_bos(n_samples=1000, sample_rate=1000, locs=locs, sample_locs=n_elecs, cov='toeplitz') for y in
                      range(n_subs)]
 
 # update the model

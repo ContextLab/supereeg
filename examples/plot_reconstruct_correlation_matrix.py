@@ -33,7 +33,7 @@ locs=pd.DataFrame(locs, columns=['x', 'y', 'z'])
 R = se.create_cov(cov='toeplitz', n_elecs=len(locs))
 
 # n_samples
-n_samples = 1000
+n_samples = 10
 
 # initialize subplots
 f, axarr = plt.subplots(4, 4)
@@ -45,7 +45,7 @@ for isub, n_subs in enumerate([10, 25, 50, 100]):
     for ielec, n_elecs in enumerate([10, 25, 50, 100]):
 
         # simulate brain objects for the model
-        model_bos = [se.simulate_model_bos(n_samples=10000, sample_rate=1000, locs=locs, sample_locs=n_elecs, cov='toeplitz') for x in
+        model_bos = [se.simulate_model_bos(n_samples=n_samples, sample_rate=10, locs=locs, sample_locs=n_elecs, cov='toeplitz') for x in
                      range(n_subs)]
 
         # create the model object

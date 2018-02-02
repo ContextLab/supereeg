@@ -62,7 +62,7 @@ for p, m, n in param_grid:
 
 
         #create brain objects with m_patients and loop over the number of model locations and subset locations to build model
-        model_bos = [se.simulate_model_bos(n_samples=10000, sample_rate=1000, locs=gray_locs, sample_locs = m) for x in range(p)]
+        model_bos = [se.simulate_model_bos(n_samples=1000, sample_rate=1000, locs=gray_locs, sample_locs = m) for x in range(p)]
 
         model_locs = pd.DataFrame()
         for i in range(len(model_bos)):
