@@ -29,7 +29,6 @@ def test_load_nifti():
     bo = se.load('example_nifti')
     assert isinstance(bo, se.Brain)
 
-
 # # this makes the test super long, from 5 secs to 73 secs
 #
 # def test_load_pyFR_k10r20_6mm():

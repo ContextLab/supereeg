@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 from superEEG._helpers.stats import corr_column
 
-# clean up simulate.py and write functions that return expected objects
 
 locs = se.load('example_locations')
 # number of timeseries samples
@@ -17,9 +16,7 @@ n_elecs = 10
 data = [se.simulate_model_bos(n_samples=10, sample_rate=1000, locs=locs, sample_locs = n_elecs) for x in range(n_subs)]
 # test model to compare
 test_model = se.Model(data=data, locs=locs)
-
 R = se.create_cov('random', len(locs))
-
 
 recon_1 = np.matrix([[ 0.82919399,  0.3047186 ,  0.82919399,  0.94488569, -0.1156917 ],
                      [-0.39653203, -0.14572065, -0.39653203,  0.77469247, -1.1712245 ],

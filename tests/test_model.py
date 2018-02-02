@@ -5,8 +5,8 @@ import superEEG as se
 import numpy as np
 import scipy
 import pandas as pd
-from superEEG._helpers.stats import rbf
 import seaborn as sns
+from superEEG._helpers.stats import rbf
 from sklearn import datasets
 
 # load example model to get locations
@@ -18,11 +18,10 @@ n_subs = 3
 # number of electrodes
 n_elecs = 5
 # simulate correlation matrix
-data = [se.simulate_model_bos(n_samples=10, sample_rate=1000, locs=locs, sample_locs = n_elecs) for x in range(n_subs)]
+data = [se.simulate_model_bos(n_samples=10, sample_rate=10, locs=locs, sample_locs = n_elecs) for x in range(n_subs)]
 # test model to compare
 test_model = se.Model(data=data, locs=locs)
 
-# make tests for attributes
 
 def test_create_model_1bo():
     model = se.Model(data=data[0], locs=locs)
@@ -43,6 +42,23 @@ def test_model_predict():
     model = se.Model(data=data[0:2], locs=locs)
     bo = model.predict(data[0], nearest_neighbor=False)
     assert isinstance(bo, se.Brain)
+
+def test_model_predict_nn():
+    model = se.Model(data=data[0:2], locs=locs)
+    bo = model.predict(data[0], nearest_neighbor=True)
+    assert isinstance(bo, se.Brain)
+
+def test_model_predict_nn_thresh():
+    model = se.Model(data=data[0:2], locs=locs)
+    bo = model.predict(data[0], nearest_neighbor=True, match_threshold=30)
+    assert isinstance(bo, se.Brain)
+
+def test_model_predict_nn_0():
+    model = se.Model(data=data[0:2], locs=locs)
+    bo_1 = model.predict(data[0], nearest_neighbor=True, match_threshold=0)
+    bo_2 = model.predict(data[0], nearest_neighbor=False)
+    assert isinstance(bo_1, se.Brain)
+    assert np.allclose(bo_1.get_data(), bo_2.get_data())
 
 def test_update():
     model = se.Model(data=data[1:3], locs=locs)

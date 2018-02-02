@@ -17,18 +17,14 @@ bo_full = se.simulate_bo(n_samples=10, sessions=2, sample_rate=10, locs=locs)
 # create brain object from subset of locations
 sub_locs = bo_full.locs.iloc[6:]
 sub_data = bo_full.data.iloc[:, sub_locs.index]
-
 bo = se.Brain(data=sub_data.as_matrix(), sessions=bo_full.sessions, locs=sub_locs, sample_rate=10,
               meta={'brain object locs sampled': 2})
-
 # simulate correlation matrix
 data = [se.simulate_model_bos(n_samples=10, locs=locs, sample_locs=n_elecs) for x in range(n_subs)]
-
 # test model to compare
 test_model = se.Model(data=data, locs=locs)
 
 
-##### _helpers/stats ########
 
 def test_apply_by_file_index():
     def aggregate(prev, next):
