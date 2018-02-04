@@ -2,12 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="72de947b-ed70-4f88-b013-460cd0bdb63e" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/tutorial/model_objects.ipynb" afterPath="$PROJECT_DIR$/docs/tutorial/model_objects.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/plot_load_example_data.py" afterPath="$PROJECT_DIR$/examples/plot_load_example_data.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/plot_load_nifti.py" afterPath="$PROJECT_DIR$/examples/plot_load_nifti.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/plot_model.py" afterPath="$PROJECT_DIR$/examples/plot_model.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/helpers.py" afterPath="$PROJECT_DIR$/superEEG/helpers.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/superEEG/model.py" afterPath="$PROJECT_DIR$/superEEG/model.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/predict.py" afterPath="$PROJECT_DIR$/examples/predict.py" />
     </list>
     <ignored path="superEEG.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -27,6 +23,16 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="simulation.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/examples/simulation.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="874">
+              <caret line="46" column="0" selection-start-line="46" selection-start-column="0" selection-end-line="50" selection-end-column="23" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="model.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/superEEG/model.py">
           <provider selected="true" editor-type-id="text-editor">
@@ -39,14 +45,34 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="helpers.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="helpers.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/superEEG/helpers.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1622">
-              <caret line="821" column="1" selection-start-line="821" selection-start-column="1" selection-end-line="821" selection-end-column="1" />
+            <state relative-caret-position="45">
+              <caret line="783" column="4" selection-start-line="783" selection-start-column="4" selection-end-line="783" selection-end-column="17" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="plot_update_model.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/examples/plot_update_model.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="342">
+              <caret line="18" column="3" selection-start-line="18" selection-start-column="3" selection-end-line="18" selection-end-column="3" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="predict.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/examples/predict.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="228">
+              <caret line="12" column="27" selection-start-line="12" selection-start-column="27" selection-end-line="12" selection-end-column="27" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -77,30 +103,8 @@
         <entry file="file://$PROJECT_DIR$/examples/plot_model.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="300">
-              <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="12" />
+              <caret line="20" column="12" selection-start-line="20" selection-start-column="12" selection-end-line="20" selection-end-column="12" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="test_helpers.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/test_helpers.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2506">
-              <caret line="32" column="0" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="test_brain.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/test_brain.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="249">
-              <caret line="58" column="35" selection-start-line="58" selection-start-column="35" selection-end-line="58" selection-end-column="57" />
-              <folding>
-                <element signature="e#0#24#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -117,21 +121,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="load.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/superEEG/load.py">
+      <file leaf-file-name="plot_reconstruct_correlation_matrix.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/examples/plot_reconstruct_correlation_matrix.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="703">
-              <caret line="126" column="32" selection-start-line="126" selection-start-column="32" selection-end-line="126" selection-end-column="32" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="simulate.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/superEEG/simulate.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2717">
-              <caret line="149" column="0" selection-start-line="149" selection-start-column="0" selection-end-line="149" selection-end-column="0" />
+            <state relative-caret-position="15">
+              <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="61" selection-end-column="12" />
               <folding />
             </state>
           </provider>
@@ -172,7 +166,6 @@
         <option value="$PROJECT_DIR$/superEEG/_helpers/bookkeeping.py" />
         <option value="$PROJECT_DIR$/cluster/pyFR_locs/union_locs.py" />
         <option value="$PROJECT_DIR$/cluster/recon/recon.py" />
-        <option value="$PROJECT_DIR$/examples/predict.py" />
         <option value="$PROJECT_DIR$/examples/plot_update_model.py" />
         <option value="$PROJECT_DIR$/cluster/simulation/simulated_patient_data.py" />
         <option value="$PROJECT_DIR$/superEEG/_helpers/stats.py" />
@@ -199,6 +192,7 @@
         <option value="$PROJECT_DIR$/examples/plot_model.py" />
         <option value="$PROJECT_DIR$/superEEG/model.py" />
         <option value="$PROJECT_DIR$/superEEG/helpers.py" />
+        <option value="$PROJECT_DIR$/examples/predict.py" />
       </list>
     </option>
   </component>
@@ -786,7 +780,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/examples/predict.py</url>
-          <line>44</line>
+          <line>34</line>
           <option name="timeStamp" value="438" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -870,14 +864,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file:///System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/posixpath.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="359" column="0" selection-start-line="359" selection-start-column="0" selection-end-line="359" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/docs/superEEG.Brain.rst">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -915,14 +901,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="344">
           <caret line="1579" column="0" selection-start-line="1579" selection-start-column="0" selection-end-line="1579" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/examples/predict.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="475">
-          <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1045,30 +1023,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/examples/plot_reconstruct_correlation_matrix.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="513">
-          <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="61" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/examples/plot_update_model.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="114">
-          <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="16" selection-end-column="68" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/examples/simulation.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="874">
-          <caret line="46" column="0" selection-start-line="46" selection-start-column="0" selection-end-line="50" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/superEEG/simulate.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2717">
@@ -1119,24 +1073,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/examples/plot_load_nifti.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="10" column="41" selection-start-line="10" selection-start-column="41" selection-end-line="10" selection-end-column="41" />
-          <folding>
-            <element signature="e#256#277#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/examples/plot_model.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/superEEG/brain.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="895">
@@ -1159,11 +1095,69 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/superEEG/helpers.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1622">
-          <caret line="821" column="1" selection-start-line="821" selection-start-column="1" selection-end-line="821" selection-end-column="1" />
+        <state relative-caret-position="45">
+          <caret line="783" column="4" selection-start-line="783" selection-start-column="4" selection-end-line="783" selection-end-column="17" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/plot_load_nifti.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="10" column="41" selection-start-line="10" selection-start-column="41" selection-end-line="10" selection-end-column="41" />
+          <folding>
+            <element signature="e#256#277#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/plot_model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="20" column="12" selection-start-line="20" selection-start-column="12" selection-end-line="20" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/plot_reconstruct_correlation_matrix.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="61" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/plot_update_model.py.bak">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/plot_update_model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="342">
+          <caret line="18" column="3" selection-start-line="18" selection-start-column="3" selection-end-line="18" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/predict.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="228">
+          <caret line="12" column="27" selection-start-line="12" selection-start-column="27" selection-end-line="12" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/simulation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="874">
+          <caret line="46" column="0" selection-start-line="46" selection-start-column="0" selection-end-line="50" selection-end-column="23" />
+          <folding />
         </state>
       </provider>
     </entry>
