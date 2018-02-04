@@ -7,18 +7,22 @@ from builtins import range
 from builtins import object
 import multiprocessing
 import copy
+import os
 import numpy.matlib as mat
 import pandas as pd
 import nibabel as nb
 import numpy as np
 
 from nilearn.input_data import NiftiMasker
+from nilearn import plotting as ni_plt
+from nilearn import image
 from scipy.stats import kurtosis, zscore, pearsonr
 from scipy.spatial.distance import pdist
 from scipy.spatial.distance import cdist
 from scipy.spatial.distance import squareform
 from scipy import linalg
 from joblib import Parallel, delayed
+
 
 
 def apply_by_file_index(bo, xform, aggregator):
@@ -775,3 +779,17 @@ def count_overlapping(X, Y):
     """
 
     return np.sum([(X.locs == y).all(1) for idy, y in Y.locs.iterrows()], 0).astype(bool)
+
+def make_gif_pngs(nifti, result_dir, window_min=1000, window_max=2000):
+    for i in range(window_min, window_max):
+        nii_i = image.index_img(nifti, i)
+        outfile = os.path.join(result_dir, str(i) + '.png')
+        ni_plt.plot_glass_brain(nii_i, display_mode='lyrz', threshold=0, plot_abs=False, colorbar='True',
+                            vmin=-20, vmax=20, output_file=outfile)
+
+#
+# def interp(tau=1):
+#     s = exp(-tau. * pdist2(R, Rstd));
+#     y = (c * s). / sum(s, 1);
+#
+

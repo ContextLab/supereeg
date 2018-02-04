@@ -104,6 +104,10 @@ def load(fname):
         bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_mask_6mm_brain.nii')
         return bo
 
+    elif fname is 'MNI152_T1_2mm_brain.nii':
+        bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/MNI152_T1_2mm_brain.nii')
+        return bo
+
     # load brain object
     elif fname.split('.')[-1]=='bo':
         bo = dd.io.load(fname)

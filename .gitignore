@@ -7,7 +7,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
-# superEEG/data/*
+superEEG/data/*
 .Python
 env/
 build/
