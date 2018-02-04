@@ -445,7 +445,9 @@ class Model(object):
         This function wraps seaborn's heatmap and accepts any inputs that seaborn
         supports.
         """
-        sns.heatmap(z2r(np.divide(self.numerator, self.denominator)), **kwargs)
+        corr_mat = z2r(np.divide(self.numerator, self.denominator))
+        corr_mat = np.fill_diagonal(corr_mat, 0)
+        sns.heatmap(corr_mat, **kwargs)
 
 
     def save(self, fname, compression='blosc'):

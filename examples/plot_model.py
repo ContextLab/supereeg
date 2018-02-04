@@ -17,4 +17,5 @@ import superEEG as se
 model = se.load('example_model')
 
 # plot it
-model.plot(xticklabels=False, yticklabels=False)
+# model.plot(xticklabels=False, yticklabels=False)
+model.plot()

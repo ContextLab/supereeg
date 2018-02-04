@@ -780,12 +780,40 @@ def count_overlapping(X, Y):
 
     return np.sum([(X.locs == y).all(1) for idy, y in Y.locs.iterrows()], 0).astype(bool)
 
-def make_gif_pngs(nifti, result_dir, window_min=1000, window_max=2000):
+
+def make_gif_pngs(nifti, result_dir, window_min=1000, window_max=2000, **kwargs):
+
+    """
+    Plots series of nifti timepoints as nilearn plot_glass_brain in .png format
+
+        Parameters
+    ----------
+    nifti : nib.nifti1.Nifti1Image
+        Nifti of reconconstruction
+
+    result_dir : directory
+        Directory to save .png files
+
+    window_min : int
+        Lower bound for time window.
+
+    window_max : int
+        Upper bound for time window.
+
+    Returns
+    ----------
+    results : png
+        Series of pngs
+
+
+    """
+
     for i in range(window_min, window_max):
         nii_i = image.index_img(nifti, i)
         outfile = os.path.join(result_dir, str(i) + '.png')
-        ni_plt.plot_glass_brain(nii_i, display_mode='lyrz', threshold=0, plot_abs=False, colorbar='True',
-                            vmin=-20, vmax=20, output_file=outfile)
+        # ni_plt.plot_glass_brain(nii_i, display_mode='lyrz', threshold=0, plot_abs=False, colorbar='True',
+        #                     vmin=-20, vmax=20, output_file=outfile)
+        ni_plt.plot_glass_brain(nii_i, output_file=outfile, ** kwargs)
 
 #
 # def interp(tau=1):
