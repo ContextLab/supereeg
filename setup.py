@@ -20,7 +20,7 @@ setup(
     install_requires=[
         'deepdish',
         'scikit-learn>=0.18.1',
-        'pandas=>0.21.1',
+        'pandas>=0.21.1',
         'seaborn>=0.7.1',
         'matplotlib>=1.5.1',
         'scipy>=0.17.1',
