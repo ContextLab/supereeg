@@ -26,11 +26,6 @@ Here, we load an example dataset and then print out some information about it.
       .. image:: /auto_examples/images/sphx_glr_plot_load_example_data_002.png
             :scale: 47
 
-    *
-
-      .. image:: /auto_examples/images/sphx_glr_plot_load_example_data_003.png
-            :scale: 47
-
 
 .. rst-class:: sphx-glr-script-out
 
@@ -39,7 +34,7 @@ Here, we load an example dataset and then print out some information about it.
     Number of electrodes: 64
     Recording time in seconds: [[  5.3984375  14.1328125]]
     Number of sessions: 2
-    Date created: Fri Feb  2 10:22:12 2018
+    Date created: Sun Feb  4 19:54:15 2018
     Meta data: CH003
 
 
@@ -51,13 +46,11 @@ Here, we load an example dataset and then print out some information about it.
 .. code-block:: python
 
 
-    # Code source: Andrew Heusser & Lucy Owen
+    # Code source: Lucy Owen & Andrew Heusser
     # License: MIT
 
     # import
     import superEEG as se
-    import seaborn as sns
-    import matplotlib.pyplot as plt
 
     # load example data
     bo = se.load('example_data')
@@ -68,17 +61,15 @@ Here, we load an example dataset and then print out some information about it.
     # look data, stored as pandas dataframe
     bo.data.head()
 
-    # and visualize the data
-    bo.plot_data()
-
+    # visualize the data
     # the default time window is the first 10 seconds, but you can specify your own timewindow
-    bo.plot_data(time_min=10, time_max=15)
+    bo.plot_data(time_min=10, time_max=12)
 
     # then can visualize locations
     bo.plot_locs()
 
 
-**Total running time of the script:** ( 0 minutes  1.404 seconds)
+**Total running time of the script:** ( 0 minutes  0.953 seconds)
 
 
 

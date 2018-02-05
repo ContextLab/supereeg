@@ -22,6 +22,7 @@ model, the better the true correlational structure can be recovered.
 # License: MIT
 
 # import libraries
+from builtins import range
 import os
 import scipy
 import numpy as np

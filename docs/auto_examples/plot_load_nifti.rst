@@ -23,7 +23,7 @@ This example loads a nifti file and converts it into a brain object.
 .. code-block:: python
 
 
-    # Code source: Andrew Heusser & Lucy Owen
+    # Code source: Lucy Owen & Andrew Heusser
     # License: MIT
 
     # import
@@ -40,7 +40,7 @@ This example loads a nifti file and converts it into a brain object.
     ni_plt.plot_anat(nifti)
     ni_plt.show()
 
-**Total running time of the script:** ( 0 minutes  0.653 seconds)
+**Total running time of the script:** ( 0 minutes  0.614 seconds)
 
 
 

@@ -89,6 +89,26 @@ Gallery of Examples
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we load in a single subject example, load a model, and predict activity at all...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_labels_thumb.png
+
+        :ref:`sphx_glr_auto_examples_labels.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/labels
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="In this example, we will parametrically vary how many subjects and how many electrodes per subj...">
 
 .. only:: html

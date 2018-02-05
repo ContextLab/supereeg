@@ -33,8 +33,7 @@ Here we load the example model, and then plot it.
 
     # plot it
     model.plot(xticklabels=False, yticklabels=False)
-
-**Total running time of the script:** ( 0 minutes  0.171 seconds)
+**Total running time of the script:** ( 0 minutes  0.160 seconds)
 
 
 

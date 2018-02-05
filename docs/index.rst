@@ -6,7 +6,7 @@
 **SuperEEG**: A python toolbox for inferring whole-brain activity from intracranial data
 ==================================
 
-   .. image:: _static/smaller.gif
+   .. image:: _static/example_model.gif
        :width: 400pt
 
  .. toctree::

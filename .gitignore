@@ -8,6 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 superEEG/data/*
+/docs/_static/example_model.gif
 .Python
 env/
 build/

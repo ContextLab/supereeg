@@ -43,3 +43,16 @@ Simulations
   simulate_model_bos
   simulate_bo
   create_cov
+
+Helpers
+------------------
+
+.. autosummary::
+  :toctree:
+
+  loadnii
+  filter_subj
+  filter_elecs
+  model_compile
+  sort_unique_locs
+  tal2mni

@@ -484,7 +484,25 @@ def round_it(locs, places):
 
 def filter_elecs(bo, measure='kurtosis', threshold=10):
     """
-    Filter bad electrodes
+    Filter electrodes based on kurtosis value
+
+    Parameters
+    ----------
+    bo : brain object
+        Brain object
+
+    measure : 'kurtosis'
+        Method to filter electrodes. Only kurtosis supported currently.
+
+    threshold : int
+        Threshold for filtering
+
+    Returns
+    ----------
+    result : brain object
+        Brain object with electrodes and corresponding data that passes kurtosis thresholding
+
+
     """
     thresh_bool = bo.kurtosis > threshold
     nbo = copy.copy(bo)
@@ -496,7 +514,25 @@ def filter_elecs(bo, measure='kurtosis', threshold=10):
 
 def filter_subj(bo, measure='kurtosis', threshold=10):
     """
-    Filter subjects based on filter measure (use only if 2 or more electrodes pass thresholding)
+    Filter subjects if less than two electrodes pass kurtosis value
+
+    Parameters
+    ----------
+    bo : brain object
+        Brain object
+
+    measure : 'kurtosis'
+        Method to filter electrodes. Only kurtosis supported currently.
+
+    threshold : int
+        Threshold for filtering.
+
+    Returns
+    ----------
+    result : meta brain object or None
+        Meta field from brain object if two or more electrodes pass kurtosis thresholding.
+
+
     """
     if not bo.meta is None:
         thresh_bool = bo.kurtosis > threshold
@@ -582,9 +618,27 @@ class BrainData(object):
 
 
 def loadnii(fname, mask_strategy='background'):
-    # if mask_strategy is 'background', treat uniformly valued voxels at the outer parts of the images as background
-    # if mask_strategy is 'epi', use nilearn's background detection strategy: find the least dense point
-    # of the histogram, between fractions lower_cutoff and upper_cutoff of the total image histogram
+    """
+         Load nifti
+
+         Parameters
+         ----------
+
+         fname : filepath
+            Path to a template nifti file
+
+         mask_strategy : str
+            if mask_strategy is 'background', treat uniformly valued voxels at the outer parts
+            of the images as background
+            if mask_strategy is 'epi', use nilearn's background detection strategy: find the least dense point
+            of the histogram, between fractions lower_cutoff and upper_cutoff of the total image histogram
+
+         Returns
+         ----------
+         results : ndarray
+             Normalized activity from each electrode channel
+
+         """
     return BrainData(fname, mask_strategy)
 
 

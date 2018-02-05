@@ -37,6 +37,7 @@ model, the better the true correlational structure can be recovered.
     # License: MIT
 
     # import libraries
+    from builtins import range
     import os
     import scipy
     import numpy as np
@@ -103,7 +104,7 @@ model, the better the true correlational structure can be recovered.
 
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  12.644 seconds)
+**Total running time of the script:** ( 0 minutes  11.833 seconds)
 
 
 

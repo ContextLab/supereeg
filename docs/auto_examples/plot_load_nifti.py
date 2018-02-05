@@ -8,7 +8,7 @@ This example loads a nifti file and converts it into a brain object.
 
 """
 
-# Code source: Andrew Heusser & Lucy Owen
+# Code source: Lucy Owen & Andrew Heusser
 # License: MIT
 
 # import

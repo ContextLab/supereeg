@@ -25,7 +25,7 @@ bo.data.head()
 
 # visualize the data
 # the default time window is the first 10 seconds, but you can specify your own timewindow
-bo.plot_data(time_min=10, time_max=15)
+bo.plot_data(time_min=10, time_max=12)
 
 # then can visualize locations
 bo.plot_locs()
