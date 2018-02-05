@@ -353,8 +353,6 @@ class Model(object):
         # timeseries reconstruction
         reconstructed = timeseries_recon(bo, model_corrmat_x)
 
-        print(reconstructed)
-
         # join reconstructed and known activity
         activations = np.hstack((reconstructed, zscore(bo.data.as_matrix())))
 
@@ -449,7 +447,6 @@ class Model(object):
         corr_mat = z2r(np.divide(self.numerator, self.denominator))
         np.fill_diagonal(corr_mat, 1)
         sns.heatmap(corr_mat, **kwargs)
-        plt.show()
 
 
     def save(self, fname, compression='blosc'):
