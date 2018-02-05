@@ -13,8 +13,6 @@ Here, we load an example dataset and then print out some information about it.
 
 # import
 import superEEG as se
-import seaborn as sns
-import matplotlib.pyplot as plt
 
 # load example data
 bo = se.load('example_data')

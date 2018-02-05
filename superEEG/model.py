@@ -446,7 +446,7 @@ class Model(object):
         supports.
         """
         corr_mat = z2r(np.divide(self.numerator, self.denominator))
-        corr_mat = np.fill_diagonal(corr_mat, 0)
+        np.fill_diagonal(corr_mat, 1)
         sns.heatmap(corr_mat, **kwargs)
 
 

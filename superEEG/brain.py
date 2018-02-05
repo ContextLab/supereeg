@@ -164,7 +164,10 @@ class Brain(object):
         # add kurtosis
         self.kurtosis = kurt_vals(self)
 
-        self.label = len(self.locs) * ['observed']
+        if not label:
+            self.label = len(self.locs) * ['observed']
+        else:
+            self.label = label
 
     def info(self):
         """
@@ -196,6 +199,7 @@ class Brain(object):
         Gets locations from brain object
         """
         return self.locs.as_matrix()
+
 
     def plot_data(self, filepath=None, time_min=None, time_max=None, title=None, electrode=None, threshold=10,
                   filtered=True):

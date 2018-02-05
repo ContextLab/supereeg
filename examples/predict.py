@@ -6,7 +6,7 @@ Predict unknown location
 
 In this example, we load in a single subject example, remove electrodes that exceed
 a kurtosis threshold (in place), load a model, and predict activity at all
-model locations.
+model locations.  We then convert the reconstruction to a nifti.
 
 """
 
@@ -27,9 +27,6 @@ reconstructed_bo = model.predict(bo)
 
 # print out info on new brain object
 reconstructed_bo.info()
-
-# you can also see which locations were observed and which were predicted
-reconstructed_bo.label()
 
 # save as nifti
 reconstructed_nifti = reconstructed_bo.to_nii()
