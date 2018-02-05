@@ -44,8 +44,6 @@ other model options:
 
 ``pyFR_k10r20_6mm``
 
-``pyFR_k10r20_8mm``
-
 ``pyFR_k10r20_20mm``
 
 Note: The last option is the same as the example_model, but saved as
@@ -96,8 +94,8 @@ accepts are supported by ``model.plot``.
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/superEEG/model.py:442: RuntimeWarning: invalid value encountered in divide
-      sns.heatmap(z2r(np.divide(self.numerator, self.denominator)), **kwargs)
+    /Users/lucyowen/repos/superEEG/superEEG/model.py:447: RuntimeWarning: invalid value encountered in divide
+      corr_mat = z2r(np.divide(self.numerator, self.denominator))
 
 
 
@@ -123,7 +121,7 @@ data as a brain object. First, let’s load in an example subjects data:
     Number of electrodes: 64
     Recording time in seconds: [[  5.3984375  14.1328125]]
     Number of sessions: 2
-    Date created: Fri Feb  2 10:38:22 2018
+    Date created: Mon Feb  5 14:28:26 2018
     Meta data: CH003
 
 
@@ -139,7 +137,7 @@ Now you can update the model with that brain object:
 
     Number of locations: 170
     Number of subjects: 67
-    Date created: Fri Feb  2 10:38:23 2018
+    Date created: Mon Feb  5 14:28:27 2018
     Meta data: None
 
 
@@ -164,8 +162,8 @@ Creating a new model
 In addition to including a few premade models in the ``superEEG``
 package, we also provide a way to construct a model from scratch.
 
-Created from list of brain objects:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Created from a list of brain objects:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For example, if you have a dataset of iEEG patients, we provide a way to
 construct a model that will predict whole brain activity. The more
@@ -186,7 +184,7 @@ construct the model from that data:
     Number of electrodes: 10
     Recording time in seconds: [ 1.]
     Number of sessions: 1
-    Date created: Fri Feb  2 10:38:23 2018
+    Date created: Mon Feb  5 14:28:27 2018
     Meta data: None
 
 
@@ -203,14 +201,20 @@ new model will be generated:
 
 .. parsed-literal::
 
+    /Users/lucyowen/repos/superEEG/superEEG/brain.py:139: UserWarning: No sample rate given.  Number of seconds cant be computed
+      warnings.warn('No sample rate given.  Number of seconds cant be computed')
+
+
+.. parsed-literal::
+
     Number of locations: 170
     Number of subjects: 10
-    Date created: Fri Feb  2 10:38:28 2018
+    Date created: Mon Feb  5 14:28:32 2018
     Meta data: None
 
 
-Created from directly adding to model object fields:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Created by adding to model object fields:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Another option is to add a model directly.
 
@@ -228,7 +232,7 @@ locations loaded from ``example_locations``. The ``model.denominator``
 field in this case is a matrix of ones, but should be the number of
 subjects that contributed to each cell in the ``model.numerator`` field.
 
-You can also pass a custom covariance matrix in ``se.create_cov`` by
+You can also create a custom covariance matrix in ``se.create_cov`` by
 simply passing numpy array as and that is number of locations by number
 of locations to ``cov`` and the number of location to ``n_elecs``.
 
@@ -238,7 +242,7 @@ of locations to ``cov`` and the number of location to ``n_elecs``.
     R = se.create_cov(cov='toeplitz', n_elecs=len(locs))
     p = 10
     model = se.Model(numerator=R, denominator=np.ones(np.shape(R)), locs=locs, n_subs=p)
-    model.plot()
+    model.plot(xticklabels=False, yticklabels=False)
     plt.show()
 
 
@@ -271,71 +275,6 @@ recordings. To predict activity, simply call the ``predict`` method of a
 model and pass the subjects brain activity that you’d like to
 reconstruct:
 
-.. code:: ipython2
-
-    # plot a slice of the original data
-    print('BEFORE')
-    print('------')
-    bo.info()
-    nii = bo.to_nii()
-    nii_0 = image.index_img(nii, 1)
-    plotting.plot_glass_brain(nii_0)
-    plotting.show()
-    
-    # voodoo magic
-    bor = model.predict(bo)
-    
-    # plot a slice of the whole brain data
-    print('AFTER')
-    print('------')
-    bor.info()
-    nii = bor.to_nii()
-    nii_0 = image.index_img(nii, 1)
-    plotting.plot_glass_brain(nii_0)
-    plotting.show()
-
-
-.. parsed-literal::
-
-    BEFORE
-    ------
-    Number of electrodes: 64
-    Recording time in seconds: [[  5.3984375  14.1328125]]
-    Number of sessions: 2
-    Date created: Fri Feb  2 10:38:22 2018
-    Meta data: CH003
-
-
-.. parsed-literal::
-
-    /Users/lucyowen/repos/superEEG/superEEG/brain.py:397: RuntimeWarning: invalid value encountered in divide
-      data = np.divide(data, counts)
-
-
-
-.. image:: model_objects_files/model_objects_27_2.png
-
-
-.. parsed-literal::
-
-    AFTER
-    ------
-    Number of electrodes: 170
-    Recording time in seconds: [  5.3984375  14.1328125]
-    Number of sessions: 2
-    Date created: Fri Feb  2 10:38:31 2018
-    Meta data: None
-
-
-
-.. image:: model_objects_files/model_objects_27_4.png
-
-
-Using the ``superEEG`` algorithm, we’ve ‘reconstructed’ whole brain
-activity from a smaller sample of electrodes.
-
-A few additional notes on the ``predict`` function:
-
 ``mo.predict(nearest_neighbor=True)``
 -------------------------------------
 
@@ -353,54 +292,74 @@ model with the subject’s correlation matrix.
 
 .. code:: ipython2
 
-    print('nearest_neighbor=True and force_update=False (Default)')
+    # plot a slice of the original data
+    print('BEFORE')
     print('------')
-    bor.plot_locs()
-    nii = bor.to_nii()
+    bo.info()
+    nii = bo.to_nii()
     nii_0 = image.index_img(nii, 1)
-    plotting.plot_glass_brain(nii_0)
+    plotting.plot_glass_brain(nii_0, display_mode='lyrz', threshold=0, colorbar='True')
     plotting.show()
     
-    print('nearest_neighbor=False and force_update=True')
+    # voodoo magic
+    bor = model.predict(bo)
+    
+    
+    # plot a slice of the whole brain data
+    print('AFTER')
     print('------')
-    bor_no_nn = model.predict(bo, nearest_neighbor=False, force_update=True)
-    bor_no_nn.plot_locs()
-    nii = bor_no_nn.to_nii()
+    bor.info()
+    nii = bor.to_nii()
     nii_0 = image.index_img(nii, 1)
-    plotting.plot_glass_brain(nii_0, vmin = -6, vmax = 6)
+    plotting.plot_glass_brain(nii_0, display_mode='lyrz', threshold=0, colorbar='True')
     plotting.show()
 
 
 .. parsed-literal::
 
-    nearest_neighbor=True and force_update=False (Default)
+    BEFORE
     ------
+    Number of electrodes: 64
+    Recording time in seconds: [[  5.3984375  14.1328125]]
+    Number of sessions: 2
+    Date created: Mon Feb  5 14:28:26 2018
+    Meta data: CH003
 
 
 .. parsed-literal::
 
-    /Library/Python/2.7/site-packages/nilearn/plotting/displays.py:1259: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
-      if node_color == 'auto':
+    /Users/lucyowen/repos/superEEG/superEEG/brain.py:366: UserWarning: Voxel sizes of reconstruction and template do not match. Default to using a template with 20mm voxels.
+      warnings.warn('Voxel sizes of reconstruction and template do not match. '
+    /Users/lucyowen/repos/superEEG/superEEG/brain.py:387: UserWarning: Voxel sizes of reconstruction and template do not match. Voxel sizes calculated from model locations.
+      warnings.warn('Voxel sizes of reconstruction and template do not match. '
+    /Users/lucyowen/repos/superEEG/superEEG/brain.py:406: RuntimeWarning: invalid value encountered in divide
+      data = np.divide(data, counts)
+    /Library/Python/2.7/site-packages/matplotlib/cbook.py:136: MatplotlibDeprecationWarning: The axisbg attribute was deprecated in version 2.0. Use facecolor instead.
+      warnings.warn(message, mplDeprecation, stacklevel=1)
+    /Library/Python/2.7/site-packages/nilearn/plotting/glass_brain.py:164: MatplotlibDeprecationWarning: The get_axis_bgcolor function was deprecated in version 2.0. Use get_facecolor instead.
+      black_bg = colors.colorConverter.to_rgba(ax.get_axis_bgcolor()) \
+    /Library/Python/2.7/site-packages/matplotlib/artist.py:879: MatplotlibDeprecationWarning: The set_axis_bgcolor function was deprecated in version 2.0. Use set_facecolor instead.
+      return func(v)
 
 
 
-.. image:: model_objects_files/model_objects_32_2.png
-
-
-
-.. image:: model_objects_files/model_objects_32_3.png
+.. image:: model_objects_files/model_objects_29_2.png
 
 
 .. parsed-literal::
 
-    nearest_neighbor=False and force_update=True
+    AFTER
     ------
+    Number of electrodes: 170
+    Recording time in seconds: [  5.3984375  14.1328125]
+    Number of sessions: 2
+    Date created: Mon Feb  5 14:28:34 2018
+    Meta data: None
 
 
 
-.. image:: model_objects_files/model_objects_32_5.png
+.. image:: model_objects_files/model_objects_29_4.png
 
 
-
-.. image:: model_objects_files/model_objects_32_6.png
-
+Using the ``superEEG`` algorithm, we’ve ‘reconstructed’ whole brain
+activity from a smaller sample of electrodes.

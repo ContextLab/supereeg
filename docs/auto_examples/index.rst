@@ -9,6 +9,27 @@ Gallery of Examples
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Here, we load an example dataset and then print out some information about it.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_load_example_data_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_load_example_data.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_load_example_data
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="Here we load the example model, and then plot it.">
 
 .. only:: html
@@ -47,25 +68,6 @@ Gallery of Examples
 
    /auto_examples/plot_load_nifti
 
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Here, we load an example dataset and then print out some information about it.">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_load_example_data_thumb.png
-
-        :ref:`sphx_glr_auto_examples_plot_load_example_data.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/plot_load_example_data
 
 .. raw:: html
 
