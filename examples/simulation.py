@@ -39,7 +39,7 @@ noise =.5
 n_elecs = range(10, 160, 20)
 
 # m_patients - number of patients in the model
-m_patients = [5, 10, 20]
+m_patients = [5, 10]
 
 # m_electrodes - number of electrodes for each patient in the model
 m_elecs = range(10, 160, 20)
