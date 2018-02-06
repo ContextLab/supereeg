@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/superEEG.iml" filepath="$PROJECT_DIR$/.idea/superEEG.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/superEEG.iml" filepath="$PROJECT_DIR$/.idea/supereeg.iml" />
     </modules>
   </component>
 </project>
