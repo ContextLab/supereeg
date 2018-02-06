@@ -39,7 +39,7 @@ model_bos = [se.simulate_model_bos(n_samples=1000, sample_rate=1000, locs=locs, 
 # create the model object
 model = se.Model(data=model_bos, locs=locs)
 
-# brain object locations subsetted entirely from both model and gray locations - for this n > m (this isn't necessarily true, but this ensures overlap)
+# brain object locations subsetted
 sub_locs = locs.sample(10).sort_values(['x', 'y', 'z'])
 
 # simulate a new brain object using the same covariance matrix

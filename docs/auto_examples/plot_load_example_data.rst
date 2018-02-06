@@ -34,7 +34,7 @@ Here, we load an example dataset and then print out some information about it.
     Number of electrodes: 64
     Recording time in seconds: [[  5.3984375  14.1328125]]
     Number of sessions: 2
-    Date created: Sun Feb  4 19:54:15 2018
+    Date created: Tue Feb  6 17:34:40 2018
     Meta data: CH003
 
 
@@ -69,7 +69,7 @@ Here, we load an example dataset and then print out some information about it.
     bo.plot_locs()
 
 
-**Total running time of the script:** ( 0 minutes  0.953 seconds)
+**Total running time of the script:** ( 0 minutes  0.999 seconds)
 
 
 

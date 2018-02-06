@@ -89,6 +89,46 @@ Gallery of Examples
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Then we simulate 3 brain objects using a subset of 10 locations. We will simulate correlational...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_simulate_mo_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_simulate_mo.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_simulate_mo
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we demonstrate the simulate brain object function. First, we'll load in some e...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_simulate_bo_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_simulate_bo.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_simulate_bo
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="In this example, we load in a single subject example, load a model, and predict activity at all...">
 
 .. only:: html
@@ -109,27 +149,7 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we will parametrically vary how many subjects and how many electrodes per subj...">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_reconstruct_correlation_matrix_thumb.png
-
-        :ref:`sphx_glr_auto_examples_plot_reconstruct_correlation_matrix.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/plot_reconstruct_correlation_matrix
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we will simulate a model and some data, and see if we can recover the model fr...">
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we will simulate a model and update the model with the new data. First, we'll ...">
 
 .. only:: html
 
@@ -146,26 +166,6 @@ Gallery of Examples
    :hidden:
 
    /auto_examples/plot_update_model
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we demonstrate the simulate functions. First, we'll load in some example locat...">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_simulation_thumb.png
-
-        :ref:`sphx_glr_auto_examples_simulation.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/simulation
 .. raw:: html
 
     <div style='clear:both'></div>
