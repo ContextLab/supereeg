@@ -1,6 +1,6 @@
-superEEG\.sort\_unique\_locs
+supereeg\.sort\_unique\_locs
 ============================
 
-.. currentmodule:: superEEG
+.. currentmodule:: supereeg
 
 .. autofunction:: sort_unique_locs

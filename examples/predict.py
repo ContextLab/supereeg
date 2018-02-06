@@ -13,7 +13,7 @@ model locations.  We then convert the reconstruction to a nifti.
 # Code source: Lucy Owen & Andrew Heusser
 # License: MIT
 
-import superEEG as se
+import supereeg as se
 
 
 # load example data

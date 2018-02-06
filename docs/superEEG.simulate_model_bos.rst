@@ -1,6 +1,6 @@
-superEEG\.simulate\_model\_bos
+supereeg\.simulate\_model\_bos
 ==============================
 
-.. currentmodule:: superEEG
+.. currentmodule:: supereeg
 
 .. autofunction:: simulate_model_bos

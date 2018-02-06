@@ -11,7 +11,7 @@ Here we load the example model, and then plot it.
 # Code source: Andrew Heusser & Lucy Owen
 # License: MIT
 
-import superEEG as se
+import supereeg as se
 
 # load example model
 model = se.load('example_model')

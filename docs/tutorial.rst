@@ -2,7 +2,7 @@
 
 .. _tutorial:
 
-How to use the SuperEEG package
+How to use the supereeg package
 ================
 
 Introduction to `Brain` objects

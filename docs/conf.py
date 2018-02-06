@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# superEEG documentation build configuration file, created by
+# supereeg documentation build configuration file, created by
 # sphinx-quickstart on Thu Feb  2 08:22:16 2017.
 #
 # This file is execfile()d with the current directory set to its
@@ -57,7 +57,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'superEEG'
+project = u'supereeg'
 copyright = u'2017, Contextual Dynamics Laboratory'
 author = u'Lucy L. W. Owen, Andrew C. Heusser, Jeremy R. Manning'
 
@@ -116,7 +116,7 @@ html_theme = 'bootstrap'
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-extlinks = {'github': 'https://github.com/ContextLab/superEEG'}
+extlinks = {'github': 'https://github.com/ContextLab/supereeg'}
 
 html_theme_options = {
     'source_link_position': "footer",
@@ -126,7 +126,7 @@ html_theme_options = {
     'navbar_links': [("API", "api"),
                      ("Gallery", "auto_examples/index"),
                      ("Tutorials", "tutorial"),
-                     ("Download", "http://www.github.com/ContextLab/superEEG", True)],
+                     ("Download", "http://www.github.com/ContextLab/supereeg", True)],
 
     }
 
@@ -163,7 +163,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'superEEG.tex', u'superEEG Documentation',
+    (master_doc, 'supereeg.tex', u'supereeg Documentation',
      u'Contextual Dynamics Laboratory', 'manual'),
 ]
 
@@ -173,7 +173,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'superEEG', u'superEEG Documentation',
+    (master_doc, 'supereeg', u'supereeg Documentation',
      [author], 1)
 ]
 
@@ -184,8 +184,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'superEEG', u'superEEG Documentation',
-     author, 'superEEG', 'One line description of project.',
+    (master_doc, 'supereeg', u'supereeg Documentation',
+     author, 'supereeg', 'One line description of project.',
      'Miscellaneous'),
 ]
 

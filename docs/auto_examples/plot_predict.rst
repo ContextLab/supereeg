@@ -38,7 +38,7 @@ model locations.
     # Code source: Andrew Heusser & Lucy Owen
     # License: MIT
 
-    import superEEG as se
+    import supereeg as se
 
     # load example data
     bo = se.load('example_data')

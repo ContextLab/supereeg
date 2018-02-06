@@ -1,6 +1,6 @@
-superEEG\.loadnii
+supereeg\.loadnii
 =================
 
-.. currentmodule:: superEEG
+.. currentmodule:: supereeg
 
 .. autofunction:: loadnii

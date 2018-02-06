@@ -1,6 +1,6 @@
-superEEG\.filter\_elecs
+supereeg\.filter\_elecs
 =======================
 
-.. currentmodule:: superEEG
+.. currentmodule:: supereeg
 
 .. autofunction:: filter_elecs

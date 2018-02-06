@@ -1,15 +1,15 @@
-![SuperEEG logo](images/superEEG.png)
+![supereeg logo](images/supereeg.png)
 
 <h2>Overview</h2>
 
-SuperEEG is a Python package used for estimating neural activity throughout the brain from a small number of intracranial recordings by leveraging across patients and Gaussian process regression. 
+supereeg is a Python package used for estimating neural activity throughout the brain from a small number of intracranial recordings by leveraging across patients and Gaussian process regression.
 
 <h2>Details</h2>
 
 
 A fundamental trade-off in human neuroimaging pertains to balancing spatial versus temporal resolution.  For example, techniques like fMRI yield high spatial resolution brain recordings (but at poor temporal resolutions), whereas EEG yields high temporal resolution brain recordings (but at poor spatial resolutions).  Other recording methods, such as from implanted electrodes, yield good spatial and temporal resolutions, but have poor coverage. 
-SuperEEG , which is inspired by Gaussian process regression, uses ongoing recordings from implanted electrodes to ‘fill in’ high spatiotemporal resolution activity patterns throughout the brain even at unrecorded locations.  
-By using a large dataset comprised of hundreds of hours of data collected from 67 neurosurgical patients, we have fit a detailed covariance model describing relations between the activity patterns at different locations throughout the brain.  Collectively the dataset contains recordings from a broad range of locations throughout the brain, but each individual patient contributes only a limited set of locations.  Given this covariance model, and given the recordings at a limited set of locations from an individual patient, SuperEEG estimates what the recordings would have looked like for that patient if the electrodes had instead been implanted elsewhere throughout their brain.  The result is a detailed high spatiotemporal resolution estimate of evolving activity patterns throughout the brain, at fMRI-like spatial resolutions and EEG-like temporal resolutions.
+supereeg , which is inspired by Gaussian process regression, uses ongoing recordings from implanted electrodes to ‘fill in’ high spatiotemporal resolution activity patterns throughout the brain even at unrecorded locations.
+By using a large dataset comprised of hundreds of hours of data collected from 67 neurosurgical patients, we have fit a detailed covariance model describing relations between the activity patterns at different locations throughout the brain.  Collectively the dataset contains recordings from a broad range of locations throughout the brain, but each individual patient contributes only a limited set of locations.  Given this covariance model, and given the recordings at a limited set of locations from an individual patient, supereeg estimates what the recordings would have looked like for that patient if the electrodes had instead been implanted elsewhere throughout their brain.  The result is a detailed high spatiotemporal resolution estimate of evolving activity patterns throughout the brain, at fMRI-like spatial resolutions and EEG-like temporal resolutions.
 
 <!-- <h2>Try it!</h2>
 
@@ -113,7 +113,7 @@ The preferred way to contribute to quail is to fork the main repository on GitHu
 
 <!-- [![Build Status](https://travis-ci.com/ContextLab/quail.svg?token=hxjzzuVkr2GZrDkPGN5n&branch=master) -->
 
-To test supereeg, install pytest (`pip install pytest`) and run `pytest` in the superEEG folder
+To test supereeg, install pytest (`pip install pytest`) and run `pytest` in the supereeg folder
 
 <!-- <h2>Examples</h2> -->
 

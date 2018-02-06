@@ -1,6 +1,6 @@
-superEEG.load
+supereeg.load
 =============
 
-.. currentmodule:: superEEG
+.. currentmodule:: supereeg
 
 .. autofunction:: load

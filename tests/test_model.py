@@ -3,7 +3,7 @@
 from __future__ import print_function
 from builtins import range
 import pytest
-import superEEG as se
+import supereeg as se
 import numpy as np
 import scipy
 

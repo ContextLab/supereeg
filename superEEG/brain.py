@@ -16,7 +16,7 @@ from .helpers import kurt_vals, zscore, normalize_Y, vox_size
 
 class Brain(object):
     """
-    Brain data object for the superEEG package
+    Brain data object for the supereeg package
 
     A brain data object contains a single iEEG subject. To create one, at minimum
     you need data (samples by electrodes), location coordinates in MNI space and
@@ -89,7 +89,7 @@ class Brain(object):
     Returns
     ----------
 
-    bo : superEEG.Brain instance
+    bo : supereeg.Brain instance
         Instance of Brain data object containing subject data
 
     """

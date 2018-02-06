@@ -3,9 +3,9 @@ from __future__ import division
 from past.utils import old_div
 from builtins import bytes
 import pytest
-import superEEG as se
+import supereeg as se
 import glob
-from superEEG.helpers import *
+from supereeg.helpers import *
 from scipy.stats import kurtosis, zscore
 import os
 

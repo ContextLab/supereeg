@@ -1,6 +1,6 @@
-superEEG\.create\_cov
+supereeg\.create\_cov
 =====================
 
-.. currentmodule:: superEEG
+.. currentmodule:: supereeg
 
 .. autofunction:: create_cov

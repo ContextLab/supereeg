@@ -19,7 +19,7 @@ model locations. We then parse the values based on the labels.
     # Code source: Lucy Owen & Andrew Heusser
     # License: MIT
 
-    import superEEG as se
+    import supereeg as se
     import copy as copy
     import pandas as pd
 

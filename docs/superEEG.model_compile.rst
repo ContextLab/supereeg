@@ -1,6 +1,6 @@
-superEEG\.model\_compile
+supereeg\.model\_compile
 ========================
 
-.. currentmodule:: superEEG
+.. currentmodule:: supereeg
 
 .. autofunction:: model_compile

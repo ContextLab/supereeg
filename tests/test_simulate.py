@@ -1,9 +1,9 @@
 from builtins import range
 import pytest
-import superEEG as se
+import supereeg as se
 import numpy as np
 import pandas as pd
-from superEEG.helpers import corr_column
+from supereeg.helpers import corr_column
 
 
 locs = se.load('example_locations')

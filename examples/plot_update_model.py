@@ -29,7 +29,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-import superEEG as se
+import supereeg as se
 
 # load example model to get locations
 locs = se.load('example_locations')

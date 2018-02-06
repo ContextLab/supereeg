@@ -13,10 +13,10 @@ model locations.
 # Code source: Andrew Heusser & Lucy Owen
 # License: MIT
 
-import superEEG as se
+import supereeg as se
 import scipy
 import numpy as np
-from superEEG._helpers.stats import r2z, z2r, get_expanded_corrmat_fit, get_expanded_corrmat_predict, rbf
+from supereeg._helpers.stats import r2z, z2r, get_expanded_corrmat_fit, get_expanded_corrmat_predict, rbf
 from numpy import inf
 from scipy.stats import zscore
 

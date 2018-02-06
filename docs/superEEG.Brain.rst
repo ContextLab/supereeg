@@ -1,7 +1,7 @@
-superEEG.Brain
+supereeg.Brain
 ==============
 
-.. currentmodule:: superEEG
+.. currentmodule:: supereeg
 
 .. autoclass:: Brain
     :members:

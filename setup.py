@@ -9,7 +9,7 @@ with open('LICENSE') as f:
     license = f.read()
 
 setup(
-    name='superEEG',
+    name='supereeg',
     version='0.1.0',
     description='Infer activity throughout the brain from a small(ish) number of electrodes using Gaussian process regression',
     long_description=readme,

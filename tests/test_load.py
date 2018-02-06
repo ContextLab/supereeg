@@ -1,7 +1,7 @@
 from builtins import str
 from builtins import range
 import pytest
-import superEEG as se
+import supereeg as se
 import numpy as np
 import os
 

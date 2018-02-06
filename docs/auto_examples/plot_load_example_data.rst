@@ -50,7 +50,7 @@ Here, we load an example dataset and then print out some information about it.
     # License: MIT
 
     # import
-    import superEEG as se
+    import supereeg as se
 
     # load example data
     bo = se.load('example_data')

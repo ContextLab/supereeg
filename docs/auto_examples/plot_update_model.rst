@@ -44,7 +44,7 @@ model, the better the true correlational structure can be recovered.
     import pandas as pd
     import seaborn as sns
     import matplotlib.pyplot as plt
-    import superEEG as se
+    import supereeg as se
 
     # load example model to get locations
     locs = se.load('example_locations')

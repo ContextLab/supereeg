@@ -2,7 +2,7 @@
 Building a brain object
 =======================
 
-Brain objects are superEEG’s fundamental data structure for a single
+Brain objects are supereeg’s fundamental data structure for a single
 subject’s iEEG data. To create one at minimum you’ll need a matrix of
 neural recordings (time samples by electrodes), electrode locations, and
 a sample rate. Additionally, you can include information about separate
@@ -15,7 +15,7 @@ Load in the required libraries
 
 .. code:: ipython2
 
-    import superEEG as se
+    import supereeg as se
     import numpy as np
     import seaborn as sns
     import matplotlib.pyplot as plt
@@ -30,7 +30,7 @@ Load in the required libraries
 Simulate some data
 ==================
 
-First, we’ll use superEEG’s built in simulation functions to simulate
+First, we’ll use supereeg’s built in simulation functions to simulate
 some data and electrodes. By default, the ``simualate_data`` function
 will return a 1000 samples by 10 electrodes matrix, but you can specify
 the number of time samples with ``n_samples`` and the number of
@@ -395,7 +395,7 @@ You can also plot both the data and the electrode locations:
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/superEEG/brain.py:268: MatplotlibDeprecationWarning: The set_axis_bgcolor function was deprecated in version 2.0. Use set_facecolor instead.
+    /Users/lucyowen/repos/supereeg/supereeg/brain.py:268: MatplotlibDeprecationWarning: The set_axis_bgcolor function was deprecated in version 2.0. Use set_facecolor instead.
       ax.set_axis_bgcolor('w')
 
 
@@ -568,10 +568,10 @@ specify a nifti template with the ``template`` argument.
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/superEEG/brain.py:366: UserWarning: Voxel sizes of reconstruction and template do not match. Default to using a template with 20mm voxels.
+    /Users/lucyowen/repos/supereeg/supereeg/brain.py:366: UserWarning: Voxel sizes of reconstruction and template do not match. Default to using a template with 20mm voxels.
       warnings.warn('Voxel sizes of reconstruction and template do not match. '
-    /Users/lucyowen/repos/superEEG/superEEG/brain.py:387: UserWarning: Voxel sizes of reconstruction and template do not match. Voxel sizes calculated from model locations.
+    /Users/lucyowen/repos/supereeg/supereeg/brain.py:387: UserWarning: Voxel sizes of reconstruction and template do not match. Voxel sizes calculated from model locations.
       warnings.warn('Voxel sizes of reconstruction and template do not match. '
-    /Users/lucyowen/repos/superEEG/superEEG/brain.py:406: RuntimeWarning: invalid value encountered in divide
+    /Users/lucyowen/repos/supereeg/supereeg/brain.py:406: RuntimeWarning: invalid value encountered in divide
       data = np.divide(data, counts)
 

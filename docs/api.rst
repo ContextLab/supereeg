@@ -2,7 +2,7 @@
 
 .. _api_ref:
 
-.. currentmodule:: superEEG
+.. currentmodule:: supereeg
 
 API reference
 =============

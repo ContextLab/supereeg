@@ -1,6 +1,6 @@
-superEEG\.filter\_subj
+supereeg\.filter\_subj
 ======================
 
-.. currentmodule:: superEEG
+.. currentmodule:: supereeg
 
 .. autofunction:: filter_subj

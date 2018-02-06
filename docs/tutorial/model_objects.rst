@@ -2,9 +2,9 @@
 Model objects and predicting whole brain activity
 =================================================
 
-Model objects are superEEG’s class that contains the model that
+Model objects are supereeg’s class that contains the model that
 reconstructs full brain activity timeseries from a smaller sample of
-electrodes. The superEEG package offers a few premade models that you
+electrodes. The supereeg package offers a few premade models that you
 can use to reconstruct brain activity, but also a way to create your own
 model if you have a dataset of intracranial patient data converted into
 the brain object format. This tutorial will go over how to use the
@@ -16,7 +16,7 @@ Load in the required libraries
 
 .. code:: ipython2
 
-    import superEEG as se
+    import supereeg as se
     import seaborn as sns
     import matplotlib.pyplot as plt
     from nilearn import plotting
@@ -94,7 +94,7 @@ accepts are supported by ``model.plot``.
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/superEEG/model.py:447: RuntimeWarning: invalid value encountered in divide
+    /Users/lucyowen/repos/supereeg/supereeg/model.py:447: RuntimeWarning: invalid value encountered in divide
       corr_mat = z2r(np.divide(self.numerator, self.denominator))
 
 
@@ -159,7 +159,7 @@ the elements of a brain object saved in the hd5 format using
 Creating a new model
 --------------------
 
-In addition to including a few premade models in the ``superEEG``
+In addition to including a few premade models in the ``supereeg``
 package, we also provide a way to construct a model from scratch.
 
 Created from a list of brain objects:
@@ -201,7 +201,7 @@ new model will be generated:
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/superEEG/brain.py:139: UserWarning: No sample rate given.  Number of seconds cant be computed
+    /Users/lucyowen/repos/supereeg/supereeg/brain.py:139: UserWarning: No sample rate given.  Number of seconds cant be computed
       warnings.warn('No sample rate given.  Number of seconds cant be computed')
 
 
@@ -269,7 +269,7 @@ Predicting whole brain activity
 ``mo.predict()``
 ----------------
 
-Now for the magic. ``superEEG`` uses ***gaussian process regression***
+Now for the magic. ``supereeg`` uses ***gaussian process regression***
 to infer whole brain activity given a smaller sampling of electrode
 recordings. To predict activity, simply call the ``predict`` method of a
 model and pass the subjects brain activity that you’d like to
@@ -328,11 +328,11 @@ model with the subject’s correlation matrix.
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/superEEG/brain.py:366: UserWarning: Voxel sizes of reconstruction and template do not match. Default to using a template with 20mm voxels.
+    /Users/lucyowen/repos/supereeg/supereeg/brain.py:366: UserWarning: Voxel sizes of reconstruction and template do not match. Default to using a template with 20mm voxels.
       warnings.warn('Voxel sizes of reconstruction and template do not match. '
-    /Users/lucyowen/repos/superEEG/superEEG/brain.py:387: UserWarning: Voxel sizes of reconstruction and template do not match. Voxel sizes calculated from model locations.
+    /Users/lucyowen/repos/supereeg/supereeg/brain.py:387: UserWarning: Voxel sizes of reconstruction and template do not match. Voxel sizes calculated from model locations.
       warnings.warn('Voxel sizes of reconstruction and template do not match. '
-    /Users/lucyowen/repos/superEEG/superEEG/brain.py:406: RuntimeWarning: invalid value encountered in divide
+    /Users/lucyowen/repos/supereeg/supereeg/brain.py:406: RuntimeWarning: invalid value encountered in divide
       data = np.divide(data, counts)
     /Library/Python/2.7/site-packages/matplotlib/cbook.py:136: MatplotlibDeprecationWarning: The axisbg attribute was deprecated in version 2.0. Use facecolor instead.
       warnings.warn(message, mplDeprecation, stacklevel=1)
@@ -361,5 +361,5 @@ model with the subject’s correlation matrix.
 .. image:: model_objects_files/model_objects_29_4.png
 
 
-Using the ``superEEG`` algorithm, we’ve ‘reconstructed’ whole brain
+Using the ``supereeg`` algorithm, we’ve ‘reconstructed’ whole brain
 activity from a smaller sample of electrodes.

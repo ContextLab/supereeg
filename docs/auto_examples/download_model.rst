@@ -19,7 +19,7 @@ Here, we load an example dataset and then print out some information about it.
     # License: MIT
 
     # import
-    import superEEG as se
+    import supereeg as se
 
     # load example data
     se.download('example_model')

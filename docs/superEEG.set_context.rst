@@ -1,6 +1,6 @@
-superEEG.set_context
+supereeg.set_context
 ====================
 
-.. currentmodule:: superEEG
+.. currentmodule:: supereeg
 
 .. autofunction:: set_context

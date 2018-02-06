@@ -1,7 +1,7 @@
 ccopy_reg
 _reconstructor
 p0
-(csuperEEG.model
+(csupereeg.model
 Model
 p1
 c__builtin__

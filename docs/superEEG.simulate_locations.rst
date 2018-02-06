@@ -1,6 +1,6 @@
-superEEG\.simulate\_locations
+supereeg\.simulate\_locations
 =============================
 
-.. currentmodule:: superEEG
+.. currentmodule:: supereeg
 
 .. autofunction:: simulate_locations

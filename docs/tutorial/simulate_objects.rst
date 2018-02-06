@@ -12,12 +12,12 @@ Load in the required libraries
 
 .. code:: 
 
-    import superEEG as se
+    import supereeg as se
     import pandas as pd
     import seaborn as sns
     import matplotlib.pyplot as plt
     import numpy as np
-    from superEEG.helpers import corr_column
+    from supereeg.helpers import corr_column
 
 
 .. parsed-literal::
@@ -203,7 +203,7 @@ locations with ``bo.plot_locs``.
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/superEEG/brain.py:268: MatplotlibDeprecationWarning: The set_axis_bgcolor function was deprecated in version 2.0. Use set_facecolor instead.
+    /Users/lucyowen/repos/supereeg/supereeg/brain.py:268: MatplotlibDeprecationWarning: The set_axis_bgcolor function was deprecated in version 2.0. Use set_facecolor instead.
       ax.set_axis_bgcolor('w')
 
 
@@ -311,9 +311,9 @@ brain objects.
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/superEEG/simulate.py:138: RuntimeWarning: covariance is not positive-semidefinite.
+    /Users/lucyowen/repos/supereeg/supereeg/simulate.py:138: RuntimeWarning: covariance is not positive-semidefinite.
       full_data = np.random.multivariate_normal(np.zeros(len(locs)), R, size=n_samples)
-    /Users/lucyowen/repos/superEEG/superEEG/model.py:447: RuntimeWarning: invalid value encountered in divide
+    /Users/lucyowen/repos/supereeg/supereeg/model.py:447: RuntimeWarning: invalid value encountered in divide
       corr_mat = z2r(np.divide(self.numerator, self.denominator))
 
 
@@ -546,9 +546,9 @@ recovery of the true model.
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/superEEG/brain.py:139: UserWarning: No sample rate given.  Number of seconds cant be computed
+    /Users/lucyowen/repos/supereeg/supereeg/brain.py:139: UserWarning: No sample rate given.  Number of seconds cant be computed
       warnings.warn('No sample rate given.  Number of seconds cant be computed')
-    /Users/lucyowen/repos/superEEG/superEEG/model.py:257: RuntimeWarning: invalid value encountered in divide
+    /Users/lucyowen/repos/supereeg/supereeg/model.py:257: RuntimeWarning: invalid value encountered in divide
       model_corrmat_x = np.divide(self.numerator,self.denominator)
 
 

@@ -1,7 +1,7 @@
-superEEG.Model
+supereeg.Model
 ==============
 
-.. currentmodule:: superEEG
+.. currentmodule:: supereeg
 
 .. autoclass:: Model
     :members:

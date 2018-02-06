@@ -27,7 +27,7 @@ This example loads a nifti file and converts it into a brain object.
     # License: MIT
 
     # import
-    import superEEG as se
+    import supereeg as se
     from nilearn import plotting as ni_plt
 
     # load nifti -> brain object

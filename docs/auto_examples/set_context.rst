@@ -7,7 +7,7 @@
 Setting a context
 =============================
 
-SuperEEG will run in different ways depending your computing environment. To
+supereeg will run in different ways depending your computing environment. To
 change the computing context, use the `set_context` function.  You can select
 single, cluster or define your own custom computing environment.
 
@@ -20,16 +20,16 @@ single, cluster or define your own custom computing environment.
     # Code source: Andrew Heusser & Lucy Owen
     # License: MIT
 
-    import superEEG
+    import supereeg
 
     # print default context
-    print(superEEG.context)
+    print(supereeg.context)
 
     # change context to preset cluster default
-    superEEG.set_context('cluster')
+    supereeg.set_context('cluster')
 
     # print updated context
-    print(superEEG.context)
+    print(supereeg.context)
 
     # change context to custom dict
     google = {
@@ -37,8 +37,8 @@ single, cluster or define your own custom computing environment.
         'nodes' : 1000,
         'memory' : 300,
     }
-    superEEG.set_context(google)
-    print(superEEG.context)
+    supereeg.set_context(google)
+    print(supereeg.context)
 
 **Total running time of the script:** ( 0 minutes  0.000 seconds)
 

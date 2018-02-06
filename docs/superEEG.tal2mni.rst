@@ -1,6 +1,6 @@
-superEEG\.tal2mni
+supereeg\.tal2mni
 =================
 
-.. currentmodule:: superEEG
+.. currentmodule:: supereeg
 
 .. autofunction:: tal2mni

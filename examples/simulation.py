@@ -17,7 +17,7 @@ correlational structure (a toeplitz matrix). Finally, we update the model with
 # Code source: Andrew Heusser & Lucy Owen
 # License: MIT
 
-import superEEG as se
+import supereeg as se
 import os
 import sys
 import ast
@@ -25,7 +25,7 @@ import pandas as pd
 import numpy as np
 import pickle
 import seaborn as sns
-from superEEG.helpers import corr_column
+from supereeg.helpers import corr_column
 import matplotlib.pyplot as plt
 #plt.switch_backend('agg')
 

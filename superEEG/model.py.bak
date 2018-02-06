@@ -15,9 +15,9 @@ from .brain import Brain
 
 class Model(object):
     """
-    superEEG model and associated locations
+    supereeg model and associated locations
 
-    This class holds your superEEG model.  To create an instance, pass a list
+    This class holds your supereeg model.  To create an instance, pass a list
     of brain objects and the model will be generated from those brain objects.
     Alternatively, you can bypass creating a new model by passing numerator,
     denominator and n_subs (see parameters for details).  Additionally,
@@ -28,7 +28,7 @@ class Model(object):
     ----------
 
     data : list
-        A list of superEEG.Brain objects used to create the model
+        A list of supereeg.Brain objects used to create the model
 
     locs : pandas.DataFrame
         MNI coordinate (x,y,z) by number of electrode df containing electrode locations
@@ -76,7 +76,7 @@ class Model(object):
 
     Returns
     ----------
-    model : superEEG.Model instance
+    model : supereeg.Model instance
         A model that can be used to infer timeseries from unknown locations
 
     """
@@ -435,7 +435,7 @@ class Model(object):
 
     def plot(self, **kwargs):
         """
-        Plot the superEEG model as a correlation matrix
+        Plot the supereeg model as a correlation matrix
 
         This function wraps seaborn's heatmap and accepts any inputs that seaborn
         supports.

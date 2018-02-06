@@ -1,7 +1,7 @@
 from builtins import str
 import pytest
 import os
-import superEEG as se
+import supereeg as se
 import numpy as np
 import pandas as pd
 import nibabel as nib

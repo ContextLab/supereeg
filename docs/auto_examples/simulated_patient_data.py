@@ -13,11 +13,11 @@ model locations.
 # Code source: Andrew Heusser & Lucy Owen
 # License: MIT
 
-import superEEG as se
+import supereeg as se
 import scipy
 import numpy as np
-from superEEG._helpers.stats import r2z, z2r, corr_column, recon_no_expand
-from superEEG._helpers.bookkeeping import slice_list
+from supereeg._helpers.stats import r2z, z2r, corr_column, recon_no_expand
+from supereeg._helpers.bookkeeping import slice_list
 from numpy import inf
 from scipy.stats import zscore
 from scipy.spatial.distance import squareform, pdist
@@ -41,12 +41,12 @@ m_patients = [50, 40]
 m_elecs = 170
 
 # load nifti to get locations
-gray = se.load(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/gray_mask_20mm_brain.nii')
+gray = se.load(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_20mm_brain.nii')
 
 # extract locations
 locs = gray.locs
 
-import superEEG as se
+import supereeg as se
 # small model
 model = se.load('example_model')
 data = se.load('example_data')
@@ -58,7 +58,7 @@ reconstruct = model.predict(data)
 recon_parallel = model.predict(data, parallel=True)
 
 # create directory for synthetic patient data
-synth_dir = os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/synthetic_data'
+synth_dir = os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/synthetic_data'
 if not os.path.isdir(synth_dir):
     os.mkdir(synth_dir)
 
@@ -251,7 +251,7 @@ d = pd.DataFrame(d)
 #     rand_dist = np.random.multivariate_normal(np.zeros(len(locs)), np.eye(len(locs)), size=n_samples)
 #     data.append(se.Brain(data=np.dot(rand_dist, scipy.linalg.cholesky(R))[:,p], locs=pd.DataFrame(locs[p,:], columns=['x', 'y', 'z'])))
 #
-#     #bo.to_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../superEEG/data/synthetic_' + str(i))
+#     #bo.to_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/synthetic_' + str(i))
 # model = se.Model(data=data, locs=locs)
 
 # ## create brain object to be reconstructed

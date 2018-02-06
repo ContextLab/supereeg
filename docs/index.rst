@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-**SuperEEG**: A python toolbox for inferring whole-brain activity from intracranial data
+**supereeg**: A python toolbox for inferring whole-brain activity from intracranial data
 ==================================
 
    .. image:: _static/example_model.gif
@@ -11,7 +11,7 @@
 
  .. toctree::
 
- `SuperEEG <https://github.com/ContextLab/superEEG>`_ is a Python package used for estimating neural activity throughout the brain from a small number of intracranial recordings by leveraging across patients and Gaussian process regression.
+ `supereeg <https://github.com/ContextLab/supereeg>`_ is a Python package used for estimating neural activity throughout the brain from a small number of intracranial recordings by leveraging across patients and Gaussian process regression.
  and to read the paper, click
  `here <http://www.biorxiv.org/content/early/2017/03/27/121020>`_.
 
