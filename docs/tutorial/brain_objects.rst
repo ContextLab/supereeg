@@ -53,24 +53,6 @@ simulating data, check out the simulate tutorial!
 .. image:: brain_objects_files/brain_objects_4_0.png
 
 
-.. code:: ipython2
-
-    # you can also specify a random seed and set the noise parameter to 0 
-    # if you want to simulate the same brain object again
-    
-    data1 = se.simulate_bo(n_samples=1000, sessions=2, n_elecs=5, random_seed=True, noise=0).get_data()
-    data2 = se.simulate_bo(n_samples=1000, sessions=2, n_elecs=5, random_seed=True, noise=0).get_data()
-    np.allclose(data1, data2)
-
-
-
-
-.. parsed-literal::
-
-    True
-
-
-
 We’ll also simulate some electrode locations
 
 .. code:: ipython2
@@ -82,16 +64,16 @@ We’ll also simulate some electrode locations
 .. parsed-literal::
 
         x   y   z
-    0 -26  37  17
-    1   2 -39 -34
-    2  19  49 -27
-    3 -11 -13 -16
-    4 -21  22   7
-    5  45 -47 -35
-    6 -48 -47 -28
-    7  35 -37  33
-    8 -40   6  42
-    9 -10 -11  -6
+    0  25  -2  -2
+    1  35  25  27
+    2  31  20  -8
+    3  19 -49 -27
+    4  -7  26 -18
+    5  44   7   1
+    6  29  11 -22
+    7 -38 -33  26
+    8 -35 -49 -36
+    9 -16  32   2
 
 
 Creating a brain object
@@ -117,7 +99,7 @@ To view a summary of the contents of the brain object, you can call the
     Number of electrodes: 10
     Recording time in seconds: [ 10.]
     Number of sessions: 1
-    Date created: Mon Feb  5 14:28:13 2018
+    Date created: Mon Feb  5 15:26:50 2018
     Meta data: None
 
 
@@ -137,7 +119,7 @@ each session. For example:
     Number of electrodes: 10
     Recording time in seconds: [ 0.5  0.5]
     Number of sessions: 2
-    Date created: Mon Feb  5 14:28:13 2018
+    Date created: Mon Feb  5 15:26:50 2018
     Meta data: None
 
 
@@ -161,7 +143,7 @@ you want:
     Number of electrodes: 10
     Recording time in seconds: [ 0.5  0.5]
     Number of sessions: 2
-    Date created: Mon Feb  5 14:28:13 2018
+    Date created: Mon Feb  5 15:26:50 2018
     Meta data: {'Hospital': 'DHMC', 'subjectID': '123', 'Investigator': 'Andy'}
 
 
@@ -213,68 +195,68 @@ that can be accessed directly:
       <tbody>
         <tr>
           <th>0</th>
-          <td>0.262042</td>
-          <td>0.464752</td>
-          <td>0.122412</td>
-          <td>0.309758</td>
-          <td>0.274739</td>
-          <td>0.969601</td>
-          <td>0.644827</td>
-          <td>0.640758</td>
-          <td>1.089206</td>
-          <td>1.185163</td>
+          <td>-0.930009</td>
+          <td>-0.754930</td>
+          <td>0.334511</td>
+          <td>0.736630</td>
+          <td>0.839893</td>
+          <td>-0.203794</td>
+          <td>1.252928</td>
+          <td>0.543430</td>
+          <td>0.202970</td>
+          <td>-0.142840</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>0.211075</td>
-          <td>0.387304</td>
-          <td>0.361695</td>
-          <td>0.253977</td>
-          <td>-0.219884</td>
-          <td>-0.061928</td>
-          <td>0.111554</td>
-          <td>0.067584</td>
-          <td>0.283500</td>
-          <td>0.001077</td>
+          <td>-0.663206</td>
+          <td>-0.773829</td>
+          <td>-1.080991</td>
+          <td>-0.631675</td>
+          <td>-0.832990</td>
+          <td>-0.283372</td>
+          <td>-1.071417</td>
+          <td>-0.705510</td>
+          <td>-1.076166</td>
+          <td>-0.776047</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>-0.843265</td>
-          <td>-0.963552</td>
-          <td>-0.648091</td>
-          <td>-0.407617</td>
-          <td>-0.252618</td>
-          <td>-0.255452</td>
-          <td>0.286525</td>
-          <td>0.088394</td>
-          <td>-0.488312</td>
-          <td>-0.075149</td>
+          <td>0.372385</td>
+          <td>0.561954</td>
+          <td>0.626500</td>
+          <td>-0.353542</td>
+          <td>-0.131171</td>
+          <td>0.024503</td>
+          <td>-0.348883</td>
+          <td>-0.229059</td>
+          <td>-0.265106</td>
+          <td>-0.166613</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>-0.025970</td>
-          <td>-0.330554</td>
-          <td>-0.548323</td>
-          <td>-0.571345</td>
-          <td>-0.706949</td>
-          <td>-0.512776</td>
-          <td>-0.567865</td>
-          <td>-0.770673</td>
-          <td>-0.519861</td>
-          <td>-0.427667</td>
+          <td>-0.496578</td>
+          <td>-1.130612</td>
+          <td>-0.695002</td>
+          <td>-1.301244</td>
+          <td>-0.494200</td>
+          <td>-0.991676</td>
+          <td>-1.423415</td>
+          <td>-1.183072</td>
+          <td>-0.874190</td>
+          <td>-0.960488</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>-0.618685</td>
-          <td>-0.271534</td>
-          <td>-1.074725</td>
-          <td>-1.124591</td>
-          <td>-1.185395</td>
-          <td>-0.307570</td>
-          <td>-0.872320</td>
-          <td>-1.102650</td>
-          <td>-0.633870</td>
-          <td>-0.276115</td>
+          <td>0.827513</td>
+          <td>0.891721</td>
+          <td>0.765209</td>
+          <td>0.204045</td>
+          <td>0.175431</td>
+          <td>0.401281</td>
+          <td>-0.394446</td>
+          <td>0.383435</td>
+          <td>0.648246</td>
+          <td>0.780819</td>
         </tr>
       </tbody>
     </table>
@@ -293,19 +275,19 @@ or returned as a numpy array using the ``get_data`` method:
 
 .. parsed-literal::
 
-    array([[  2.62041703e-01,   4.64752400e-01,   1.22411566e-01, ...,
-              6.40758153e-01,   1.08920569e+00,   1.18516324e+00],
-           [  2.11074553e-01,   3.87304478e-01,   3.61695425e-01, ...,
-              6.75835371e-02,   2.83499887e-01,   1.07725289e-03],
-           [ -8.43264636e-01,  -9.63551729e-01,  -6.48091112e-01, ...,
-              8.83935533e-02,  -4.88311679e-01,  -7.51490738e-02],
+    array([[-0.93000919, -0.75492991,  0.33451071, ...,  0.54342999,
+             0.20296994, -0.14284028],
+           [-0.6632061 , -0.77382875, -1.08099143, ..., -0.70550965,
+            -1.07616636, -0.7760469 ],
+           [ 0.37238544,  0.5619545 ,  0.62650049, ..., -0.2290587 ,
+            -0.26510573, -0.16661298],
            ..., 
-           [  5.72147855e-02,   3.55056785e-01,   4.61260064e-01, ...,
-              4.96925721e-01,   1.33369813e-01,   3.82861426e-01],
-           [ -9.49813849e-01,  -1.09307269e+00,  -1.10577853e+00, ...,
-             -1.52238504e-01,  -4.45591411e-01,  -7.55068324e-01],
-           [ -9.64314280e-01,  -1.03669074e+00,  -6.03769901e-01, ...,
-              6.88456868e-01,   1.33442549e-01,   3.03477009e-01]])
+           [ 0.93253886,  0.4405663 ,  0.72032217, ...,  0.42949391,
+             0.45702549,  0.10989546],
+           [-0.70807758, -1.20442834, -0.91176033, ..., -1.36567471,
+            -0.36029023, -0.80815287],
+           [ 0.16579536,  0.82929421,  0.32887336, ..., -0.23778818,
+            -0.10385272,  0.3207427 ]])
 
 
 
@@ -347,33 +329,33 @@ can be retrieved as a numpy array using the ``get_locs`` method:
       <tbody>
         <tr>
           <th>0</th>
-          <td>-26</td>
-          <td>37</td>
-          <td>17</td>
+          <td>25</td>
+          <td>-2</td>
+          <td>-2</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>2</td>
-          <td>-39</td>
-          <td>-34</td>
+          <td>35</td>
+          <td>25</td>
+          <td>27</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>19</td>
-          <td>49</td>
-          <td>-27</td>
+          <td>31</td>
+          <td>20</td>
+          <td>-8</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>-11</td>
-          <td>-13</td>
-          <td>-16</td>
+          <td>19</td>
+          <td>-49</td>
+          <td>-27</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>-21</td>
-          <td>22</td>
-          <td>7</td>
+          <td>-7</td>
+          <td>26</td>
+          <td>-18</td>
         </tr>
       </tbody>
     </table>
@@ -390,16 +372,16 @@ can be retrieved as a numpy array using the ``get_locs`` method:
 
 .. parsed-literal::
 
-    array([[-26,  37,  17],
-           [  2, -39, -34],
-           [ 19,  49, -27],
-           [-11, -13, -16],
-           [-21,  22,   7],
-           [ 45, -47, -35],
-           [-48, -47, -28],
-           [ 35, -37,  33],
-           [-40,   6,  42],
-           [-10, -11,  -6]])
+    array([[ 25,  -2,  -2],
+           [ 35,  25,  27],
+           [ 31,  20,  -8],
+           [ 19, -49, -27],
+           [ -7,  26, -18],
+           [ 44,   7,   1],
+           [ 29,  11, -22],
+           [-38, -33,  26],
+           [-35, -49, -36],
+           [-16,  32,   2]])
 
 
 
@@ -418,7 +400,7 @@ You can also plot both the data and the electrode locations:
 
 
 
-.. image:: brain_objects_files/brain_objects_24_1.png
+.. image:: brain_objects_files/brain_objects_23_1.png
 
 
 .. code:: ipython2
@@ -437,7 +419,7 @@ You can also plot both the data and the electrode locations:
 
 
 
-.. image:: brain_objects_files/brain_objects_25_1.png
+.. image:: brain_objects_files/brain_objects_24_1.png
 
 
 The other pieces of the brain object are listed below:
@@ -491,7 +473,7 @@ This method will give you a summary of the brain object:
     Number of electrodes: 10
     Recording time in seconds: [ 0.5  0.5]
     Number of sessions: 2
-    Date created: Mon Feb  5 14:28:13 2018
+    Date created: Mon Feb  5 15:26:50 2018
     Meta data: {'Hospital': 'DHMC', 'subjectID': '123', 'Investigator': 'Andy'}
 
 
@@ -531,7 +513,7 @@ This method normalizes and plots data from brain object:
 
 
 
-.. image:: brain_objects_files/brain_objects_38_0.png
+.. image:: brain_objects_files/brain_objects_37_0.png
 
 
 ``bo.plot_locs()``
@@ -545,7 +527,7 @@ This method plots electrode locations from brain object:
 
 
 
-.. image:: brain_objects_files/brain_objects_40_0.png
+.. image:: brain_objects_files/brain_objects_39_0.png
 
 
 ``bo.save(fname='something')``

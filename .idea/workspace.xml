@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="72de947b-ed70-4f88-b013-460cd0bdb63e" name="Default" comment="" />
+    <list default="true" id="72de947b-ed70-4f88-b013-460cd0bdb63e" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/auto_examples_jupyter.zip" afterPath="$PROJECT_DIR$/docs/auto_examples/auto_examples_jupyter.zip" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/auto_examples/auto_examples_python.zip" afterPath="$PROJECT_DIR$/docs/auto_examples/auto_examples_python.zip" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/tutorial/brain_objects_files/brain_objects_24_1.png" afterPath="$PROJECT_DIR$/docs/tutorial/brain_objects_files/brain_objects_24_1.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/tutorial/brain_objects_files/brain_objects_4_0.png" afterPath="$PROJECT_DIR$/docs/tutorial/brain_objects_files/brain_objects_4_0.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/tutorial/brain_objects.rst" afterPath="$PROJECT_DIR$/docs/tutorial/brain_objects.rst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/tutorial/model_objects.rst" afterPath="$PROJECT_DIR$/docs/tutorial/model_objects.rst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/tutorial/simulate_objects.ipynb" afterPath="$PROJECT_DIR$/docs/tutorial/simulate_objects.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/simulation.py" afterPath="$PROJECT_DIR$/examples/simulation.py" />
+    </list>
     <ignored path="superEEG.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -23,9 +33,11 @@
       <file leaf-file-name="simulation.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/examples/simulation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="456">
-              <caret line="95" column="10" selection-start-line="95" selection-start-column="10" selection-end-line="95" selection-end-column="59" />
-              <folding />
+            <state relative-caret-position="15">
+              <caret line="99" column="0" selection-start-line="99" selection-start-column="0" selection-end-line="99" selection-end-column="0" />
+              <folding>
+                <element signature="e#652#673#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -118,16 +130,6 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="plot_reconstruct_correlation_matrix.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/examples/plot_reconstruct_correlation_matrix.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-608">
-              <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="12" selection-end-column="15" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
     </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
@@ -167,7 +169,6 @@
         <option value="$PROJECT_DIR$/cluster/simulation/simulated_patient_data.py" />
         <option value="$PROJECT_DIR$/superEEG/_helpers/stats.py" />
         <option value="$PROJECT_DIR$/examples/plot_reconstruct_correlation_matrix.py" />
-        <option value="$PROJECT_DIR$/examples/simulation.py" />
         <option value="$PROJECT_DIR$/tests/test_model.py" />
         <option value="$PROJECT_DIR$/tests/test_simulate.py" />
         <option value="$PROJECT_DIR$/superEEG/simulate.py" />
@@ -194,12 +195,13 @@
         <option value="$PROJECT_DIR$/docs/conf.py" />
         <option value="$PROJECT_DIR$/docs/auto_examples/index.rst" />
         <option value="$PROJECT_DIR$/setup.py" />
+        <option value="$PROJECT_DIR$/examples/simulation.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1697" />
-    <option name="y" value="-374" />
+    <option name="x" value="2124" />
+    <option name="y" value="-417" />
     <option name="width" value="1631" />
     <option name="height" value="870" />
   </component>
@@ -260,7 +262,7 @@
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Font" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
   </component>
-  <component name="RunManager" selected="Python.labels">
+  <component name="RunManager" selected="Python.simulation">
     <configuration default="false" name="predict" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -274,23 +276,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="superEEG" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/examples/predict.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="test_helpers" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="/System/Library/Frameworks/Python.framework/Versions/2.7/bin/python2.7" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="superEEG" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tests/test_helpers.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -342,6 +327,23 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="superEEG" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/examples/labels.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="simulation" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="/System/Library/Frameworks/Python.framework/Versions/2.7/bin/python2.7" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/examples" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="superEEG" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/examples/simulation.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -536,18 +538,18 @@
       <item index="1" class="java.lang.String" itemvalue="Python.predict_example_data.py" />
       <item index="2" class="java.lang.String" itemvalue="Python.load_example_data.py" />
       <item index="3" class="java.lang.String" itemvalue="Python.predict" />
-      <item index="4" class="java.lang.String" itemvalue="Python.test_helpers" />
-      <item index="5" class="java.lang.String" itemvalue="Python.helpers" />
-      <item index="6" class="java.lang.String" itemvalue="Python.plot_model" />
-      <item index="7" class="java.lang.String" itemvalue="Python.labels" />
+      <item index="4" class="java.lang.String" itemvalue="Python.helpers" />
+      <item index="5" class="java.lang.String" itemvalue="Python.plot_model" />
+      <item index="6" class="java.lang.String" itemvalue="Python.labels" />
+      <item index="7" class="java.lang.String" itemvalue="Python.simulation" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.labels" />
-        <item index="1" class="java.lang.String" itemvalue="Python.predict" />
-        <item index="2" class="java.lang.String" itemvalue="Python.plot_model" />
-        <item index="3" class="java.lang.String" itemvalue="Python.helpers" />
-        <item index="4" class="java.lang.String" itemvalue="Python.test_helpers" />
+        <item index="0" class="java.lang.String" itemvalue="Python.simulation" />
+        <item index="1" class="java.lang.String" itemvalue="Python.labels" />
+        <item index="2" class="java.lang.String" itemvalue="Python.predict" />
+        <item index="3" class="java.lang.String" itemvalue="Python.plot_model" />
+        <item index="4" class="java.lang.String" itemvalue="Python.helpers" />
       </list>
     </recent_temporary>
   </component>
@@ -609,7 +611,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="1697" y="-374" width="1631" height="870" extended-state="0" />
+    <frame x="2124" y="-417" width="1631" height="870" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24844721" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -756,13 +758,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/examples/simulation.py</url>
-          <line>132</line>
+          <line>113</line>
           <option name="timeStamp" value="412" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/examples/simulation.py</url>
-          <line>104</line>
-          <option name="timeStamp" value="414" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/examples/plot_update_model.py</url>
@@ -860,7 +857,7 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="541" />
+      <option name="time" value="544" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -879,14 +876,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="190">
           <caret line="3789" column="0" selection-start-line="3789" selection-start-column="0" selection-end-line="3789" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="344">
-          <caret line="1579" column="0" selection-start-line="1579" selection-start-column="0" selection-end-line="1579" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1065,7 +1054,7 @@
         <state relative-caret-position="114">
           <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
+            <element signature="e#0#24#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1083,7 +1072,7 @@
         <state relative-caret-position="224">
           <caret line="271" column="0" selection-start-line="271" selection-start-column="0" selection-end-line="274" selection-end-column="22" />
           <folding>
-            <element signature="e#0#31#0" expanded="true" />
+            <element signature="e#0#31#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1176,11 +1165,21 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="186">
+          <caret line="1579" column="0" selection-start-line="1579" selection-start-column="0" selection-end-line="1579" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/examples/simulation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="456">
-          <caret line="95" column="10" selection-start-line="95" selection-start-column="10" selection-end-line="95" selection-end-column="59" />
-          <folding />
+        <state relative-caret-position="15">
+          <caret line="99" column="0" selection-start-line="99" selection-start-column="0" selection-end-line="99" selection-end-column="0" />
+          <folding>
+            <element signature="e#652#673#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
