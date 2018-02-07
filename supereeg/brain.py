@@ -208,33 +208,17 @@ class Brain(object):
         """
         Gets a time slice of the data
         """
+        if not times:
+            times = list(range(self.data.shape[0]))
+        if not locs:
+            locs = list(range(self.locs.shape[0]))
+
         if times and locs:
             data = self.data.iloc[times, locs].copy()
             sessions = self.sessions.iloc[times].copy()
             sample_rate = [self.sample_rate[int(s-1)] for s in sessions.unique()]
             meta = copy.copy(self.meta)
             locs = self.locs.iloc[locs].copy()
-            date_created = self.date_created
-            return Brain(data=data, locs=locs, sessions=sessions,
-                         sample_rate=sample_rate, meta=meta,
-                         date_created=date_created)
-        elif locs:
-            data = self.data.iloc[:, locs].copy()
-            sessions = self.sessions.copy()
-            sample_rate = copy.copy(self.sample_rate)
-            meta = copy.copy(self.meta)
-            locs = self.locs.iloc[locs].copy()
-            date_created = self.date_created
-            return Brain(data=data, locs=locs, sessions=sessions,
-                         sample_rate=sample_rate, meta=meta,
-                         date_created=date_created)
-
-        elif times:
-            data = self.data.iloc[times, :].copy()
-            sessions = self.sessions.iloc[times].copy()
-            sample_rate = [self.sample_rate[int(s-1)] for s in sessions.unique()]
-            meta = copy.copy(self.meta)
-            locs = self.locs.copy()
             date_created = self.date_created
             return Brain(data=data, locs=locs, sessions=sessions,
                          sample_rate=sample_rate, meta=meta,
