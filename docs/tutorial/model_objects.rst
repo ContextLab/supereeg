@@ -121,7 +121,7 @@ data as a brain object. First, let’s load in an example subjects data:
     Number of electrodes: 64
     Recording time in seconds: [[  5.3984375  14.1328125]]
     Number of sessions: 2
-    Date created: Wed Feb  7 17:47:32 2018
+    Date created: Wed Feb  7 17:55:22 2018
     Meta data: CH003
 
 
@@ -137,7 +137,7 @@ Now you can update the model with that brain object:
 
     Number of locations: 170
     Number of subjects: 67
-    Date created: Wed Feb  7 17:47:33 2018
+    Date created: Wed Feb  7 17:55:23 2018
     Meta data: None
 
 
@@ -184,7 +184,7 @@ construct the model from that data:
     Number of electrodes: 10
     Recording time in seconds: [ 1.]
     Number of sessions: 1
-    Date created: Wed Feb  7 17:47:33 2018
+    Date created: Wed Feb  7 17:55:23 2018
     Meta data: {}
 
 
@@ -209,7 +209,7 @@ new model will be generated:
 
     Number of locations: 170
     Number of subjects: 10
-    Date created: Wed Feb  7 17:47:38 2018
+    Date created: Wed Feb  7 17:55:28 2018
     Meta data: None
 
 
@@ -322,7 +322,7 @@ model with the subject’s correlation matrix.
     Number of electrodes: 64
     Recording time in seconds: [[  5.3984375  14.1328125]]
     Number of sessions: 2
-    Date created: Wed Feb  7 17:47:32 2018
+    Date created: Wed Feb  7 17:55:22 2018
     Meta data: CH003
 
 
@@ -353,7 +353,7 @@ model with the subject’s correlation matrix.
     Number of electrodes: 170
     Recording time in seconds: [  5.3984375  14.1328125]
     Number of sessions: 2
-    Date created: Wed Feb  7 17:47:41 2018
+    Date created: Wed Feb  7 17:55:30 2018
     Meta data: {}
 
 

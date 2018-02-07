@@ -74,9 +74,10 @@ brain object and use the model.update method to update an existing model with ne
     new_model.plot(ax=ax2, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
     ax2.set_title('After updating model: 4 subjects total')
 
+    plt.tight_layout()
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  2.192 seconds)
+**Total running time of the script:** ( 0 minutes  2.475 seconds)
 
 
 

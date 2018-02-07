@@ -43,14 +43,14 @@ cov='toeplitz' to create the model.
     R = se.create_cov(cov='toeplitz', n_elecs=len(locs))
 
     # create list of simulated brain objects
-    model_bos = [se.simulate_model_bos(n_samples=100, sample_rate=1000, cov=R, locs=locs, sample_locs=10) for x in range(3)]
+    model_bos = [se.simulate_model_bos(n_samples=1000, sample_rate=1000, cov=R, locs=locs, sample_locs=10) for x in range(3)]
 
     # create model from subsampled gray locations
     model = se.Model(model_bos, locs=locs)
 
     # plot the model
     model.plot()
-**Total running time of the script:** ( 0 minutes  1.860 seconds)
+**Total running time of the script:** ( 0 minutes  1.663 seconds)
 
 
 
