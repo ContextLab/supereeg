@@ -21,7 +21,7 @@ brain object specifying a noise parameter and the correlational structure
       File "/Library/Python/2.7/site-packages/sphinx_gallery/gen_rst.py", line 475, in execute_code_block
         exec(code_block, example_globals)
       File "<string>", line 33, in <module>
-      File "/Users/lucyowen/repos/supereeg/supereeg/brain.py", line 252, in plot_data
+      File "/Users/lucyowen/repos/supereeg/supereeg/brain.py", line 278, in plot_data
         Y.index = Y.index/np.mean(self.sample_rate)
       File "/Library/Python/2.7/site-packages/numpy/core/fromnumeric.py", line 2909, in mean
         out=out, **kwargs)
