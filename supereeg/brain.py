@@ -6,6 +6,7 @@ from builtins import object
 import time
 import os
 import warnings
+import copy
 import numpy as np
 import pandas as pd
 import nibabel as nib
@@ -150,7 +151,10 @@ class Brain(object):
             self.n_secs = np.true_divide(counts, np.array(sample_rate))
 
         # meta
-        self.meta = meta
+        if meta:
+            self.meta = meta
+        else:
+            self.meta = {}
 
         if not date_created:
             self.date_created = time.strftime("%c")
@@ -199,6 +203,24 @@ class Brain(object):
         Gets locations from brain object
         """
         return self.locs.as_matrix()
+
+    def get_slice(self, times=None):
+        """
+        Gets a time slice of the data
+        """
+        if not times:
+            return self.copy()
+        else:
+            data = self.data.iloc[times, :].copy()
+            sessions = self.sessions.iloc[times].copy()
+            print(sessions.unique())
+            sample_rate = [self.sample_rate[int(s-1)] for s in sessions.unique()]
+            meta = copy.copy(self.meta)
+            locs = self.locs.copy()
+            date_created = self.date_created
+            return Brain(data=data, locs=locs, sessions=sessions,
+                         sample_rate=sample_rate, meta=meta,
+                         date_created=date_created)
 
 
     def plot_data(self, filepath=None, time_min=None, time_max=None, title=None, electrode=None, threshold=10,
