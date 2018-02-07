@@ -64,16 +64,16 @@ We’ll also simulate some electrode locations
 .. parsed-literal::
 
         x   y   z
-    0 -34  14  37
-    1  14   5 -46
-    2  -8 -26   4
-    3  15  34  -8
-    4 -23 -23 -13
-    5 -32  41 -34
-    6 -43 -20  23
-    7  34  25  13
-    8  22  -5  44
-    9  24 -49  27
+    0 -32 -19 -21
+    1 -41 -12  23
+    2 -10 -30  -7
+    3   4 -13 -10
+    4 -14 -45   2
+    5  -2 -35 -14
+    6 -40  47 -29
+    7 -45   6  13
+    8 -14 -11 -25
+    9 -31  45  11
 
 
 Creating a brain object
@@ -99,7 +99,7 @@ To view a summary of the contents of the brain object, you can call the
     Number of electrodes: 10
     Recording time in seconds: [ 10.]
     Number of sessions: 1
-    Date created: Wed Feb  7 12:01:51 2018
+    Date created: Wed Feb  7 17:47:18 2018
     Meta data: {}
 
 
@@ -119,7 +119,7 @@ each session. For example:
     Number of electrodes: 10
     Recording time in seconds: [ 0.5  0.5]
     Number of sessions: 2
-    Date created: Wed Feb  7 12:01:51 2018
+    Date created: Wed Feb  7 17:47:18 2018
     Meta data: {}
 
 
@@ -143,7 +143,7 @@ you want:
     Number of electrodes: 10
     Recording time in seconds: [ 0.5  0.5]
     Number of sessions: 2
-    Date created: Wed Feb  7 12:01:51 2018
+    Date created: Wed Feb  7 17:47:18 2018
     Meta data: {'Hospital': 'DHMC', 'subjectID': '123', 'Investigator': 'Andy'}
 
 
@@ -195,68 +195,68 @@ that can be accessed directly:
       <tbody>
         <tr>
           <th>0</th>
-          <td>0.359493</td>
-          <td>0.388910</td>
-          <td>0.194146</td>
-          <td>-0.246899</td>
-          <td>0.485074</td>
-          <td>0.552142</td>
-          <td>-0.153355</td>
-          <td>0.149642</td>
-          <td>0.310752</td>
-          <td>0.525719</td>
+          <td>0.198819</td>
+          <td>-0.124699</td>
+          <td>-0.380240</td>
+          <td>-0.685776</td>
+          <td>-0.171183</td>
+          <td>0.533168</td>
+          <td>-0.179924</td>
+          <td>-0.236687</td>
+          <td>-0.423308</td>
+          <td>0.167720</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>0.484379</td>
-          <td>0.617828</td>
-          <td>0.564839</td>
-          <td>-0.286592</td>
-          <td>0.134614</td>
-          <td>0.277588</td>
-          <td>0.460598</td>
-          <td>-0.086931</td>
-          <td>0.452722</td>
-          <td>0.034082</td>
+          <td>-0.788142</td>
+          <td>-1.248452</td>
+          <td>-0.820344</td>
+          <td>-0.984107</td>
+          <td>-1.212429</td>
+          <td>-0.888530</td>
+          <td>-1.292391</td>
+          <td>-0.868692</td>
+          <td>-1.550727</td>
+          <td>-0.620401</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>0.560707</td>
-          <td>1.273067</td>
-          <td>0.559568</td>
-          <td>-0.352315</td>
-          <td>0.374204</td>
-          <td>0.661906</td>
-          <td>-0.026836</td>
-          <td>0.378439</td>
-          <td>0.601929</td>
-          <td>0.648457</td>
+          <td>-0.500353</td>
+          <td>-1.188048</td>
+          <td>-0.682745</td>
+          <td>-0.901951</td>
+          <td>-0.087577</td>
+          <td>-0.153879</td>
+          <td>-0.546635</td>
+          <td>-0.441206</td>
+          <td>0.296296</td>
+          <td>-0.350318</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>0.666073</td>
-          <td>1.026356</td>
-          <td>0.475672</td>
-          <td>-0.306384</td>
-          <td>1.010015</td>
-          <td>0.900754</td>
-          <td>-0.409723</td>
-          <td>0.350996</td>
-          <td>-0.080924</td>
-          <td>0.450895</td>
+          <td>0.933650</td>
+          <td>0.196506</td>
+          <td>0.472087</td>
+          <td>0.391212</td>
+          <td>0.161351</td>
+          <td>0.548689</td>
+          <td>1.305987</td>
+          <td>1.009641</td>
+          <td>1.124480</td>
+          <td>0.577910</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>0.155259</td>
-          <td>0.125987</td>
-          <td>-0.195374</td>
-          <td>-1.199296</td>
-          <td>-1.241410</td>
-          <td>-0.212679</td>
-          <td>-1.232085</td>
-          <td>-0.580203</td>
-          <td>0.001638</td>
-          <td>-0.504372</td>
+          <td>0.928871</td>
+          <td>0.549550</td>
+          <td>0.611523</td>
+          <td>-0.842358</td>
+          <td>-0.356948</td>
+          <td>0.733351</td>
+          <td>-1.286813</td>
+          <td>-0.270330</td>
+          <td>-0.209234</td>
+          <td>0.854060</td>
         </tr>
       </tbody>
     </table>
@@ -275,19 +275,19 @@ or returned as a numpy array using the ``get_data`` method:
 
 .. parsed-literal::
 
-    array([[ 0.35949293,  0.3889104 ,  0.19414583, ...,  0.14964173,
-             0.31075159,  0.52571946],
-           [ 0.4843794 ,  0.61782807,  0.5648395 , ..., -0.08693107,
-             0.45272172,  0.03408206],
-           [ 0.56070739,  1.27306685,  0.55956827, ...,  0.37843882,
-             0.60192899,  0.64845682],
+    array([[  1.98819461e-01,  -1.24698598e-01,  -3.80239902e-01, ...,
+             -2.36686565e-01,  -4.23308220e-01,   1.67719980e-01],
+           [ -7.88142011e-01,  -1.24845174e+00,  -8.20343604e-01, ...,
+             -8.68692345e-01,  -1.55072709e+00,  -6.20401315e-01],
+           [ -5.00353492e-01,  -1.18804812e+00,  -6.82745092e-01, ...,
+             -4.41206200e-01,   2.96296474e-01,  -3.50318367e-01],
            ..., 
-           [-0.66559006,  0.15584047, -0.29704573, ..., -0.07603965,
-            -0.47958977, -0.16955093],
-           [ 0.43668876, -0.2064319 ,  0.54242694, ...,  1.21709892,
-             0.80839056,  0.8998248 ],
-           [ 0.63327396,  1.04842109,  0.81187229, ..., -0.45900497,
-             0.37022246,  0.35440475]])
+           [  2.03874039e-01,  -1.38341973e-01,   2.66879442e-01, ...,
+              9.86484805e-01,   6.36961862e-01,   5.42720508e-01],
+           [ -4.42432477e-01,  -6.84193728e-01,  -4.95644717e-01, ...,
+             -1.51241736e-01,  -3.66008465e-01,   2.18509737e-01],
+           [ -5.01381101e-01,  -4.20362270e-01,   8.03228790e-04, ...,
+             -3.32534910e-01,  -9.00252363e-02,  -3.73585975e-01]])
 
 
 
@@ -329,33 +329,33 @@ can be retrieved as a numpy array using the ``get_locs`` method:
       <tbody>
         <tr>
           <th>0</th>
-          <td>-34</td>
-          <td>14</td>
-          <td>37</td>
+          <td>-32</td>
+          <td>-19</td>
+          <td>-21</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>14</td>
-          <td>5</td>
-          <td>-46</td>
+          <td>-41</td>
+          <td>-12</td>
+          <td>23</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>-8</td>
-          <td>-26</td>
-          <td>4</td>
+          <td>-10</td>
+          <td>-30</td>
+          <td>-7</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>15</td>
-          <td>34</td>
-          <td>-8</td>
+          <td>4</td>
+          <td>-13</td>
+          <td>-10</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>-23</td>
-          <td>-23</td>
-          <td>-13</td>
+          <td>-14</td>
+          <td>-45</td>
+          <td>2</td>
         </tr>
       </tbody>
     </table>
@@ -372,16 +372,16 @@ can be retrieved as a numpy array using the ``get_locs`` method:
 
 .. parsed-literal::
 
-    array([[-34,  14,  37],
-           [ 14,   5, -46],
-           [ -8, -26,   4],
-           [ 15,  34,  -8],
-           [-23, -23, -13],
-           [-32,  41, -34],
-           [-43, -20,  23],
-           [ 34,  25,  13],
-           [ 22,  -5,  44],
-           [ 24, -49,  27]])
+    array([[-32, -19, -21],
+           [-41, -12,  23],
+           [-10, -30,  -7],
+           [  4, -13, -10],
+           [-14, -45,   2],
+           [ -2, -35, -14],
+           [-40,  47, -29],
+           [-45,   6,  13],
+           [-14, -11, -25],
+           [-31,  45,  11]])
 
 
 
@@ -398,9 +398,9 @@ return a subset of the brain object
 
 .. parsed-literal::
 
-    array([[ 0.61782807,  0.5648395 , -0.28659249],
-           [ 1.27306685,  0.55956827, -0.35231479],
-           [ 1.0263561 ,  0.47567213, -0.30638369]])
+    array([[-1.24845174, -0.8203436 , -0.98410739],
+           [-1.18804812, -0.68274509, -0.90195075],
+           [ 0.19650629,  0.47208747,  0.39121229]])
 
 
 
@@ -414,7 +414,7 @@ You can also plot both the data and the electrode locations:
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:294: MatplotlibDeprecationWarning: The set_axis_bgcolor function was deprecated in version 2.0. Use set_facecolor instead.
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:298: MatplotlibDeprecationWarning: The set_axis_bgcolor function was deprecated in version 2.0. Use set_facecolor instead.
       ax.set_axis_bgcolor('w')
 
 
@@ -492,7 +492,7 @@ This method will give you a summary of the brain object:
     Number of electrodes: 10
     Recording time in seconds: [ 0.5  0.5]
     Number of sessions: 2
-    Date created: Wed Feb  7 12:01:51 2018
+    Date created: Wed Feb  7 17:47:18 2018
     Meta data: {'Hospital': 'DHMC', 'subjectID': '123', 'Investigator': 'Andy'}
 
 
@@ -587,10 +587,10 @@ specify a nifti template with the ``template`` argument.
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:392: UserWarning: Voxel sizes of reconstruction and template do not match. Default to using a template with 20mm voxels.
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:396: UserWarning: Voxel sizes of reconstruction and template do not match. Default to using a template with 20mm voxels.
       warnings.warn('Voxel sizes of reconstruction and template do not match. '
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:413: UserWarning: Voxel sizes of reconstruction and template do not match. Voxel sizes calculated from model locations.
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:417: UserWarning: Voxel sizes of reconstruction and template do not match. Voxel sizes calculated from model locations.
       warnings.warn('Voxel sizes of reconstruction and template do not match. '
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:432: RuntimeWarning: invalid value encountered in divide
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:436: RuntimeWarning: invalid value encountered in divide
       data = np.divide(data, counts)
 

@@ -37,6 +37,8 @@ Here, we load an example dataset and then slice it.
     bo_i = bo.get_slice(times=[1,2,3,4,5], locs=[10,11,12])
     bo_i.get_data()
 
+
+
 **Total running time of the script:** ( 0 minutes  0.000 seconds)
 
 

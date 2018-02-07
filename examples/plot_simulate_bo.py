@@ -23,10 +23,7 @@ locs = se.load('example_locations')
 locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
 # simulate brain object
-bo = se.simulate_bo(n_samples=100, sample_rate=1000, cov='toeplitz', locs=locs, noise =.3)
-
-# plot complete brain object
-bo.plot_locs()
+bo = se.simulate_bo(n_samples=1000, sample_rate=1000, cov='toeplitz', locs=locs, noise =.3)
 
 # brain object locations, 10 sampled
 sub_locs = locs.sample(10).sort_values(['x', 'y', 'z'])
@@ -35,10 +32,10 @@ sub_locs = locs.sample(10).sort_values(['x', 'y', 'z'])
 data = bo.data.iloc[:, sub_locs.index]
 
 # create synthetic patient
-bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs)
+bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
 
 # plot sample patient locations
 bo_sample.plot_locs()
 
 # plot sample patient data
-bo_sample.plot_data(time_min=5, time_max=10)
+bo_sample.plot_data()

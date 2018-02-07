@@ -15,19 +15,18 @@ brain object specifying a noise parameter and the correlational structure
 
 
 
-.. code-block:: pytb
+.. rst-class:: sphx-glr-horizontal
 
-    Traceback (most recent call last):
-      File "/Library/Python/2.7/site-packages/sphinx_gallery/gen_rst.py", line 475, in execute_code_block
-        exec(code_block, example_globals)
-      File "<string>", line 33, in <module>
-      File "/Users/lucyowen/repos/supereeg/supereeg/brain.py", line 278, in plot_data
-        Y.index = np.divide(Y.index,np.mean(self.sample_rate))
-      File "/Library/Python/2.7/site-packages/numpy/core/fromnumeric.py", line 2909, in mean
-        out=out, **kwargs)
-      File "/Library/Python/2.7/site-packages/numpy/core/_methods.py", line 82, in _mean
-        ret = ret / rcount
-    TypeError: unsupported operand type(s) for /: 'NoneType' and 'int'
+
+    *
+
+      .. image:: /auto_examples/images/sphx_glr_plot_simulate_bo_001.png
+            :scale: 47
+
+    *
+
+      .. image:: /auto_examples/images/sphx_glr_plot_simulate_bo_002.png
+            :scale: 47
 
 
 
@@ -49,10 +48,7 @@ brain object specifying a noise parameter and the correlational structure
     locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
     # simulate brain object
-    bo = se.simulate_bo(n_samples=100, sample_rate=1000, cov='toeplitz', locs=locs, noise =.3)
-
-    # plot complete brain object
-    bo.plot_locs()
+    bo = se.simulate_bo(n_samples=1000, sample_rate=1000, cov='toeplitz', locs=locs, noise =.3)
 
     # brain object locations, 10 sampled
     sub_locs = locs.sample(10).sort_values(['x', 'y', 'z'])
@@ -61,14 +57,14 @@ brain object specifying a noise parameter and the correlational structure
     data = bo.data.iloc[:, sub_locs.index]
 
     # create synthetic patient
-    bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs)
+    bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
 
     # plot sample patient locations
     bo_sample.plot_locs()
 
     # plot sample patient data
-    bo_sample.plot_data(time_min=5, time_max=10)
-**Total running time of the script:** ( 0 minutes  0.000 seconds)
+    bo_sample.plot_data()
+**Total running time of the script:** ( 0 minutes  0.904 seconds)
 
 
 

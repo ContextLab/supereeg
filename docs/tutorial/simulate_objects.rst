@@ -10,7 +10,7 @@ simulate functions and explore varying parameters.
 Load in the required libraries
 ==============================
 
-.. code:: 
+.. code:: ipython2
 
     import supereeg as se
     import pandas as pd
@@ -31,7 +31,7 @@ Simulate locations
 
 To begin, we can either simulate locations:
 
-.. code:: 
+.. code:: ipython2
 
     sim_locs = se.simulate_locations()
     sim_locs.head()
@@ -67,33 +67,33 @@ To begin, we can either simulate locations:
       <tbody>
         <tr>
           <th>0</th>
-          <td>-39</td>
-          <td>21</td>
-          <td>44</td>
+          <td>-19</td>
+          <td>36</td>
+          <td>3</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>-44</td>
-          <td>-3</td>
-          <td>-38</td>
+          <td>-33</td>
+          <td>-22</td>
+          <td>-9</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>20</td>
-          <td>0</td>
-          <td>-23</td>
+          <td>18</td>
+          <td>-17</td>
+          <td>-2</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>-18</td>
-          <td>49</td>
-          <td>36</td>
+          <td>25</td>
+          <td>-1</td>
+          <td>4</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>11</td>
-          <td>-23</td>
-          <td>24</td>
+          <td>-34</td>
+          <td>-14</td>
+          <td>8</td>
         </tr>
       </tbody>
     </table>
@@ -103,7 +103,7 @@ To begin, we can either simulate locations:
 
 Or extract example locations:
 
-.. code:: 
+.. code:: ipython2
 
     # load example locations
     locs = se.load('example_locations')
@@ -187,7 +187,7 @@ with ``n_samples``, sessions with ``sessions``, and the number of
 electrodes with ``n_elecs`` or by passing specific electrodes with
 ``locs``.
 
-.. code:: 
+.. code:: ipython2
 
     # simulate brain object with example locations
     bo = se.simulate_bo(n_samples=1000, sample_rate=100, sessions=2)
@@ -195,7 +195,7 @@ electrodes with ``n_elecs`` or by passing specific electrodes with
 You can view your simulated data with ``bo.plot_data`` and simulated
 locations with ``bo.plot_locs``.
 
-.. code:: 
+.. code:: ipython2
 
     # for plotting data, the default time window is first 10 seconds, but you can specifiy your own window
     bo.plot_data(time_min=5, time_max=10)
@@ -203,7 +203,7 @@ locations with ``bo.plot_locs``.
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/supereeg/supereeg/brain.py:268: MatplotlibDeprecationWarning: The set_axis_bgcolor function was deprecated in version 2.0. Use set_facecolor instead.
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:297: MatplotlibDeprecationWarning: The set_axis_bgcolor function was deprecated in version 2.0. Use set_facecolor instead.
       ax.set_axis_bgcolor('w')
 
 
@@ -211,7 +211,7 @@ locations with ``bo.plot_locs``.
 .. image:: simulate_objects_files/simulate_objects_13_1.png
 
 
-.. code:: 
+.. code:: ipython2
 
     # plot locations
     bo.plot_locs()
@@ -238,7 +238,7 @@ We’ve added a ``random_seed=False`` and ``noise=.1`` parameters as
 defaults. But if you want to recreate the same brain object, you can set
 these flags to: ``random_seed=True`` and ``noise=0``
 
-.. code:: 
+.. code:: ipython2
 
     # if you want to simulate the same brain object again
     bo_1 = se.simulate_bo(n_samples=1000, sessions=2, n_elecs=5, random_seed=True, noise=0).get_data()
@@ -270,14 +270,14 @@ include:
 
 ``'random'`` - positive semi-definite random matrix
 
-.. code:: 
+.. code:: ipython2
 
     # create brain object with specified correlation matrix
     bo = se.simulate_bo(n_samples=100, sample_rate=1000, locs=locs, cov='toeplitz')
 
 You can also pass a custom covariance matrix in ``cov``.
 
-.. code:: 
+.. code:: ipython2
 
     # create correlation matrix
     R = se.create_cov(cov='toeplitz', n_elecs=len(locs))
@@ -295,7 +295,7 @@ Simulate model object
 You can create a simulated model object by passing a list of simulated
 brain objects.
 
-.. code:: 
+.. code:: ipython2
 
     # list of 3 simulated brain objects, each with 20 locations, for model 
     model_bos = [se.simulate_model_bos(n_samples=100, sample_rate=1000, sample_locs=20, 
@@ -311,9 +311,9 @@ brain objects.
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/supereeg/supereeg/simulate.py:138: RuntimeWarning: covariance is not positive-semidefinite.
+    /Users/lucyowen/repos/superEEG/supereeg/simulate.py:138: RuntimeWarning: covariance is not positive-semidefinite.
       full_data = np.random.multivariate_normal(np.zeros(len(locs)), R, size=n_samples)
-    /Users/lucyowen/repos/supereeg/supereeg/model.py:447: RuntimeWarning: invalid value encountered in divide
+    /Users/lucyowen/repos/superEEG/supereeg/model.py:447: RuntimeWarning: invalid value encountered in divide
       corr_mat = z2r(np.divide(self.numerator, self.denominator))
 
 
@@ -330,7 +330,7 @@ number of subjects and number of randomly chosen electrodes and plot the
 model at each iteration. As the figure shows, the more subjects and
 electrodes, the better then recovery of the true model.
 
-.. code:: 
+.. code:: ipython2
 
     # n_samples
     n_samples = 100
@@ -392,7 +392,7 @@ updated model is plotted. As is apparent from the figures, the more data
 in the model, the better the true correlational structure can be
 recovered.
 
-.. code:: 
+.. code:: ipython2
 
     # number of subjects
     n_subs = 10
@@ -460,31 +460,29 @@ model
 As the figure shows, the more subjects and electrodes, the better then
 recovery of the true model.
 
-.. code:: 
+.. code:: ipython2
 
     # n_electrodes - number of electrodes for reconstructed patient
-    n_elecs = range(10, 160, 50)
+    n_elecs = range(10, 160, 100)
     
-    # m_patients - number of patients in the model 
-    m_patients = [1, 5, 10]
+    # m_patients - number of patients in the model
+    m_patients = [5, 10]
     
     # m_electrodes - number of electrodes for each patient in the model
-    m_elecs = range(10, 160, 50)
+    m_elecs = range(10, 160, 100)
     
-    iter_val = 2
+    iter_val = 1
     
     append_d = pd.DataFrame()
     
-    param_grid = [(p,m,n) for p in m_patients for m in m_elecs for n in n_elecs]
+    param_grid = [(p, m, n) for p in m_patients for m in m_elecs for n in n_elecs]
     
     for p, m, n in param_grid:
         d = []
     
         for i in range(iter_val):
-    
-    
-            #create brain objects with m_patients and loop over the number of model locations and subset locations to build model
-            model_bos = [se.simulate_model_bos(n_samples=100, sample_rate=1000, locs=locs, sample_locs = m) for x in range(p)]
+            # create brain objects with m_patients and loop over the number of model locations and subset locations to build model
+            model_bos = [se.simulate_model_bos(n_samples=100, sample_rate=1000, locs=locs, sample_locs=m, noise =.3) for x in range(p)]
     
             # create model from subsampled gray locations
             model = se.Model(model_bos, locs=locs)
@@ -493,7 +491,7 @@ recovery of the true model.
             sub_locs = locs.sample(n).sort_values(['x', 'y', 'z'])
     
             # simulate brain object
-            bo = se.simulate_bo(n_samples=100, sample_rate=1000, locs=locs)
+            bo = se.simulate_bo(n_samples=100, sample_rate=1000, locs=locs, noise =.3)
     
             # parse brain object to create synthetic patient data
             data = bo.data.iloc[:, sub_locs.index]
@@ -503,52 +501,52 @@ recovery of the true model.
     
             # reconstruct at 'unknown' locations
             bo_r = model.predict(bo_sample)
-            
+    
             # find the reconstructed indices
             recon_inds = [i for i, x in enumerate(bo_r.label) if x == 'reconstructed']
-            
+    
             # sample reconstructed data a reconstructed indices
             recon = bo_r.data.iloc[:, recon_inds]
-            
+    
             # sample actual data at reconstructed locations
             actual = bo.data.iloc[:, recon_inds]
-            
+    
             # correlate reconstruction with actual data
-            corr_vals = corr_column(actual.as_matrix(),recon.as_matrix())
+            corr_vals = corr_column(actual.as_matrix(), recon.as_matrix())
             corr_vals_sample = np.random.choice(corr_vals, 5)
     
-            d.append({'Subjects in model': p, 'Electrodes per subject in model': m, 'Electrodes per reconstructed subject': n, 'Average Correlation': corr_vals_sample.mean(), 'Correlations': corr_vals})
+            d.append(
+                {'Subjects in model': p, 'Electrodes per subject in model': m, 'Electrodes per reconstructed subject': n,
+                 'Average Correlation': corr_vals_sample.mean(), 'Correlations': corr_vals})
     
-        d = pd.DataFrame(d, columns = ['Subjects in model', 'Electrodes per subject in model', 'Electrodes per reconstructed subject', 'Average Correlation', 'Correlations'])
+        d = pd.DataFrame(d, columns=['Subjects in model', 'Electrodes per subject in model',
+                                     'Electrodes per reconstructed subject', 'Average Correlation', 'Correlations'])
         append_d = append_d.append(d)
         append_d.index.rename('Iteration', inplace=True)
     
-    
-    new_df=append_d.groupby('Average Correlation').mean()
+    new_df = append_d.groupby('Average Correlation').mean()
     
     fig, axs = plt.subplots(ncols=len(np.unique(new_df['Subjects in model'])), sharex=True, sharey=True)
     
     axs_iter = 0
     cbar_ax = fig.add_axes([.92, .3, .03, .4])
     for i in np.unique(new_df['Subjects in model']):
-    
-    
-        data_plot = append_d[append_d['Subjects in model'] == i].pivot_table(index=['Electrodes per subject in model'], columns='Electrodes per reconstructed subject',
-                                                                  values='Average Correlation')
-        axs[axs_iter].set_title('Patients = '+ str(i))
-        sns.heatmap(data_plot, cmap="coolwarm", cbar = axs_iter == 0, ax = axs[axs_iter], cbar_ax = None if axs_iter else cbar_ax)
+        data_plot = append_d[append_d['Subjects in model'] == i].pivot_table(index=['Electrodes per subject in model'],
+                                                                             columns='Electrodes per reconstructed subject',
+                                                                             values='Average Correlation')
+        axs[axs_iter].set_title('Patients = ' + str(i))
+        sns.heatmap(data_plot, cmap="coolwarm", cbar=axs_iter == 0, ax=axs[axs_iter], cbar_ax=None if axs_iter else cbar_ax)
         axs[axs_iter].invert_yaxis()
-        axs_iter+=1
+        axs_iter += 1
     
     plt.show()
 
 
-
 .. parsed-literal::
 
-    /Users/lucyowen/repos/supereeg/supereeg/brain.py:139: UserWarning: No sample rate given.  Number of seconds cant be computed
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:140: UserWarning: No sample rate given.  Number of seconds cant be computed
       warnings.warn('No sample rate given.  Number of seconds cant be computed')
-    /Users/lucyowen/repos/supereeg/supereeg/model.py:257: RuntimeWarning: invalid value encountered in divide
+    /Users/lucyowen/repos/superEEG/supereeg/model.py:257: RuntimeWarning: invalid value encountered in divide
       model_corrmat_x = np.divide(self.numerator,self.denominator)
 
 

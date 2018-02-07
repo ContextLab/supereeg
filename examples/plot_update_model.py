@@ -59,4 +59,5 @@ ax1.set_title('Before updating model: 3 subjects total')
 new_model.plot(ax=ax2, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
 ax2.set_title('After updating model: 4 subjects total')
 
+plt.tight_layout()
 plt.show()

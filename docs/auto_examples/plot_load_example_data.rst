@@ -34,7 +34,7 @@ Here, we load an example dataset and then print out some information about it.
     Number of electrodes: 64
     Recording time in seconds: [[  5.3984375  14.1328125]]
     Number of sessions: 2
-    Date created: Tue Feb  6 17:34:40 2018
+    Date created: Wed Feb  7 17:40:11 2018
     Meta data: CH003
 
 
@@ -61,15 +61,14 @@ Here, we load an example dataset and then print out some information about it.
     # look data, stored as pandas dataframe
     bo.data.head()
 
+    # then can visualize locations
+    bo.plot_locs()
+
     # visualize the data
     # the default time window is the first 10 seconds, but you can specify your own timewindow
     bo.plot_data(time_min=10, time_max=12)
 
-    # then can visualize locations
-    bo.plot_locs()
-
-
-**Total running time of the script:** ( 0 minutes  0.999 seconds)
+**Total running time of the script:** ( 0 minutes  1.001 seconds)
 
 
 

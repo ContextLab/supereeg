@@ -121,7 +121,7 @@ data as a brain object. First, let’s load in an example subjects data:
     Number of electrodes: 64
     Recording time in seconds: [[  5.3984375  14.1328125]]
     Number of sessions: 2
-    Date created: Wed Feb  7 12:02:04 2018
+    Date created: Wed Feb  7 17:47:32 2018
     Meta data: CH003
 
 
@@ -137,7 +137,7 @@ Now you can update the model with that brain object:
 
     Number of locations: 170
     Number of subjects: 67
-    Date created: Wed Feb  7 12:02:05 2018
+    Date created: Wed Feb  7 17:47:33 2018
     Meta data: None
 
 
@@ -184,7 +184,7 @@ construct the model from that data:
     Number of electrodes: 10
     Recording time in seconds: [ 1.]
     Number of sessions: 1
-    Date created: Wed Feb  7 12:02:05 2018
+    Date created: Wed Feb  7 17:47:33 2018
     Meta data: {}
 
 
@@ -209,7 +209,7 @@ new model will be generated:
 
     Number of locations: 170
     Number of subjects: 10
-    Date created: Wed Feb  7 12:02:10 2018
+    Date created: Wed Feb  7 17:47:38 2018
     Meta data: None
 
 
@@ -322,17 +322,17 @@ model with the subject’s correlation matrix.
     Number of electrodes: 64
     Recording time in seconds: [[  5.3984375  14.1328125]]
     Number of sessions: 2
-    Date created: Wed Feb  7 12:02:04 2018
+    Date created: Wed Feb  7 17:47:32 2018
     Meta data: CH003
 
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:392: UserWarning: Voxel sizes of reconstruction and template do not match. Default to using a template with 20mm voxels.
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:396: UserWarning: Voxel sizes of reconstruction and template do not match. Default to using a template with 20mm voxels.
       warnings.warn('Voxel sizes of reconstruction and template do not match. '
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:413: UserWarning: Voxel sizes of reconstruction and template do not match. Voxel sizes calculated from model locations.
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:417: UserWarning: Voxel sizes of reconstruction and template do not match. Voxel sizes calculated from model locations.
       warnings.warn('Voxel sizes of reconstruction and template do not match. '
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:432: RuntimeWarning: invalid value encountered in divide
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:436: RuntimeWarning: invalid value encountered in divide
       data = np.divide(data, counts)
     /Library/Python/2.7/site-packages/matplotlib/cbook.py:136: MatplotlibDeprecationWarning: The axisbg attribute was deprecated in version 2.0. Use facecolor instead.
       warnings.warn(message, mplDeprecation, stacklevel=1)
@@ -353,7 +353,7 @@ model with the subject’s correlation matrix.
     Number of electrodes: 170
     Recording time in seconds: [  5.3984375  14.1328125]
     Number of sessions: 2
-    Date created: Wed Feb  7 12:02:13 2018
+    Date created: Wed Feb  7 17:47:41 2018
     Meta data: {}
 
 

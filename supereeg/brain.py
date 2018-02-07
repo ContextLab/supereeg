@@ -278,7 +278,8 @@ class Brain(object):
             Y = Y.columns[int(electrode)]
 
         # divide index by sample rate so that index corresponds to time
-        Y.index = np.divide(Y.index,np.mean(self.sample_rate))
+        if self.sample_rate:
+            Y.index = np.divide(Y.index,np.mean(self.sample_rate))
 
         # if a time window is designated index data in that window
         if all([time_min, time_max]):

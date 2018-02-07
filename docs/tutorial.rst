@@ -20,3 +20,11 @@ Introduction to `Brain` objects
    :maxdepth: 2
 
    tutorial/model_objects.ipynb
+
+Simulations
+------------------
+
+.. toctree::
+   :maxdepth: 2
+
+   tutorial/simulate_objects.ipynb
