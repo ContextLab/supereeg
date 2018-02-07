@@ -15,6 +15,7 @@ build/
 develop-eggs/
 dist/
 .idea/
+*/.idea/
 downloads/
 eggs/
 .eggs/
