@@ -22,7 +22,7 @@ brain object specifying a noise parameter and the correlational structure
         exec(code_block, example_globals)
       File "<string>", line 33, in <module>
       File "/Users/lucyowen/repos/supereeg/supereeg/brain.py", line 278, in plot_data
-        Y.index = Y.index/np.mean(self.sample_rate)
+        Y.index = np.divide(Y.index,np.mean(self.sample_rate))
       File "/Library/Python/2.7/site-packages/numpy/core/fromnumeric.py", line 2909, in mean
         out=out, **kwargs)
       File "/Library/Python/2.7/site-packages/numpy/core/_methods.py", line 82, in _mean
