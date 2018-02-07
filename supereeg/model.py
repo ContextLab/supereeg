@@ -257,10 +257,10 @@ class Model(object):
             model_corrmat_x = np.divide(self.numerator,self.denominator)
 
         # find overlapping locations
-        overlap_bo_in_mo = count_overlapping(self, bo)
+        bool_mask = count_overlapping(self, bo)
 
         # get model indices where subject locs overlap with model locs
-        bool_mask = np.sum([(self.locs == y).all(1) for idy, y in bo.locs.iterrows()], 0).astype(bool)
+        #bool_mask = np.sum([(self.locs == y).all(1) for idy, y in bo.locs.iterrows()], 0).astype(bool)
 
         # if model locs is a subset of patient locs, nothing to reconstruct
         assert not all(bool_mask),"model is a complete subset of patient locations"

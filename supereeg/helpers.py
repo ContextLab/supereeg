@@ -344,7 +344,7 @@ def chunk_bo(bo, chunk):
     nbo : brain object
         Chunked brain object with chunked zscored data in the data field
     """
-    return bo.get_slice([i for i in chunk if i is not None])
+    return bo.get_slice(times=[i for i in chunk if i is not None])
 
 
 def timeseries_recon(bo, K, chunk_size=1000):
