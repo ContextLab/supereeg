@@ -49,6 +49,26 @@ Gallery of Examples
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Here, we load an example dataset and then slice it.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_slice_brain_object_thumb.png
+
+        :ref:`sphx_glr_auto_examples_slice_brain_object.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/slice_brain_object
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="Here, we load an example dataset and then print out some information about it.">
 
 .. only:: html
