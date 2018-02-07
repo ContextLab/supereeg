@@ -204,16 +204,34 @@ class Brain(object):
         """
         return self.locs.as_matrix()
 
-    def get_slice(self, times=None):
+    def get_slice(self, times=None, locs=None):
         """
         Gets a time slice of the data
         """
-        if not times:
-            return self.copy()
-        else:
+        if times and locs:
+            data = self.data.iloc[times, locs].copy()
+            sessions = self.sessions.iloc[times].copy()
+            sample_rate = [self.sample_rate[int(s-1)] for s in sessions.unique()]
+            meta = copy.copy(self.meta)
+            locs = self.locs.iloc[locs].copy()
+            date_created = self.date_created
+            return Brain(data=data, locs=locs, sessions=sessions,
+                         sample_rate=sample_rate, meta=meta,
+                         date_created=date_created)
+        elif locs:
+            data = self.data.iloc[:, locs].copy()
+            sessions = self.sessions.copy()
+            sample_rate = copy.copy(self.sample_rate)
+            meta = copy.copy(self.meta)
+            locs = self.locs.iloc[locs].copy()
+            date_created = self.date_created
+            return Brain(data=data, locs=locs, sessions=sessions,
+                         sample_rate=sample_rate, meta=meta,
+                         date_created=date_created)
+
+        elif times:
             data = self.data.iloc[times, :].copy()
             sessions = self.sessions.iloc[times].copy()
-            print(sessions.unique())
             sample_rate = [self.sample_rate[int(s-1)] for s in sessions.unique()]
             meta = copy.copy(self.meta)
             locs = self.locs.copy()
@@ -221,6 +239,8 @@ class Brain(object):
             return Brain(data=data, locs=locs, sessions=sessions,
                          sample_rate=sample_rate, meta=meta,
                          date_created=date_created)
+        else:
+            return self.copy()
 
 
     def plot_data(self, filepath=None, time_min=None, time_max=None, title=None, electrode=None, threshold=10,

@@ -121,7 +121,7 @@ data as a brain object. First, let’s load in an example subjects data:
     Number of electrodes: 64
     Recording time in seconds: [[  5.3984375  14.1328125]]
     Number of sessions: 2
-    Date created: Wed Feb  7 08:53:06 2018
+    Date created: Wed Feb  7 10:40:15 2018
     Meta data: CH003
 
 
@@ -137,7 +137,7 @@ Now you can update the model with that brain object:
 
     Number of locations: 170
     Number of subjects: 67
-    Date created: Wed Feb  7 08:53:07 2018
+    Date created: Wed Feb  7 10:40:16 2018
     Meta data: None
 
 
@@ -184,8 +184,8 @@ construct the model from that data:
     Number of electrodes: 10
     Recording time in seconds: [ 1.]
     Number of sessions: 1
-    Date created: Wed Feb  7 08:53:07 2018
-    Meta data: None
+    Date created: Wed Feb  7 10:40:16 2018
+    Meta data: {}
 
 
 As you can see above, each simulated subject has 10 (randomly placed)
@@ -201,7 +201,7 @@ new model will be generated:
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:139: UserWarning: No sample rate given.  Number of seconds cant be computed
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:140: UserWarning: No sample rate given.  Number of seconds cant be computed
       warnings.warn('No sample rate given.  Number of seconds cant be computed')
 
 
@@ -209,7 +209,7 @@ new model will be generated:
 
     Number of locations: 170
     Number of subjects: 10
-    Date created: Wed Feb  7 08:53:12 2018
+    Date created: Wed Feb  7 10:40:20 2018
     Meta data: None
 
 
@@ -322,17 +322,17 @@ model with the subject’s correlation matrix.
     Number of electrodes: 64
     Recording time in seconds: [[  5.3984375  14.1328125]]
     Number of sessions: 2
-    Date created: Wed Feb  7 08:53:06 2018
+    Date created: Wed Feb  7 10:40:15 2018
     Meta data: CH003
 
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:366: UserWarning: Voxel sizes of reconstruction and template do not match. Default to using a template with 20mm voxels.
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:388: UserWarning: Voxel sizes of reconstruction and template do not match. Default to using a template with 20mm voxels.
       warnings.warn('Voxel sizes of reconstruction and template do not match. '
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:387: UserWarning: Voxel sizes of reconstruction and template do not match. Voxel sizes calculated from model locations.
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:409: UserWarning: Voxel sizes of reconstruction and template do not match. Voxel sizes calculated from model locations.
       warnings.warn('Voxel sizes of reconstruction and template do not match. '
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:406: RuntimeWarning: invalid value encountered in divide
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:428: RuntimeWarning: invalid value encountered in divide
       data = np.divide(data, counts)
     /Library/Python/2.7/site-packages/matplotlib/cbook.py:136: MatplotlibDeprecationWarning: The axisbg attribute was deprecated in version 2.0. Use facecolor instead.
       warnings.warn(message, mplDeprecation, stacklevel=1)
@@ -348,13 +348,19 @@ model with the subject’s correlation matrix.
 
 .. parsed-literal::
 
+    [1]
+    [1]
+    [2]
+    [2]
+    [2]
+    [2]
     AFTER
     ------
     Number of electrodes: 170
     Recording time in seconds: [  5.3984375  14.1328125]
     Number of sessions: 2
-    Date created: Wed Feb  7 08:53:14 2018
-    Meta data: None
+    Date created: Wed Feb  7 10:40:23 2018
+    Meta data: {}
 
 
 
