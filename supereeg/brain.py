@@ -216,7 +216,10 @@ class Brain(object):
         if times and locs:
             data = self.data.iloc[times, locs].copy()
             sessions = self.sessions.iloc[times].copy()
-            sample_rate = [self.sample_rate[int(s-1)] for s in sessions.unique()]
+            if self.sample_rate:
+                sample_rate = [self.sample_rate[int(s-1)] for s in sessions.unique()]
+            else:
+                sample_rate = self.sample_rate
             meta = copy.copy(self.meta)
             locs = self.locs.iloc[locs].copy()
             date_created = self.date_created
