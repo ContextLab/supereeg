@@ -344,14 +344,7 @@ def chunk_bo(bo, chunk):
     nbo : brain object
         Chunked brain object with chunked zscored data in the data field
     """
-
-    # index only places where not none
-    l = [i for i in chunk if i is not None]
-    nbo = copy.copy(bo)
-    # make a copy of the brain object which z_scores the entirety of the data
-    nbo.data = pd.DataFrame(nbo.get_data()[l, :])
-
-    return nbo
+    return bo.get_slice([i for i in chunk if i is not None])
 
 
 def timeseries_recon(bo, K, chunk_size=1000):
@@ -874,4 +867,3 @@ def make_gif_pngs(nifti, result_dir, window_min=1000, window_max=2000, **kwargs)
 #     s = exp(-tau. * pdist2(R, Rstd));
 #     y = (c * s). / sum(s, 1);
 #
-
