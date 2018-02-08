@@ -67,33 +67,33 @@ To begin, we can either simulate locations:
       <tbody>
         <tr>
           <th>0</th>
-          <td>-19</td>
-          <td>36</td>
-          <td>3</td>
+          <td>17</td>
+          <td>22</td>
+          <td>6</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>-33</td>
-          <td>-22</td>
-          <td>-9</td>
+          <td>-5</td>
+          <td>-10</td>
+          <td>-7</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>18</td>
-          <td>-17</td>
-          <td>-2</td>
+          <td>42</td>
+          <td>6</td>
+          <td>-35</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>25</td>
-          <td>-1</td>
-          <td>4</td>
+          <td>-42</td>
+          <td>42</td>
+          <td>3</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>-34</td>
-          <td>-14</td>
-          <td>8</td>
+          <td>-23</td>
+          <td>0</td>
+          <td>-7</td>
         </tr>
       </tbody>
     </table>
@@ -203,7 +203,7 @@ locations with ``bo.plot_locs``.
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:297: MatplotlibDeprecationWarning: The set_axis_bgcolor function was deprecated in version 2.0. Use set_facecolor instead.
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:298: MatplotlibDeprecationWarning: The set_axis_bgcolor function was deprecated in version 2.0. Use set_facecolor instead.
       ax.set_axis_bgcolor('w')
 
 
@@ -463,13 +463,13 @@ recovery of the true model.
 .. code:: ipython2
 
     # n_electrodes - number of electrodes for reconstructed patient
-    n_elecs = range(10, 160, 100)
+    n_elecs = range(10, 160, 10)
     
     # m_patients - number of patients in the model
     m_patients = [5, 10]
     
     # m_electrodes - number of electrodes for each patient in the model
-    m_elecs = range(10, 160, 100)
+    m_elecs = range(10, 160, 10)
     
     iter_val = 1
     

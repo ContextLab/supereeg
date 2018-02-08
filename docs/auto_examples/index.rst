@@ -29,6 +29,26 @@ Gallery of Examples
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="This example loads a nifti file as a brain object.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_load_nifti_thumb.png
+
+        :ref:`sphx_glr_auto_examples_load_nifti.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/load_nifti
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="This example loads a nifti file and converts it into a brain object.">
 
 .. only:: html
@@ -46,6 +66,26 @@ Gallery of Examples
    :hidden:
 
    /auto_examples/plot_load_nifti
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example filters electrodes based on kurtosis thresholding. It also filters patients if les...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_filtering_thumb.png
+
+        :ref:`sphx_glr_auto_examples_filtering.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/filtering
 
 .. raw:: html
 

@@ -89,6 +89,12 @@ def load(fname):
         bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_8mm_brain.nii')
         return bo
 
+    elif fname is 'example_filter':
+        bo = dd.io.load(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/example_filter.bo')
+        return Brain(data=bo['data'], locs=bo['locs'], sessions=bo['sessions'],
+                    sample_rate=bo['sample_rate'], meta=bo['meta'],
+                    date_created=bo['date_created'])
+
     elif fname is 'pyFR_union':
         with open(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/pyFR_k10_locs.npz', 'rb') as handle:
             data = np.load(handle)
