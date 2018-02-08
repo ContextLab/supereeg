@@ -71,7 +71,6 @@ def _kurt_vals(bo):
     results: 1D ndarray
         Maximum kurtosis across sessions for each channel
 
-
     """
 
     def aggregate(prev, next):
@@ -94,7 +93,6 @@ def _get_corrmat(bo):
     ----------
     results: 2D np.ndarray
         The average correlation matrix across sessions
-
 
     """
 
@@ -123,7 +121,6 @@ def _z2r(z):
     result : int or ndarray
         Correlation value
 
-
     """
     with np.errstate(invalid='ignore', divide='ignore'):
         return (np.exp(2 * z) - 1) / (np.exp(2 * z) + 1)
@@ -142,7 +139,6 @@ def _r2z(r):
     ----------
     result : int or ndarray
         Fishers z transformed correlation value
-
 
     """
     with np.errstate(invalid='ignore', divide='ignore'):
@@ -169,7 +165,6 @@ def _rbf(x, center, width=20):
     results : ndarray
         Matrix of _rbf weights for each subject coordinate for all coordinates
 
-
     """
     return np.exp(-cdist(x, center, metric='euclidean') ** 2 / float(width))
 
@@ -190,6 +185,7 @@ def tal2mni(r):
         Coordinate locations (MNI space)
 
     """
+
     rotmat = np.array([[1, 0, 0, 0], [0, 0.9988, 0.0500, 0], [0, -0.0500, 0.9988, 0], [0, 0, 0, 1.0000]])
     up = np.array([[0.9900, 0, 0, 0], [0, 0.9700, 0, 0], [0, 0, 0.9200, 0], [0, 0, 0, 1.0000]])
     down = np.array([[0.9900, 0, 0, 0], [0, 0.9700, 0, 0], [0, 0, 0.8400, 0], [0, 0, 0, 1.0000]])
@@ -322,7 +318,6 @@ def _expand_corrmat_predict(C, weights):
 def _compute_coord(coord, weights, Z):
     next_weights = np.outer(weights[coord[0], :], weights[coord[1], :])
     next_weights = next_weights - np.triu(next_weights)
-
     return np.sum(next_weights), np.sum(Z * next_weights)
 
 
@@ -343,6 +338,7 @@ def _chunk_bo(bo, chunk):
     ----------
     nbo : brain object
         Chunked brain object with chunked zscored data in the data field
+
     """
     return bo.get_slice(times=[i for i in chunk if i is not None])
 
@@ -366,7 +362,6 @@ def _timeseries_recon(bo, K, chunk_size=1000):
     ----------
     results : ndarray
         Compiled reconstructed timeseries
-
 
     """
     zbo = copy.copy(bo)
@@ -398,22 +393,22 @@ def _timeseries_recon(bo, K, chunk_size=1000):
 
 def _chunker(iterable, chunksize, fillvalue=None):
     """
-        Chunks longer sequence by regular interval
+    Chunks longer sequence by regular interval
 
-        Parameters
-        ----------
-        iterable : list or ndarray
-            Use would be a long timeseries that needs to be broken down
+    Parameters
+    ----------
+    iterable : list or ndarray
+        Use would be a long timeseries that needs to be broken down
 
-        chunksize : int
-            Size to break down
+    chunksize : int
+        Size to break down
 
-        Returns
-        ----------
-        results : ndarray
-            Chunked timeseries
+    Returns
+    ----------
+    results : ndarray
+        Chunked timeseries
 
-        """
+    """
     try:
         from itertools import zip_longest as zip_longest
     except:
@@ -427,22 +422,22 @@ def _reconstruct_activity(bo, K, zscored=False):
     """
     Reconstruct activity - need to add chunking option here
 
-        Parameters
-        ----------
-        bo : brain object
-            brain object with zscored data
+    Parameters
+    ----------
+    bo : brain object
+        brain object with zscored data
 
-        K : correlation matrix
-            Correlation matix including observed and predicted locations
+    K : correlation matrix
+        Correlation matix including observed and predicted locations
 
-        zscore = False
+    zscore = False
 
-        Returns
-        ----------
-        results : ndarray
-            Reconstructed timeseries
+    Returns
+    ----------
+    results : ndarray
+        Reconstructed timeseries
 
-        """
+    """
     s = K.shape[0] - bo.locs.shape[0]
     Kba = K[:s, s:]
     Kaa = K[s:, s:]
@@ -470,7 +465,6 @@ def _round_it(locs, places):
     result : array or float
         Rounded number
 
-
     """
     return np.round(locs, decimals=places)
 
@@ -494,7 +488,6 @@ def filter_elecs(bo, measure='kurtosis', threshold=10):
     ----------
     result : brain object
         Brain object with electrodes and corresponding data that passes kurtosis thresholding
-
 
     """
     thresh_bool = bo.kurtosis > threshold
@@ -525,7 +518,6 @@ def filter_subj(bo, measure='kurtosis', threshold=10):
     result : meta brain object or None
         Meta field from brain object if two or more electrodes pass kurtosis thresholding.
 
-
     """
     if not bo.meta is None:
         thresh_bool = bo.kurtosis > threshold
@@ -543,20 +535,19 @@ def _corr_column(X, Y):
 
 def _normalize_Y(Y_matrix):
     """
-         Normalizes timeseries
+    Normalizes timeseries
 
-         Parameters
-         ----------
+    Parameters
+    ----------
+    Y_matrix : ndarray
+        Raw activity from each electrode channel
 
-         Y_matrix : ndarray
-             Raw activity from each electrode channel
+    Returns
+    ----------
+    results : ndarray
+        Normalized activity from each electrode channel
 
-         Returns
-         ----------
-         results : ndarray
-             Normalized activity from each electrode channel
-
-         """
+    """
     Y = Y_matrix
     m = mat.repmat(np.min(Y, axis=0), Y.shape[0], 1)
     Y = Y - m
@@ -612,28 +603,26 @@ class BrainData(object):
 
 def _loadnii(fname, mask_strategy='background'):
     """
-         Load nifti
+    Load nifti
 
-         Parameters
-         ----------
+    Parameters
+    ----------
+    fname : filepath
+        Path to a template nifti file
 
-         fname : filepath
-            Path to a template nifti file
+    mask_strategy : str
+        If mask_strategy is 'background', treat uniformly valued voxels at the outer parts
+        of the images as background.
 
-         mask_strategy : str
+        If mask_strategy is 'epi', use nilearn's background detection strategy: find the least dense point
+        of the histogram, between fractions lower_cutoff and upper_cutoff of the total image histogram.
 
-            If mask_strategy is 'background', treat uniformly valued voxels at the outer parts
-            of the images as background.
+    Returns
+    ----------
+    results : ndarray
+        Normalized activity from each electrode channel
 
-            If mask_strategy is 'epi', use nilearn's background detection strategy: find the least dense point
-            of the histogram, between fractions lower_cutoff and upper_cutoff of the total image histogram.
-
-         Returns
-         ----------
-         results : ndarray
-             Normalized activity from each electrode channel
-
-         """
+    """
     return BrainData(fname, mask_strategy)
 
 
@@ -661,13 +650,11 @@ def model_compile(data):
 
     Parameters
     ----------
-
     data : list of model object file directories
         Compiles model objects
 
     Returns
     ----------
-
     model : Model object
         A new updated model object
 
@@ -719,11 +706,8 @@ def _near_neighbor(bo, mo, match_threshold='auto'):
 
         match_threshold > 0 : include only nearest neighbor that are within given distance
 
-
-
     Returns
     ----------
-
     bo : Brain object
         A new updated brain object
 
@@ -759,7 +743,7 @@ def _vox_size(locs):
     """
     Finds voxel size
 
-        Parameters
+    Parameters
     ----------
     locs : pandas DataFrame
         Locations in brain extracted from nifti
@@ -768,7 +752,6 @@ def _vox_size(locs):
     ----------
     results : ndarray
         1 x n_dims of voxel size
-
 
     """
     n_dims = locs.shape[1]
@@ -786,7 +769,7 @@ def sort_unique_locs(locs):
     """
     Sorts unique locations
 
-        Parameters
+    Parameters
     ----------
     locs : pandas DataFrame or ndarray
         Electrode locations
@@ -795,7 +778,6 @@ def sort_unique_locs(locs):
     ----------
     results : ndarray
         Array of unique locations
-
 
     """
     if isinstance(locs, pd.DataFrame):
@@ -812,7 +794,7 @@ def _count_overlapping(X, Y):
     """
     Finds overlapping locations (Y in X)
 
-        Parameters
+    Parameters
     ----------
     X : brain object or model object
         Electrode locations
@@ -825,7 +807,6 @@ def _count_overlapping(X, Y):
     results : ndarray
         Array of length(X.locs) with 0s and 1s, where 1s denote overlapping locations Y in X
 
-
     """
 
     return np.sum([(X.locs == y).all(1) for idy, y in Y.locs.iterrows()], 0).astype(bool)
@@ -835,7 +816,7 @@ def make_gif_pngs(nifti, gif_path, window_min=1000, window_max=1002, **kwargs):
     """
     Plots series of nifti timepoints as nilearn plot_glass_brain in .png format
 
-        Parameters
+    Parameters
     ----------
     nifti : nib.nifti1.Nifti1Image
         Nifti of reconconstruction
@@ -853,7 +834,6 @@ def make_gif_pngs(nifti, gif_path, window_min=1000, window_max=1002, **kwargs):
     ----------
     results : png
         Series of pngs
-
 
     """
 

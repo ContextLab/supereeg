@@ -31,11 +31,12 @@ class Model(object):
     Parameters
     ----------
 
-    data : list
+    data : supereeg.Brain or list
         A list of supereeg.Brain objects used to create the model
 
     locs : pandas.DataFrame
-        MNI coordinate (x,y,z) by number of electrode df containing electrode locations
+        MNI coordinate (x,y,z) by number of electrode df containing electrode
+        locations
 
     template : filepath
         Path to a template nifti file used to set model locations
@@ -65,7 +66,6 @@ class Model(object):
 
     Attributes
     ----------
-
     numerator : Numpy.ndarray
         A locations x locations matrix comprising the sum of the zscored
         correlation matrices over subjects
@@ -92,10 +92,7 @@ class Model(object):
         # if all of these fields are not none, shortcut the model creation
         if all(v is not None for v in [numerator, denominator, locs, n_subs]):
 
-            # numerator
             self.numerator = numerator
-
-            # denominator
             self.denominator = denominator
 
             # if locs arent already a df, turn them into df
@@ -104,7 +101,6 @@ class Model(object):
             else:
                 self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
-            # number of subjects
             self.n_subs = n_subs
 
         else:
@@ -115,12 +111,9 @@ class Model(object):
                 if template is None:
                     template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_20mm_brain.nii'
 
-                # load in template file
-                from .load import load_nifti
-
-                bo = load_nifti(template)
-
                 # get locations from template
+                from .load import load_nifti
+                bo = load_nifti(template)
                 self.locs = pd.DataFrame(bo.get_locs(), columns=['x', 'y', 'z'])
 
             else:
@@ -128,17 +121,12 @@ class Model(object):
                 # otherwise, create df from locs passed as arg
                 self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
-            # initialize numerator
             numerator = np.zeros((self.locs.shape[0], self.locs.shape[0]))
-
-            # initialize denominator
             denominator = np.zeros((self.locs.shape[0], self.locs.shape[0]))
 
-            # turn data into a list if its a single subject
             if type(data) is not list:
                 data = [data]
 
-            # loop over brain objects
             for bo in data:
 
                 # filter bad electrodes
@@ -165,49 +153,42 @@ class Model(object):
                 # add in new subj data to denominator
                 denominator += denom_corrmat_x
 
-            # attach numerator
             self.numerator = numerator
-
-            # attach denominator
             self.denominator = denominator
-
-            # attach number of subjects
             self.n_subs = len(data)
 
-        # number of electrodes
         self.n_locs = self.locs.shape[0]
+        self.meta = meta
 
-        # date created
         if not date_created:
             self.date_created = time.strftime("%c")
         else:
             self.date_created = date_created
 
-        # meta
-        self.meta = meta
-
-
-    def predict(self, bo, nearest_neighbor=True, match_threshold='auto', force_update=False, kthreshold=10):
+    def predict(self, bo, nearest_neighbor=True, match_threshold='auto',
+                force_update=False, kthreshold=10):
         """
         Takes a brain object and a 'full' covariance model, fills in all
-        electrode timeseries for all missing locations and returns the new brain object
+        electrode timeseries for all missing locations and returns the new brain
+        object
 
         Parameters
         ----------
-
-        bo : Brain data object or a list of Brain objects
+        bo : supereeg.Brain or a list of brain objects
             The brain data object that you want to predict
 
         nearest_neighbor : True
-            Default finds the nearest voxel for each subject's electrode location and
-            uses that as revised electrodes location matrix in the prediction.
+            Default finds the nearest voxel for each subject's electrode
+            location and uses that as revised electrodes location matrix in the
+            prediction.
 
         match_threshold : 'auto' or int
+            auto: if match_threshold auto, ignore all electrodes whose distance
+            from the nearest matching voxel is greater than the maximum voxel
+            dimension
 
-            auto: if match_threshold auto, ignore all electrodes whose distance from the nearest matching voxel is
-            greater than the maximum voxel dimension
-
-            If value is greater than 0, inlcudes only electrodes that are within that distance of matched voxel
+            If value is greater than 0, inlcudes only electrodes that are within
+            that distance of matched voxel
 
         force_update : False
             If True, will update model with patient's correlation matrix.
@@ -217,11 +198,11 @@ class Model(object):
 
         Returns
         ----------
-
-        bo_p : Brain data object
+        bo_p : supereeg.Brain
             New brain data object with missing electrode locations filled in
 
         """
+
         if nearest_neighbor:
             # if match_threshold auto, ignore all electrodes whose distance from the nearest matching voxel is
             # greater than the maximum voxel dimension
@@ -367,20 +348,19 @@ class Model(object):
 
         Parameters
         ----------
-
-        data : Brain object, list of Brain objects, Model object, or list of Model objects
+        data : supereeg.Brain, supereeg.Model (or list of either)
             New subject data
 
         measure : kurtosis
-            Measure for filtering electrodes.  Only option currently supported is kurtosis.
+            Measure for filtering electrodes.  Only option currently supported
+            is kurtosis.
 
         threshold : 10 or int
             Kurtosis threshold
 
         Returns
         ----------
-
-        model : Model object
+        model : supereeg.Model
             A new updated model object
 
         """
@@ -394,7 +374,6 @@ class Model(object):
         if type(data) is not list:
             data = [data]
 
-        # loop over brain objects
         for bo in data:
 
             # filter bad electrodes
@@ -446,7 +425,6 @@ class Model(object):
 
         Parameters
         ----------
-
         show : bool
             If False, image not rendered (default : True)
 
@@ -454,14 +432,18 @@ class Model(object):
         ----------
         ax : matplotlib.Axes
             An axes object
+
         """
 
         with np.errstate(invalid='ignore'):
             corr_mat = _z2r(np.divide(self.numerator, self.denominator))
         np.fill_diagonal(corr_mat, 1)
+
         ax = sns.heatmap(corr_mat, cbar_kws = {'label': 'correlation'}, **kwargs)
+
         if show:
             plt.show()
+            
         return ax
 
 
@@ -475,7 +457,6 @@ class Model(object):
 
         Parameters
         ----------
-
         fname : str
             A name for the file.  If the file extension (.mo) is not specified,
             it will be appended.
@@ -486,8 +467,6 @@ class Model(object):
 
         """
 
-
-        # put geo vars into a dict
         mo = {
             'numerator' : self.numerator,
             'denominator' : self.denominator,
@@ -497,9 +476,7 @@ class Model(object):
             'date_created' : self.date_created
         }
 
-        # if extension wasn't included, add it
         if fname[-3:]!='.mo':
             fname+='.mo'
 
-        # save
         dd.io.save(fname, mo, compression=compression)
