@@ -1,6 +1,6 @@
 
 
-.. _sphx_glr_auto_examples_filtering.py:
+.. _sphx_glr_auto_examples_plot_filtering.py:
 
 
 =============================
@@ -8,6 +8,14 @@ Filtering electrodes
 =============================
 
 This example filters electrodes based on kurtosis thresholding.
+
+
+
+
+
+.. image:: /auto_examples/images/sphx_glr_plot_filtering_001.png
+    :align: center
+
 
 
 
@@ -42,7 +50,7 @@ This example filters electrodes based on kurtosis thresholding.
     # plot data will filter in place
     bo.plot_data()
 
-**Total running time of the script:** ( 0 minutes  0.000 seconds)
+**Total running time of the script:** ( 0 minutes  0.266 seconds)
 
 
 
@@ -51,13 +59,13 @@ This example filters electrodes based on kurtosis thresholding.
 
   .. container:: sphx-glr-download
 
-     :download:`Download Python source code: filtering.py <filtering.py>`
+     :download:`Download Python source code: plot_filtering.py <plot_filtering.py>`
 
 
 
   .. container:: sphx-glr-download
 
-     :download:`Download Jupyter notebook: filtering.ipynb <filtering.ipynb>`
+     :download:`Download Jupyter notebook: plot_filtering.ipynb <plot_filtering.ipynb>`
 
 .. rst-class:: sphx-glr-signature
 

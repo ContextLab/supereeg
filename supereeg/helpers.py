@@ -497,7 +497,7 @@ def filter_elecs(bo, measure='kurtosis', threshold=10):
 
     """
     thresh_bool = bo.kurtosis > threshold
-    nbo = copy.copy(bo)
+    nbo = copy.deepcopy(bo)
     nbo.data = bo.data.loc[:, ~thresh_bool]
     nbo.locs = bo.locs.loc[~thresh_bool]
     nbo.n_elecs = bo.data.shape[1]

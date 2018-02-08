@@ -20,6 +20,7 @@
 # import sys
 import sys, os
 import sphinx_bootstrap_theme
+from sphinx_gallery.sorting import ExplicitOrder
 sys.path.insert(0, os.path.abspath('../'))
 
 # -- General configuration ------------------------------------------------
@@ -193,7 +194,22 @@ sphinx_gallery_conf = {
     # path to your examples scripts
     'examples_dirs' : '../examples',
     # path where to save gallery generated examples
-    'gallery_dirs'  : 'auto_examples'}
+    'gallery_dirs'  : 'auto_examples',
+    # 'gallery_dirs' : ExplicitOrder(['../examples/plot_load_example_data.py',
+    #                                    '../examples/plot_filtering.py',
+    #                                    '../examples/plot_labels.py',
+    #                                    '../examples/slice_brain_object.py',
+    #                                    '../examples/tal_to_mni.py',
+    #                                    '../examples/plot_load_nifti.py',
+    #                                    '../examples/plot_model.py',
+    #                                    '../examples/plot_update_model.py',
+    #                                    '../examples/plot_load_nifti.py',
+    #                                    '../examples/load_nifti.py',
+    #                                    '../examples/make_gif.py',
+    #                                    '../examples/predict.py',
+    #                                    '../examples/plot_simulate_bo.py',
+    #                                    '../examples/plot_simulate_mo.py'])
+}
 
 # def setup(app):
 #     app.add_stylesheet('css/custom.css')  # may also be an URL

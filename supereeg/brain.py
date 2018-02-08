@@ -295,7 +295,7 @@ class Brain(object):
 
         # plot data
         ax = Y.plot(legend=False, title=title, color='k', lw=.6)
-        ax.set_axis_bgcolor('w')
+        ax.set_facecolor('w')
         ax.set_xlabel("time")
         ax.set_ylabel("electrode")
         ax.set_ylim([0,len(Y.columns) + 1])
@@ -317,7 +317,6 @@ class Brain(object):
 
 
         """
-
         ni_plt.plot_connectome(np.eye(self.locs.shape[0]), self.locs, display_mode='lyrz', output_file=pdfpath,
                                node_kwargs={'alpha': 0.5, 'edgecolors': None}, node_size=10,
                                node_color=np.ones(self.locs.shape[0]))
