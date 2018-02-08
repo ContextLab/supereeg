@@ -13,7 +13,7 @@ import nibabel as nib
 import deepdish as dd
 import matplotlib.pyplot as plt
 from nilearn import plotting as ni_plt
-from .helpers import kurt_vals, zscore, normalize_Y, vox_size
+from .helpers import _kurt_vals, zscore, _normalize_Y, _vox_size
 
 class Brain(object):
     """
@@ -166,7 +166,7 @@ class Brain(object):
         self.n_sessions = len(self.sessions.unique())
 
         # add kurtosis
-        self.kurtosis = kurt_vals(self)
+        self.kurtosis = _kurt_vals(self)
 
         if not label:
             self.label = len(self.locs) * ['observed']
@@ -266,7 +266,7 @@ class Brain(object):
         # normalizes the samples x electrodes array containing the EEG data and adds 1 to each row
         # so that the y-axis value corresponds to electrode location in the MNI coordinate (x,y,z)
         # by electrode df containing electrode locations
-        Y = normalize_Y(self.data)
+        Y = _normalize_Y(self.data)
 
         # if filtered in passed, filter by electrodes that do not pass kurtosis thresholding
         if filtered:
@@ -388,7 +388,7 @@ class Brain(object):
         """
 
         # recontructed voxel size:
-        recon_v_size = vox_size(self.locs)
+        recon_v_size = _vox_size(self.locs)
 
         if template is None:
 

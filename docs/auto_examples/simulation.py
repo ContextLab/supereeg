@@ -25,7 +25,7 @@ correlational structure (a toeplitz matrix). Finally, we update the model with
 # import numpy as np
 # import pickle
 # import seaborn as sns
-# from supereeg._helpers.stats import r2z, z2r, corr_column
+# from supereeg._helpers.stats import _r2z, _z2r, _corr_column
 # import matplotlib.pyplot as plt
 # #plt.switch_backend('agg')
 #
@@ -90,7 +90,7 @@ correlational structure (a toeplitz matrix). Finally, we update the model with
 #         actual = bo.data.iloc[:, recon.locs.index]
 #
 #         # correlate reconstruction with actual data
-#         corr_vals = corr_column(actual.as_matrix(),recon.data.as_matrix())
+#         corr_vals = _corr_column(actual.as_matrix(),recon.data.as_matrix())
 #
 #         # since the numbers of reconstructed locations change, sample the same number to take mean
 #         corr_vals_sample = np.random.choice(corr_vals, 5)

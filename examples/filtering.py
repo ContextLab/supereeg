@@ -18,7 +18,7 @@ import supereeg as se
 bo = se.load('example_filter')
 
 # to get kurtosis values
-kurt_vals = bo.kurtosis
+kurtosis_vals = bo.kurtosis
 
 # 40 locations before filtering
 bo.get_locs()

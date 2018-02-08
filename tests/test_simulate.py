@@ -3,7 +3,7 @@ import pytest
 import supereeg as se
 import numpy as np
 import pandas as pd
-from supereeg.helpers import corr_column
+from supereeg.helpers import _corr_column
 
 
 locs = se.load('example_locations')
@@ -160,7 +160,7 @@ def test_electrode_contingencies_1_null_set():
     # actual = bo.data.iloc[:, unknown_ind]
     actual = bo.data.iloc[:, recon.locs.index]
 
-    corr_vals = corr_column(actual.as_matrix(), recon.data.as_matrix())
+    corr_vals = _corr_column(actual.as_matrix(), recon.data.as_matrix())
 
     assert 1 >= corr_vals.mean() >= -1
     assert np.allclose(recon_1, recon.get_data())
@@ -201,7 +201,7 @@ def test_electrode_contingencies_2_subset():
 
     actual = bo.data.iloc[:, recon.locs.index]
 
-    corr_vals = corr_column(actual.as_matrix(), recon.data.as_matrix())
+    corr_vals = _corr_column(actual.as_matrix(), recon.data.as_matrix())
 
     assert np.allclose(recon_2, recon.get_data())
     assert 1 >= corr_vals.mean() >= -1
@@ -249,7 +249,7 @@ def test_electrode_contingencies_3_locations_can_subset():
     # actual = bo.data.iloc[:, unknown_ind]
     actual = bo.data.iloc[:, recon.locs.index]
 
-    corr_vals = corr_column(actual.as_matrix(), recon.data.as_matrix())
+    corr_vals = _corr_column(actual.as_matrix(), recon.data.as_matrix())
 
     assert 1 >= corr_vals.mean() >= -1
     assert np.allclose(recon_3, recon.get_data())

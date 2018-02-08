@@ -30,10 +30,16 @@ This example filters electrodes based on kurtosis thresholding.
     # 40 locations before filtering
     bo.get_locs()
 
+    # plot data will filter by default
+    bo.plot_data()
+
+    # but filtered=False will show all electrodes
+    bo.plot_data(filtered=False)
+
     # filter elecs, default measure='kurtosis' and threshold=10
     f_bo = se.filter_elecs(bo)
 
-    # 28 locations after filtering
+    # 37 locations after filtering
     f_bo.get_locs()
 
 **Total running time of the script:** ( 0 minutes  0.000 seconds)

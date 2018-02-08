@@ -17,7 +17,7 @@ Load in the required libraries
     import seaborn as sns
     import matplotlib.pyplot as plt
     import numpy as np
-    from supereeg.helpers import corr_column
+    from supereeg.helpers import _corr_column
 
 
 .. parsed-literal::
@@ -314,7 +314,7 @@ brain objects.
     /Users/lucyowen/repos/superEEG/supereeg/simulate.py:138: RuntimeWarning: covariance is not positive-semidefinite.
       full_data = np.random.multivariate_normal(np.zeros(len(locs)), R, size=n_samples)
     /Users/lucyowen/repos/superEEG/supereeg/model.py:447: RuntimeWarning: invalid value encountered in divide
-      corr_mat = z2r(np.divide(self.numerator, self.denominator))
+      corr_mat = _z2r(np.divide(self.numerator, self.denominator))
 
 
 
@@ -512,7 +512,7 @@ recovery of the true model.
             actual = bo.data.iloc[:, recon_inds]
     
             # correlate reconstruction with actual data
-            corr_vals = corr_column(actual.as_matrix(), recon.as_matrix())
+            corr_vals = _corr_column(actual.as_matrix(), recon.as_matrix())
             corr_vals_sample = np.random.choice(corr_vals, 5)
     
             d.append(

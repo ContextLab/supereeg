@@ -12,8 +12,8 @@ import seaborn as sns
 import deepdish as dd
 import matplotlib.pyplot as plt
 from scipy.stats import zscore
-from .helpers import filter_elecs, get_corrmat, r2z, z2r, rbf, expand_corrmat_fit, expand_corrmat_predict,\
-    near_neighbor, timeseries_recon, count_overlapping
+from .helpers import filter_elecs, _get_corrmat, _r2z, _z2r, _rbf, _expand_corrmat_fit, _expand_corrmat_predict,\
+    _near_neighbor, _timeseries_recon, _count_overlapping
 from .brain import Brain
 
 
@@ -145,19 +145,19 @@ class Model(object):
                 bo = filter_elecs(bo, measure=measure, threshold=threshold)
 
                 # get subject-specific correlation matrix
-                sub_corrmat = get_corrmat(bo)
+                sub_corrmat = _get_corrmat(bo)
 
                 # convert diag to zeros
                 np.fill_diagonal(sub_corrmat, 0)
 
                 # z-score the corrmat
-                sub_corrmat_z = r2z(sub_corrmat)
+                sub_corrmat_z = _r2z(sub_corrmat)
 
-                # get rbf weights
-                sub_rbf_weights = rbf(self.locs, bo.locs)
+                # get _rbf weights
+                sub__rbf_weights = _rbf(self.locs, bo.locs)
 
                 #  get subject expanded correlation matrix
-                num_corrmat_x, denom_corrmat_x = expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
+                num_corrmat_x, denom_corrmat_x = _expand_corrmat_fit(sub_corrmat_z, sub__rbf_weights)
 
                 # add in new subj data to numerator
                 numerator += num_corrmat_x
@@ -225,7 +225,7 @@ class Model(object):
         if nearest_neighbor:
             # if match_threshold auto, ignore all electrodes whose distance from the nearest matching voxel is
             # greater than the maximum voxel dimension
-            bo = near_neighbor(bo, self, match_threshold=match_threshold)
+            bo = _near_neighbor(bo, self, match_threshold=match_threshold)
 
         # filter bad electrodes
         bo = filter_elecs(bo, measure='kurtosis', threshold=kthreshold)
@@ -234,19 +234,19 @@ class Model(object):
         if force_update:
 
             # get subject-specific correlation matrix
-            sub_corrmat = get_corrmat(bo)
+            sub_corrmat = _get_corrmat(bo)
 
             # fill diag with zeros
             np.fill_diagonal(sub_corrmat, 0) # <- possible failpoint
 
             # z-score the corrmat
-            sub_corrmat_z = r2z(sub_corrmat)
+            sub_corrmat_z = _r2z(sub_corrmat)
 
-            # get rbf weights
-            sub_rbf_weights = rbf(self.locs, bo.locs)
+            # get _rbf weights
+            sub__rbf_weights = _rbf(self.locs, bo.locs)
 
             #  get subject expanded correlation matrix
-            num_corrmat_x, denom_corrmat_x = expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
+            num_corrmat_x, denom_corrmat_x = _expand_corrmat_fit(sub_corrmat_z, sub__rbf_weights)
 
             # add in new subj data
             with np.errstate(invalid='ignore'):
@@ -257,7 +257,7 @@ class Model(object):
             model_corrmat_x = np.divide(self.numerator,self.denominator)
 
         # find overlapping locations
-        bool_mask = count_overlapping(self, bo)
+        bool_mask = _count_overlapping(self, bo)
 
         # get model indices where subject locs overlap with model locs
         #bool_mask = np.sum([(self.locs == y).all(1) for idy, y in bo.locs.iterrows()], 0).astype(bool)
@@ -271,11 +271,11 @@ class Model(object):
         # if there is no overlap, expand the model and predict at unknown locs
         if not any(bool_mask):
 
-            # expanded rbf weights
-            model_rbf_weights = rbf(pd.concat([self.locs, bo.locs]), self.locs)
+            # expanded _rbf weights
+            model__rbf_weights = _rbf(pd.concat([self.locs, bo.locs]), self.locs)
 
             # get model expanded correlation matrix
-            num_corrmat_x, denom_corrmat_x = expand_corrmat_predict(model_corrmat_x, model_rbf_weights)
+            num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(model_corrmat_x, model__rbf_weights)
 
             # divide the numerator and denominator
             with np.errstate(invalid='ignore'):
@@ -312,7 +312,7 @@ class Model(object):
             perm_inds = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds)) + sorted(set(joint_model_inds))
             model_permuted = model_corrmat_x[:, perm_inds][perm_inds, :]
 
-            # permute the model locations (important for the rbf calculation later)
+            # permute the model locations (important for the _rbf calculation later)
             model_locs_permuted = self.locs.iloc[perm_inds]
 
             # permute the subject locations arranging them
@@ -324,12 +324,12 @@ class Model(object):
             # permuted indices for unknown model locations
             perm_inds_unknown = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds))
 
-            # expanded rbf weights
-            #model_rbf_weights = rbf(pd.concat([model_locs_permuted, bo.locs]), model_locs_permuted)
-            model_rbf_weights = rbf(pd.concat([model_locs_permuted, sub_bo]), model_locs_permuted)
+            # expanded _rbf weights
+            #model__rbf_weights = _rbf(pd.concat([model_locs_permuted, bo.locs]), model_locs_permuted)
+            model__rbf_weights = _rbf(pd.concat([model_locs_permuted, sub_bo]), model_locs_permuted)
 
             # get model expanded correlation matrix
-            num_corrmat_x, denom_corrmat_x = expand_corrmat_predict(model_permuted, model_rbf_weights)
+            num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(model_permuted, model__rbf_weights)
 
             # divide the numerator and denominator
             with np.errstate(invalid='ignore'):
@@ -345,13 +345,13 @@ class Model(object):
             perm_locs = self.locs.iloc[perm_inds_unknown].append(bo.locs)
 
         #convert from z to r
-        model_corrmat_x = z2r(model_corrmat_x)
+        model_corrmat_x = _z2r(model_corrmat_x)
 
         # convert diagonals to zeros
         np.fill_diagonal(model_corrmat_x, 0)
 
         # timeseries reconstruction
-        reconstructed = timeseries_recon(bo, model_corrmat_x)
+        reconstructed = _timeseries_recon(bo, model_corrmat_x)
 
         # join reconstructed and known activity
         activations = np.hstack((reconstructed, zscore(bo.data.as_matrix())))
@@ -401,13 +401,13 @@ class Model(object):
             bo = filter_elecs(bo, measure=measure, threshold=threshold)
 
             # get subject-specific correlation matrix
-            sub_corrmat = r2z(get_corrmat(bo))
+            sub_corrmat = _r2z(_get_corrmat(bo))
 
-            # get rbf weights
-            sub_rbf_weights = rbf(m.locs, bo.locs)
+            # get _rbf weights
+            sub__rbf_weights = _rbf(m.locs, bo.locs)
 
             #  get subject expanded correlation matrix
-            num_corrmat_x, denom_corrmat_x = expand_corrmat_fit(sub_corrmat, sub_rbf_weights)
+            num_corrmat_x, denom_corrmat_x = _expand_corrmat_fit(sub_corrmat, sub__rbf_weights)
 
             # set weights equal to zero where the numerator is equal to nan
             denom_corrmat_x[np.isnan(num_corrmat_x)] = 0
@@ -444,7 +444,7 @@ class Model(object):
         This function wraps seaborn's heatmap and accepts any inputs that seaborn
         supports.
         """
-        corr_mat = z2r(np.divide(self.numerator, self.denominator))
+        corr_mat = _z2r(np.divide(self.numerator, self.denominator))
         np.fill_diagonal(corr_mat, 1)
         sns.heatmap(corr_mat, **kwargs)
 

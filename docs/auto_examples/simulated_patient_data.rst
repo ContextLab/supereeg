@@ -23,7 +23,7 @@ model locations.
     import supereeg as se
     import scipy
     import numpy as np
-    from supereeg._helpers.stats import r2z, z2r, corr_column, recon_no_expand
+    from supereeg._helpers.stats import _r2z, _z2r, _corr_column, recon_no_expand
     from supereeg._helpers.bookkeeping import slice_list
     from numpy import inf
     from scipy.stats import zscore
@@ -146,7 +146,7 @@ model locations.
                 # #### only expand into unknownxknown and knownxknown
                 # reconstructed_fit = model.predict(bo_sub, prediction=True)
                 # #### check if they give the same values
-                # corr_reconstructions = np.mean(corr_column(reconstructed_predict.data.as_matrix(), reconstructed_fit.data.as_matrix()))
+                # corr_reconstructions = np.mean(_corr_column(reconstructed_predict.data.as_matrix(), reconstructed_fit.data.as_matrix()))
                 # #### comparing second corrmat_expand
 
                 reconstructed_predict = model.predict(bo_sub)
@@ -155,13 +155,13 @@ model locations.
                 reconstructed = model.predict(bo_sub, simulation=True)
                 predicted = reconstructed.data.as_matrix()
 
-                corr_reconstructions = np.mean(corr_column(reconstructed_predict.data.as_matrix(), predicted))
+                corr_reconstructions = np.mean(_corr_column(reconstructed_predict.data.as_matrix(), predicted))
                 ##### to bypass predict function entirely (and only parse model):
                 # predicted = recon_no_expand(bo_sub, model)
 
                 actual = zscore(bo_actual.data.loc[:, unknown_inds].as_matrix())
 
-                corr_vals = corr_column(actual, predicted)
+                corr_vals = _corr_column(actual, predicted)
 
 
                 d.append({'Patients': p, 'Model Locations': m_elecs, 'Patient Locations': n, 'Correlation': np.mean(corr_vals)})
@@ -209,7 +209,7 @@ model locations.
     #         def recon_no_expand(bo_sub, mo):
     #             """
     #             """
-    #             model = z2r(np.divide(mo.numerator, mo.denominator))
+    #             model = _z2r(np.divide(mo.numerator, mo.denominator))
     #             model[np.eye(model.shape[0]) == 1] = 1
     #             known_locs = bo_sub.locs
     #             known_inds = bo_sub.locs.index.values

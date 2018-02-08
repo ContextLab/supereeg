@@ -29,6 +29,26 @@ Gallery of Examples
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="This example converts electrodes locations from talairach to MNI space.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_tal_to_mni_thumb.png
+
+        :ref:`sphx_glr_auto_examples_tal_to_mni.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/tal_to_mni
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="This example loads a nifti file as a brain object.">
 
 .. only:: html
@@ -66,26 +86,6 @@ Gallery of Examples
    :hidden:
 
    /auto_examples/plot_load_nifti
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="This example filters electrodes based on kurtosis thresholding.">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_filtering_thumb.png
-
-        :ref:`sphx_glr_auto_examples_filtering.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/filtering
 
 .. raw:: html
 
@@ -146,6 +146,26 @@ Gallery of Examples
    :hidden:
 
    /auto_examples/predict
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example filters electrodes based on kurtosis thresholding.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_filtering_thumb.png
+
+        :ref:`sphx_glr_auto_examples_filtering.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/filtering
 
 .. raw:: html
 

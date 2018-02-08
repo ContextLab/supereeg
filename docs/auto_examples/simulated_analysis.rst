@@ -23,7 +23,7 @@ model locations.
     import supereeg as se
     import scipy
     import numpy as np
-    from supereeg._helpers.stats import r2z, z2r, get_expanded_corrmat_fit, get_expanded_corrmat_predict, rbf
+    from supereeg._helpers.stats import _r2z, _z2r, get_expanded_corrmat_fit, get_expanded_corrmat_predict, _rbf
     from numpy import inf
     from scipy.stats import zscore
 
@@ -33,7 +33,7 @@ model locations.
     model_locs = np.array([[0, 0, 0], [0, 0, 1], [0, 0, 2]])
     subject_locs = np.array([[0, 0, 3], [0, 0, 4]])
     full_locs = np.vstack([model_locs, subject_locs])
-    weights = rbf(full_locs, model_locs, width=2)
+    weights = _rbf(full_locs, model_locs, width=2)
     num_fit, denom_fit = get_expanded_corrmat_fit(R, weights)
     num_predict, denom_predict = get_expanded_corrmat_predict(R, weights)
     fit = np.divide(num_fit, denom_fit)
@@ -74,7 +74,7 @@ model locations.
     # # create a new model that is a subsample of the full model - this is the synthetic model
     # model = se.Model(data=full_model.data.as_matrix()[:, model_inds][model_inds], locs=full_model.locs.iloc[model_inds, :])
     #
-    # temp = r2z(model.data)
+    # temp = _r2z(model.data)
     # temp[temp == inf] = 0
     # model.data = temp
     # reconstructed = model.predict(bo_sub)
@@ -86,7 +86,7 @@ model locations.
     #
     # bo_sub = se.Brain(data=bo.data.iloc[:, range(1,len(locs))], locs=bo.locs.iloc[range(1,len(locs)), :])
     #
-    # def reconstruct_activity(bo, K):
+    # def _reconstruct_activity(bo, K):
     #     """
     #     """
     #     s = K.shape[0]-bo.locs.shape[0]
@@ -96,7 +96,7 @@ model locations.
     #     return np.squeeze(np.dot(np.dot(Kba, np.linalg.pinv(Kaa)), Y.T).T)
     #
     #
-    # reconstructed_activity = reconstruct_activity(bo_sub, model.data.as_matrix())
+    # reconstructed_activity = _reconstruct_activity(bo_sub, model.data.as_matrix())
     #
     # import seaborn as sb
     # sb.jointplot(reconstructed_activity, bo.data[0])

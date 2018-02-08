@@ -95,7 +95,7 @@ accepts are supported by ``model.plot``.
 .. parsed-literal::
 
     /Users/lucyowen/repos/superEEG/supereeg/model.py:447: RuntimeWarning: invalid value encountered in divide
-      corr_mat = z2r(np.divide(self.numerator, self.denominator))
+      corr_mat = _z2r(np.divide(self.numerator, self.denominator))
 
 
 

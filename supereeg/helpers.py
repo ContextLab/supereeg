@@ -1,7 +1,7 @@
 from __future__ import division
 from __future__ import print_function
 
-#from builtins import zip
+# from builtins import zip
 from builtins import map
 from builtins import range
 from builtins import object
@@ -24,8 +24,7 @@ from scipy import linalg
 from joblib import Parallel, delayed
 
 
-
-def apply_by_file_index(bo, xform, aggregator):
+def _apply_by_file_index(bo, xform, aggregator):
     """
     Session dependent function application and aggregation
 
@@ -56,7 +55,7 @@ def apply_by_file_index(bo, xform, aggregator):
     return results
 
 
-def kurt_vals(bo):
+def _kurt_vals(bo):
     """
     Function that calculates maximum kurtosis values for each channel
 
@@ -76,10 +75,10 @@ def kurt_vals(bo):
     def aggregate(prev, next):
         return np.max(np.vstack((prev, next)), axis=0)
 
-    return apply_by_file_index(bo, kurtosis, aggregate)
+    return _apply_by_file_index(bo, kurtosis, aggregate)
 
 
-def get_corrmat(bo):
+def _get_corrmat(bo):
     """
     Function that calculates the average subject level correlation matrix for brain object across session
 
@@ -101,14 +100,14 @@ def get_corrmat(bo):
         return p + n
 
     def zcorr(x):
-        return r2z(1 - squareform(pdist(x.T, 'correlation')))
+        return _r2z(1 - squareform(pdist(x.T, 'correlation')))
 
-    summed_zcorrs = apply_by_file_index(bo, zcorr, aggregate)
+    summed_zcorrs = _apply_by_file_index(bo, zcorr, aggregate)
 
-    return z2r(summed_zcorrs / len(bo.sessions.unique()))
+    return _z2r(summed_zcorrs / len(bo.sessions.unique()))
 
 
-def z2r(z):
+def _z2r(z):
     """
     Function that calculates the inverse Fisher z-transformation
 
@@ -128,7 +127,7 @@ def z2r(z):
         return (np.exp(2 * z) - 1) / (np.exp(2 * z) + 1)
 
 
-def r2z(r):
+def _r2z(r):
     """
     Function that calculates the Fisher z-transformation
 
@@ -148,7 +147,7 @@ def r2z(r):
         return 0.5 * (np.log(1 + r) - np.log(1 - r))
 
 
-def rbf(x, center, width=20):
+def _rbf(x, center, width=20):
     """
     Radial basis function
 
@@ -166,7 +165,7 @@ def rbf(x, center, width=20):
     Returns
     ----------
     results : ndarray
-        Matrix of RBF weights for each subject coordinate for all coordinates
+        Matrix of _rbf weights for each subject coordinate for all coordinates
 
 
     """
@@ -198,10 +197,10 @@ def tal2mni(r):
     inpoints[:, tmp] = linalg.solve(np.dot(rotmat, down), inpoints[:, tmp])
     inpoints[:, ~tmp] = linalg.solve(np.dot(rotmat, up), inpoints[:, ~tmp])
 
-    return round_it(inpoints[0:3, :].T, 2)
+    return _round_it(inpoints[0:3, :].T, 2)
 
 
-def uniquerows(x):
+def _uniquerows(x):
     """
     Finds unique rows
 
@@ -223,7 +222,7 @@ def uniquerows(x):
     return x[idx]
 
 
-def expand_corrmat_fit(C, weights):
+def _expand_corrmat_fit(C, weights):
     """
     Gets full correlation matrix
 
@@ -233,7 +232,7 @@ def expand_corrmat_fit(C, weights):
         Subject's correlation matrix
 
     weights : Numpy array
-        Weights matrix calculated using rbf function matrix
+        Weights matrix calculated using _rbf function matrix
 
     mode : str
         Specifies whether to compute over all elecs (fit mode) or just new elecs
@@ -273,7 +272,7 @@ def expand_corrmat_fit(C, weights):
     return (K + K.T), (W + W.T)
 
 
-def expand_corrmat_predict(C, weights):
+def _expand_corrmat_predict(C, weights):
     """
     Gets full correlation matrix
 
@@ -283,7 +282,7 @@ def expand_corrmat_predict(C, weights):
         Subject's correlation matrix
 
     weights : Numpy array
-        Weights matrix calculated using rbf function matrix
+        Weights matrix calculated using _rbf function matrix
 
     mode : str
         Specifies whether to compute over all elecs (fit mode) or just new elecs
@@ -310,7 +309,7 @@ def expand_corrmat_predict(C, weights):
     sliced_up = [(x, y) for x in range(s, n) for y in range(x)]
 
     results = Parallel(n_jobs=multiprocessing.cpu_count())(
-        delayed(compute_coord)(coord, weights, Z) for coord in sliced_up)
+        delayed(_compute_coord)(coord, weights, Z) for coord in sliced_up)
 
     W[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[0] for x in results]
     K[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[1] for x in results]
@@ -318,15 +317,14 @@ def expand_corrmat_predict(C, weights):
     return (K + K.T), (W + W.T)
 
 
-def compute_coord(coord, weights, Z):
-
+def _compute_coord(coord, weights, Z):
     next_weights = np.outer(weights[coord[0], :], weights[coord[1], :])
     next_weights = next_weights - np.triu(next_weights)
 
     return np.sum(next_weights), np.sum(Z * next_weights)
 
 
-def chunk_bo(bo, chunk):
+def _chunk_bo(bo, chunk):
     """
     Chunk brain object by session for reconstruction. Returns chunked indices
 
@@ -347,7 +345,7 @@ def chunk_bo(bo, chunk):
     return bo.get_slice(times=[i for i in chunk if i is not None])
 
 
-def timeseries_recon(bo, K, chunk_size=1000):
+def _timeseries_recon(bo, K, chunk_size=1000):
     """
     Reconstruction done by chunking by session
 
@@ -374,29 +372,29 @@ def timeseries_recon(bo, K, chunk_size=1000):
 
     results = []
     for idx, session in enumerate(bo.sessions.unique()):
-            block_results = []
-            if idx is 0:
-                for each in chunker(zbo.sessions[bo.sessions == session].index.tolist(), chunk_size):
-                    z_bo = chunk_bo(zbo, each)
-                    block = reconstruct_activity(z_bo, K, zscored=True)
-                    if block_results==[]:
-                        block_results = block
-                    else:
-                        block_results = np.vstack((block_results, block))
-                results = block_results
-            else:
-                for each in chunker(zbo.sessions[bo.sessions == session].index.tolist(), chunk_size):
-                    z_bo = chunk_bo(zbo, each)
-                    block = reconstruct_activity(z_bo, K, zscored=True)
-                    if block_results==[]:
-                        block_results = block
-                    else:
-                        block_results = np.vstack((block_results, block))
-                results = np.vstack((results, block_results))
+        block_results = []
+        if idx is 0:
+            for each in _chunker(zbo.sessions[bo.sessions == session].index.tolist(), chunk_size):
+                z_bo = _chunk_bo(zbo, each)
+                block = _reconstruct_activity(z_bo, K, zscored=True)
+                if block_results == []:
+                    block_results = block
+                else:
+                    block_results = np.vstack((block_results, block))
+            results = block_results
+        else:
+            for each in _chunker(zbo.sessions[bo.sessions == session].index.tolist(), chunk_size):
+                z_bo = _chunk_bo(zbo, each)
+                block = _reconstruct_activity(z_bo, K, zscored=True)
+                if block_results == []:
+                    block_results = block
+                else:
+                    block_results = np.vstack((block_results, block))
+            results = np.vstack((results, block_results))
     return results
 
 
-def chunker(iterable, chunksize, fillvalue=None):
+def _chunker(iterable, chunksize, fillvalue=None):
     """
         Chunks longer sequence by regular interval
 
@@ -423,7 +421,7 @@ def chunker(iterable, chunksize, fillvalue=None):
     return list(zip_longest(*args, fillvalue=fillvalue))
 
 
-def reconstruct_activity(bo, K, zscored=False):
+def _reconstruct_activity(bo, K, zscored=False):
     """
     Reconstruct activity - need to add chunking option here
 
@@ -453,7 +451,7 @@ def reconstruct_activity(bo, K, zscored=False):
     return np.squeeze(np.dot(np.dot(Kba, np.linalg.pinv(Kaa)), Y.T).T)
 
 
-def round_it(locs, places):
+def _round_it(locs, places):
     """
     Rounding function
 
@@ -537,11 +535,11 @@ def filter_subj(bo, measure='kurtosis', threshold=10):
         print('no meta data for brain object')
 
 
-def corr_column(X, Y):
+def _corr_column(X, Y):
     return np.array([pearsonr(x, y)[0] for x, y in zip(X.T, Y.T)])
 
 
-def normalize_Y(Y_matrix):
+def _normalize_Y(Y_matrix):
     """
          Normalizes timeseries
 
@@ -575,7 +573,7 @@ class BrainData(object):
             self.R = []
             self.N = 0
             self.V = 0
-            self.vox_size = (0, 0, 0)
+            self._vox_size = (0, 0, 0)
             self.im_size = (0, 0, 0)
             self.mask = []
             self.img = []
@@ -591,7 +589,7 @@ class BrainData(object):
 
             hdr = img.get_header()
             S = img.get_sform()
-            self.vox_size = hdr.get_zooms()
+            self._vox_size = hdr.get_zooms()
             self.im_size = img.shape
 
             if len(img.shape) > 3:
@@ -604,13 +602,13 @@ class BrainData(object):
             vmask = np.nonzero(np.array(
                 np.reshape(self.mask.mask_img_.dataobj, (1, np.prod(self.mask.mask_img_.shape)), order='F')))[1]
 
-            vox_coords = fullfact(img.shape[0:3])[vmask, :]
+            vox_coords = _fullfact(img.shape[0:3])[vmask, :]
             self.matrix_coordinates = vox_coords
 
             self.R = np.array(vox_coords * S[0:3, 0:3] + np.tile(S[0:3, 3].T, (self.V, 1)))
 
 
-def loadnii(fname, mask_strategy='background'):
+def _loadnii(fname, mask_strategy='background'):
     """
          Load nifti
 
@@ -637,15 +635,15 @@ def loadnii(fname, mask_strategy='background'):
     return BrainData(fname, mask_strategy)
 
 
-def fullfact(dims):
+def _fullfact(dims):
     '''
-    Replicates MATLAB's fullfact function (behaves the same way)
+    Replicates MATLAB's _fullfact function (behaves the same way)
     '''
     vals = np.asmatrix(list(range(1, dims[0] + 1))).T
     if len(dims) == 1:
         return vals
     else:
-        aftervals = np.asmatrix(fullfact(dims[1:]))
+        aftervals = np.asmatrix(_fullfact(dims[1:]))
         inds = np.asmatrix(np.zeros((np.prod(dims), len(dims))))
         row = 0
         for i in range(aftervals.shape[0]):
@@ -694,8 +692,7 @@ def model_compile(data):
     #              locs=pd.concat([m.locs, bo.locs]), n_subs=n_subs)
 
 
-def near_neighbor(bo, mo, match_threshold = 'auto'):
-
+def _near_neighbor(bo, mo, match_threshold='auto'):
     """
     Finds the nearest voxel for each subject's electrode location and uses
     that as revised electrodes location matrix in the prediction.
@@ -740,7 +737,7 @@ def near_neighbor(bo, mo, match_threshold = 'auto'):
     if not match_threshold is 0 or None:
 
         if match_threshold is 'auto':
-            v_size = vox_size(mo.locs)
+            v_size = _vox_size(mo.locs)
             thresh_bool = abs(nbo.locs - bo.locs) > v_size
             thresh_bool = thresh_bool.any(1).ravel()
         else:
@@ -756,7 +753,7 @@ def near_neighbor(bo, mo, match_threshold = 'auto'):
         return nbo
 
 
-def vox_size(locs):
+def _vox_size(locs):
     """
     Finds voxel size
 
@@ -781,6 +778,7 @@ def vox_size(locs):
         v_size[0][i] = np.min(dists[dists > 0])
 
     return v_size
+
 
 def sort_unique_locs(locs):
     """
@@ -807,7 +805,8 @@ def sort_unique_locs(locs):
 
     return unique_full_locs[unique_full_locs[:, 0].argsort(),]
 
-def count_overlapping(X, Y):
+
+def _count_overlapping(X, Y):
     """
     Finds overlapping locations (Y in X)
 
@@ -831,7 +830,6 @@ def count_overlapping(X, Y):
 
 
 def make_gif_pngs(nifti, result_dir, window_min=1000, window_max=2000, **kwargs):
-
     """
     Plots series of nifti timepoints as nilearn plot_glass_brain in .png format
 
@@ -862,10 +860,5 @@ def make_gif_pngs(nifti, result_dir, window_min=1000, window_max=2000, **kwargs)
         outfile = os.path.join(result_dir, str(i) + '.png')
         # ni_plt.plot_glass_brain(nii_i, display_mode='lyrz', threshold=0, plot_abs=False, colorbar='True',
         #                     vmin=-20, vmax=20, output_file=outfile)
-        ni_plt.plot_glass_brain(nii_i, output_file=outfile, ** kwargs)
+        ni_plt.plot_glass_brain(nii_i, output_file=outfile, **kwargs)
 
-#
-# def interp(tau=1):
-#     s = exp(-tau. * pdist2(R, Rstd));
-#     y = (c * s). / sum(s, 1);
-#

@@ -9,7 +9,7 @@ import nibabel as nib
 from nilearn.input_data import NiftiMasker
 from .brain import Brain
 from .model import Model
-from .helpers import tal2mni, fullfact
+from .helpers import tal2mni, _fullfact
 
 def load(fname):
     """
@@ -163,7 +163,7 @@ def load_nifti(nifti_file, mask_file=None):
 
     hdr = img.header
     S = img.get_sform()
-    vox_size = hdr.get_zooms()
+    _vox_size = hdr.get_zooms()
     im_size = img.shape
 
     if len(img.shape) > 3:
@@ -173,7 +173,7 @@ def load_nifti(nifti_file, mask_file=None):
 
     Y = np.float64(mask.transform(nifti_file)).copy()
     vmask = np.nonzero(np.array(np.reshape(mask.mask_img_.dataobj, (1, np.prod(mask.mask_img_.shape)), order='C')))[1]
-    vox_coords = fullfact(img.shape[0:3])[vmask, ::-1]-1
+    vox_coords = _fullfact(img.shape[0:3])[vmask, ::-1]-1
 
     R = np.array(np.dot(vox_coords, S[0:3, 0:3])) + S[:3, 3]
 
