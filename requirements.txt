@@ -9,3 +9,4 @@ nilearn
 nibabel
 joblib
 imageio
+future
