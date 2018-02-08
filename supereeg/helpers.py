@@ -31,7 +31,7 @@ def _apply_by_file_index(bo, xform, aggregator):
 
     Parameters
     ----------
-    bo : Brain object
+    bo : supereeg.Brain
         Contains data
 
     xform : function
@@ -62,7 +62,7 @@ def _kurt_vals(bo):
 
     Parameters
     ----------
-    bo : Brain object
+    bo : supereeg.Brain
         Contains data
 
     Returns
@@ -84,9 +84,8 @@ def _get_corrmat(bo):
 
     Parameters
     ----------
-    bo : Brain object
+    bo : supereeg.Brain
         Contains data
-
 
     Returns
     ----------
@@ -177,7 +176,6 @@ def tal2mni(r):
     r : ndarray
         Coordinate locations (Talairach space)
 
-
     Returns
     ----------
     results : ndarray
@@ -205,7 +203,6 @@ def _uniquerows(x):
     ----------
     x : ndarray
         Coordinates
-
 
     Returns
     ----------
@@ -324,14 +321,13 @@ def _chunk_bo(bo, chunk):
     """
     Chunk brain object by session for reconstruction. Returns chunked indices
 
-        Parameters
+    Parameters
     ----------
-    bo : brain object
+    bo : supereeg.Brain
         Brain object used to reconstruct and data to chunk
 
     chunk : list
         Chunked indices
-
 
     Returns
     ----------
@@ -346,9 +342,9 @@ def _timeseries_recon(bo, K, chunk_size=1000):
     """
     Reconstruction done by chunking by session
 
-        Parameters
+    Parameters
     ----------
-    bo : brain object
+    bo : supereeg.Brain
         Copied brain object with zscored data
 
     K : correlation matrix
@@ -423,7 +419,7 @@ def _reconstruct_activity(bo, K, zscored=False):
 
     Parameters
     ----------
-    bo : brain object
+    bo : supereeg.Brain
         brain object with zscored data
 
     K : correlation matrix
@@ -474,7 +470,7 @@ def filter_elecs(bo, measure='kurtosis', threshold=10):
 
     Parameters
     ----------
-    bo : brain object
+    bo : supereeg.Brain
         Brain object
 
     measure : 'kurtosis'
@@ -485,7 +481,7 @@ def filter_elecs(bo, measure='kurtosis', threshold=10):
 
     Returns
     ----------
-    result : brain object
+    result : supereeg.Brain
         Brain object with electrodes and corresponding data that passes kurtosis thresholding
 
     """
@@ -503,7 +499,7 @@ def filter_subj(bo, measure='kurtosis', threshold=10):
 
     Parameters
     ----------
-    bo : brain object
+    bo : supereeg.Brain
         Brain object
 
     measure : 'kurtosis'
@@ -514,7 +510,7 @@ def filter_subj(bo, measure='kurtosis', threshold=10):
 
     Returns
     ----------
-    result : meta brain object or None
+    result : supereeg.Brain.meta or None
         Meta field from brain object if two or more electrodes pass kurtosis thresholding.
 
     """
@@ -626,9 +622,9 @@ def _loadnii(fname, mask_strategy='background'):
 
 
 def _fullfact(dims):
-    '''
+    """
     Replicates MATLAB's _fullfact function (behaves the same way)
-    '''
+    """
     vals = np.asmatrix(list(range(1, dims[0] + 1))).T
     if len(dims) == 1:
         return vals
@@ -654,7 +650,7 @@ def model_compile(data):
 
     Returns
     ----------
-    model : Model object
+    model : supereeg.Model
         A new updated model object
 
     """
@@ -688,10 +684,10 @@ def _near_neighbor(bo, mo, match_threshold='auto'):
     Parameters
     ----------
 
-    bo : Brain object
+    bo : supereeg.Brain
         Brain object to update
 
-    mo : Model object
+    mo : supereeg.Model
         Model object for the nearests locations used to predict
 
     match_threshold : 'auto', int, or None
@@ -707,7 +703,7 @@ def _near_neighbor(bo, mo, match_threshold='auto'):
 
     Returns
     ----------
-    bo : Brain object
+    bo : supereeg.Brain
         A new updated brain object
 
     """
@@ -770,12 +766,12 @@ def sort_unique_locs(locs):
 
     Parameters
     ----------
-    locs : pandas DataFrame or ndarray
+    locs : pandas.DataFrame or numpy.ndarray
         Electrode locations
 
     Returns
     ----------
-    results : ndarray
+    results : numpy.ndarray
         Array of unique locations
 
     """

@@ -231,7 +231,6 @@ class Brain(object):
         """
         Normalizes and plots data from brain object
 
-
         Parameters
         ----------
         filepath : str
@@ -252,10 +251,10 @@ class Brain(object):
             electrode locations
 
         threshold : int
-        Value of kurtosis threshold
+            Value of kurtosis threshold
 
         filtered : True
-        Default to filter by kurtosis threshold.  If False, will show all original data.
+            Default to filter by kurtosis threshold.  If False, will show all original data.
 
         """
 
@@ -309,11 +308,11 @@ class Brain(object):
         Parameters
         ----------
         pdfpath : str
-        A name for the file.  If the file extension (.pdf) is not specified, it
-        will be appended.
+            A name for the file.  If the file extension (.pdf) is not specified, it
+            will be appended.
 
         """
-        
+
         ni_plt.plot_connectome(np.eye(self.locs.shape[0]), self.locs,
                                display_mode='lyrz', output_file=pdfpath,
                                node_kwargs={'alpha': 0.5, 'edgecolors': None},
