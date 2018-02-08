@@ -1,5 +1,6 @@
 from __future__ import division
 from builtins import range
+import warnings
 import scipy
 import numpy as np
 import pandas as pd
@@ -160,7 +161,9 @@ def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None
         n = np.random.normal(0, noise, len(locs))
         R = R+n*n.T
         sub_locs = locs.sample(sample_locs, random_state=random_seed).sort_values(['x', 'y', 'z'])
-        full_data = np.random.multivariate_normal(np.zeros(len(locs)), R, size=n_samples)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            full_data = np.random.multivariate_normal(np.zeros(len(locs)), R, size=n_samples)
         data = full_data[:, sub_locs.index]
         return data, sub_locs
     else:

@@ -392,11 +392,12 @@ class Brain(object):
         if template is None:
 
             if int(recon_v_size[0][0]) not in [20, 8, 6]:
-                warnings.warn('Voxel sizes of reconstruction and template do not match. '
-                              'Default to using a template with 20mm voxels.')
+                warnings.warn('Template is None.  Default to using a template with 20mm voxels.')
                 template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_20mm_brain.nii'
 
             elif int(recon_v_size[0][0]) in [20, 8, 6]:
+                warnings.warn('Template is None.  '
+                              'Default to b using a template with ' + str(int(recon_v_size[0][0])) + ' voxels.')
                 template = os.path.dirname(os.path.abspath(__file__)) + \
                            '/data/gray_mask_'+ str(int(recon_v_size[0][0]))+'mm_brain.nii'
 
@@ -412,7 +413,7 @@ class Brain(object):
         # template voxel size:
         temp_v_size = hdr.get_zooms()[0:3]
 
-        if not np.array_equal(temp_v_size, recon_v_size.ravel()):
+        if not np.array_equiv(temp_v_size, recon_v_size.ravel()):
             warnings.warn('Voxel sizes of reconstruction and template do not match. '
                           'Voxel sizes calculated from model locations.')
 
@@ -431,8 +432,8 @@ class Brain(object):
             for j in range(R.shape[0]):
                 data[locs[j, 0], locs[j, 1], locs[j, 2], i] += Y[i, j]
                 counts[locs[j, 0], locs[j, 1], locs[j, 2], i] += 1
-
-        data = np.divide(data, counts)
+        with np.errstate(invalid='ignore'):
+            data = np.divide(data, counts)
         data[np.isnan(data)] = 0
         nifti =  nib.Nifti1Image(data, affine=img.affine)
 

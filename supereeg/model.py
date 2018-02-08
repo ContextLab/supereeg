@@ -447,7 +447,7 @@ class Model(object):
         with np.errstate(invalid='ignore'):
             corr_mat = _z2r(np.divide(self.numerator, self.denominator))
         np.fill_diagonal(corr_mat, 1)
-        sns.heatmap(corr_mat, **kwargs)
+        sns.heatmap(corr_mat, cbar_kws = {'label': 'correlation'}, **kwargs)
 
 
     def save(self, fname, compression='blosc'):
