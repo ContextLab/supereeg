@@ -8,3 +8,4 @@ matplotlib
 scikit-learn
 joblib
 deepdish
+imageio

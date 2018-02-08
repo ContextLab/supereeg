@@ -27,7 +27,8 @@ setup(
         'numpy>=1.10.4',
         'nilearn',
         'nibabel',
-        'joblib'
+        'joblib',
+        'imageio'
     ],
     packages=find_packages(exclude=('tests', 'docs')),
     include_package_data=True,
