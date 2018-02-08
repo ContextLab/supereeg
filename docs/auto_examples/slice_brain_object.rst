@@ -7,7 +7,8 @@
 Slice brain object
 =============================
 
-Here, we load an example dataset and then slice it.
+Here, we load an example dataset, and then slice out some electrodes and time
+samples.
 
 
 
@@ -25,6 +26,7 @@ Here, we load an example dataset and then slice it.
     bo = se.load('example_data')
 
     # check out the brain object (bo)
+    print('bo')
     bo.info()
 
     # index by first 5 timepoints
@@ -35,9 +37,8 @@ Here, we load an example dataset and then slice it.
 
     # or index by both locations and times
     bo_i = bo.get_slice(times=[1,2,3,4,5], locs=[10,11,12])
-    bo_i.get_data()
-
-
+    print('sliced bo')
+    bo_i.info()
 
 **Total running time of the script:** ( 0 minutes  0.000 seconds)
 

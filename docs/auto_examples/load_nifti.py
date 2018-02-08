@@ -4,7 +4,7 @@
 Load nifti file
 =============================
 
-This example loads a nifti file as a brain object.
+This example loads a nifti file and converts it into a brain object.
 
 """
 
@@ -19,4 +19,4 @@ import os
 nifti_file = os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_20mm_brain.nii'
 
 # load nifti as brain object
-nii = se.load_nifti(nifti_file, mask_file=None)
+bo = se.load_nifti(nifti_file, mask_file=None)
