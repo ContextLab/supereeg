@@ -139,8 +139,8 @@ def load_nifti(nifti_file, mask_file=None):
 
     Returns
     ----------
-    data : nibabel.Nifti1
-        Data to be returned
+    results : brain object
+        Brain object from nifti file
 
     """
 

@@ -621,10 +621,12 @@ def loadnii(fname, mask_strategy='background'):
             Path to a template nifti file
 
          mask_strategy : str
-            if mask_strategy is 'background', treat uniformly valued voxels at the outer parts
-            of the images as background
-            if mask_strategy is 'epi', use nilearn's background detection strategy: find the least dense point
-            of the histogram, between fractions lower_cutoff and upper_cutoff of the total image histogram
+
+            If mask_strategy is 'background', treat uniformly valued voxels at the outer parts
+            of the images as background.
+
+            If mask_strategy is 'epi', use nilearn's background detection strategy: find the least dense point
+            of the histogram, between fractions lower_cutoff and upper_cutoff of the total image histogram.
 
          Returns
          ----------

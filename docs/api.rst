@@ -16,6 +16,7 @@ Loading Data
   :toctree:
 
   load
+  load_nifti
 
 Brain data object
 ------------------
@@ -50,7 +51,6 @@ Helpers
 .. autosummary::
   :toctree:
 
-  loadnii
   filter_subj
   filter_elecs
   model_compile
