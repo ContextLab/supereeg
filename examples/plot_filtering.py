@@ -4,7 +4,7 @@
 Filtering electrodes
 =============================
 
-This example filters electrodes based on kurtosis thresholding.
+This example filters electrodes based on kurtosis thresholding (default=10).
 
 """
 
