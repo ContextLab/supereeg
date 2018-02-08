@@ -51,7 +51,6 @@ Helpers
 .. autosummary::
   :toctree:
 
-  filter_subj
   filter_elecs
   model_compile
   sort_unique_locs
