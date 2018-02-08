@@ -64,9 +64,17 @@ def load(fname):
             with open(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/mini_model.mo', 'rb') as handle:
                 example_model = pickle.load(handle)
             return example_model
+
         except:
-            model = pd.read_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/mini_model.mo')
-            return model
+            try:
+                mo = dd.io.load(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/mini_model.mo')
+                return Model(numerator=mo['numerator'], denominator=mo['denominator'],
+                             locs=mo['locs'], n_subs=mo['n_subs'], meta=mo['meta'],
+                             date_created=mo['date_created'])
+            except:
+                model = pd.read_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/mini_model.mo')
+                return model
+
 
     elif fname is 'pyFR_k10r20_20mm':
         try:
@@ -74,8 +82,15 @@ def load(fname):
                 example_model = pickle.load(handle)
             return example_model
         except:
-            model = pd.read_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/mini_model.mo')
-            return model
+            try:
+                mo = dd.io.load(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/mini_model.mo')
+                return Model(numerator=mo['numerator'], denominator=mo['denominator'],
+                             locs=mo['locs'], n_subs=mo['n_subs'], meta=mo['meta'],
+                             date_created=mo['date_created'])
+            except:
+                model = pd.read_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/mini_model.mo')
+                return model
+
 
     elif fname is 'pyFR_k10r20_6mm':
         try:
@@ -83,8 +98,15 @@ def load(fname):
                 example_model = pickle.load(handle)
             return example_model
         except:
-            model = pd.read_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_6mm_brain.mo')
-            return model
+            try:
+                mo = dd.io.load(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_6mm_brain.mo')
+                return Model(numerator=mo['numerator'], denominator=mo['denominator'],
+                             locs=mo['locs'], n_subs=mo['n_subs'], meta=mo['meta'],
+                             date_created=mo['date_created'])
+            except:
+                model = pd.read_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_6mm_brain.mo')
+                return model
+
 
     elif fname is 'example_locations':
         with open(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_20mm_locs.npy', 'rb') as handle:

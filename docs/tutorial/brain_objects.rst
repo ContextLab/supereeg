@@ -15,23 +15,18 @@ Load in the required libraries
 
 .. code:: ipython2
 
+    import warnings 
+    warnings.simplefilter("ignore")
     import supereeg as se
     import numpy as np
     import seaborn as sns
     import matplotlib.pyplot as plt
 
-
-.. parsed-literal::
-
-    /Library/Python/2.7/site-packages/sklearn/cross_validation.py:44: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the refactored classes and functions are moved. Also note that the interface of the new CV iterators are different from that of this module. This module will be removed in 0.20.
-      "This module will be removed in 0.20.", DeprecationWarning)
-
-
 Simulate some data
 ==================
 
 First, we’ll use supereeg’s built in simulation functions to simulate
-some data and electrodes. By default, the ``simualate_data`` function
+some data and electrodes. By default, the ``simulate_data`` function
 will return a 1000 samples by 10 electrodes matrix, but you can specify
 the number of time samples with ``n_samples`` and the number of
 electrodes with ``n_elecs``. If you want further information on
@@ -64,16 +59,16 @@ We’ll also simulate some electrode locations
 .. parsed-literal::
 
         x   y   z
-    0 -48 -30   2
-    1  -8 -40 -24
-    2   5  42  49
-    3  27  15  46
-    4  46  38 -34
-    5 -49 -14  19
-    6 -34 -50   5
-    7 -38 -29 -48
-    8  27 -31  -8
-    9  25 -40 -38
+    0  24  45 -33
+    1 -25 -16  29
+    2 -48  20  16
+    3  48  11 -33
+    4 -48 -50 -48
+    5  37 -16  22
+    6  14  43  17
+    7 -15  10  13
+    8 -37  -7  36
+    9 -31 -18  -2
 
 
 Creating a brain object
@@ -99,7 +94,7 @@ To view a summary of the contents of the brain object, you can call the
     Number of electrodes: 10
     Recording time in seconds: [ 10.]
     Number of sessions: 1
-    Date created: Wed Feb  7 17:55:10 2018
+    Date created: Thu Feb  8 16:43:45 2018
     Meta data: {}
 
 
@@ -119,7 +114,7 @@ each session. For example:
     Number of electrodes: 10
     Recording time in seconds: [ 0.5  0.5]
     Number of sessions: 2
-    Date created: Wed Feb  7 17:55:10 2018
+    Date created: Thu Feb  8 16:43:45 2018
     Meta data: {}
 
 
@@ -143,7 +138,7 @@ you want:
     Number of electrodes: 10
     Recording time in seconds: [ 0.5  0.5]
     Number of sessions: 2
-    Date created: Wed Feb  7 17:55:10 2018
+    Date created: Thu Feb  8 16:43:45 2018
     Meta data: {'Hospital': 'DHMC', 'subjectID': '123', 'Investigator': 'Andy'}
 
 
@@ -195,68 +190,68 @@ that can be accessed directly:
       <tbody>
         <tr>
           <th>0</th>
-          <td>0.692874</td>
-          <td>1.245272</td>
-          <td>0.701344</td>
-          <td>0.617046</td>
-          <td>1.220643</td>
-          <td>0.132408</td>
-          <td>0.263621</td>
-          <td>0.159834</td>
-          <td>1.646244</td>
-          <td>0.754970</td>
+          <td>0.382586</td>
+          <td>0.333622</td>
+          <td>0.214103</td>
+          <td>-0.265925</td>
+          <td>0.325929</td>
+          <td>0.805790</td>
+          <td>-0.021989</td>
+          <td>0.646090</td>
+          <td>0.058325</td>
+          <td>-0.076683</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>-0.077390</td>
-          <td>0.657327</td>
-          <td>0.296077</td>
-          <td>-1.032988</td>
-          <td>-0.760648</td>
-          <td>-0.120385</td>
-          <td>-0.786144</td>
-          <td>-0.532653</td>
-          <td>-0.237034</td>
-          <td>0.421261</td>
+          <td>-0.463498</td>
+          <td>-0.150590</td>
+          <td>-0.205202</td>
+          <td>-0.407724</td>
+          <td>-0.431042</td>
+          <td>-0.508995</td>
+          <td>-0.536993</td>
+          <td>-0.557777</td>
+          <td>-0.339154</td>
+          <td>-0.338929</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>-0.008377</td>
-          <td>-0.186241</td>
-          <td>0.461545</td>
-          <td>-0.643121</td>
-          <td>-0.304275</td>
-          <td>-0.897737</td>
-          <td>-0.775547</td>
-          <td>-0.849747</td>
-          <td>-0.896127</td>
-          <td>-0.971033</td>
+          <td>0.196829</td>
+          <td>-0.469763</td>
+          <td>0.683407</td>
+          <td>1.378482</td>
+          <td>0.811645</td>
+          <td>0.118007</td>
+          <td>1.327783</td>
+          <td>0.781677</td>
+          <td>0.180177</td>
+          <td>0.644221</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>-1.503509</td>
-          <td>-0.911524</td>
-          <td>-0.780793</td>
-          <td>-0.038887</td>
-          <td>-0.262013</td>
-          <td>-1.454584</td>
-          <td>-0.073368</td>
-          <td>-0.766932</td>
-          <td>-0.780627</td>
-          <td>-0.610842</td>
+          <td>0.731063</td>
+          <td>0.414445</td>
+          <td>0.541975</td>
+          <td>0.562243</td>
+          <td>1.128243</td>
+          <td>0.979952</td>
+          <td>0.731497</td>
+          <td>0.793575</td>
+          <td>0.813715</td>
+          <td>0.495433</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>-0.581615</td>
-          <td>-0.707990</td>
-          <td>-0.915148</td>
-          <td>-0.340441</td>
-          <td>0.161326</td>
-          <td>0.071423</td>
-          <td>0.039092</td>
-          <td>0.023713</td>
-          <td>-0.238514</td>
-          <td>-0.554809</td>
+          <td>-0.650483</td>
+          <td>-0.647418</td>
+          <td>-0.255525</td>
+          <td>-0.352095</td>
+          <td>-0.737620</td>
+          <td>-0.990270</td>
+          <td>-0.181314</td>
+          <td>-0.790536</td>
+          <td>-0.555052</td>
+          <td>-0.595288</td>
         </tr>
       </tbody>
     </table>
@@ -275,19 +270,19 @@ or returned as a numpy array using the ``get_data`` method:
 
 .. parsed-literal::
 
-    array([[ 0.69287447,  1.24527165,  0.70134405, ...,  0.15983399,
-             1.64624373,  0.7549699 ],
-           [-0.07738979,  0.65732683,  0.29607651, ..., -0.53265335,
-            -0.23703386,  0.42126061],
-           [-0.00837717, -0.18624108,  0.46154526, ..., -0.84974662,
-            -0.89612701, -0.97103326],
+    array([[ 0.38258564,  0.33362172,  0.21410298, ...,  0.64608996,
+             0.05832478, -0.07668315],
+           [-0.46349806, -0.15059048, -0.20520242, ..., -0.55777727,
+            -0.33915407, -0.33892933],
+           [ 0.19682918, -0.46976349,  0.6834066 , ...,  0.78167735,
+             0.18017724,  0.64422098],
            ..., 
-           [ 0.42132452,  0.90842576, -0.00308145, ...,  0.47560078,
-             0.36495653,  0.66611695],
-           [-0.67555082, -0.65787042, -0.47493693, ..., -0.3040666 ,
-            -1.53963073, -0.17313308],
-           [-0.58940122, -0.94379032, -0.57664268, ..., -0.121156  ,
-             0.25189463,  0.13743845]])
+           [-0.22162661,  0.53725265,  0.02315143, ..., -0.26951488,
+            -0.40746491,  0.40569943],
+           [-1.33850292, -1.80492147, -1.19813078, ..., -0.70659012,
+            -0.72775529, -0.56779603],
+           [ 0.45456363,  0.71542546,  0.30851046, ...,  0.73372424,
+            -0.23424389,  0.12040398]])
 
 
 
@@ -329,33 +324,33 @@ can be retrieved as a numpy array using the ``get_locs`` method:
       <tbody>
         <tr>
           <th>0</th>
-          <td>-48</td>
-          <td>-30</td>
-          <td>2</td>
+          <td>24</td>
+          <td>45</td>
+          <td>-33</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>-8</td>
-          <td>-40</td>
-          <td>-24</td>
+          <td>-25</td>
+          <td>-16</td>
+          <td>29</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>5</td>
-          <td>42</td>
-          <td>49</td>
+          <td>-48</td>
+          <td>20</td>
+          <td>16</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>27</td>
-          <td>15</td>
-          <td>46</td>
+          <td>48</td>
+          <td>11</td>
+          <td>-33</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>46</td>
-          <td>38</td>
-          <td>-34</td>
+          <td>-48</td>
+          <td>-50</td>
+          <td>-48</td>
         </tr>
       </tbody>
     </table>
@@ -372,16 +367,16 @@ can be retrieved as a numpy array using the ``get_locs`` method:
 
 .. parsed-literal::
 
-    array([[-48, -30,   2],
-           [ -8, -40, -24],
-           [  5,  42,  49],
-           [ 27,  15,  46],
-           [ 46,  38, -34],
-           [-49, -14,  19],
-           [-34, -50,   5],
-           [-38, -29, -48],
-           [ 27, -31,  -8],
-           [ 25, -40, -38]])
+    array([[ 24,  45, -33],
+           [-25, -16,  29],
+           [-48,  20,  16],
+           [ 48,  11, -33],
+           [-48, -50, -48],
+           [ 37, -16,  22],
+           [ 14,  43,  17],
+           [-15,  10,  13],
+           [-37,  -7,  36],
+           [-31, -18,  -2]])
 
 
 
@@ -398,9 +393,9 @@ return a subset of the brain object
 
 .. parsed-literal::
 
-    array([[ 0.65732683,  0.29607651, -1.03298838],
-           [-0.18624108,  0.46154526, -0.64312115],
-           [-0.91152381, -0.78079333, -0.0388872 ]])
+    array([[-0.15059048, -0.20520242, -0.4077237 ],
+           [-0.46976349,  0.6834066 ,  1.37848224],
+           [ 0.41444456,  0.54197526,  0.56224315]])
 
 
 
@@ -412,14 +407,8 @@ You can also plot both the data and the electrode locations:
     plt.show()
 
 
-.. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:298: MatplotlibDeprecationWarning: The set_axis_bgcolor function was deprecated in version 2.0. Use set_facecolor instead.
-      ax.set_axis_bgcolor('w')
-
-
-
-.. image:: brain_objects_files/brain_objects_25_1.png
+.. image:: brain_objects_files/brain_objects_25_0.png
 
 
 .. code:: ipython2
@@ -427,18 +416,8 @@ You can also plot both the data and the electrode locations:
     bo.plot_locs()
 
 
-.. parsed-literal::
 
-    /Library/Python/2.7/site-packages/matplotlib/cbook.py:136: MatplotlibDeprecationWarning: The axisbg attribute was deprecated in version 2.0. Use facecolor instead.
-      warnings.warn(message, mplDeprecation, stacklevel=1)
-    /Library/Python/2.7/site-packages/nilearn/plotting/glass_brain.py:164: MatplotlibDeprecationWarning: The get_axis_bgcolor function was deprecated in version 2.0. Use get_facecolor instead.
-      black_bg = colors.colorConverter.to_rgba(ax.get_axis_bgcolor()) \
-    /Library/Python/2.7/site-packages/nilearn/plotting/displays.py:1259: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
-      if node_color == 'auto':
-
-
-
-.. image:: brain_objects_files/brain_objects_26_1.png
+.. image:: brain_objects_files/brain_objects_26_0.png
 
 
 The other pieces of the brain object are listed below:
@@ -492,7 +471,7 @@ This method will give you a summary of the brain object:
     Number of electrodes: 10
     Recording time in seconds: [ 0.5  0.5]
     Number of sessions: 2
-    Date created: Wed Feb  7 17:55:10 2018
+    Date created: Thu Feb  8 16:43:45 2018
     Meta data: {'Hospital': 'DHMC', 'subjectID': '123', 'Investigator': 'Andy'}
 
 
@@ -521,6 +500,16 @@ This method will return a numpy array of the electrode locations:
 
     locs = bo.get_locs()
 
+``bo.get_slice()``
+------------------
+
+This method allows you to slice out time and locations from the brain
+object, and returns a brain object.
+
+.. code:: ipython2
+
+    bo_slice = bo.get_slice(times=None, locs=None)
+
 ``bo.plot_data()``
 ------------------
 
@@ -532,7 +521,7 @@ This method normalizes and plots data from brain object:
 
 
 
-.. image:: brain_objects_files/brain_objects_39_0.png
+.. image:: brain_objects_files/brain_objects_41_0.png
 
 
 ``bo.plot_locs()``
@@ -546,7 +535,7 @@ This method plots electrode locations from brain object:
 
 
 
-.. image:: brain_objects_files/brain_objects_41_0.png
+.. image:: brain_objects_files/brain_objects_43_0.png
 
 
 ``bo.save(fname='something')``
@@ -570,27 +559,11 @@ specify a nifti template with the ``template`` argument.
 
 .. code:: ipython2
 
-    nii = bo.to_nii()
-    print(type(nii))
+    # convert to nifit
+    # nii = bo.to_nii()
     
     # save the file
     # nii = bo.to_nii(filepath='/path/to/file/brain')
     
     # specify a template
     # nii = bo.to_nii(template='/path/to/nifti/file.nii')
-
-
-.. parsed-literal::
-
-    <class 'nibabel.nifti1.Nifti1Image'>
-
-
-.. parsed-literal::
-
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:396: UserWarning: Voxel sizes of reconstruction and template do not match. Default to using a template with 20mm voxels.
-      warnings.warn('Voxel sizes of reconstruction and template do not match. '
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:417: UserWarning: Voxel sizes of reconstruction and template do not match. Voxel sizes calculated from model locations.
-      warnings.warn('Voxel sizes of reconstruction and template do not match. '
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:436: RuntimeWarning: invalid value encountered in divide
-      data = np.divide(data, counts)
-

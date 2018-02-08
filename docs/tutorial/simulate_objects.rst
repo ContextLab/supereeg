@@ -19,13 +19,6 @@ Load in the required libraries
     import numpy as np
     from supereeg.helpers import _corr_column
 
-
-.. parsed-literal::
-
-    /Library/Python/2.7/site-packages/sklearn/cross_validation.py:44: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the refactored classes and functions are moved. Also note that the interface of the new CV iterators are different from that of this module. This module will be removed in 0.20.
-      "This module will be removed in 0.20.", DeprecationWarning)
-
-
 Simulate locations
 ==================
 
@@ -67,33 +60,33 @@ To begin, we can either simulate locations:
       <tbody>
         <tr>
           <th>0</th>
-          <td>17</td>
-          <td>22</td>
-          <td>6</td>
+          <td>2</td>
+          <td>19</td>
+          <td>-23</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>-5</td>
-          <td>-10</td>
-          <td>-7</td>
+          <td>41</td>
+          <td>-21</td>
+          <td>-23</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>42</td>
-          <td>6</td>
-          <td>-35</td>
+          <td>22</td>
+          <td>-4</td>
+          <td>-38</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>-42</td>
-          <td>42</td>
-          <td>3</td>
+          <td>44</td>
+          <td>20</td>
+          <td>21</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>-23</td>
-          <td>0</td>
-          <td>-7</td>
+          <td>-50</td>
+          <td>45</td>
+          <td>29</td>
         </tr>
       </tbody>
     </table>
@@ -178,8 +171,8 @@ Or extract example locations:
 Simulate brain object
 =====================
 
-``simulate_bo``
----------------
+``simulate_bo()``
+-----------------
 
 By default, the ``simualate_bo`` function will return a 1000 samples by
 10 electrodes matrix, but you can specify the number of time samples
@@ -201,14 +194,8 @@ locations with ``bo.plot_locs``.
     bo.plot_data(time_min=5, time_max=10)
 
 
-.. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:298: MatplotlibDeprecationWarning: The set_axis_bgcolor function was deprecated in version 2.0. Use set_facecolor instead.
-      ax.set_axis_bgcolor('w')
-
-
-
-.. image:: simulate_objects_files/simulate_objects_13_1.png
+.. image:: simulate_objects_files/simulate_objects_13_0.png
 
 
 .. code:: ipython2
@@ -219,11 +206,7 @@ locations with ``bo.plot_locs``.
 
 .. parsed-literal::
 
-    /Library/Python/2.7/site-packages/matplotlib/cbook.py:136: MatplotlibDeprecationWarning: The axisbg attribute was deprecated in version 2.0. Use facecolor instead.
-      warnings.warn(message, mplDeprecation, stacklevel=1)
-    /Library/Python/2.7/site-packages/nilearn/plotting/glass_brain.py:164: MatplotlibDeprecationWarning: The get_axis_bgcolor function was deprecated in version 2.0. Use get_facecolor instead.
-      black_bg = colors.colorConverter.to_rgba(ax.get_axis_bgcolor()) \
-    /Library/Python/2.7/site-packages/nilearn/plotting/displays.py:1259: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
+    /Library/Python/2.7/site-packages/nilearn/plotting/displays.py:1291: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
       if node_color == 'auto':
 
 
@@ -231,8 +214,8 @@ locations with ``bo.plot_locs``.
 .. image:: simulate_objects_files/simulate_objects_14_1.png
 
 
-``simulate_bo(random_seed=True, noise=0)``
-------------------------------------------
+Replicating simulated data with a random seed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We’ve added a ``random_seed=False`` and ``noise=.1`` parameters as
 defaults. But if you want to recreate the same brain object, you can set
@@ -254,8 +237,8 @@ these flags to: ``random_seed=True`` and ``noise=0``
 
 
 
-``simulate_bo(cov='toeplitz')``
--------------------------------
+Specify correlation matrix to generate simulated data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We use a correlation matrix to impose on the simulated subject data. The
 default is ``random`` uses a positive semi-definite matrix created using
@@ -289,15 +272,15 @@ You can also pass a custom covariance matrix in ``cov``.
 Simulate model object
 ---------------------
 
-``simulate_model_bos``
-----------------------
+``simulate_model_bos()``
+------------------------
 
 You can create a simulated model object by passing a list of simulated
 brain objects.
 
 .. code:: ipython2
 
-    # list of 3 simulated brain objects, each with 20 locations, for model 
+    # list of 5 simulated brain objects, each with 20 locations, for model 
     model_bos = [se.simulate_model_bos(n_samples=100, sample_rate=1000, sample_locs=20, 
                                        locs=locs, cov=R) for x in range(5)]
     
@@ -309,16 +292,8 @@ brain objects.
     plt.show()
 
 
-.. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/supereeg/simulate.py:138: RuntimeWarning: covariance is not positive-semidefinite.
-      full_data = np.random.multivariate_normal(np.zeros(len(locs)), R, size=n_samples)
-    /Users/lucyowen/repos/superEEG/supereeg/model.py:447: RuntimeWarning: invalid value encountered in divide
-      corr_mat = _z2r(np.divide(self.numerator, self.denominator))
-
-
-
-.. image:: simulate_objects_files/simulate_objects_25_1.png
+.. image:: simulate_objects_files/simulate_objects_25_0.png
 
 
 Simulation Example 1:
@@ -338,6 +313,8 @@ electrodes, the better then recovery of the true model.
     # initialize subplots
     f, axarr = plt.subplots(4, 4)
     
+    f.set_size_inches(10,8)
+    
     # loop over simulated subjects size
     for isub, n_subs in enumerate([10, 25, 50, 100]):
     
@@ -352,24 +329,18 @@ electrodes, the better then recovery of the true model.
             model = se.Model(data=model_bos, locs=locs)
     
             # plot it
-            sns.heatmap(np.divide(model.numerator, model.denominator), ax=axarr[isub, ielec], yticklabels=False,
-                        xticklabels=False, cmap='RdBu_r', cbar=False, vmin=0, vmax=3)
+            model.plot(ax=axarr[isub, ielec], yticklabels=False,
+                        xticklabels=False, cmap='RdBu_r', cbar=False, vmin=0, vmax=1)
     
             # set the title
             axarr[isub, ielec].set_title(str(n_subs) + ' Subjects, ' + str(n_elecs) + ' Electrodes')
     
-    #plt.tight_layout()
-    plt.rcParams['figure.dpi'] = 80
+    f.tight_layout()
     plt.show()
 
 
-.. parsed-literal::
 
-    /Library/Python/2.7/site-packages/ipykernel/__main__.py:21: RuntimeWarning: invalid value encountered in divide
-
-
-
-.. image:: simulate_objects_files/simulate_objects_28_1.png
+.. image:: simulate_objects_files/simulate_objects_28_0.png
 
 
 Simulation Example 2:
@@ -426,6 +397,8 @@ recovered.
     # initialize subplots
     f, (ax1, ax2, ax3) = plt.subplots(1, 3)
     
+    f.set_size_inches(15,5)
+    
     # plot it and set the title
     model.plot(ax=ax1, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
     ax1.set_title('Before updating model: 10 subjects total')
@@ -438,6 +411,7 @@ recovered.
     better_model.plot(ax=ax3, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
     ax3.set_title('After updating model: 20 subjects total')
     
+    f.tight_layout()
     plt.show()
 
 
@@ -463,13 +437,13 @@ recovery of the true model.
 .. code:: ipython2
 
     # n_electrodes - number of electrodes for reconstructed patient
-    n_elecs = range(10, 160, 10)
+    n_elecs = range(10, 160, 50)
     
     # m_patients - number of patients in the model
     m_patients = [5, 10]
     
     # m_electrodes - number of electrodes for each patient in the model
-    m_elecs = range(10, 160, 10)
+    m_elecs = range(10, 160, 50)
     
     iter_val = 1
     
@@ -526,10 +500,15 @@ recovery of the true model.
     
     new_df = append_d.groupby('Average Correlation').mean()
     
-    fig, axs = plt.subplots(ncols=len(np.unique(new_df['Subjects in model'])), sharex=True, sharey=True)
+    #fig, axs = plt.subplots(ncols=len(np.unique(new_df['Subjects in model'])), sharex=True, sharey=True)
+    fig, axs = plt.subplots(ncols=2, sharex=True, sharey=True)
     
     axs_iter = 0
+    
     cbar_ax = fig.add_axes([.92, .3, .03, .4])
+    
+    fig.subplots_adjust(right=0.85)
+    fig.set_size_inches(14,5)
     for i in np.unique(new_df['Subjects in model']):
         data_plot = append_d[append_d['Subjects in model'] == i].pivot_table(index=['Electrodes per subject in model'],
                                                                              columns='Electrodes per reconstructed subject',
@@ -544,13 +523,25 @@ recovery of the true model.
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:140: UserWarning: No sample rate given.  Number of seconds cant be computed
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:139: UserWarning: No sample rate given.  Number of seconds cant be computed
       warnings.warn('No sample rate given.  Number of seconds cant be computed')
-    /Users/lucyowen/repos/superEEG/supereeg/model.py:257: RuntimeWarning: invalid value encountered in divide
-      model_corrmat_x = np.divide(self.numerator,self.denominator)
 
 
 
 .. image:: simulate_objects_files/simulate_objects_34_1.png
+
+
+Simulations run on the cluster:
+
+.. code:: ipython2
+
+    from IPython.display import Image
+    Image("simulation_for_nb.png")
+
+
+
+
+.. image:: simulate_objects_files/simulate_objects_36_0.png
+
 
 

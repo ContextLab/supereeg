@@ -16,19 +16,14 @@ Load in the required libraries
 
 .. code:: ipython2
 
+    # import warnings 
+    # warnings.simplefilter("ignore")
     import supereeg as se
     import seaborn as sns
     import matplotlib.pyplot as plt
     from nilearn import plotting
     from nilearn import image
     import numpy as np
-
-
-.. parsed-literal::
-
-    /Library/Python/2.7/site-packages/sklearn/cross_validation.py:44: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the refactored classes and functions are moved. Also note that the interface of the new CV iterators are different from that of this module. This module will be removed in 0.20.
-      "This module will be removed in 0.20.", DeprecationWarning)
-
 
 First, let’s load in our default model, ``example_model``, that we made
 from the pyFR dataset sampled at 20mm resolution. Electrodes with a
@@ -92,14 +87,8 @@ accepts are supported by ``model.plot``.
     plt.show()
 
 
-.. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/supereeg/model.py:447: RuntimeWarning: invalid value encountered in divide
-      corr_mat = _z2r(np.divide(self.numerator, self.denominator))
-
-
-
-.. image:: model_objects_files/model_objects_10_1.png
+.. image:: model_objects_files/model_objects_10_0.png
 
 
 ``mo.update()``
@@ -121,7 +110,7 @@ data as a brain object. First, let’s load in an example subjects data:
     Number of electrodes: 64
     Recording time in seconds: [[  5.3984375  14.1328125]]
     Number of sessions: 2
-    Date created: Wed Feb  7 17:55:22 2018
+    Date created: Thu Feb  8 16:43:59 2018
     Meta data: CH003
 
 
@@ -137,7 +126,7 @@ Now you can update the model with that brain object:
 
     Number of locations: 170
     Number of subjects: 67
-    Date created: Wed Feb  7 17:55:23 2018
+    Date created: Thu Feb  8 16:44:00 2018
     Meta data: None
 
 
@@ -174,17 +163,23 @@ construct the model from that data:
 
 .. code:: ipython2
 
+    # load locations
+    locs = se.load('example_locations')
+    
+    # simulate 10 brain objects to create a model
     n_subs = 10
-    bos = [se.simulate_bo(sample_rate=1000) for i in range(n_subs)]
-    bos[0].info()
+    model_bos = [se.simulate_model_bos(n_samples=1000, sample_rate=1000, sample_locs=20, 
+                                       locs=locs, cov='toeplitz') for x in range(n_subs)]
+    
+    model_bos[0].info()
 
 
 .. parsed-literal::
 
-    Number of electrodes: 10
+    Number of electrodes: 20
     Recording time in seconds: [ 1.]
     Number of sessions: 1
-    Date created: Wed Feb  7 17:55:23 2018
+    Date created: Thu Feb  8 16:44:00 2018
     Meta data: {}
 
 
@@ -195,21 +190,15 @@ new model will be generated:
 
 .. code:: ipython2
 
-    new_model = se.Model(bos)
+    new_model = se.Model(data=model_bos, locs=locs)
     new_model.info()
-
-
-.. parsed-literal::
-
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:140: UserWarning: No sample rate given.  Number of seconds cant be computed
-      warnings.warn('No sample rate given.  Number of seconds cant be computed')
 
 
 .. parsed-literal::
 
     Number of locations: 170
     Number of subjects: 10
-    Date created: Wed Feb  7 17:55:28 2018
+    Date created: Thu Feb  8 16:44:05 2018
     Meta data: None
 
 
@@ -238,7 +227,6 @@ of locations to ``cov`` and the number of location to ``n_elecs``.
 
 .. code:: ipython2
 
-    locs = se.load('example_locations')
     R = se.create_cov(cov='toeplitz', n_elecs=len(locs))
     p = 10
     model = se.Model(numerator=R, denominator=np.ones(np.shape(R)), locs=locs, n_subs=p)
@@ -322,24 +310,16 @@ model with the subject’s correlation matrix.
     Number of electrodes: 64
     Recording time in seconds: [[  5.3984375  14.1328125]]
     Number of sessions: 2
-    Date created: Wed Feb  7 17:55:22 2018
+    Date created: Thu Feb  8 16:43:59 2018
     Meta data: CH003
 
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:396: UserWarning: Voxel sizes of reconstruction and template do not match. Default to using a template with 20mm voxels.
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:389: UserWarning: Template is None.  Default to using a template with 20mm voxels.
+      warnings.warn('Template is None.  Default to using a template with 20mm voxels.')
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:408: UserWarning: Voxel sizes of reconstruction and template do not match. Voxel sizes calculated from model locations.
       warnings.warn('Voxel sizes of reconstruction and template do not match. '
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:417: UserWarning: Voxel sizes of reconstruction and template do not match. Voxel sizes calculated from model locations.
-      warnings.warn('Voxel sizes of reconstruction and template do not match. '
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:436: RuntimeWarning: invalid value encountered in divide
-      data = np.divide(data, counts)
-    /Library/Python/2.7/site-packages/matplotlib/cbook.py:136: MatplotlibDeprecationWarning: The axisbg attribute was deprecated in version 2.0. Use facecolor instead.
-      warnings.warn(message, mplDeprecation, stacklevel=1)
-    /Library/Python/2.7/site-packages/nilearn/plotting/glass_brain.py:164: MatplotlibDeprecationWarning: The get_axis_bgcolor function was deprecated in version 2.0. Use get_facecolor instead.
-      black_bg = colors.colorConverter.to_rgba(ax.get_axis_bgcolor()) \
-    /Library/Python/2.7/site-packages/matplotlib/artist.py:879: MatplotlibDeprecationWarning: The set_axis_bgcolor function was deprecated in version 2.0. Use set_facecolor instead.
-      return func(v)
 
 
 
@@ -353,12 +333,18 @@ model with the subject’s correlation matrix.
     Number of electrodes: 170
     Recording time in seconds: [  5.3984375  14.1328125]
     Number of sessions: 2
-    Date created: Wed Feb  7 17:55:30 2018
+    Date created: Thu Feb  8 16:44:08 2018
     Meta data: {}
 
 
+.. parsed-literal::
 
-.. image:: model_objects_files/model_objects_29_4.png
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:394: UserWarning: Template is None.  Default to b using a template with 20 voxels.
+      'Default to b using a template with ' + str(int(recon_v_size[0][0])) + ' voxels.')
+
+
+
+.. image:: model_objects_files/model_objects_29_5.png
 
 
 Using the ``supereeg`` algorithm, we’ve ‘reconstructed’ whole brain
