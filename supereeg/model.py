@@ -252,8 +252,8 @@ class Model(object):
                 model_corrmat_x = np.divide(np.add(self.numerator, num_corrmat_x), np.add(self.denominator, denom_corrmat_x))
 
         else:
-
-            model_corrmat_x = np.divide(self.numerator,self.denominator)
+            with np.errstate(invalid='ignore'):
+                model_corrmat_x = np.divide(self.numerator,self.denominator)
 
         # find overlapping locations
         bool_mask = _count_overlapping(self, bo)
