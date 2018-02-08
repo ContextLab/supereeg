@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 """
 =============================
-Simulate brain object
+Simulating a brain object
 =============================
 
-In this example, we demonstrate the simulate brain object function.
+In this example, we demonstrate the simulate_bo function.
 First, we'll load in some example locations. Then we'll simulate 1
 brain object specifying a noise parameter and the correlational structure
-(a toeplitz matrix). We'll then subsample 10 locations from the original brain object.
+of the data (a toeplitz matrix). We'll then subsample 10 locations from the
+original brain object.
+
 """
 
 # Code source: Lucy Owen & Andrew Heusser
@@ -19,7 +21,7 @@ import pandas as pd
 # load example model to get locations
 locs = se.load('example_locations')
 
-# convert to pandas
+# convert to pandas (so that we can sample some locs)
 locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
 # simulate brain object

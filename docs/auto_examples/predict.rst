@@ -7,8 +7,8 @@
 Predict unknown location
 =============================
 
-In this example, we load in a single subject example, remove electrodes that exceed
-a kurtosis threshold (in place), load a model, and predict activity at all
+In this example, we load in a single subject example, remove electrodes that
+exceed a kurtosis threshold, load a model, and predict activity at all
 model locations.  We then convert the reconstruction to a nifti.
 
 
@@ -37,9 +37,6 @@ model locations.  We then convert the reconstruction to a nifti.
 
     # save as nifti
     reconstructed_nifti = reconstructed_bo.to_nii()
-
-
-
 
 **Total running time of the script:** ( 0 minutes  0.000 seconds)
 

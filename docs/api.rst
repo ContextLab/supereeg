@@ -16,7 +16,6 @@ Loading Data
   :toctree:
 
   load
-  load_nifti
 
 Brain data object
 ------------------

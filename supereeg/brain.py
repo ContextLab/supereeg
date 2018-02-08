@@ -20,7 +20,7 @@ class Brain(object):
     Brain data object for the supereeg package
 
     A brain data object contains a single iEEG subject. To create one, at minimum
-    you need data (samples by electrodes), location coordinates in MNI space and
+    you need data (samples x electrodes), location coordinates in MNI space and
     the sample rate of the data. Additionally, you can include a session id. If
     included, all analyses will be performed within session and then aggregated
     across sessions.  You can also include a meta dict, which can contain any
@@ -30,46 +30,48 @@ class Brain(object):
     ----------
 
     data : numpy.ndarray or pandas.DataFrame
-        Samples x electrodes array containing the EEG data
+        Samples x electrodes array containing the iEEG data
 
     locs : numpy.ndarray or pandas.DataFrame
-        MNI coordinate (x,y,z) by electrode array containing electrode locations
+        Electrode by MNI coordinate (x,y,z) array containing electrode locations
 
-    session : numpy.ndarray
-        Samples x 1 array containing session identifiers
+    session : str, int or numpy.ndarray
+        Samples x 1 array containing session identifiers for each time sample.
+        If str or int, the value will be copied for each time sample.
 
-    sample_rates : float or list of floats
+    sample_rates : float, int or list
         Sample rate of the data. If different over multiple sessions, this is a
-        list
+        list.
 
     meta : dict
-        Optional dict containing whatever you want
+        Optional dict containing whatever you want.
 
     date created : str
-        Time created
+        Time created (optional)
 
     label : list
-        List delineating if location was reconstructed or observed. This is computed in reconstruction.
+        List delineating if location was reconstructed or observed. This is
+        computed in reconstruction.
 
     Attributes
     ----------
 
     data : Pandas DataFrame
-        Samples x electrodes dataframe containing the EEG data
+        Samples x electrodes dataframe containing the EEG data.
 
     locs : Pandas DataFrame
-        MNI coordinate (x,y,z) by electrode df containing electrode locations
+        Electrode by MNI coordinate (x,y,z) df containing electrode locations.
 
     sessions : Pandas Series
         Samples x 1 array containing session identifiers.  If a singleton is passed,
          a single session will be created.
 
-    sample_rates : float or list of floats
+    sample_rates : list
         Sample rate of the data. If different over multiple sessions, this is a
-        list
+        list.
 
     meta : dict
-        Optional dict containing whatever you want
+        Optional dict containing whatever you want.
 
     n_elecs : int
         Number of electrodes
@@ -80,7 +82,7 @@ class Brain(object):
     n_sessions : int
         Number of sessions
 
-    session_labels : list
+    label : list
         Label for each session
 
     kurtosis : list of floats
@@ -90,7 +92,7 @@ class Brain(object):
     Returns
     ----------
 
-    bo : supereeg.Brain instance
+    bo : supereeg.Brain
         Instance of Brain data object containing subject data
 
     """

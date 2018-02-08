@@ -49,7 +49,7 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This example loads a nifti file as a brain object.">
+    <div class="sphx-glr-thumbcontainer" tooltip="This example loads a nifti file and converts it into a brain object.">
 
 .. only:: html
 
@@ -89,26 +89,6 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Here, we load an example dataset and then slice it.">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_slice_brain_object_thumb.png
-
-        :ref:`sphx_glr_auto_examples_slice_brain_object.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/slice_brain_object
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="Here, we load an example dataset and then print out some information about it.">
 
 .. only:: html
@@ -126,6 +106,26 @@ Gallery of Examples
    :hidden:
 
    /auto_examples/plot_load_example_data
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Here, we load an example dataset, and then slice out some electrodes and time samples.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_slice_brain_object_thumb.png
+
+        :ref:`sphx_glr_auto_examples_slice_brain_object.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/slice_brain_object
 
 .. raw:: html
 
@@ -149,7 +149,7 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This example filters electrodes based on kurtosis thresholding.">
+    <div class="sphx-glr-thumbcontainer" tooltip="This example filters electrodes based on kurtosis thresholding (default=10).">
 
 .. only:: html
 
@@ -166,26 +166,6 @@ Gallery of Examples
    :hidden:
 
    /auto_examples/plot_filtering
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Then we simulate 3 brain objects using a subset of 10 locations. We will simulate correlational...">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_simulate_mo_thumb.png
-
-        :ref:`sphx_glr_auto_examples_plot_simulate_mo.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/plot_simulate_mo
 
 .. raw:: html
 
@@ -209,7 +189,27 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we demonstrate the simulate brain object function. First, we&#x27;ll load in some e...">
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we simulate 3 brain objects using a subset of 10 locations. We will impose a c...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_simulate_mo_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_simulate_mo.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_simulate_mo
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we demonstrate the simulate_bo function. First, we&#x27;ll load in some example loc...">
 
 .. only:: html
 
@@ -279,13 +279,13 @@ Gallery of Examples
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Python source code: auto_examples_python.zip <//Users/lucyowen/repos/supereeg/docs/auto_examples/auto_examples_python.zip>`
+    :download:`Download all examples in Python source code: auto_examples_python.zip <//Users/andyheusser/Documents/github/supereeg/docs/auto_examples/auto_examples_python.zip>`
 
 
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//Users/lucyowen/repos/supereeg/docs/auto_examples/auto_examples_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//Users/andyheusser/Documents/github/supereeg/docs/auto_examples/auto_examples_jupyter.zip>`
 
 
 .. only:: html

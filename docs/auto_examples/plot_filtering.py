@@ -4,7 +4,7 @@
 Filtering electrodes
 =============================
 
-This example filters electrodes based on kurtosis thresholding.
+This example filters electrodes based on kurtosis thresholding (default=10).
 
 """
 
@@ -24,7 +24,7 @@ kurtosis_vals = bo.kurtosis
 bo.get_locs()
 
 # but filtered=False will show all electrodes
-#bo.plot_data(filtered=False)
+bo.plot_data(filtered=False)
 
 # filter elecs, default measure='kurtosis' and threshold=10
 f_bo = se.filter_elecs(bo)

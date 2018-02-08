@@ -26,12 +26,18 @@ def load(fname):
         The name of the example data or a filepath.
 
         Example data includes:
+
         example_data - example brain object (n = 64)
+
         example_model - example model object with locations from gray_mask_20mm_brain.nii (n = 170)
+
         example_locations - example location from gray_mask_20mm_brain.nii (n = 170)
+
         example_nifti - example nifti file from gray_mask_20mm_brain.nii (n = 170)
+
         pyFR_k10r20_20mm - model used for analyses from
         `Owen LLW and Manning JR (2017) Towards Human Super EEG.  bioRxiv: 121020` with 20mm resolution (n = 170)
+        
         pyFR_k10r20_6mm - model used for analyses from
         `Owen LLW and Manning JR (2017) Towards Human Super EEG.  bioRxiv: 121020` with 6 mm resolution (n = 10K)
 

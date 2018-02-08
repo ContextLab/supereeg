@@ -29,7 +29,7 @@ reconstructed_bo = model.predict(bo)
 obs_inds = [i for i, x in enumerate(reconstructed_bo.label) if x == 'observed']
 
 # make a copy of the brain object
-o_bo = copy.copy(reconstructed_bo )
+o_bo = copy.copy(reconstructed_bo)
 
 # replace fields with indexed data and locations
 o_bo.data = pd.DataFrame(o_bo.get_data()[obs_inds, :])

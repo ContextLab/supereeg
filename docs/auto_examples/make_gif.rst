@@ -15,7 +15,6 @@ to .png files and then compile as a gif.
 
 
 
-
 .. code-block:: python
 
 
