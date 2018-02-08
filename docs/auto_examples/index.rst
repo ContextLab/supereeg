@@ -189,6 +189,26 @@ Gallery of Examples
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we load in a single subject example, remove electrodes that exceed a kurtosis ...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_make_gif_thumb.png
+
+        :ref:`sphx_glr_auto_examples_make_gif.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/make_gif
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="In this example, we demonstrate the simulate brain object function. First, we'll load in some e...">
 
 .. only:: html

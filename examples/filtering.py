@@ -23,7 +23,7 @@ kurtosis_vals = bo.kurtosis
 # 40 locations before filtering
 bo.get_locs()
 
-# plot data will filter by default
+# plot data will filter in place
 bo.plot_data()
 
 # but filtered=False will show all electrodes
