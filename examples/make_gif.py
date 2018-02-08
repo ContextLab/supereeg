@@ -9,7 +9,6 @@ a kurtosis threshold (in place), load a model, and predict activity at all
 model locations.  We then convert the reconstruction to a nifti and convert 500 consecutive timepoints
 to .png files and then compile as a gif.
 
-
 """
 
 # Code source: Lucy Owen & Andrew Heusser

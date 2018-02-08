@@ -5,12 +5,12 @@ Create a model from scratch, and then update it with new subject data
 =============================
 
 In this example, we will simulate a model and update the model with the new data.
-First, we'll load in some example locations.
-Then, we will simulate correlational structure (a toeplitz matrix) to impose on
-our simulated data. We simulate 3 brain objects using a subset of 10
-locations and the correlational structure (a toeplitz matrix) to create the model.
-Then, we will sample 10 locations to simulate 1
-brain object and use the model.update method to update an existing model with new data.
+First, we'll load in some example locations. Then, we will simulate
+correlational structure (a toeplitz matrix) to impose on our simulated data.
+We simulate 3 brain objects by sampling 10 locations from example_locs and
+create a model from these brain objects. Then, we will simulate an additional
+brain object and use the model.update method to update an existing model with
+new data.
 
 """
 
@@ -52,11 +52,11 @@ new_model = model.update(bo)
 f, (ax1, ax2) = plt.subplots(1, 2)
 
 # plot it and set the title
-model.plot(ax=ax1, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
+model.plot(ax=ax1, show=False, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
 ax1.set_title('Before updating model: 3 subjects total')
 
 # plot it and set the title
-new_model.plot(ax=ax2, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
+new_model.plot(ax=ax2, show=False, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
 ax2.set_title('After updating model: 4 subjects total')
 
 plt.tight_layout()
