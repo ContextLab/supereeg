@@ -13,15 +13,14 @@ def simulate_locations(n_elecs=10):
 
     Parameters
     ----------
-
     n_elecs : int
         Number of electrodes
 
     Returns
     ----------
-
     elecs : pd.DataFrame
         A location by coordinate (x,y,z) matrix of simulated electrode locations
+
     """
 
     locs = np.array([[np.random.randint(-50, 50), np.random.randint(-50, 50),
@@ -30,13 +29,13 @@ def simulate_locations(n_elecs=10):
     return pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
 def simulate_model_bos(n_samples=1000, locs=None, sample_locs=None, cov='random',
-                sample_rate=1000, sessions=None, meta=None, noise=.1, random_seed=False):
+                sample_rate=1000, sessions=None, meta=None, noise=.1,
+                random_seed=False):
     """
     Simulate brain object
 
     Parameters
     ----------
-
     n_samples : int
         Number of time samples
 
@@ -60,7 +59,6 @@ def simulate_model_bos(n_samples=1000, locs=None, sample_locs=None, cov='random'
 
         You can also pass a custom covariance matrix by simply passing
         numpy array that is n_elecs by n_elecs
-
 
     sample_rate : int
         Sample rate
@@ -79,9 +77,9 @@ def simulate_model_bos(n_samples=1000, locs=None, sample_locs=None, cov='random'
 
     Returns
     ----------
-
     bo : Brain data object
         Instance of Brain data object containing simulated subject data and locations
+
     """
 
     data, sub_locs= simulate_model_data(n_samples=n_samples, locs=locs, sample_locs=sample_locs, cov=cov, noise=noise, random_seed=random_seed)
@@ -90,13 +88,13 @@ def simulate_model_bos(n_samples=1000, locs=None, sample_locs=None, cov='random'
                  sessions=sessions, meta=meta)
 
 
-def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None, cov='random', noise=.1, random_seed=False):
+def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None,
+                        cov='random', noise=.1, random_seed=False):
     """
     Simulate iEEG data
 
     Parameters
     ----------
-
     n_samples : int
         Number of time samples
 
@@ -132,7 +130,6 @@ def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None
 
     Returns
     ----------
-
     data : np.ndarray
         A samples by number of electrodes array of simulated iEEG data
 
@@ -172,7 +169,8 @@ def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None
         return np.random.multivariate_normal(np.zeros(n_elecs), R, size=n_samples), locs
 
 def simulate_bo(n_samples=1000, n_elecs=10, locs=None, cov='random',
-                sample_rate=1000, sessions=None, meta=None, noise=.1, random_seed=False):
+                sample_rate=1000, sessions=None, meta=None, noise=.1,
+                random_seed=False):
     """
     Simulate brain object
 
@@ -215,13 +213,15 @@ def simulate_bo(n_samples=1000, n_elecs=10, locs=None, cov='random',
         Noise added to simulation
 
     random_seed : bool or int
-        Default False.  If True, set random seed to 123.  If int, set random seed to value.
+        Default False.  If True, set random seed to 123.  If int, set random
+        seed to value.
 
     Returns
     ----------
-
     bo : Brain data object
-        Instance of Brain data object containing simulated subject data and locations
+        Instance of Brain data object containing simulated subject data and
+        locations
+
     """
     if locs is None:
         locs =  simulate_locations(n_elecs=n_elecs)
@@ -242,9 +242,7 @@ def create_cov(cov, n_elecs=10):
 
     Parameters
     ----------
-
     cov : str or np.array
-
         The covariance structure of the data.
 
         If 'eye', the covariance will be the identity matrix.
@@ -263,9 +261,9 @@ def create_cov(cov, n_elecs=10):
 
     Returns
     ----------
-
-    R : np.array
-        Numpy array containing the covariance structure in the specified dimension (n_elecs x n_elecs)
+    R : np.ndarray
+        Numpy array containing the covariance structure in the specified
+        dimension (n_elecs x n_elecs)
 
     """
     if cov is 'eye':
@@ -278,7 +276,4 @@ def create_cov(cov, n_elecs=10):
         R /= np.max(R)
     elif isinstance(cov, np.ndarray):
         R = cov
-
     return R
-
-
