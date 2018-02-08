@@ -100,19 +100,16 @@ class Brain(object):
     def __init__(self, data=None, locs=None, sessions=None, sample_rate=None,
                  meta=None, date_created=None, label=None):
 
-        # convert data to df if not imported as df
         if isinstance(data, pd.DataFrame):
             self.data = data
         else:
             self.data = pd.DataFrame(data)
 
-        # convert locs to df if not imported as df
         if isinstance(locs, pd.DataFrame):
             self.locs = locs
         else:
             self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
-        # session
         if isinstance(sessions, str) or isinstance(sessions, int):
             self.sessions = pd.Series([sessions for i in range(self.data.shape[0])])
 
@@ -121,7 +118,6 @@ class Brain(object):
         else:
             self.sessions = pd.Series(sessions.ravel())
 
-        # sample rate
         if isinstance(sample_rate, np.ndarray):
             if np.shape(sample_rate)[1]>1:
                 self.sample_rate = list(sample_rate[0])
@@ -134,7 +130,8 @@ class Brain(object):
                 self.sample_rate = list(sample_rate[0][0])
             else:
                 self.sample_rate = sample_rate
-            assert len(self.sample_rate) ==  len(self.sessions.unique()), 'Should be one sample rate for each session.'
+            assert len(self.sample_rate) ==  len(self.sessions.unique()), \
+            'Should be one sample rate for each session.'
 
         elif sample_rate is None:
             self.sample_rate = None
@@ -145,14 +142,13 @@ class Brain(object):
             self.sample_rate = [sample_rate]*len(self.sessions.unique())
         else:
             self.sample_rate = None
-            warnings.warn('Format of sample rate not recognized. Number of seconds cannot be computed.'
-                          'Setting sample rate to None')
+            warnings.warn('Format of sample rate not recognized. Number of '
+                          'seconds cannot be computed. Setting sample rate to None')
 
         if sample_rate is not None:
             index, counts = np.unique(self.sessions, return_counts=True)
             self.n_secs = np.true_divide(counts, np.array(sample_rate))
 
-        # meta
         if meta:
             self.meta = meta
         else:
@@ -163,11 +159,8 @@ class Brain(object):
         else:
             self.date_created = date_created
 
-        # compute attrs
         self.n_elecs = self.data.shape[1] # needs to be calculated by sessions
         self.n_sessions = len(self.sessions.unique())
-
-        # add kurtosis
         self.kurtosis = _kurt_vals(self)
 
         if not label:
@@ -219,7 +212,8 @@ class Brain(object):
             data = self.data.iloc[times, locs].copy()
             sessions = self.sessions.iloc[times].copy()
             if self.sample_rate:
-                sample_rate = [self.sample_rate[int(s-1)] for s in sessions.unique()]
+                sample_rate = [self.sample_rate[int(s-1)] for s in
+                               sessions.unique()]
             else:
                 sample_rate = self.sample_rate
             meta = copy.copy(self.meta)
@@ -232,8 +226,8 @@ class Brain(object):
             return self.copy()
 
 
-    def plot_data(self, filepath=None, time_min=None, time_max=None, title=None, electrode=None, threshold=10,
-                  filtered=True):
+    def plot_data(self, filepath=None, time_min=None, time_max=None, title=None,
+                  electrode=None, threshold=10, filtered=True):
         """
         Normalizes and plots data from brain object
 
@@ -241,7 +235,8 @@ class Brain(object):
         Parameters
         ----------
         filepath : str
-            A name for the file.  If the file extension (.png) is not specified, it will be appended.
+            A name for the file.  If the file extension (.png) is not specified,
+            it will be appended.
 
         time_min : int
             Minimum value for desired time window
@@ -253,8 +248,8 @@ class Brain(object):
             Title for plot
 
         electrode : int
-            Location in MNI coordinate (x,y,z) by electrode df containing electrode locations
-            ## should add functionality that matches the coordinate instead of location in matrix
+            Location in MNI coordinate (x,y,z) by electrode df containing
+            electrode locations
 
         threshold : int
         Value of kurtosis threshold
@@ -265,17 +260,18 @@ class Brain(object):
         """
 
 
-        # normalizes the samples x electrodes array containing the EEG data and adds 1 to each row
-        # so that the y-axis value corresponds to electrode location in the MNI coordinate (x,y,z)
-        # by electrode df containing electrode locations
+        # normalizes the samples x electrodes array containing the EEG data and
+        # adds 1 to each row so that the y-axis value corresponds to electrode
+        # location in the MNI coordinate (x,y,z) by electrode df containing
+        # electrode locations
         Y = _normalize_Y(self.data)
 
-        # if filtered in passed, filter by electrodes that do not pass kurtosis thresholding
+        # if filtered in passed, filter by electrodes that do not pass kurtosis
+        # thresholding
         if filtered:
             thresh_bool = self.kurtosis > threshold
             Y = Y.iloc[:, ~thresh_bool]
 
-        # if electrode is included, index data at electrode location
         if electrode is not None:
             Y = Y.columns[int(electrode)]
 
@@ -295,32 +291,33 @@ class Brain(object):
             mask = (Y.index >= time_min) & (Y.index <= time_max)
             Y= Y[mask]
 
-        # plot data
         ax = Y.plot(legend=False, title=title, color='k', lw=.6)
         ax.set_facecolor('w')
         ax.set_xlabel("time")
         ax.set_ylabel("electrode")
-        ax.set_ylim([0,len(Y.columns) + 1])
+        ax.set_ylim([0, len(Y.columns) + 1])
         if filepath:
-            plt.savefig(filename = filepath)
+            plt.savefig(filename=filepath)
         else:
             plt.show()
 
-    def plot_locs(self, pdfpath = None):
+    def plot_locs(self, pdfpath=None):
         """
         Plots electrode locations from brain object
 
 
         Parameters
         ----------
-
         pdfpath : str
-        A name for the file.  If the file extension (.pdf) is not specified, it will be appended.
-
+        A name for the file.  If the file extension (.pdf) is not specified, it
+        will be appended.
 
         """
-        ni_plt.plot_connectome(np.eye(self.locs.shape[0]), self.locs, display_mode='lyrz', output_file=pdfpath,
-                               node_kwargs={'alpha': 0.5, 'edgecolors': None}, node_size=10,
+        
+        ni_plt.plot_connectome(np.eye(self.locs.shape[0]), self.locs,
+                               display_mode='lyrz', output_file=pdfpath,
+                               node_kwargs={'alpha': 0.5, 'edgecolors': None},
+                               node_size=10,
                                node_color=np.ones(self.locs.shape[0]))
         if not pdfpath:
             ni_plt.show()
@@ -346,8 +343,6 @@ class Brain(object):
 
         """
 
-
-        # put bo vars into a dict
         bo = {
             'data' : self.data.as_matrix(),
             'locs' : self.locs.as_matrix(),
@@ -357,11 +352,9 @@ class Brain(object):
             'date_created' : self.date_created
         }
 
-        # if extension wasn't included, add it
         if fname[-3:]!='.bo':
             fname+='.bo'
 
-        # save
         dd.io.save(fname, bo, compression=compression)
 
 
@@ -388,7 +381,6 @@ class Brain(object):
 
         """
 
-        # recontructed voxel size:
         recon_v_size = _vox_size(self.locs)
 
         if template is None:
@@ -408,11 +400,8 @@ class Brain(object):
                     'Voxel sizes of reconstruction and template do not match. '
                     'Try '+'/data/gray_mask_'+ str(int(recon_v_size[0][0]))+'mm_brain.nii'+ ' to match voxel sizes.')
 
-        # load template
         img = nib.load(template)
         hdr = img.get_header()
-
-        # template voxel size:
         temp_v_size = hdr.get_zooms()[0:3]
 
         if not np.array_equiv(temp_v_size, recon_v_size.ravel()):
@@ -429,7 +418,6 @@ class Brain(object):
         data = np.zeros(tuple(list(shape) + [Y.shape[0]]))
         counts = np.zeros(data.shape)
 
-        # loop over data and locations to fill in activations
         for i in range(Y.shape[0]):
             for j in range(R.shape[0]):
                 data[locs[j, 0], locs[j, 1], locs[j, 2], i] += Y[i, j]
@@ -439,7 +427,6 @@ class Brain(object):
         data[np.isnan(data)] = 0
         nifti =  nib.Nifti1Image(data, affine=img.affine)
 
-        # save if filepath
         if filepath:
             nifti.to_filename(filepath)
 
