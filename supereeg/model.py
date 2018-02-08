@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import deepdish as dd
+import matplotlib.pyplot as plt
 from scipy.stats import zscore
 from .helpers import filter_elecs, _get_corrmat, _r2z, _z2r, _rbf, _expand_corrmat_fit, _expand_corrmat_predict,\
     _near_neighbor, _timeseries_recon, _count_overlapping
@@ -436,18 +437,32 @@ class Model(object):
         print('Date created: ' + str(self.date_created))
         print('Meta data: ' + str(self.meta))
 
-    def plot(self, **kwargs):
+    def plot(self, show=True, **kwargs):
         """
         Plot the supereeg model as a correlation matrix
 
         This function wraps seaborn's heatmap and accepts any inputs that seaborn
         supports.
+
+        Parameters
+        ----------
+
+        show : bool
+            If False, image not rendered (default : True)
+
+        Returns
+        ----------
+        ax : matplotlib.Axes
+            An axes object
         """
 
         with np.errstate(invalid='ignore'):
             corr_mat = _z2r(np.divide(self.numerator, self.denominator))
         np.fill_diagonal(corr_mat, 1)
-        sns.heatmap(corr_mat, cbar_kws = {'label': 'correlation'}, **kwargs)
+        ax = sns.heatmap(corr_mat, cbar_kws = {'label': 'correlation'}, **kwargs)
+        if show:
+            plt.show()
+        return ax
 
 
     def save(self, fname, compression='blosc'):
