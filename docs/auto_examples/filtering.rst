@@ -4,11 +4,10 @@
 
 
 =============================
-Filtering electrodes and subjects
+Filtering electrodes
 =============================
 
 This example filters electrodes based on kurtosis thresholding.
-It also filters patients if less than two electrodes pass thresholding.
 
 
 
@@ -21,15 +20,21 @@ It also filters patients if less than two electrodes pass thresholding.
 
     # import
     import supereeg as se
-    import os
 
     # load example data
-    subject_1 = os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/BW013.bo'
-    bo = se.load(subject_1)
+    bo = se.load('example_filter')
+
+    # to get kurtosis values
+    kurt_vals = bo.kurtosis
+
+    # 40 locations before filtering
+    bo.get_locs()
 
     # filter elecs, default measure='kurtosis' and threshold=10
-    f_bo = se.filter_elecs(subject_1)
+    f_bo = se.filter_elecs(bo)
 
+    # 28 locations after filtering
+    f_bo.get_locs()
 
 **Total running time of the script:** ( 0 minutes  0.000 seconds)
 

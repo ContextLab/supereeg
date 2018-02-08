@@ -69,7 +69,7 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This example filters electrodes based on kurtosis thresholding. It also filters patients if les...">
+    <div class="sphx-glr-thumbcontainer" tooltip="This example filters electrodes based on kurtosis thresholding.">
 
 .. only:: html
 
