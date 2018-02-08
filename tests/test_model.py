@@ -66,5 +66,3 @@ def test_update():
     assert isinstance(mo, se.Model)
     assert np.allclose(mo.numerator, test_model.numerator)
     assert np.allclose(mo.denominator, test_model.denominator)
-
-
