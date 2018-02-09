@@ -53,26 +53,6 @@ Gallery of Examples
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_load_nifti_thumb.png
-
-        :ref:`sphx_glr_auto_examples_load_nifti.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/load_nifti
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="This example loads a nifti file and converts it into a brain object.">
-
-.. only:: html
-
     .. figure:: /auto_examples/images/thumb/sphx_glr_plot_load_nifti_thumb.png
 
         :ref:`sphx_glr_auto_examples_plot_load_nifti.py`

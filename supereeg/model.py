@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import deepdish as dd
+from nilearn import plotting as ni_plt
 import matplotlib.pyplot as plt
 from scipy.stats import zscore
 from .helpers import filter_elecs, _get_corrmat, _r2z, _z2r, _rbf, _expand_corrmat_fit, _expand_corrmat_predict,\
@@ -416,7 +417,7 @@ class Model(object):
         print('Date created: ' + str(self.date_created))
         print('Meta data: ' + str(self.meta))
 
-    def plot(self, show=True, **kwargs):
+    def plot_data(self, show=True, **kwargs):
         """
         Plot the supereeg model as a correlation matrix
 
@@ -446,6 +447,24 @@ class Model(object):
             
         return ax
 
+    def plot_locs(self, pdfpath=None):
+        """
+        Plots electrode locations from brain object
+
+
+        Parameters
+        ----------
+        pdfpath : str
+        A name for the file.  If the file extension (.pdf) is not specified, it
+        will be appended.
+
+        """
+
+        ni_plt.plot_connectome(np.eye(self.locs.shape[0]), self.locs,output_file=pdfpath,
+                               node_kwargs={'alpha': 0.5, 'edgecolors': None},
+                               node_size=10, node_color='k')
+        if not pdfpath:
+            ni_plt.show()
 
     def save(self, fname, compression='blosc'):
         """

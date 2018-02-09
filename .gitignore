@@ -9,7 +9,6 @@ __pycache__/
 # Distribution / packaging
 supereeg/data/gray_mask_6mm_brain.mo
 supereeg/data/MNI152_T1_2mm_brain.nii
-/docs/_static/example_model.gif
 .Python
 env/
 build/

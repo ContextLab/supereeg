@@ -313,12 +313,10 @@ class Brain(object):
         will be appended.
 
         """
-        
-        ni_plt.plot_connectome(np.eye(self.locs.shape[0]), self.locs,
-                               display_mode='lyrz', output_file=pdfpath,
+
+        ni_plt.plot_connectome(np.eye(self.locs.shape[0]), self.locs, output_file=pdfpath,
                                node_kwargs={'alpha': 0.5, 'edgecolors': None},
-                               node_size=10,
-                               node_color=np.ones(self.locs.shape[0]))
+                               node_size=10, node_color='k')
         if not pdfpath:
             ni_plt.show()
 
