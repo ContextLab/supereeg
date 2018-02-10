@@ -373,7 +373,7 @@ def _timeseries_recon(bo, K, chunk_size=1000):
         if idx is 0:
             for each in _chunker(zbo.sessions[bo.sessions == session].index.tolist(), chunk_size):
                 z_bo = _chunk_bo(zbo, each)
-                block = _reconstruct_activity(z_bo, K, zscored=True)
+                block = _reconstruct_activity(z_bo, K)
                 if block_results == []:
                     block_results = block
                 else:
@@ -382,7 +382,7 @@ def _timeseries_recon(bo, K, chunk_size=1000):
         else:
             for each in _chunker(zbo.sessions[bo.sessions == session].index.tolist(), chunk_size):
                 z_bo = _chunk_bo(zbo, each)
-                block = _reconstruct_activity(z_bo, K, zscored=True)
+                block = _reconstruct_activity(z_bo, K)
                 if block_results == []:
                     block_results = block
                 else:
