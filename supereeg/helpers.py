@@ -380,9 +380,13 @@ def _timeseries_recon(bo, K, chunk_size=1000):
                     block_results = np.vstack((block_results, block))
             results = block_results
         else:
+            Kba = K[:s, s:]
+            Kaa = K[s:, s:]
+            Kaa_inv = np.linalg.pinv(Kaa))
+
             for each in _chunker(zbo.sessions[bo.sessions == session].index.tolist(), chunk_size):
                 z_bo = _chunk_bo(zbo, each)
-                block = _reconstruct_activity(z_bo, K)
+                block = _reconstruct_activity(z_bo, Kba, Kaa_inv, zscored=True)
                 if block_results == []:
                     block_results = block
                 else:
@@ -427,8 +431,9 @@ def _reconstruct_activity(bo, K):
     bo : brain object
         brain object with zscored data
 
-    K : correlation matrix
-        Correlation matix including observed and predicted locations
+    Kba : correlation matrix (unknown to known)
+
+    Kaa_inv : inverse correlation matrix (known to known)
 
     zscore = False
 
