@@ -168,7 +168,7 @@ def test_reconstruct():
     model_corrmat_x = np.divide(mo.numerator, mo.denominator)
     model_corrmat_x = _z2r(model_corrmat_x)
     np.fill_diagonal(model_corrmat_x, 0)
-    recon_data = np.hstack((_reconstruct_activity(zbo, model_corrmat_x), zscore(bo.data.as_matrix())))
+    recon_data = np.hstack((_timeseries_recon(zbo, model_corrmat_x), zscore(bo.data.as_matrix())))
     corr_vals = _corr_column(actual_test.as_matrix(), recon_test.data.as_matrix())
     assert isinstance(recon_data, np.ndarray)
     assert np.allclose(recon_data, recon_test.data)

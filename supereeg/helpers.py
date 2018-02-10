@@ -367,26 +367,28 @@ def _timeseries_recon(bo, K, chunk_size=1000):
     zbo = copy.copy(bo)
     zbo.data = pd.DataFrame(bo.get_zscore_data())
 
+    s = K.shape[0] - bo.locs.shape[0]
+    Kba = K[:s, s:]
+    Kaa = K[s:, s:]
+    Kaa_inv = np.linalg.pinv(Kaa)
+
     results = []
     for idx, session in enumerate(bo.sessions.unique()):
         block_results = []
         if idx is 0:
             for each in _chunker(zbo.sessions[bo.sessions == session].index.tolist(), chunk_size):
                 z_bo = _chunk_bo(zbo, each)
-                block = _reconstruct_activity(z_bo, K)
+                block = _reconstruct_activity(z_bo, Kba, Kaa_inv)
                 if block_results == []:
                     block_results = block
                 else:
                     block_results = np.vstack((block_results, block))
             results = block_results
         else:
-            Kba = K[:s, s:]
-            Kaa = K[s:, s:]
-            Kaa_inv = np.linalg.pinv(Kaa))
 
             for each in _chunker(zbo.sessions[bo.sessions == session].index.tolist(), chunk_size):
                 z_bo = _chunk_bo(zbo, each)
-                block = _reconstruct_activity(z_bo, Kba, Kaa_inv, zscored=True)
+                block = _reconstruct_activity(z_bo, Kba, Kaa_inv)
                 if block_results == []:
                     block_results = block
                 else:
@@ -422,7 +424,7 @@ def _chunker(iterable, chunksize, fillvalue=None):
     return list(zip_longest(*args, fillvalue=fillvalue))
 
 
-def _reconstruct_activity(bo, K):
+def _reconstruct_activity(bo, Kba, Kaa_inv):
     """
     Reconstruct activity
 
@@ -443,13 +445,9 @@ def _reconstruct_activity(bo, K):
         Reconstructed timeseries
 
     """
-    s = K.shape[0] - bo.locs.shape[0]
-    Kba = K[:s, s:]
-    Kaa = K[s:, s:]
     Y = bo.get_data()
 
-    return np.squeeze(np.dot(np.dot(Kba, np.linalg.pinv(Kaa)), Y.T).T)
-
+    return np.squeeze(np.dot(np.dot(Kba, Kaa_inv), Y.T).T)
 
 def _round_it(locs, places):
     """
