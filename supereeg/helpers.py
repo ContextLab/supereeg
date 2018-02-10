@@ -418,9 +418,9 @@ def _chunker(iterable, chunksize, fillvalue=None):
     return list(zip_longest(*args, fillvalue=fillvalue))
 
 
-def _reconstruct_activity(bo, K, zscored=False):
+def _reconstruct_activity(bo, K):
     """
-    Reconstruct activity - need to add chunking option here
+    Reconstruct activity
 
     Parameters
     ----------
@@ -441,10 +441,8 @@ def _reconstruct_activity(bo, K, zscored=False):
     s = K.shape[0] - bo.locs.shape[0]
     Kba = K[:s, s:]
     Kaa = K[s:, s:]
-    if zscored:
-        Y = bo.get_data()
-    else:
-        Y = bo.get_zscore_data()
+    Y = bo.get_data()
+
     return np.squeeze(np.dot(np.dot(Kba, np.linalg.pinv(Kaa)), Y.T).T)
 
 

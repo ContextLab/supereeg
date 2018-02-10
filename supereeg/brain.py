@@ -12,6 +12,7 @@ import pandas as pd
 import nibabel as nib
 import deepdish as dd
 import matplotlib.pyplot as plt
+import seaborn as sns
 from nilearn import plotting as ni_plt
 from .helpers import _kurt_vals, zscore, _normalize_Y, _vox_size
 

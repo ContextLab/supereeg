@@ -449,7 +449,7 @@ class Model(object):
 
     def plot_locs(self, pdfpath=None):
         """
-        Plots electrode locations from brain object
+        Plots electrode locations from model object
 
 
         Parameters
