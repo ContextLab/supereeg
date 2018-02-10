@@ -373,7 +373,7 @@ def _timeseries_recon(bo, K, chunk_size=1000):
         if idx is 0:
             for each in _chunker(zbo.sessions[bo.sessions == session].index.tolist(), chunk_size):
                 z_bo = _chunk_bo(zbo, each)
-                block = _reconstruct_activity(z_bo, K, zscored=True)
+                block = _reconstruct_activity(z_bo, K)
                 if block_results == []:
                     block_results = block
                 else:
@@ -422,9 +422,9 @@ def _chunker(iterable, chunksize, fillvalue=None):
     return list(zip_longest(*args, fillvalue=fillvalue))
 
 
-def _reconstruct_activity(bo, Kba, Kaa_inv, zscored=False):
+def _reconstruct_activity(bo, K):
     """
-    Reconstruct activity - need to add chunking option here
+    Reconstruct activity
 
     Parameters
     ----------
@@ -444,11 +444,11 @@ def _reconstruct_activity(bo, Kba, Kaa_inv, zscored=False):
 
     """
     s = K.shape[0] - bo.locs.shape[0]
-    if zscored:
-        Y = bo.get_data()
-    else:
-        Y = bo.get_zscore_data()
-    return np.squeeze(np.dot(np.dot(Kba, Kaa_inv, Y.T).T)
+    Kba = K[:s, s:]
+    Kaa = K[s:, s:]
+    Y = bo.get_data()
+
+    return np.squeeze(np.dot(np.dot(Kba, np.linalg.pinv(Kaa)), Y.T).T)
 
 
 def _round_it(locs, places):
