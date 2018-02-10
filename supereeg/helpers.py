@@ -380,9 +380,13 @@ def _timeseries_recon(bo, K, chunk_size=1000):
                     block_results = np.vstack((block_results, block))
             results = block_results
         else:
+            Kba = K[:s, s:]
+            Kaa = K[s:, s:]
+            Kaa_inv = np.linalg.pinv(Kaa))
+
             for each in _chunker(zbo.sessions[bo.sessions == session].index.tolist(), chunk_size):
                 z_bo = _chunk_bo(zbo, each)
-                block = _reconstruct_activity(z_bo, K, zscored=True)
+                block = _reconstruct_activity(z_bo, Kba, Kaa_inv, zscored=True)
                 if block_results == []:
                     block_results = block
                 else:
@@ -418,7 +422,7 @@ def _chunker(iterable, chunksize, fillvalue=None):
     return list(zip_longest(*args, fillvalue=fillvalue))
 
 
-def _reconstruct_activity(bo, K, zscored=False):
+def _reconstruct_activity(bo, Kba, Kaa_inv, zscored=False):
     """
     Reconstruct activity - need to add chunking option here
 
@@ -427,8 +431,9 @@ def _reconstruct_activity(bo, K, zscored=False):
     bo : brain object
         brain object with zscored data
 
-    K : correlation matrix
-        Correlation matix including observed and predicted locations
+    Kba : correlation matrix (unknown to known)
+
+    Kaa_inv : inverse correlation matrix (known to known)
 
     zscore = False
 
@@ -439,13 +444,11 @@ def _reconstruct_activity(bo, K, zscored=False):
 
     """
     s = K.shape[0] - bo.locs.shape[0]
-    Kba = K[:s, s:]
-    Kaa = K[s:, s:]
     if zscored:
         Y = bo.get_data()
     else:
         Y = bo.get_zscore_data()
-    return np.squeeze(np.dot(np.dot(Kba, np.linalg.pinv(Kaa)), Y.T).T)
+    return np.squeeze(np.dot(np.dot(Kba, Kaa_inv, Y.T).T)
 
 
 def _round_it(locs, places):
