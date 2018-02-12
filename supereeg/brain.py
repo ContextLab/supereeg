@@ -370,7 +370,12 @@ class Brain(object):
             Path to save the nifti file
 
         template : str
-            Path to template nifti file
+            Path to template nifti file or shortcut
+
+            Options for shortcut templates:
+            20mm
+            6mm
+            Std_Brain
 
         Returns
         ----------
@@ -393,6 +398,15 @@ class Brain(object):
                               'Default to b using a template with ' + str(int(recon_v_size[0][0])) + ' voxels.')
                 template = os.path.dirname(os.path.abspath(__file__)) + \
                            '/data/gray_mask_'+ str(int(recon_v_size[0][0]))+'mm_brain.nii'
+
+        elif template == '20mm':
+            template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_20mm_brain.nii'
+
+        elif template == '6mm':
+            template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_6mm_brain.nii'
+
+        elif template == 'Std_brain':
+            template = os.path.dirname(os.path.abspath(__file__)) + '/data/MNI152_T1_2mm_brain.nii'
 
         elif int(recon_v_size[0][0]) in [20, 8, 6]:
                 warnings.warn(
