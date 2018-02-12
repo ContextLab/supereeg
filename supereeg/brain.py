@@ -14,7 +14,7 @@ import deepdish as dd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from nilearn import plotting as ni_plt
-from .helpers import _kurt_vals, zscore, _normalize_Y, _vox_size
+from .helpers import _kurt_vals, _z_score, _normalize_Y, _vox_size
 
 class Brain(object):
     """
@@ -192,7 +192,7 @@ class Brain(object):
         """
         Gets zscored data from brain object
         """
-        return zscore(self.data.as_matrix())
+        return _z_score(self)
 
     def get_locs(self):
         """
@@ -360,7 +360,7 @@ class Brain(object):
     def to_nii(self, filepath=None, template=None):
 
         """
-        Save brain object as a nifti file
+        Save brain object as a nifti file.
 
 
         Parameters
@@ -370,12 +370,17 @@ class Brain(object):
             Path to save the nifti file
 
         template : str
-            Path to template nifti file or shortcut
+            Path to template nifti file or shortcut.
+
+            Template is a nifti file with the desired resolution to save the brain object activity
 
             Options for shortcut templates:
-            20mm
-            6mm
-            Std_Brain
+
+            20mm - gray_mask_20mm_brain.nii
+
+            6mm - gray_mask_6mm_brain.nii
+
+            Std_Brain - MNI152_T1_2mm_brain.nii
 
         Returns
         ----------

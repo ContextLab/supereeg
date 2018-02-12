@@ -109,6 +109,34 @@ def _get_corrmat(bo):
     return _z2r(summed_zcorrs / len(bo.sessions.unique()))
 
 
+def _z_score(bo):
+    """
+    Function that calculates the average subject level correlation matrix for brain object across session
+
+    Parameters
+    ----------
+    bo : Brain object
+        Contains data
+
+    Returns
+    ----------
+    results: 2D np.ndarray
+        The average correlation matrix across sessions
+
+    """
+
+    def aggregate(p, n):
+        return np.vstack((p, n))
+
+    def z(x):
+        return zscore(x)
+
+    z_scored_data= _apply_by_file_index(bo, z, aggregate)
+
+    return z_scored_data
+
+
+
 def _z2r(z):
     """
     Function that calculates the inverse Fisher z-transformation
