@@ -24,6 +24,8 @@ from scipy.spatial.distance import cdist
 from scipy.spatial.distance import squareform
 from scipy import linalg
 from joblib import Parallel, delayed
+import matplotlib.pyplot as plt
+plt.switch_backend('agg')
 
 
 def _apply_by_file_index(bo, xform, aggregator):
