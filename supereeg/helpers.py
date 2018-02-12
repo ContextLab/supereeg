@@ -408,7 +408,7 @@ def _timeseries_recon(bo, K, chunk_size=1000):
         if idx is 0:
             for each in _chunker(zbo.sessions[bo.sessions == session].index.tolist(), chunk_size):
                 z_bo = _chunk_bo(zbo, each)
-                block = _reconstruct_activity(z_bo, Kba, Kaa_inv)
+                block = np.hstack((_reconstruct_activity(z_bo, Kba, Kaa_inv), z_bo.get_data()))
                 if block_results == []:
                     block_results = block
                 else:
@@ -420,7 +420,7 @@ def _timeseries_recon(bo, K, chunk_size=1000):
                 z_bo = _chunk_bo(zbo, each)
                 block = _reconstruct_activity(z_bo, Kba, Kaa_inv)
                 if block_results == []:
-                    block_results = block
+                    block = np.hstack((_reconstruct_activity(z_bo, Kba, Kaa_inv), z_bo.get_data()))
                 else:
                     block_results = np.vstack((block_results, block))
             results = np.vstack((results, block_results))
