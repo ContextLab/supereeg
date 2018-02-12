@@ -418,9 +418,9 @@ def _timeseries_recon(bo, K, chunk_size=1000):
 
             for each in _chunker(zbo.sessions[bo.sessions == session].index.tolist(), chunk_size):
                 z_bo = _chunk_bo(zbo, each)
-                block = _reconstruct_activity(z_bo, Kba, Kaa_inv)
+                block = np.hstack((_reconstruct_activity(z_bo, Kba, Kaa_inv), z_bo.get_data()))
                 if block_results == []:
-                    block = np.hstack((_reconstruct_activity(z_bo, Kba, Kaa_inv), z_bo.get_data()))
+                    block_results = block
                 else:
                     block_results = np.vstack((block_results, block))
             results = np.vstack((results, block_results))
@@ -477,7 +477,7 @@ def _reconstruct_activity(bo, Kba, Kaa_inv):
     """
     Y = bo.get_data()
 
-    return np.squeeze(np.dot(np.dot(Kba, Kaa_inv), Y.T).T)
+    return np.atleast_2d(np.squeeze(np.dot(np.dot(Kba, Kaa_inv), Y.T).T))
 
 def _round_it(locs, places):
     """

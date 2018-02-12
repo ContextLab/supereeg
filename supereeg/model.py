@@ -337,7 +337,7 @@ class Model(object):
 
         # join reconstructed and known activity
         #activations = np.hstack((reconstructed, bo.data.as_matrix()))
-        
+
 
         # return all data
         return Brain(data=activations, locs=perm_locs, sessions=bo.sessions,
