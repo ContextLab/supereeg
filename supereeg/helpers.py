@@ -871,7 +871,6 @@ def make_gif_pngs(nifti, gif_path, window_min=1000, window_max=1100, **kwargs):
     for i in range(window_min, window_max):
         nii_i = image.index_img(nifti, i)
         outfile = os.path.join(gif_path, str(i) + '.png')
-        #ni_plt.plot_glass_brain(nii_i, output_file=outfile)
         ni_plt.plot_glass_brain(nii_i, output_file=outfile, **kwargs)
 
     images = []
