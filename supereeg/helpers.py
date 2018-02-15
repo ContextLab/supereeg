@@ -23,6 +23,8 @@ from scipy.spatial.distance import pdist
 from scipy.spatial.distance import cdist
 from scipy.spatial.distance import squareform
 from scipy import linalg
+from scipy import signal
+from fractions import Fraction
 from joblib import Parallel, delayed
 import matplotlib.pyplot as plt
 plt.switch_backend('agg')
@@ -843,7 +845,7 @@ def _count_overlapping(X, Y):
     return np.sum([(X.locs == y).all(1) for idy, y in Y.locs.iterrows()], 0).astype(bool)
 
 
-def make_gif_pngs(nifti, gif_path, window_min=1000, window_max=1100, **kwargs):
+def make_gif_pngs(nifti, gif_path, name=None, window_min=1000, window_max=1100, **kwargs):
     """
     Plots series of nifti timepoints as nilearn plot_glass_brain in .png format
 
@@ -852,8 +854,11 @@ def make_gif_pngs(nifti, gif_path, window_min=1000, window_max=1100, **kwargs):
     nifti : nib.nifti1.Nifti1Image
         Nifti of reconconstruction
 
-    result_dir : directory
+    gif_path : directory
         Directory to save .png files
+
+    name : str
+        Name for gif, default is None and will name the file based on the time windows
 
     window_min : int
         Lower bound for time window.
@@ -877,6 +882,76 @@ def make_gif_pngs(nifti, gif_path, window_min=1000, window_max=1100, **kwargs):
     for file in os.listdir(gif_path):
         if file.endswith(".png"):
             images.append(imageio.imread(os.path.join(gif_path, file)))
-    gif_outfile = os.path.join(gif_path, 'gif_' + str(window_min) + '_' + str(window_max) + '.gif')
+    if name is None:
+        gif_outfile = os.path.join(gif_path, 'gif_' + str(window_min) + '_' + str(window_max) + '.gif')
 
+    else:
+        gif_outfile = os.path.join(gif_path, str(name) + '.gif')
     imageio.mimsave(gif_outfile, images)
+
+#
+# def _resample_worker(data, Fo, Fs):
+#
+#     f = Fraction(Fo/Fs).limit_denominator()
+#     resampled_data = signal.resample_poly(data, f.numerator, f.denominator)
+#     return resampled_data
+
+
+def _resample(bo, resample_rate=64):
+    """
+    Function that resamples data to specified sample rate
+
+    Parameters
+    ----------
+    bo : Brain object
+        Contains data
+
+    Returns
+    ----------
+    results: 2D np.ndarray
+        Resampled data
+
+    """
+
+    def aggregate(p, n):
+        return np.vstack((p, n))
+
+    def resamp(data, Fo, resample_rate):
+
+        f = Fraction(Fo/resample_rate).limit_denominator()
+        resampled_data = signal.resample_poly(data, f.numerator, f.denominator)
+        return resampled_data
+
+    resampled_data= _data_and_samplerate_by_file_index(bo, resamp, aggregate, resample_rate=resample_rate)
+
+    return resampled_data
+
+def _data_and_samplerate_by_file_index(bo, xform, aggregator, **kwargs):
+    """
+    Session dependent function application and aggregation
+
+    Parameters
+    ----------
+    bo : Brain object
+        Contains data
+
+    xform : function
+        The function to apply to the data matrix from each filename
+
+    aggregator: function
+        Function for aggregating results across multiple iterations
+
+    Returns
+    ----------
+    results : numpy ndarray
+         Array of aggregated results
+
+    """
+
+    for idx, session in enumerate(bo.sessions.unique()):
+        if idx is 0:
+            results = xform(bo.get_data()[bo.sessions == session, :], bo.sample_rate[idx], **kwargs)
+        else:
+            results = aggregator(results, xform(bo.get_data()[bo.sessions == session, :], bo.sample_rate[idx], **kwargs))
+
+    return results

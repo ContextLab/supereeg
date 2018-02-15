@@ -14,7 +14,7 @@ import deepdish as dd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from nilearn import plotting as ni_plt
-from .helpers import _kurt_vals, _z_score, _normalize_Y, _vox_size
+from .helpers import _kurt_vals, _z_score, _normalize_Y, _vox_size, _resample
 
 class Brain(object):
     """
@@ -178,6 +178,7 @@ class Brain(object):
         """
         print('Number of electrodes: ' + str(self.n_elecs))
         print('Recording time in seconds: ' + str(self.n_secs))
+        print('Sample Rate in Hz: '+ str(self.sample_rate))
         print('Number of sessions: ' + str(self.n_sessions))
         print('Date created: ' + str(self.date_created))
         print('Meta data: ' + str(self.meta))
@@ -212,6 +213,7 @@ class Brain(object):
         if times and locs:
             data = self.data.iloc[times, locs].copy()
             sessions = self.sessions.iloc[times].copy()
+            ## check this:
             if self.sample_rate:
                 sample_rate = [self.sample_rate[int(s-1)] for s in
                                sessions.unique()]
@@ -225,6 +227,28 @@ class Brain(object):
                          date_created=date_created)
         else:
             return self.copy()
+
+    def get_resampled_data(self, resample_rate=64):
+        """
+        Resamples data
+        """
+        sessions = self.sessions
+
+        # if type(self.sample_rate) is list:
+        #     sample_rate = [self.sample_rate[int(s-1)] for s in
+        #                    sessions.unique()]
+        # else:
+        #     sample_rate = self.sample_rate
+
+        data = _resample(self, resample_rate)
+
+        meta = copy.copy(self.meta)
+        locs = copy.copy(self.locs)
+        date_created = self.date_created
+        return Brain(data=data, locs=locs, sessions=sessions,
+                     sample_rate=resample_rate, meta=meta,
+                     date_created=date_created)
+
 
 
     def plot_data(self, filepath=None, time_min=None, time_max=None, title=None,
