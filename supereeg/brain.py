@@ -229,7 +229,7 @@ class Brain(object):
         else:
             return self.copy()
 
-    def get_resampled_data(self, resample_rate=64):
+    def get_resampled(self, resample_rate=64):
         """
         Resamples data
         """

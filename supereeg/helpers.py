@@ -590,6 +590,7 @@ def _normalize_Y(Y_matrix):
     Y = Y + added
     return pd.DataFrame(Y)
 
+
 def _fullfact(dims):
     '''
     Replicates MATLAB's _fullfact function (behaves the same way)
@@ -820,7 +821,7 @@ def make_gif_pngs(nifti, gif_path, name=None, window_min=1000, window_max=1100, 
         gif_outfile = os.path.join(gif_path, str(name) + '.gif')
     imageio.mimsave(gif_outfile, images)
 
-def _data_and_samplerate_by_file_index(bo, xform, aggregator, **kwargs):
+def _data_and_samplerate_by_file_index(bo, xform, **kwargs):
     """
     Session dependent function application and aggregation
 
@@ -847,9 +848,11 @@ def _data_and_samplerate_by_file_index(bo, xform, aggregator, **kwargs):
             data_results, session_results = xform(bo.data.loc[bo.sessions == session], bo.sessions.loc[bo.sessions == session],
                                                   bo.sample_rate[idx], **kwargs)
         else:
-            data_results, session_results = aggregator(data_results, xform(bo.data.loc[bo.sessions == session, :],
+            data_results_next, session_results_next = xform(bo.data.loc[bo.sessions == session, :],
                                                                            bo.sessions.loc[bo.sessions == session],
-                                                                           bo.sample_rate[idx], **kwargs))
+                                                                           bo.sample_rate[idx], **kwargs)
+            data_results = data_results.append(data_results_next, ignore_index=True)
+            session_results = session_results.append(session_results_next, ignore_index=True)
 
     return data_results, session_results
 
@@ -870,8 +873,6 @@ def _resample(bo, resample_rate=64):
 
     """
 
-    def aggregate(p, n):
-        return p.append(n, ignore_index=True)
 
     def resamp(data, session, sample_rate, resample_rate):
 
@@ -886,11 +887,9 @@ def _resample(bo, resample_rate=64):
         re_session.interpolate(method='pchip', inplace=True, limit_direction='both')
 
         # resampled data
-        re_data = data.iloc[resample_index]
+        re_data = data.loc[resample_index]
         re_data.interpolate(method='pchip', inplace=True, limit_direction='both')
 
         return re_data, re_session
 
-    resampled_data, resampled_session = _data_and_samplerate_by_file_index(bo, resamp, aggregate, resample_rate=resample_rate)
-
-    return resampled_data, resampled_session
+    return _data_and_samplerate_by_file_index(bo, resamp, resample_rate=resample_rate)

@@ -20,10 +20,21 @@ bo = se.load('example_data')
 # info contains sample rate
 bo.info()
 
-bo.get_resampled_data()
+# default resample to 64Hz
+bo_d = bo.get_resampled()
+
+# show new info
+bo_d.info()
+
+# resample to specified sample rate
+bo_n = bo.get_resampled(100)
+
+# show new info
+bo_n.info()
 
 
-print(bo.get_resampled_data)
+
+
 
 
 
