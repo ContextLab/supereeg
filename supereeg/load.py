@@ -138,8 +138,8 @@ def load(fname):
         bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_6mm_brain.nii')
         return bo
 
-    elif fname is 'MNI152_T1_2mm_brain.nii':
-        bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/MNI152_T1_2mm_brain.nii')
+    elif fname is 'std.nii':
+        bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/std.nii')
         return bo
 
     # load brain object
