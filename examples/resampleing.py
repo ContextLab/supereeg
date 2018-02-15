@@ -23,5 +23,7 @@ bo.info()
 bo.get_resampled_data()
 
 
+print(bo.get_resampled_data)
+
 
 

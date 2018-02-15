@@ -124,7 +124,8 @@ class Brain(object):
                 self.sample_rate = list(sample_rate[0])
             elif np.shape(sample_rate)[1] == 1:
                 self.sample_rate = [sample_rate[0]]
-            assert len(self.sample_rate) ==  len(self.sessions.unique()), 'Should be one sample rate for each session.'
+            assert len(self.sample_rate) ==  len(self.sessions.unique()), \
+                'Should be one sample rate for each session.'
 
         elif isinstance(sample_rate, list):
             if isinstance(sample_rate[0], np.ndarray):
@@ -232,15 +233,8 @@ class Brain(object):
         """
         Resamples data
         """
-        sessions = self.sessions
 
-        # if type(self.sample_rate) is list:
-        #     sample_rate = [self.sample_rate[int(s-1)] for s in
-        #                    sessions.unique()]
-        # else:
-        #     sample_rate = self.sample_rate
-
-        data = _resample(self, resample_rate)
+        data, sessions = _resample(self, resample_rate)
 
         meta = copy.copy(self.meta)
         locs = copy.copy(self.locs)

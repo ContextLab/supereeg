@@ -590,75 +590,6 @@ def _normalize_Y(Y_matrix):
     Y = Y + added
     return pd.DataFrame(Y)
 
-
-class BrainData(object):
-    def __init__(self, fname, mask_strategy='background'):
-        self.fname = fname
-        if len(self.fname) == 0:
-            self.Y = []
-            self.R = []
-            self.N = 0
-            self.V = 0
-            self._vox_size = (0, 0, 0)
-            self.im_size = (0, 0, 0)
-            self.mask = []
-            self.img = []
-        else:
-            img = nb.load(self.fname)
-            if not hasattr(img, 'dataobj'):
-                print("Loading: " + self.fname + " [DISK READ]")
-            else:
-                print("Loading: " + self.fname + " [RAM CACHE]")
-
-            self.mask = NiftiMasker(mask_strategy=mask_strategy)
-            self.mask.fit(self.fname)
-
-            hdr = img.get_header()
-            S = img.get_sform()
-            self._vox_size = hdr.get_zooms()
-            self.im_size = img.shape
-
-            if len(img.shape) > 3:
-                self.N = img.shape[3]
-            else:
-                self.N = 1
-
-            self.Y = self.mask.transform(self.fname)
-            self.V = self.Y.shape[1]
-            vmask = np.nonzero(np.array(
-                np.reshape(self.mask.mask_img_.dataobj, (1, np.prod(self.mask.mask_img_.shape)), order='F')))[1]
-
-            vox_coords = _fullfact(img.shape[0:3])[vmask, :]
-            self.matrix_coordinates = vox_coords
-
-            self.R = np.array(vox_coords * S[0:3, 0:3] + np.tile(S[0:3, 3].T, (self.V, 1)))
-
-
-def _loadnii(fname, mask_strategy='background'):
-    """
-    Load nifti
-
-    Parameters
-    ----------
-    fname : filepath
-        Path to a template nifti file
-
-    mask_strategy : str
-        If mask_strategy is 'background', treat uniformly valued voxels at the outer parts
-        of the images as background.
-
-        If mask_strategy is 'epi', use nilearn's background detection strategy: find the least dense point
-        of the histogram, between fractions lower_cutoff and upper_cutoff of the total image histogram.
-
-    Returns
-    ----------
-    results : ndarray
-        Normalized activity from each electrode channel
-
-    """
-    return BrainData(fname, mask_strategy)
-
-
 def _fullfact(dims):
     '''
     Replicates MATLAB's _fullfact function (behaves the same way)
@@ -889,43 +820,6 @@ def make_gif_pngs(nifti, gif_path, name=None, window_min=1000, window_max=1100, 
         gif_outfile = os.path.join(gif_path, str(name) + '.gif')
     imageio.mimsave(gif_outfile, images)
 
-#
-# def _resample_worker(data, Fo, Fs):
-#
-#     f = Fraction(Fo/Fs).limit_denominator()
-#     resampled_data = signal.resample_poly(data, f.numerator, f.denominator)
-#     return resampled_data
-
-
-def _resample(bo, resample_rate=64):
-    """
-    Function that resamples data to specified sample rate
-
-    Parameters
-    ----------
-    bo : Brain object
-        Contains data
-
-    Returns
-    ----------
-    results: 2D np.ndarray
-        Resampled data
-
-    """
-
-    def aggregate(p, n):
-        return np.vstack((p, n))
-
-    def resamp(data, Fo, resample_rate):
-
-        f = Fraction(Fo/resample_rate).limit_denominator()
-        resampled_data = signal.resample_poly(data, f.numerator, f.denominator)
-        return resampled_data
-
-    resampled_data= _data_and_samplerate_by_file_index(bo, resamp, aggregate, resample_rate=resample_rate)
-
-    return resampled_data
-
 def _data_and_samplerate_by_file_index(bo, xform, aggregator, **kwargs):
     """
     Session dependent function application and aggregation
@@ -950,8 +844,53 @@ def _data_and_samplerate_by_file_index(bo, xform, aggregator, **kwargs):
 
     for idx, session in enumerate(bo.sessions.unique()):
         if idx is 0:
-            results = xform(bo.get_data()[bo.sessions == session, :], bo.sample_rate[idx], **kwargs)
+            data_results, session_results = xform(bo.data.loc[bo.sessions == session], bo.sessions.loc[bo.sessions == session],
+                                                  bo.sample_rate[idx], **kwargs)
         else:
-            results = aggregator(results, xform(bo.get_data()[bo.sessions == session, :], bo.sample_rate[idx], **kwargs))
+            data_results, session_results = aggregator(data_results, xform(bo.data.loc[bo.sessions == session, :],
+                                                                           bo.sessions.loc[bo.sessions == session],
+                                                                           bo.sample_rate[idx], **kwargs))
 
-    return results
+    return data_results, session_results
+
+
+def _resample(bo, resample_rate=64):
+    """
+    Function that resamples data to specified sample rate
+
+    Parameters
+    ----------
+    bo : Brain object
+        Contains data
+
+    Returns
+    ----------
+    results: 2D np.ndarray
+        Resampled data
+
+    """
+
+    def aggregate(p, n):
+        return p.append(n, ignore_index=True)
+
+    def resamp(data, session, sample_rate, resample_rate):
+
+        # number of samples for resample
+        n_samples = np.round(np.shape(data)[0] * resample_rate / sample_rate)
+
+        # index for those samples
+        resample_index = np.round(np.linspace(data.index.min(), data.index.max(), n_samples))
+
+        # resampled sessions
+        re_session = session[resample_index]
+        re_session.interpolate(method='pchip', inplace=True, limit_direction='both')
+
+        # resampled data
+        re_data = data.iloc[resample_index]
+        re_data.interpolate(method='pchip', inplace=True, limit_direction='both')
+
+        return re_data, re_session
+
+    resampled_data, resampled_session = _data_and_samplerate_by_file_index(bo, resamp, aggregate, resample_rate=resample_rate)
+
+    return resampled_data, resampled_session
