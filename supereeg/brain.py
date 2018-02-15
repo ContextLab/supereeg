@@ -229,20 +229,18 @@ class Brain(object):
         else:
             return self.copy()
 
-    def get_resampled(self, resample_rate=64):
+    def resample(self, resample_rate=None):
         """
         Resamples data
         """
+        if resample_rate is None:
+            return self
+        else:
 
-        data, sessions = _resample(self, resample_rate)
-
-        meta = copy.copy(self.meta)
-        locs = copy.copy(self.locs)
-        date_created = self.date_created
-        return Brain(data=data, locs=locs, sessions=sessions,
-                     sample_rate=resample_rate, meta=meta,
-                     date_created=date_created)
-
+            data, sessions, sample_rate = _resample(self, resample_rate)
+            self.data = data
+            self.sessions = sessions
+            self.sample_rate = sample_rate
 
 
     def plot_data(self, filepath=None, time_min=None, time_max=None, title=None,

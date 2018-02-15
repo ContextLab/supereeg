@@ -842,19 +842,24 @@ def _data_and_samplerate_by_file_index(bo, xform, **kwargs):
          Array of aggregated results
 
     """
+    sample_rate = []
 
     for idx, session in enumerate(bo.sessions.unique()):
         if idx is 0:
-            data_results, session_results = xform(bo.data.loc[bo.sessions == session], bo.sessions.loc[bo.sessions == session],
-                                                  bo.sample_rate[idx], **kwargs)
+            data_results, session_results, sr_results = xform(bo.data.loc[bo.sessions == session],
+                                                                       bo.sessions.loc[bo.sessions == session],
+                                                                       bo.sample_rate[idx], **kwargs)
+            sample_rate.append(sr_results)
         else:
-            data_results_next, session_results_next = xform(bo.data.loc[bo.sessions == session, :],
+            data_next, session_next, sr_next = xform(bo.data.loc[bo.sessions == session, :],
                                                                            bo.sessions.loc[bo.sessions == session],
                                                                            bo.sample_rate[idx], **kwargs)
-            data_results = data_results.append(data_results_next, ignore_index=True)
-            session_results = session_results.append(session_results_next, ignore_index=True)
+            data_results = data_results.append(data_next, ignore_index=True)
+            session_results = session_results.append(session_next, ignore_index=True)
+            sample_rate.append(sr_next)
 
-    return data_results, session_results
+    return data_results, session_results, sample_rate
+
 
 
 def _resample(bo, resample_rate=64):
@@ -890,6 +895,6 @@ def _resample(bo, resample_rate=64):
         re_data = data.loc[resample_index]
         re_data.interpolate(method='pchip', inplace=True, limit_direction='both')
 
-        return re_data, re_session
+        return re_data, re_session, resample_rate
 
     return _data_and_samplerate_by_file_index(bo, resamp, resample_rate=resample_rate)
