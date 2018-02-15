@@ -138,7 +138,7 @@ def load(fname):
         bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_6mm_brain.nii')
         return bo
 
-    elif fname is 'std.nii':
+    elif fname is 'std':
         bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/std.nii')
         return bo
 
