@@ -14,7 +14,7 @@ from nilearn import plotting as ni_plt
 import matplotlib.pyplot as plt
 from scipy.stats import zscore
 from .helpers import filter_elecs, _get_corrmat, _r2z, _z2r, _rbf, _expand_corrmat_fit, _expand_corrmat_predict,\
-    _near_neighbor, _timeseries_recon, _count_overlapping
+    _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp
 from .brain import Brain
 
 
@@ -450,7 +450,7 @@ class Model(object):
 
     def plot_locs(self, pdfpath=None):
         """
-        Plots electrode locations from model object
+        Plots electrode locations from brain object
 
 
         Parameters
@@ -461,11 +461,11 @@ class Model(object):
 
         """
 
-        ni_plt.plot_connectome(np.eye(self.locs.shape[0]), self.locs,output_file=pdfpath,
-                               node_kwargs={'alpha': 0.5, 'edgecolors': None},
-                               node_size=10, node_color='k')
-        if not pdfpath:
-            ni_plt.show()
+        locs = self.locs
+        if self.locs .shape[0] <= 10000:
+            _plot_locs_connectome(locs, pdfpath)
+        else:
+            _plot_locs_hyp(locs, pdfpath)
 
     def save(self, fname, compression='blosc'):
         """

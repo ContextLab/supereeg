@@ -23,8 +23,7 @@ from scipy.spatial.distance import pdist
 from scipy.spatial.distance import cdist
 from scipy.spatial.distance import squareform
 from scipy import linalg
-from scipy import signal
-from fractions import Fraction
+import hypertools as hyp
 from joblib import Parallel, delayed
 import matplotlib.pyplot as plt
 plt.switch_backend('agg')
@@ -904,7 +903,7 @@ def _resample(bo, resample_rate=64):
 
 def _plot_locs_connectome(locs, pdfpath):
     """
-    Function that resamples data to specified sample rate
+    Plots locations in nilearn plot connectome
 
     Parameters
     ----------
@@ -924,3 +923,22 @@ def _plot_locs_connectome(locs, pdfpath):
                            node_size=10, node_color='k')
     if not pdfpath:
         ni_plt.show()
+
+def _plot_locs_hyp(locs, pdfpath):
+
+    """
+    Plots locations in hypertools
+
+    Parameters
+    ----------
+    locs : pd.DataFrame
+        Electrode locations
+
+    Returns
+    ----------
+    results: nilearn connectome plot
+        plot of electrodes
+
+
+    """
+    hyp.plot(locs, 'k.', save_path=pdfpath)
