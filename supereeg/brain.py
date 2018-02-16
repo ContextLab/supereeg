@@ -13,6 +13,7 @@ import nibabel as nib
 import deepdish as dd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from nipype.interfaces import fsl
 from nilearn import plotting as ni_plt
 from .helpers import _kurt_vals, _z_score, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, _plot_locs_connectome, _plot_locs_hyp
 
@@ -287,7 +288,6 @@ class Brain(object):
 
         """
 
-
         # normalizes the samples x electrodes array containing the EEG data and
         # adds 1 to each row so that the y-axis value corresponds to electrode
         # location in the MNI coordinate (x,y,z) by electrode df containing
@@ -418,6 +418,14 @@ class Brain(object):
         """
 
         recon_v_size = _vox_size(self.locs)
+
+        # def _get_brain_object():
+        #     flt = fsl.FLIRT(bins=640, cost_func='mutualinfo')
+        #     flt.inputs.in_file = os.path.dirname(os.path.abspath(__file__)) + '/data/std.nii'
+        #     flt.inputs.reference = os.path.dirname(os.path.abspath(__file__)) + '/data/std.nii'
+        #     flt.inputs.output_type = "NIFTI_GZ"
+        #     flt.run(in_file='structural.nii', ref_file='mni.nii')
+
 
         if template is None:
 

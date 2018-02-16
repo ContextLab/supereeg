@@ -60,7 +60,7 @@ This example filters electrodes based on kurtosis thresholding (default=10).
     # plot data will filter in place
     bo.plot_data()
 
-**Total running time of the script:** ( 0 minutes  0.451 seconds)
+**Total running time of the script:** ( 0 minutes  0.424 seconds)
 
 
 

@@ -26,7 +26,7 @@ from scipy import linalg
 import hypertools as hyp
 from joblib import Parallel, delayed
 import matplotlib.pyplot as plt
-plt.switch_backend('agg')
+#plt.switch_backend('agg')
 
 
 def _apply_by_file_index(bo, xform, aggregator):
@@ -942,3 +942,4 @@ def _plot_locs_hyp(locs, pdfpath):
 
     """
     hyp.plot(locs, 'k.', save_path=pdfpath)
+

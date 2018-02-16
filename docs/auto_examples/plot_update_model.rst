@@ -65,6 +65,7 @@ new data.
 
     # initialize subplots
     f, (ax1, ax2) = plt.subplots(1, 2)
+    f.set_size_inches(15,5)
 
     # plot it and set the title
     model.plot_data(ax=ax1, show=False, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
@@ -77,7 +78,7 @@ new data.
     plt.tight_layout()
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  2.134 seconds)
+**Total running time of the script:** ( 0 minutes  2.329 seconds)
 
 
 

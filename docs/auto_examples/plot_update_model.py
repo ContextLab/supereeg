@@ -50,6 +50,7 @@ new_model = model.update(bo)
 
 # initialize subplots
 f, (ax1, ax2) = plt.subplots(1, 2)
+f.set_size_inches(15,5)
 
 # plot it and set the title
 model.plot_data(ax=ax1, show=False, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)

@@ -66,7 +66,7 @@ model locations. We then parse the values based on the labels.
     # plot the nearest voxel used in the reconstruction
     o_bo.plot_locs()
 
-**Total running time of the script:** ( 0 minutes  1.509 seconds)
+**Total running time of the script:** ( 0 minutes  1.463 seconds)
 
 
 
