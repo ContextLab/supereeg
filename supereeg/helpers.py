@@ -807,7 +807,7 @@ def make_gif_pngs(nifti, gif_path, name=None, window_min=1000, window_max=1100, 
 
     for i in range(window_min, window_max):
         nii_i = image.index_img(nifti, i)
-        outfile = os.path.join(gif_path, str(i) + '.png')
+        outfile = os.path.join(gif_path, str(i).zfill(4) + '.png')
         ni_plt.plot_glass_brain(nii_i, output_file=outfile, **kwargs)
 
     images = []
@@ -874,12 +874,14 @@ def _resample(bo, resample_rate=64):
     Returns
     ----------
     results: 2D np.ndarray
-        Resampled data
+        Resampled data - pd.DataFrame
+        Resampled sessions - pd.DataFrame
+        Resample rate - List
 
     """
 
 
-    def resamp(data, session, sample_rate, resample_rate):
+    def _resamp(data, session, sample_rate, resample_rate):
 
         # number of samples for resample
         n_samples = np.round(np.shape(data)[0] * resample_rate / sample_rate)
@@ -897,4 +899,28 @@ def _resample(bo, resample_rate=64):
 
         return re_data, re_session, resample_rate
 
-    return _data_and_samplerate_by_file_index(bo, resamp, resample_rate=resample_rate)
+    return _data_and_samplerate_by_file_index(bo, _resamp, resample_rate=resample_rate)
+
+
+def _plot_locs_connectome(locs, pdfpath):
+    """
+    Function that resamples data to specified sample rate
+
+    Parameters
+    ----------
+    locs : pd.DataFrame
+        Electrode locations
+
+    Returns
+    ----------
+    results: nilearn connectome plot
+        plot of electrodes
+
+
+    """
+
+    ni_plt.plot_connectome(np.eye(locs.shape[0]), locs, output_file=pdfpath,
+                           node_kwargs={'alpha': 0.5, 'edgecolors': None},
+                           node_size=10, node_color='k')
+    if not pdfpath:
+        ni_plt.show()

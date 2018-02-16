@@ -10,3 +10,4 @@ nibabel
 joblib
 imageio
 future
+hypertools

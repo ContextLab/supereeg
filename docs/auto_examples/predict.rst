@@ -29,6 +29,8 @@ model locations.  We then convert the reconstruction to a nifti.
     # load example model
     model = se.load('example_model')
 
+    bo.get_zscore_data()
+
     # the default will replace the electrode location with the nearest voxel and reconstruct at all other locations
     reconstructed_bo = model.predict(bo)
 

@@ -4,7 +4,7 @@
 Load and plot a model
 =============================
 
-Here we load the example model, and then plot it.
+Here we load the example model, and then plot it along with the locations.
 
 """
 
@@ -17,4 +17,7 @@ import supereeg as se
 model = se.load('example_model')
 
 # plot it
-model.plot(xticklabels=False, yticklabels=False)
+model.plot_data(xticklabels=False, yticklabels=False)
+
+# plot locations
+model.plot_locs()

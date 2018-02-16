@@ -57,7 +57,7 @@ model locations. We then parse the values based on the labels.
     o_bo = copy.copy(reconstructed_bo)
 
     # replace fields with indexed data and locations
-    o_bo.data = pd.DataFrame(o_bo.get_data()[obs_inds, :])
+    o_bo.data = pd.DataFrame(o_bo.get_data()[:, obs_inds])
     o_bo.locs = pd.DataFrame(o_bo.get_locs()[obs_inds], columns=['x', 'y', 'z'])
 
     # plot the original locations
@@ -66,7 +66,7 @@ model locations. We then parse the values based on the labels.
     # plot the nearest voxel used in the reconstruction
     o_bo.plot_locs()
 
-**Total running time of the script:** ( 0 minutes  2.049 seconds)
+**Total running time of the script:** ( 0 minutes  1.340 seconds)
 
 
 

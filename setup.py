@@ -29,7 +29,8 @@ setup(
         'nibabel',
         'joblib',
         'imageio',
-        'future'
+        'future',
+        'hypertools'
     ],
     packages=find_packages(exclude=('tests', 'docs')),
     include_package_data=True,

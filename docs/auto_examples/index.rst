@@ -9,7 +9,7 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Here we load the example model, and then plot it.">
+    <div class="sphx-glr-thumbcontainer" tooltip="Here we load the example model, and then plot it along with the locations.">
 
 .. only:: html
 
@@ -66,6 +66,26 @@ Gallery of Examples
    :hidden:
 
    /auto_examples/plot_load_nifti
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example shows you how to resample your data">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_resampleing_thumb.png
+
+        :ref:`sphx_glr_auto_examples_resampleing.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/resampleing
 
 .. raw:: html
 
