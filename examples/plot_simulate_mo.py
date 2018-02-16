@@ -35,4 +35,4 @@ model_bos = [se.simulate_model_bos(n_samples=1000, sample_rate=1000, cov=R,
 model = se.Model(model_bos, locs=locs)
 
 # plot the model
-model.plot()
+model.plot_data()

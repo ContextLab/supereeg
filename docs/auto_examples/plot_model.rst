@@ -46,7 +46,7 @@ Here we load the example model, and then plot it along with the locations.
 
     # plot locations
     model.plot_locs()
-**Total running time of the script:** ( 0 minutes  0.736 seconds)
+**Total running time of the script:** ( 0 minutes  0.842 seconds)
 
 
 

@@ -25,6 +25,17 @@ Load in the required libraries
     from nilearn import image
     import numpy as np
 
+
+.. parsed-literal::
+
+    /Library/Python/2.7/site-packages/matplotlib/__init__.py:1401: UserWarning:  This call to matplotlib.use() has no effect
+    because the backend has already been chosen;
+    matplotlib.use() must be called *before* pylab, matplotlib.pyplot,
+    or matplotlib.backends is imported for the first time.
+    
+      warnings.warn(_use_error_msg)
+
+
 First, let’s load in our default model, ``example_model``, that we made
 from the pyFR dataset sampled at 20mm resolution. Electrodes with a
 threshold exceeding 10 were removed from the dataset, and the radial
@@ -67,8 +78,8 @@ This method will give you a summary of the brain object:
     Meta data: None
 
 
-``mo.plot()``
--------------
+``mo.plot_data()``
+------------------
 
 This method will plot your model.
 
@@ -83,13 +94,18 @@ accepts are supported by ``model.plot``.
 
 .. code:: ipython2
 
-    model.plot(xticklabels=False, yticklabels=False)
+    model.plot_data(xticklabels=False, yticklabels=False)
     plt.show()
 
+``mo.plot_locs()``
+------------------
 
+This method will plot the locations in your model.
 
-.. image:: model_objects_files/model_objects_10_0.png
+.. code:: ipython2
 
+    model.plot_locs()
+    plt.show()
 
 ``mo.update()``
 ---------------
@@ -109,8 +125,9 @@ data as a brain object. First, let’s load in an example subjects data:
 
     Number of electrodes: 64
     Recording time in seconds: [[  5.3984375  14.1328125]]
+    Sample Rate in Hz: [256, 256]
     Number of sessions: 2
-    Date created: Thu Feb  8 16:43:59 2018
+    Date created: Fri Feb 16 12:36:51 2018
     Meta data: CH003
 
 
@@ -126,7 +143,7 @@ Now you can update the model with that brain object:
 
     Number of locations: 170
     Number of subjects: 67
-    Date created: Thu Feb  8 16:44:00 2018
+    Date created: Fri Feb 16 12:36:52 2018
     Meta data: None
 
 
@@ -178,8 +195,9 @@ construct the model from that data:
 
     Number of electrodes: 20
     Recording time in seconds: [ 1.]
+    Sample Rate in Hz: [1000]
     Number of sessions: 1
-    Date created: Thu Feb  8 16:44:00 2018
+    Date created: Fri Feb 16 12:36:52 2018
     Meta data: {}
 
 
@@ -198,7 +216,7 @@ new model will be generated:
 
     Number of locations: 170
     Number of subjects: 10
-    Date created: Thu Feb  8 16:44:05 2018
+    Date created: Fri Feb 16 12:36:57 2018
     Meta data: None
 
 
@@ -230,13 +248,8 @@ of locations to ``cov`` and the number of location to ``n_elecs``.
     R = se.create_cov(cov='toeplitz', n_elecs=len(locs))
     p = 10
     model = se.Model(numerator=R, denominator=np.ones(np.shape(R)), locs=locs, n_subs=p)
-    model.plot(xticklabels=False, yticklabels=False)
+    model.plot_data(xticklabels=False, yticklabels=False)
     plt.show()
-
-
-
-.. image:: model_objects_files/model_objects_23_0.png
-
 
 In this example we passed a numpy array of custom MNI locations to
 predict.
@@ -309,21 +322,18 @@ model with the subject’s correlation matrix.
     ------
     Number of electrodes: 64
     Recording time in seconds: [[  5.3984375  14.1328125]]
+    Sample Rate in Hz: [256, 256]
     Number of sessions: 2
-    Date created: Thu Feb  8 16:43:59 2018
+    Date created: Fri Feb 16 12:36:51 2018
     Meta data: CH003
 
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:389: UserWarning: Template is None.  Default to using a template with 20mm voxels.
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:414: UserWarning: Template is None.  Default to using a template with 20mm voxels.
       warnings.warn('Template is None.  Default to using a template with 20mm voxels.')
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:408: UserWarning: Voxel sizes of reconstruction and template do not match. Voxel sizes calculated from model locations.
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:442: UserWarning: Voxel sizes of reconstruction and template do not match. Voxel sizes calculated from model locations.
       warnings.warn('Voxel sizes of reconstruction and template do not match. '
-
-
-
-.. image:: model_objects_files/model_objects_29_2.png
 
 
 .. parsed-literal::
@@ -332,20 +342,18 @@ model with the subject’s correlation matrix.
     ------
     Number of electrodes: 170
     Recording time in seconds: [  5.3984375  14.1328125]
+    Sample Rate in Hz: [256, 256]
     Number of sessions: 2
-    Date created: Thu Feb  8 16:44:08 2018
+    Date created: Fri Feb 16 12:36:59 2018
     Meta data: {}
 
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:394: UserWarning: Template is None.  Default to b using a template with 20 voxels.
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:419: UserWarning: Template is None.  Default to b using a template with 20 voxels.
       'Default to b using a template with ' + str(int(recon_v_size[0][0])) + ' voxels.')
-
-
-
-.. image:: model_objects_files/model_objects_29_5.png
 
 
 Using the ``supereeg`` algorithm, we’ve ‘reconstructed’ whole brain
 activity from a smaller sample of electrodes.
+

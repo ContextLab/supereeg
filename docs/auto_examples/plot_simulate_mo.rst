@@ -50,9 +50,9 @@ objects and plot it.
     model = se.Model(model_bos, locs=locs)
 
     # plot the model
-    model.plot()
+    model.plot_data()
 
-**Total running time of the script:** ( 0 minutes  1.641 seconds)
+**Total running time of the script:** ( 0 minutes  1.670 seconds)
 
 
 

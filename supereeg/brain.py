@@ -202,18 +202,18 @@ class Brain(object):
         """
         return self.locs.as_matrix()
 
-    def get_slice(self, times=None, locs=None):
+    def get_slice(self, sample_inds=None, loc_inds=None, inplace=False):
         """
         Gets a time slice of the data
         """
-        if not times:
-            times = list(range(self.data.shape[0]))
-        if not locs:
-            locs = list(range(self.locs.shape[0]))
+        if not sample_inds:
+            sample_inds = list(range(self.data.shape[0]))
+        if not loc_inds:
+            loc_inds = list(range(self.locs.shape[0]))
 
-        if times and locs:
-            data = self.data.iloc[times, locs].copy()
-            sessions = self.sessions.iloc[times].copy()
+        if sample_inds and loc_inds:
+            data = self.data.iloc[sample_inds, loc_inds].copy()
+            sessions = self.sessions.iloc[sample_inds].copy()
             ## check this:
             if self.sample_rate:
                 sample_rate = [self.sample_rate[int(s-1)] for s in
@@ -221,13 +221,24 @@ class Brain(object):
             else:
                 sample_rate = self.sample_rate
             meta = copy.copy(self.meta)
-            locs = self.locs.iloc[locs].copy()
+            locs = self.locs.iloc[loc_inds].copy()
             date_created = self.date_created
-            return Brain(data=data, locs=locs, sessions=sessions,
-                         sample_rate=sample_rate, meta=meta,
-                         date_created=date_created)
+
+            if inplace:
+                self.data = data
+                self.locs = locs
+                self.sessions = sessions
+                self.sample_rate = sample_rate
+                self.meta = meta
+                self.date_created = date_created
+
+            else:
+                return Brain(data=data, locs=locs, sessions=sessions,
+                             sample_rate=sample_rate, meta=meta,
+                             date_created=date_created)
         else:
             return self.copy()
+
 
     def resample(self, resample_rate=None):
         """
