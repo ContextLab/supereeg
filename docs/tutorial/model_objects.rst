@@ -127,7 +127,7 @@ data as a brain object. First, let’s load in an example subjects data:
     Recording time in seconds: [[  5.3984375  14.1328125]]
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
-    Date created: Fri Feb 16 12:36:51 2018
+    Date created: Fri Feb 16 13:41:59 2018
     Meta data: CH003
 
 
@@ -143,7 +143,7 @@ Now you can update the model with that brain object:
 
     Number of locations: 170
     Number of subjects: 67
-    Date created: Fri Feb 16 12:36:52 2018
+    Date created: Fri Feb 16 13:42:00 2018
     Meta data: None
 
 
@@ -197,7 +197,7 @@ construct the model from that data:
     Recording time in seconds: [ 1.]
     Sample Rate in Hz: [1000]
     Number of sessions: 1
-    Date created: Fri Feb 16 12:36:52 2018
+    Date created: Fri Feb 16 13:42:00 2018
     Meta data: {}
 
 
@@ -216,7 +216,7 @@ new model will be generated:
 
     Number of locations: 170
     Number of subjects: 10
-    Date created: Fri Feb 16 12:36:57 2018
+    Date created: Fri Feb 16 13:42:05 2018
     Meta data: None
 
 
@@ -324,15 +324,15 @@ model with the subject’s correlation matrix.
     Recording time in seconds: [[  5.3984375  14.1328125]]
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
-    Date created: Fri Feb 16 12:36:51 2018
+    Date created: Fri Feb 16 13:41:59 2018
     Meta data: CH003
 
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:414: UserWarning: Template is None.  Default to using a template with 20mm voxels.
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:425: UserWarning: Template is None.  Default to using a template with 20mm voxels.
       warnings.warn('Template is None.  Default to using a template with 20mm voxels.')
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:442: UserWarning: Voxel sizes of reconstruction and template do not match. Voxel sizes calculated from model locations.
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:453: UserWarning: Voxel sizes of reconstruction and template do not match. Voxel sizes calculated from model locations.
       warnings.warn('Voxel sizes of reconstruction and template do not match. '
 
 
@@ -344,13 +344,13 @@ model with the subject’s correlation matrix.
     Recording time in seconds: [  5.3984375  14.1328125]
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
-    Date created: Fri Feb 16 12:36:59 2018
+    Date created: Fri Feb 16 13:42:07 2018
     Meta data: {}
 
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:419: UserWarning: Template is None.  Default to b using a template with 20 voxels.
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:430: UserWarning: Template is None.  Default to b using a template with 20 voxels.
       'Default to b using a template with ' + str(int(recon_v_size[0][0])) + ' voxels.')
 
 

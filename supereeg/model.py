@@ -335,9 +335,6 @@ class Model(object):
         # timeseries reconstruction
         activations = _timeseries_recon(bo, model_corrmat_x)
 
-        # join reconstructed and known activity
-        #activations = np.hstack((reconstructed, bo.data.as_matrix()))
-
 
         # return all data
         return Brain(data=activations, locs=perm_locs, sessions=bo.sessions,

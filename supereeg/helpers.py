@@ -414,7 +414,7 @@ def _timeseries_recon(bo, K, chunk_size=1000):
                     block_results = block
                 else:
                     block_results = np.vstack((block_results, block))
-            results = block_results
+            results = zscore(block_results)
         else:
 
             for each in _chunker(zbo.sessions[bo.sessions == session].index.tolist(), chunk_size):
@@ -424,7 +424,7 @@ def _timeseries_recon(bo, K, chunk_size=1000):
                     block_results = block
                 else:
                     block_results = np.vstack((block_results, block))
-            results = np.vstack((results, block_results))
+            results = np.vstack((results, zscore(block_results)))
     return results
 
 
