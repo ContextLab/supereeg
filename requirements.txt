@@ -11,3 +11,4 @@ joblib
 imageio
 future
 hypertools
+nipype
