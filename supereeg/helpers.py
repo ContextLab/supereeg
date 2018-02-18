@@ -1,21 +1,16 @@
 from __future__ import division
 from __future__ import print_function
 
-# from builtins import zip
 from builtins import map
 from builtins import range
-from builtins import object
 import multiprocessing
 import copy
 import os
 import numpy.matlib as mat
 import pandas as pd
-import nibabel as nb
 import numpy as np
 import imageio
-import glob
 
-from nilearn.input_data import NiftiMasker
 from nilearn import plotting as ni_plt
 from nilearn import image
 from scipy.stats import kurtosis, zscore, pearsonr
@@ -25,8 +20,38 @@ from scipy.spatial.distance import squareform
 from scipy import linalg
 import hypertools as hyp
 from joblib import Parallel, delayed
-import matplotlib.pyplot as plt
-#plt.switch_backend('agg')
+from scipy.ndimage.interpolation import zoom
+import nibabel as nb
+
+def std(res):
+    '''
+    Load a Nifti image of the standard MNI 152 brain at the given resolution
+    :param res: int or float (for cubic voxels) or a list or array of 3D voxel dimensions
+    :return: Nifti image of the standard brain
+    '''
+
+    std_fname = os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/std.nii'
+    std_img = nb.load(std_fname)
+    return resample_nii(std_img, res)
+
+
+def resample_nii(x, target_res):
+    '''
+    Resample a Nifti image to have the given voxel dimensions
+
+    :param x: input Nifti image (a nibel Nifti1Image object)
+    :param target_res: int or float (for cubic voxels) or a list or array of 3D voxel dimensions
+    :return: re-scaled Nifti image
+    '''
+
+    res = x.header.get_zooms()[0:3]
+    scale = np.divide(res, target_res)
+
+    target_affine = x.affine
+    target_affine[0:3, 0:3] *= scale
+    target_affine[:, 3] *= np.append(scale, 1.0)
+
+    return nb.nifti1.Nifti1Image(zoom(x.get_data(), np.append(scale, 1.0)), target_affine)
 
 
 def _apply_by_file_index(bo, xform, aggregator):

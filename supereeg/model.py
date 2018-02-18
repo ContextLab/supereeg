@@ -10,9 +10,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import deepdish as dd
-from nilearn import plotting as ni_plt
 import matplotlib.pyplot as plt
-from scipy.stats import zscore
 from .helpers import filter_elecs, _get_corrmat, _r2z, _z2r, _rbf, _expand_corrmat_fit, _expand_corrmat_predict,\
     _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp
 from .brain import Brain
