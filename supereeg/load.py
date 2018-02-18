@@ -9,7 +9,7 @@ import nibabel as nib
 from nilearn.input_data import NiftiMasker
 from .brain import Brain
 from .model import Model
-from .helpers import tal2mni, _fullfact
+from .helpers import tal2mni, _fullfact, _gray
 
 def load(fname):
     """
@@ -133,6 +133,11 @@ def load(fname):
     elif fname is 'gray_mask_20mm_brain':
         bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_20mm_brain.nii')
         return bo
+    #
+    # elif fname is 'gray_mask_20mm_brain':
+    #     nii = _gray(20)
+    #     bo = get_brain_object(nii)
+    #     return bo
 
     elif fname is 'gray_mask_6mm_brain':
         bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_6mm_brain.nii')
@@ -202,6 +207,47 @@ def load_nifti(nifti_file, mask_file=None):
     Y = np.float64(mask.transform(nifti_file)).copy()
     vmask = np.nonzero(np.array(np.reshape(mask.mask_img_.dataobj, (1, np.prod(mask.mask_img_.shape)), order='C')))[1]
     vox_coords = _fullfact(img.shape[0:3])[vmask, ::-1]-1
+
+    R = np.array(np.dot(vox_coords, S[0:3, 0:3])) + S[:3, 3]
+
+    return Brain(data=Y, locs=R, meta={'header': hdr})
+
+
+def get_brain_object(nifti, mask_file=None):
+    """
+    Function that returns a brain object
+
+    Parameters
+    ----------
+    x : str or nifti image
+
+        If x is a nifti filepath, loads nifti and returns brain object
+
+        If x is a nifti image, it returns a brain object
+
+    Returns
+    ----------
+    results: brain object
+
+
+    """
+
+    if os.path.exists(nifti):
+        img = nib.load(nifti)
+    else:
+        img = nifti
+    mask = NiftiMasker(mask_strategy='background')
+    if mask_file is None:
+        mask.fit(nifti)
+    else:
+        mask.fit(mask_file)
+
+    hdr = img.header
+    S = img.get_sform()
+
+    Y = np.float64(mask.transform(nifti)).copy()
+    vmask = np.nonzero(np.array(np.reshape(mask.mask_img_.dataobj, (1, np.prod(mask.mask_img_.shape)), order='C')))[1]
+    vox_coords = _fullfact(img.shape[0:3])[vmask, ::-1] - 1
 
     R = np.array(np.dot(vox_coords, S[0:3, 0:3])) + S[:3, 3]
 

@@ -12,7 +12,7 @@ import pandas as pd
 import nibabel as nib
 import deepdish as dd
 import matplotlib.pyplot as plt
-from .helpers import _kurt_vals, _z_score, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, _plot_locs_connectome, _plot_locs_hyp, resample_nii, std
+from .helpers import _kurt_vals, _z_score, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, _plot_locs_hyp, _resample_nii, _std
 
 class Brain(object):
     """
@@ -415,14 +415,6 @@ class Brain(object):
         """
 
         recon_v_size = _vox_size(self.locs)
-
-        # def _get_brain_object():
-        #     flt = fsl.FLIRT(bins=640, cost_func='mutualinfo')
-        #     flt.inputs.in_file = os.path.dirname(os.path.abspath(__file__)) + '/data/std.nii'
-        #     flt.inputs.reference = os.path.dirname(os.path.abspath(__file__)) + '/data/std.nii'
-        #     flt.inputs.output_type = "NIFTI_GZ"
-        #     flt.run(in_file='structural.nii', ref_file='mni.nii')
-
 
         if template is None:
 

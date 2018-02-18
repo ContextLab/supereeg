@@ -23,7 +23,8 @@ from joblib import Parallel, delayed
 from scipy.ndimage.interpolation import zoom
 import nibabel as nb
 
-def std(res):
+
+def _std(res):
     '''
     Load a Nifti image of the standard MNI 152 brain at the given resolution
     :param res: int or float (for cubic voxels) or a list or array of 3D voxel dimensions
@@ -32,10 +33,22 @@ def std(res):
 
     std_fname = os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/std.nii'
     std_img = nb.load(std_fname)
-    return resample_nii(std_img, res)
+    return _resample_nii(std_img, res)
 
 
-def resample_nii(x, target_res):
+def _gray(res):
+    '''
+    Load a Nifti image of the gray matter masked MNI 152 brain at the given resolution
+    :param res: int or float (for cubic voxels) or a list or array of 3D voxel dimensions
+    :return: Nifti image of the standard brain
+    '''
+
+    std_fname = os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray.nii'
+    std_img = nb.load(std_fname)
+    return _resample_nii(std_img, res)
+
+
+def _resample_nii(x, target_res):
     '''
     Resample a Nifti image to have the given voxel dimensions
 

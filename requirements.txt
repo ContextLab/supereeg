@@ -11,5 +11,4 @@ joblib
 imageio
 future
 hypertools
-nipype
 scikit-image
