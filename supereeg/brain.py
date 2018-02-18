@@ -12,10 +12,7 @@ import pandas as pd
 import nibabel as nib
 import deepdish as dd
 import matplotlib.pyplot as plt
-import seaborn as sns
-from nipype.interfaces import fsl
-from nilearn import plotting as ni_plt
-from .helpers import _kurt_vals, _z_score, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, _plot_locs_connectome, _plot_locs_hyp
+from .helpers import _kurt_vals, _z_score, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, _plot_locs_connectome, _plot_locs_hyp, resample_nii, std
 
 class Brain(object):
     """
