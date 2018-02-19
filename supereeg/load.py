@@ -9,7 +9,7 @@ import nibabel as nib
 from nilearn.input_data import NiftiMasker
 from .brain import Brain
 from .model import Model
-from .helpers import tal2mni, _fullfact, _gray
+from .helpers import tal2mni, _fullfact, _gray, _std
 
 def load(fname):
     """
@@ -130,12 +130,17 @@ def load(fname):
             print(('subjects = ', data['subjs']))
         return locs
 
-    elif fname is 'gray_mask_20mm_brain':
-        bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_20mm_brain.nii')
-        return bo
-    #
     # elif fname is 'gray_mask_20mm_brain':
-    #     nii = _gray(20)
+    #     bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_20mm_brain.nii')
+    #     return bo
+    #
+    elif fname is 'gray_mask_20mm_brain':
+        nii = _gray(20)
+        bo = get_brain_object(nii)
+        return bo
+
+    # elif fname is 'gray_mask_6mm_brain':
+    #     nii = _std(6)
     #     bo = get_brain_object(nii)
     #     return bo
 

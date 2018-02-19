@@ -48,12 +48,13 @@ def _gray(res):
     return _resample_nii(std_img, res)
 
 
-def _resample_nii(x, target_res):
+def _resample_nii(x, target_res, precision=5):
     '''
     Resample a Nifti image to have the given voxel dimensions
 
     :param x: input Nifti image (a nibel Nifti1Image object)
     :param target_res: int or float (for cubic voxels) or a list or array of 3D voxel dimensions
+    :param precision: number of decimal places in affine transformation matrix for resulting image (default: 5)
     :return: re-scaled Nifti image
     '''
 
@@ -61,10 +62,22 @@ def _resample_nii(x, target_res):
     scale = np.divide(res, target_res)
 
     target_affine = x.affine
-    target_affine[0:3, 0:3] *= scale
-    target_affine[:, 3] *= np.append(scale, 1.0)
 
-    return nb.nifti1.Nifti1Image(zoom(x.get_data(), np.append(scale, 1.0)), target_affine)
+    origin = np.divide(x.affine[0:3, 3], res)
+    target_affine[0:3, 0:3] /= scale
+    target_affine = np.round(target_affine, decimals=precision)
+    #target_affine[3, 3] = 0
+    #target_affine[0:3, 3] = np.multiply(origin, target_res)
+
+    # correct for 1-voxel shift
+    target_affine[0:3, 3] -= np.multiply(np.divide(target_res, 2.0), np.sign(target_affine[0:3, 3]))
+    target_affine[0:3, 3] += np.sign(target_affine[0:3, 3])
+
+    if len(scale) < np.ndim(x.get_data()):
+        assert np.ndim(x.get_data()) == 4, 'Data must be 3D or 4D'
+        scale = np.append(scale, x.shape[3])
+
+    return nb.nifti1.Nifti1Image(zoom(x.get_data(), scale), target_affine)
 
 
 def _apply_by_file_index(bo, xform, aggregator):
