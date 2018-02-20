@@ -139,14 +139,14 @@ def load(fname):
         bo = get_brain_object(nii)
         return bo
 
-    # elif fname is 'gray_mask_6mm_brain':
-    #     nii = _std(6)
-    #     bo = get_brain_object(nii)
-    #     return bo
-
     elif fname is 'gray_mask_6mm_brain':
-        bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_6mm_brain.nii')
+        nii = _gray(6)
+        bo = get_brain_object(nii)
         return bo
+    #
+    # elif fname is 'gray_mask_6mm_brain':
+    #     bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_6mm_brain.nii')
+    #     return bo
 
     elif fname is 'std':
         bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/std.nii')
@@ -218,7 +218,7 @@ def load_nifti(nifti_file, mask_file=None):
     return Brain(data=Y, locs=R, meta={'header': hdr})
 
 
-def get_brain_object(nifti, mask_file=None):
+def get_brain_object(nifti, mask_file=None, precision=4):
     """
     Function that returns a brain object
 
@@ -237,10 +237,17 @@ def get_brain_object(nifti, mask_file=None):
 
     """
 
-    if os.path.exists(nifti):
-        img = nib.load(nifti)
-    else:
+    if type(nifti) is nib.nifti1.Nifti1Image:
         img = nifti
+
+    elif type(nifti) is str:
+        if os.path.exists(nifti):
+            img = nib.load(nifti)
+        else:
+            warnings.warn('Nifti format not supported')
+    else:
+        warnings.warn('Nifti format not supported')
+
     mask = NiftiMasker(mask_strategy='background')
     if mask_file is None:
         mask.fit(nifti)

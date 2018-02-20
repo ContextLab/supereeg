@@ -15,17 +15,18 @@ This example loads a nifti file and converts it into a brain object.
 import supereeg as se
 from nilearn import plotting as ni_plt
 from supereeg.helpers import _std, _gray
+from supereeg.load import get_brain_object
 import nibabel as nib
 import os
+import hypertools as hyp
+
+
+x = get_brain_object(_gray(10))
+
 # load nifti -> brain object
+bo = se.load('gray_mask_6mm_brain')
 
-nii = _std(6)
 
-nii_gray = _gray(6)
-#ni_plt.plot_glass_brain(nii)
-
-nii_b = nib.load(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_6mm_brain.nii')
-#bo = se.load('gray_mask_6mm_brain')
 
 # export brain object -> nifti
 nifti = bo.to_nii()

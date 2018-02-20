@@ -43,9 +43,14 @@ def _gray(res):
     :return: Nifti image of the standard brain
     '''
 
-    std_fname = os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray.nii'
-    std_img = nb.load(std_fname)
-    return _resample_nii(std_img, res)
+    gray_fname = os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray.nii'
+    gray_img = nb.load(gray_fname)
+
+    threshold = 100
+    gray_data = gray_img.get_data()
+    gray_data[np.isnan(gray_data) | (gray_data < threshold)] = 0
+
+    return _resample_nii(nb.Nifti1Image(gray_data, gray_img.affine), res)
 
 
 def _resample_nii(x, target_res, precision=5):
@@ -57,6 +62,16 @@ def _resample_nii(x, target_res, precision=5):
     :param precision: number of decimal places in affine transformation matrix for resulting image (default: 5)
     :return: re-scaled Nifti image
     '''
+
+    if np.iterable(target_res):
+        target_res[target_res < 1] = 1
+    elif target_res < 1:
+        target_res = 1.0
+
+    if np.any(np.isnan(x.get_data())):
+        img = x.get_data()
+        img[np.isnan(img)] = 0.0
+        x = nb.nifti1.Nifti1Image(img, x.affine)
 
     res = x.header.get_zooms()[0:3]
     scale = np.divide(res, target_res)
@@ -77,7 +92,12 @@ def _resample_nii(x, target_res, precision=5):
         assert np.ndim(x.get_data()) == 4, 'Data must be 3D or 4D'
         scale = np.append(scale, x.shape[3])
 
-    return nb.nifti1.Nifti1Image(zoom(x.get_data(), scale), target_affine)
+    z = zoom(x.get_data(), scale)
+    try:
+        z[z < 1e-5] = np.nan
+    except:
+        pass
+    return nb.nifti1.Nifti1Image(z, target_affine)
 
 
 def _apply_by_file_index(bo, xform, aggregator):
@@ -717,7 +737,9 @@ def _near_neighbor(bo, mo, match_threshold='auto'):
 
         match_threshold = 'auto' : include only nearest neighbor if falls within one voxel distance
 
-        match_threshold = None or 0 : set nearest_neighbor = False and proceed (only exact matches will be used)
+        match_threshold =  0 :set nearest_neighbor = False and proceed (only exact matches will be used)
+
+        match_threshol = None use best match and don't check (even if far away)
 
         match_threshold > 0 : include only nearest neighbor that are within given distance
 

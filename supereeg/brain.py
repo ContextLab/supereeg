@@ -12,7 +12,7 @@ import pandas as pd
 import nibabel as nib
 import deepdish as dd
 import matplotlib.pyplot as plt
-from .helpers import _kurt_vals, _z_score, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, _plot_locs_hyp, _resample_nii, _std
+from .helpers import _kurt_vals, _z_score, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, _plot_locs_hyp, _resample_nii, _std, _gray
 
 class Brain(object):
     """
@@ -406,6 +406,17 @@ class Brain(object):
 
             Std_Brain - MNI152_T1_2mm_brain.nii
 
+            object or string for nifti file
+            - or gray or standard
+
+            and allow user to specify voxel size as well - max 20 mm
+            10mm as default - deal with special cases in vox_size
+
+            to_nii - default gray, str( std, gray, or fileapth, nifti object or brainobject)
+            - if brain object - convert to nii with default arguement
+            - if str(load with nibable and use as template) - if bad throw an error and dont proceed
+            -
+
         Returns
         ----------
 
@@ -416,33 +427,36 @@ class Brain(object):
 
         recon_v_size = _vox_size(self.locs)
 
-        if template is None:
+        # if template is None:
+        #
+        #     if int(recon_v_size[0][0]) not in [20, 8, 6]:
+        #         warnings.warn('Template is None.  Default to using a template with 20mm voxels.')
+        #         template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_20mm_brain.nii'
+        #
+        #     elif int(recon_v_size[0][0]) in [20, 8, 6]:
+        #         warnings.warn('Template is None.  '
+        #                       'Default to b using a template with ' + str(int(recon_v_size[0][0])) + ' voxels.')
+        #         template = os.path.dirname(os.path.abspath(__file__)) + \
+        #                    '/data/gray_mask_'+ str(int(recon_v_size[0][0]))+'mm_brain.nii'
+        #
+        # elif template == '20mm':
+        #     template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_20mm_brain.nii'
+        #
+        # elif template == '6mm':
+        #     template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_6mm_brain.nii'
+        #
+        # elif template == 'std':
+        #     template = os.path.dirname(os.path.abspath(__file__)) + '/data/std.nii'
+        #
+        # elif int(recon_v_size[0][0]) in [20, 8, 6]:
+        #         warnings.warn(
+        #             'Voxel sizes of reconstruction and template do not match. '
+        #             'Try '+'/data/gray_mask_'+ str(int(recon_v_size[0][0]))+'mm_brain.nii'+ ' to match voxel sizes.')
 
-            if int(recon_v_size[0][0]) not in [20, 8, 6]:
-                warnings.warn('Template is None.  Default to using a template with 20mm voxels.')
-                template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_20mm_brain.nii'
 
-            elif int(recon_v_size[0][0]) in [20, 8, 6]:
-                warnings.warn('Template is None.  '
-                              'Default to b using a template with ' + str(int(recon_v_size[0][0])) + ' voxels.')
-                template = os.path.dirname(os.path.abspath(__file__)) + \
-                           '/data/gray_mask_'+ str(int(recon_v_size[0][0]))+'mm_brain.nii'
+        img = _gray(6)
 
-        elif template == '20mm':
-            template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_20mm_brain.nii'
-
-        elif template == '6mm':
-            template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_6mm_brain.nii'
-
-        elif template == 'std':
-            template = os.path.dirname(os.path.abspath(__file__)) + '/data/std.nii'
-
-        elif int(recon_v_size[0][0]) in [20, 8, 6]:
-                warnings.warn(
-                    'Voxel sizes of reconstruction and template do not match. '
-                    'Try '+'/data/gray_mask_'+ str(int(recon_v_size[0][0]))+'mm_brain.nii'+ ' to match voxel sizes.')
-
-        img = nib.load(template)
+        #img = nib.load(template)
         hdr = img.get_header()
         temp_v_size = hdr.get_zooms()[0:3]
 
