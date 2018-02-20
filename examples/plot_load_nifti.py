@@ -21,12 +21,10 @@ import os
 import hypertools as hyp
 
 
-x = get_brain_object(_gray(10))
+x = get_brain_object(_gray())
 
 # load nifti -> brain object
 bo = se.load('gray_mask_6mm_brain')
-
-
 
 # export brain object -> nifti
 nifti = bo.to_nii()

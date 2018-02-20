@@ -135,18 +135,20 @@ def load(fname):
     #     return bo
     #
     elif fname is 'gray_mask_20mm_brain':
-        nii = _gray(20)
-        bo = get_brain_object(nii)
+        bo = get_brain_object(_gray(20))
         return bo
 
     elif fname is 'gray_mask_6mm_brain':
-        nii = _gray(6)
-        bo = get_brain_object(nii)
+        bo = get_brain_object( _gray(6))
         return bo
     #
     # elif fname is 'gray_mask_6mm_brain':
     #     bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_6mm_brain.nii')
     #     return bo
+
+    elif fname is 'std':
+        bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/std.nii')
+        return bo
 
     elif fname is 'std':
         bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/std.nii')

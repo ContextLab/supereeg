@@ -24,24 +24,49 @@ from scipy.ndimage.interpolation import zoom
 import nibabel as nb
 
 
-def _std(res):
-    '''
+def _std(res=None):
+    """
     Load a Nifti image of the standard MNI 152 brain at the given resolution
-    :param res: int or float (for cubic voxels) or a list or array of 3D voxel dimensions
-    :return: Nifti image of the standard brain
-    '''
+
+
+    Parameters
+    ----------
+    res : int or float or None
+        If int or float: (for cubic voxels) or a list or array of 3D voxel dimensions
+        If None, returns loaded gray matter masked brain
+
+    Returns
+    ----------
+    results : Nifti1Image
+         Nifti image of the standard brain
+
+    """
 
     std_fname = os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/std.nii'
     std_img = nb.load(std_fname)
-    return _resample_nii(std_img, res)
+    if res:
+        return _resample_nii(std_img, res)
+    else:
+        return std_img
 
 
-def _gray(res):
-    '''
+def _gray(res=None):
+    """
     Load a Nifti image of the gray matter masked MNI 152 brain at the given resolution
-    :param res: int or float (for cubic voxels) or a list or array of 3D voxel dimensions
-    :return: Nifti image of the standard brain
-    '''
+
+
+    Parameters
+    ----------
+    res : int or float or None
+        If int or float: (for cubic voxels) or a list or array of 3D voxel dimensions
+        If None, returns loaded gray matter masked brain
+
+    Returns
+    ----------
+    results : Nifti1Image
+         Nifti image of gray masked brain
+
+    """
 
     gray_fname = os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray.nii'
     gray_img = nb.load(gray_fname)
@@ -50,19 +75,34 @@ def _gray(res):
     gray_data = gray_img.get_data()
     gray_data[np.isnan(gray_data) | (gray_data < threshold)] = 0
 
-    return _resample_nii(nb.Nifti1Image(gray_data, gray_img.affine), res)
+    if res:
+        return _resample_nii(nb.Nifti1Image(gray_data, gray_img.affine), res)
+    else:
+        return nb.Nifti1Image(gray_data, gray_img.affine)
 
 
 def _resample_nii(x, target_res, precision=5):
-    '''
+    """
     Resample a Nifti image to have the given voxel dimensions
 
-    :param x: input Nifti image (a nibel Nifti1Image object)
-    :param target_res: int or float (for cubic voxels) or a list or array of 3D voxel dimensions
-    :param precision: number of decimal places in affine transformation matrix for resulting image (default: 5)
-    :return: re-scaled Nifti image
-    '''
 
+    Parameters
+    ----------
+    x : Nifti1Image
+        Input Nifti image (a nibel Nifti1Image object)
+
+    target_res : int or float or None
+        Int or float (for cubic voxels) or a list or array of 3D voxel dimensions
+
+    precision : int
+        Number of decimal places in affine transformation matrix for resulting image (default: 5)
+
+    Returns
+    ----------
+    results : Nifti1Image
+         Re-scaled Nifti image
+
+    """
     if np.iterable(target_res):
         target_res[target_res < 1] = 1
     elif target_res < 1:
@@ -78,11 +118,8 @@ def _resample_nii(x, target_res, precision=5):
 
     target_affine = x.affine
 
-    origin = np.divide(x.affine[0:3, 3], res)
     target_affine[0:3, 0:3] /= scale
     target_affine = np.round(target_affine, decimals=precision)
-    #target_affine[3, 3] = 0
-    #target_affine[0:3, 3] = np.multiply(origin, target_res)
 
     # correct for 1-voxel shift
     target_affine[0:3, 3] -= np.multiply(np.divide(target_res, 2.0), np.sign(target_affine[0:3, 3]))
