@@ -169,54 +169,54 @@ def load(fname):
 
     # load nifti
     elif fname.split('.')[-1]=='nii' or '.'.join(fname.split('.')[-2:])=='nii.gz':
-        return load_nifti(fname)
+        return get_brain_object(fname)
 
 
-def load_nifti(nifti_file, mask_file=None):
-    """
-    Load nifti file and convert to brain object
-
-    Parameters
-    ----------
-    fname : string
-        Filepath to nifti file.
-
-
-    Returns
-    ----------
-    results : brain object
-        Brain object from nifti file
-
-    """
-
-
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-
-        img = nib.load(nifti_file)
-        mask = NiftiMasker(mask_strategy='background')
-        if mask_file is None:
-            mask.fit(nifti_file)
-        else:
-            mask.fit(mask_file)
-
-    hdr = img.header
-    S = img.get_sform()
-    _vox_size = hdr.get_zooms()
-    im_size = img.shape
-
-    if len(img.shape) > 3:
-        N = img.shape[3]
-    else:
-        N = 1
-
-    Y = np.float64(mask.transform(nifti_file)).copy()
-    vmask = np.nonzero(np.array(np.reshape(mask.mask_img_.dataobj, (1, np.prod(mask.mask_img_.shape)), order='C')))[1]
-    vox_coords = _fullfact(img.shape[0:3])[vmask, ::-1]-1
-
-    R = np.array(np.dot(vox_coords, S[0:3, 0:3])) + S[:3, 3]
-
-    return Brain(data=Y, locs=R, meta={'header': hdr})
+# def load_nifti(nifti_file, mask_file=None):
+#     """
+#     Load nifti file and convert to brain object
+#
+#     Parameters
+#     ----------
+#     fname : string
+#         Filepath to nifti file.
+#
+#
+#     Returns
+#     ----------
+#     results : brain object
+#         Brain object from nifti file
+#
+#     """
+#
+#
+#     with warnings.catch_warnings():
+#         warnings.simplefilter("ignore")
+#
+#         img = nib.load(nifti_file)
+#         mask = NiftiMasker(mask_strategy='background')
+#         if mask_file is None:
+#             mask.fit(nifti_file)
+#         else:
+#             mask.fit(mask_file)
+#
+#     hdr = img.header
+#     S = img.get_sform()
+#     _vox_size = hdr.get_zooms()
+#     im_size = img.shape
+#
+#     if len(img.shape) > 3:
+#         N = img.shape[3]
+#     else:
+#         N = 1
+#
+#     Y = np.float64(mask.transform(nifti_file)).copy()
+#     vmask = np.nonzero(np.array(np.reshape(mask.mask_img_.dataobj, (1, np.prod(mask.mask_img_.shape)), order='C')))[1]
+#     vox_coords = _fullfact(img.shape[0:3])[vmask, ::-1]-1
+#
+#     R = np.array(np.dot(vox_coords, S[0:3, 0:3])) + S[:3, 3]
+#
+#     return Brain(data=Y, locs=R, meta={'header': hdr})
 
 
 def get_brain_object(nifti, mask_file=None, precision=4):
