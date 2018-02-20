@@ -334,7 +334,7 @@ class Brain(object):
         Parameters
         ----------
         pdfpath : str
-        A name for the file.  If the file extension (.pdf) is not specified, it
+            A name for the file.  If the file extension (.pdf) is not specified, it
         will be appended.
 
         """
@@ -381,7 +381,7 @@ class Brain(object):
         dd.io.save(fname, bo, compression=compression)
 
 
-    def to_nii(self, filepath=None, template=None):
+    def to_nii(self, filepath=None, template=None, vox_size=None):
 
         """
         Save brain object as a nifti file.
@@ -393,21 +393,26 @@ class Brain(object):
         filepath : str
             Path to save the nifti file
 
-        template : str
-            Path to template nifti file or shortcut.
+        template : str, Nifti1Image, or None
 
             Template is a nifti file with the desired resolution to save the brain object activity
 
-            Options for shortcut templates:
+            If template is None (default) :
+                - Uses gray matter masked brain downsampled to brain object voxel size (max 20 mm)
 
-            20mm - gray_mask_20mm_brain.nii
+            If template is str :
+                - Checks if nifti file path and uses specified nifti
 
-            6mm - gray_mask_6mm_brain.nii
+                - If not a filepath, checks if 'std' or 'gray'
 
-            Std_Brain - MNI152_T1_2mm_brain.nii
+                - If 'std':
+                    - Uses standard brain downsampled to brain object voxel size
 
-            object or string for nifti file
-            - or gray or standard
+                - If 'gray':
+                    - Uses gray matter masked brain downsampled to brain object voxel size
+
+            If template is Nifti1Image :
+                - Uses specified Nifti image
 
             and allow user to specify voxel size as well - max 20 mm
             10mm as default - deal with special cases in vox_size
@@ -427,36 +432,37 @@ class Brain(object):
 
         recon_v_size = _vox_size(self.locs)
 
-        # if template is None:
-        #
-        #     if int(recon_v_size[0][0]) not in [20, 8, 6]:
-        #         warnings.warn('Template is None.  Default to using a template with 20mm voxels.')
-        #         template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_20mm_brain.nii'
-        #
-        #     elif int(recon_v_size[0][0]) in [20, 8, 6]:
-        #         warnings.warn('Template is None.  '
-        #                       'Default to b using a template with ' + str(int(recon_v_size[0][0])) + ' voxels.')
-        #         template = os.path.dirname(os.path.abspath(__file__)) + \
-        #                    '/data/gray_mask_'+ str(int(recon_v_size[0][0]))+'mm_brain.nii'
-        #
-        # elif template == '20mm':
-        #     template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_20mm_brain.nii'
-        #
-        # elif template == '6mm':
-        #     template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_6mm_brain.nii'
-        #
-        # elif template == 'std':
-        #     template = os.path.dirname(os.path.abspath(__file__)) + '/data/std.nii'
-        #
-        # elif int(recon_v_size[0][0]) in [20, 8, 6]:
-        #         warnings.warn(
-        #             'Voxel sizes of reconstruction and template do not match. '
-        #             'Try '+'/data/gray_mask_'+ str(int(recon_v_size[0][0]))+'mm_brain.nii'+ ' to match voxel sizes.')
+        if vox_size:
+            v_size = vox_size
 
+        else:
+            v_size = recon_v_size[0].tolist()
 
-        img = _gray(6)
+        if type(v_size) is list:
+            v_size[v_size > 20] = 20
 
-        #img = nib.load(template)
+        if template is None:
+            img = _gray(v_size)
+
+        if type(template) is nib.nifti1.Nifti1Image:
+            img = template
+
+        elif type(template) is str:
+
+            if os.path.exists(template):
+                img = nib.load(template)
+
+            elif template is 'gray':
+                img = _gray(v_size)
+
+            elif template is 'std':
+                img = _std(v_size)
+
+            else:
+                warnings.warn('String not understood')
+        else:
+            warnings.warn('Nifti format not supported')
+
         hdr = img.get_header()
         temp_v_size = hdr.get_zooms()[0:3]
 

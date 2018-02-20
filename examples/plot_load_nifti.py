@@ -20,14 +20,11 @@ import nibabel as nib
 import os
 import hypertools as hyp
 
-
-x = get_brain_object(_gray())
-
 # load nifti -> brain object
 bo = se.load('gray_mask_6mm_brain')
 
 # export brain object -> nifti
-nifti = bo.to_nii()
+nifti = bo.to_nii(vox_size=6)
 
 # plot the result
 ni_plt.plot_anat(nifti)
