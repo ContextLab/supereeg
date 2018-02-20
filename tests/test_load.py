@@ -4,6 +4,7 @@ import pytest
 import supereeg as se
 import numpy as np
 import os
+import nibabel as nib
 
 # downsample locations
 locs = se.load('example_locations')[0::17]
@@ -28,8 +29,8 @@ def test_load_example_locations():
     assert isinstance(locs, np.ndarray)
 
 def test_load_nifti():
-    bo = se.load('example_nifti')
-    assert isinstance(bo, se.Brain)
+    nii = se.load('example_nifti')
+    assert isinstance(nii, nib.nifti1.Nifti1Image)
 
 # # this makes the test super long, from 5 secs to 73 secs
 #

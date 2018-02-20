@@ -11,7 +11,7 @@ import os
 
 ## don't understand why i have to do this:
 from supereeg.helpers import _apply_by_file_index, _kurt_vals, _get_corrmat, _z2r, _r2z, _rbf, _uniquerows, \
-    _expand_corrmat_fit, _expand_corrmat_predict, _chunk_bo, _timeseries_recon, _chunker, _reconstruct_activity, \
+    _expand_corrmat_fit, _expand_corrmat_predict, _chunk_bo, _timeseries_recon, _chunker, \
     _round_it, _corr_column, _normalize_Y, _near_neighbor, _vox_size
 
 locs = se.load('example_locations')[0::17]
@@ -32,6 +32,7 @@ bo = se.Brain(data=sub_data.as_matrix(), sessions=bo_full.sessions, locs=sub_loc
 data = [se.simulate_model_bos(n_samples=10, locs=locs, sample_locs=n_elecs) for x in range(n_subs)]
 # test model to compare
 test_model = se.Model(data=data, locs=locs)
+
 
 def test__apply_by_file_index():
     def aggregate(prev, next):
@@ -152,8 +153,8 @@ def test_expand_corrmats_same():
 
     assert isinstance(Kaa_p, np.ndarray)
     assert isinstance(Kaa_f, np.ndarray)
-    assert np.allclose(Kaa_p, Kaa_f)
-    assert np.allclose(Kba_p, Kba_f)
+    assert np.allclose(Kaa_p, Kaa_f, equal_nan=True)
+    assert np.allclose(Kba_p, Kba_f, equal_nan=True)
 
 def test_reconstruct():
     recon_test = test_model.predict(bo, nearest_neighbor=False, force_update=True)
@@ -164,11 +165,10 @@ def test_reconstruct():
     model_corrmat_x = np.divide(mo.numerator, mo.denominator)
     model_corrmat_x = _z2r(model_corrmat_x)
     np.fill_diagonal(model_corrmat_x, 0)
-    #recon_data = np.hstack((_timeseries_recon(zbo, model_corrmat_x), zscore(bo.data.as_matrix())))
     recon_data = _timeseries_recon(zbo, model_corrmat_x)
     corr_vals = _corr_column(actual_test.as_matrix(), recon_test.data.as_matrix())
     assert isinstance(recon_data, np.ndarray)
-    assert np.allclose(recon_data, recon_test.data)
+    assert np.allclose(recon_data, recon_test.data, equal_nan=True)
     assert 1 >= corr_vals.mean() >= -1
 
 def test_round_it():

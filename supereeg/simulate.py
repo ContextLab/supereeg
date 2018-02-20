@@ -165,6 +165,7 @@ def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None
         return data, sub_locs
     else:
         R = create_cov(cov, n_elecs=len(locs))
+        n_elecs = len(locs)
 
         return np.random.multivariate_normal(np.zeros(n_elecs), R, size=n_samples), locs
 

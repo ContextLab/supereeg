@@ -7,7 +7,7 @@ from scipy.stats import zscore
 from supereeg.helpers import _corr_column
 
 
-locs = se.load('example_locations')
+locs = se.load('example_locations')[0::17]
 # number of timeseries samples
 n_samples = 10
 # number of subjects
@@ -20,23 +20,24 @@ data = [se.simulate_model_bos(n_samples=10, sample_rate=1000, locs=locs, sample_
 test_model = se.Model(data=data, locs=locs)
 R = se.create_cov('random', len(locs))
 
-recon_1 = np.matrix([[ 0.82919399,  0.3047186 ,  0.82919399,  0.94488569, -0.1156917 ],
-                     [-0.39653203, -0.14572065, -0.39653203,  0.77469247, -1.1712245 ],
-                     [-0.16080707, -0.05909462, -0.16080707,  0.72329345, -0.88410052],
-                     [-0.63032456, -0.23163653, -0.63032456, -1.2276946 ,  0.59737003],
-                     [ 0.35846968,  0.1317332 ,  0.35846968, -1.21517701,  1.57364669]])
+recon_1 = np.matrix([[ 0.453253,  1.569009,  1.569009,  0.944886, -0.115692],
+                     [-1.256820, -0.750322, -0.750322,  0.774692, -1.171225],
+                     [-0.856609, -0.304281, -0.304281,  0.723293, -0.884101],
+                     [ 0.087427, -1.192707, -1.192707, -1.227695,  0.597370],
+                     [ 1.572750,  0.678300,  0.678300, -1.215177,  1.573647]])
 
-recon_2 = np.matrix([[-0.02616138, -0.65365414, -0.30856683, -0.49671408, -0.28675327],
-                     [-0.07208702, -0.65861915, -0.36174338, -0.03937399, -0.79014146],
-                     [-0.11282797, -2.24664523, -1.08602914, -1.47620904, -1.23670058],
-                     [ 0.08643809,  1.16408297,  0.59381912,  0.48276444,  0.94744261],
-                     [ 0.12463829,  2.39483555,  1.16252024,  1.52953267,  1.36615270]])
+recon_2 = np.matrix([[-0.286753, -0.405398, -0.391275, -0.496714, -0.286753],
+                     [-0.790141, -0.408477, -0.458704, -0.039374, -0.790141],
+                     [-1.236701, -1.393375, -1.377126, -1.476209, -1.236701],
+                     [ 0.947443,  0.721967,  0.752985,  0.482764,  0.947443],
+                     [ 1.366153,  1.485283,  1.474120,  1.529533,  1.366153]])
 
-recon_3 = np.matrix([[  1.72363835e-01,   3.09339273e-10,  -1.95257063e-01, 1.62790162e-01,  -2.93614621e-01],
-                     [ -2.51070375e+00,  -3.71561269e-09,  -5.72328657e-01,-1.95534562e+00,   1.57187889e+00],
-                     [  1.06992272e+00,   1.54327013e-09,   4.17322838e-01, 8.12147750e-01,  -5.32536689e-01],
-                     [  3.12442895e-01,   7.97543472e-10,  -1.37764262e+00, 4.19708205e-01,  -1.34274447e+00],
-                     [  9.55974302e-01,   1.06545982e-09,   1.72790550e+00, 5.60699502e-01,   5.97016891e-01]])
+
+recon_3 = np.matrix([[ 0.119278,  0.162790,  -0.290248,  0.162790, -0.293615],
+                     [-1.907964, -1.955346,   0.571294, -1.955346,  1.571879],
+                     [ 0.821725,  0.812148,  -0.057841,  0.812148, -0.532537],
+                     [ 0.165119,  0.419708,  -1.621756,  0.419708, -1.342744],
+                     [ 0.801842,  0.560700,   1.398550,  0.560700,  0.597017]])
 
 def test_simulate_locations():
     locs = se.simulate_locations(10)
@@ -158,7 +159,7 @@ def test_electrode_contingencies_1_null_set():
     corr_vals = _corr_column(actual.as_matrix(), recon.data.as_matrix())
 
     assert 1 >= corr_vals.mean() >= -1
-    assert np.allclose(zscore(recon_1), recon.get_data())
+    assert np.allclose(zscore(recon_1), recon.get_data(), equal_nan=True)
 
 def test_electrode_contingencies_2_subset():
 
@@ -198,10 +199,11 @@ def test_electrode_contingencies_2_subset():
 
     corr_vals = _corr_column(actual.as_matrix(), recon.data.as_matrix())
 
-    assert np.allclose(zscore(recon_2), recon.get_data())
+    assert np.allclose(zscore(recon_2), recon.get_data(), equal_nan=True)
     assert 1 >= corr_vals.mean() >= -1
 
 def test_electrode_contingencies_3_locations_can_subset():
+
     random_seed = np.random.seed(123)
     noise = 0
 
@@ -247,4 +249,4 @@ def test_electrode_contingencies_3_locations_can_subset():
     corr_vals = _corr_column(actual.as_matrix(), recon.data.as_matrix())
 
     assert 1 >= corr_vals.mean() >= -1
-    assert np.allclose(zscore(recon_3), recon.get_data())
+    assert np.allclose(zscore(recon_3), recon.get_data(), equal_nan=True)

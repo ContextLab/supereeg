@@ -29,12 +29,13 @@ def load(fname):
 
         example_data - example brain object (n = 64)
 
-        example_model - example model object with locations from gray_mask_20mm_brain.nii (n = 170)
+        example_model - example model object with locations from gray masked brain downsampled to 20mm (n = 210)
 
-        example_locations - example location from gray_mask_20mm_brain.nii (n = 170)
+        example_locations - example location from gray masked brain downsampled to 20mm (n = 210)
 
-        example_nifti - example nifti file from gray_mask_20mm_brain.nii (n = 170)
+        example_nifti - example nifti file from gray masked brain downsampled to 20mm (n = 210)
 
+        ### need to recompute these with the new 210 locations
         pyFR_k10r20_20mm - model used for analyses from
         `Owen LLW and Manning JR (2017) Towards Human Super EEG.  bioRxiv: 121020` with 20mm resolution (n = 170)
         
@@ -109,20 +110,22 @@ def load(fname):
 
 
     elif fname is 'example_locations':
-        with open(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_20mm_locs.npy', 'rb') as handle:
-            locs = np.load(handle)
-        return locs
+        bo = get_brain_object(_gray(20))
+        return bo.get_locs()
 
+    # load example nifti
     elif fname is 'example_nifti':
-        bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_8mm_brain.nii')
-        return bo
+        nii = _std(20)
+        return nii
 
+    # load example patient data with kurtosis thresholded channels
     elif fname is 'example_filter':
         bo = dd.io.load(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/example_filter.bo')
         return Brain(data=bo['data'], locs=bo['locs'], sessions=bo['sessions'],
                     sample_rate=bo['sample_rate'], meta=bo['meta'],
                     date_created=bo['date_created'])
 
+    # load union of pyFR electrode locations
     elif fname is 'pyFR_union':
         with open(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/pyFR_k10_locs.npz', 'rb') as handle:
             data = np.load(handle)
@@ -130,28 +133,24 @@ def load(fname):
             print(('subjects = ', data['subjs']))
         return locs
 
-    # elif fname is 'gray_mask_20mm_brain':
-    #     bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_20mm_brain.nii')
-    #     return bo
-    #
+    # load gray matter masked MNI 152 brain downsampled to 20mm voxels
     elif fname is 'gray_mask_20mm_brain':
         bo = get_brain_object(_gray(20))
         return bo
 
+    # load gray matter masked MNI 152 brain downsampled to 6mm voxels
     elif fname is 'gray_mask_6mm_brain':
         bo = get_brain_object( _gray(6))
         return bo
-    #
-    # elif fname is 'gray_mask_6mm_brain':
-    #     bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_6mm_brain.nii')
-    #     return bo
 
+    # load MNI 152 standard brain
     elif fname is 'std':
-        bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/std.nii')
+        bo = get_brain_object( _std())
         return bo
 
-    elif fname is 'std':
-        bo = load_nifti(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/std.nii')
+    # load gray matter masked MNI 152 brain
+    elif fname is 'gray':
+        bo = get_brain_object( _gray())
         return bo
 
     # load brain object
