@@ -104,7 +104,7 @@ def _resample_nii(x, target_res, precision=5):
 
     """
     if np.iterable(target_res):
-        target_res[target_res < 1] = 1
+        target_res = [(lambda i: 1.0 if i < 1 else i)(i) for i in target_res]
     elif target_res < 1:
         target_res = 1.0
 

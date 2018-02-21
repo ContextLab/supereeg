@@ -438,8 +438,10 @@ class Brain(object):
         else:
             v_size = recon_v_size[0].tolist()
 
-        if type(v_size) is list:
-            v_size[v_size > 20] = 20
+        if np.iterable(v_size):
+            v_size = [(lambda i: 20 if i > 20 else i)(i) for i in v_size]
+        elif v_size > 20:
+            v_size = 20
 
         if template is None:
             img = _gray(v_size)
