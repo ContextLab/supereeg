@@ -435,11 +435,16 @@ class Brain(object):
         if vox_size:
             v_size = vox_size
 
+        ## if neither template or vox_size specified, uses gray matter masked downsampled to 10 mm
         else:
-            v_size = recon_v_size[0].tolist()
+            if not template:
+                v_size = 10
+            else:
+                v_size = recon_v_size[0].tolist()
 
         if np.iterable(v_size):
             v_size = [(lambda i: 20 if i > 20 else i)(i) for i in v_size]
+
         elif v_size > 20:
             v_size = 20
 
