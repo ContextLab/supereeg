@@ -12,7 +12,7 @@ import os
 ## don't understand why i have to do this:
 from supereeg.helpers import _std, _gray, _resample_nii, _apply_by_file_index, _kurt_vals, _get_corrmat, _z2r, _r2z, _rbf, \
     _uniquerows, _expand_corrmat_fit, _expand_corrmat_predict, _chunk_bo, _timeseries_recon, _chunker, \
-    _round_it, _corr_column, _normalize_Y, _near_neighbor, _vox_size, _count_overlapping, _resample, _get_brain_object
+    _round_it, _corr_column, _normalize_Y, _near_neighbor, _vox_size, _count_overlapping, _resample, _nifti_to_brain
 
 locs = se.load('example_locations')[0::17]
 # number of timeseries samples
@@ -277,8 +277,8 @@ def test_resample():
     assert samp_rate==[8,8]
 
 
-def test_get_brain_object():
-    b_d, b_l, b_h = _get_brain_object(_gray(20))
+def test_nifti_to_brain():
+    b_d, b_l, b_h = _nifti_to_brain(_gray(20))
     assert isinstance(b_d, np.ndarray)
     assert isinstance(b_l, np.ndarray)
     assert isinstance(b_h, dict)

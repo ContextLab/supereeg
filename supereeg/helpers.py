@@ -1055,7 +1055,7 @@ def _plot_locs_hyp(locs, pdfpath):
     """
     hyp.plot(locs, 'k.', save_path=pdfpath)
 
-def _get_brain_object(nifti, mask_file=None):
+def _nifti_to_brain(nifti, mask_file=None):
 
     """
     Takes or loads nifti file and converts to brain object
@@ -1074,7 +1074,6 @@ def _get_brain_object(nifti, mask_file=None):
 
 
     """
-    from .brain import Brain
 
     if type(nifti) is nib.nifti1.Nifti1Image:
         img = nifti
@@ -1103,3 +1102,29 @@ def _get_brain_object(nifti, mask_file=None):
     R = np.array(np.dot(vox_coords, S[0:3, 0:3])) + S[:3, 3]
 
     return Y, R, {'header': hdr}
+
+
+def _brain_to_nifti(bo, nii_template):
+
+    hdr = nii_template.get_header()
+    temp_v_size = hdr.get_zooms()[0:3]
+
+    R = bo.get_locs()
+    Y = bo.data.as_matrix()
+    Y = np.array(Y, ndmin=2)
+    S = nii_template.affine
+    locs = np.array(np.dot(R - S[:3, 3], np.linalg.inv(S[0:3, 0:3])), dtype='int')
+
+    shape = np.max(np.vstack([np.max(locs, axis=0) + 1, nii_template.shape[0:3]]), axis=0)
+    data = np.zeros(tuple(list(shape) + [Y.shape[0]]))
+    counts = np.zeros(data.shape)
+
+    for i in range(Y.shape[0]):
+        for j in range(R.shape[0]):
+            data[locs[j, 0], locs[j, 1], locs[j, 2], i] += Y[i, j]
+            counts[locs[j, 0], locs[j, 1], locs[j, 2], i] += 1
+    with np.errstate(invalid='ignore'):
+        data = np.divide(data, counts)
+    data[np.isnan(data)] = 0
+
+    return nib.Nifti1Image(data, affine=nii_template.affine)

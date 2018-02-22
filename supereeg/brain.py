@@ -13,7 +13,7 @@ import nibabel as nib
 import deepdish as dd
 import matplotlib.pyplot as plt
 from .helpers import _kurt_vals, _z_score, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, \
-    _plot_locs_hyp, _std, _gray, _get_brain_object
+    _plot_locs_hyp, _std, _gray, _nifti_to_brain, _brain_to_nifti
 
 class Brain(object):
     """
@@ -101,7 +101,7 @@ class Brain(object):
                  meta=None, date_created=None, label=None):
 
         if isinstance(data, nib.nifti1.Nifti1Image):
-           data, locs, meta = _get_brain_object(data)
+           data, locs, meta = _nifti_to_brain(data)
 
         if isinstance(data, pd.DataFrame):
             self.data = data
@@ -432,10 +432,10 @@ class Brain(object):
         if vox_size:
             v_size = vox_size
 
-        ## if neither template or vox_size specified, uses gray matter masked downsampled to 10 mm
+        ## if neither template or vox_size specified, uses gray matter masked downsampled to 6 mm
         else:
             if not template:
-                v_size = 10
+                v_size = 6
             else:
                 v_size = recon_v_size[0].tolist()
 
@@ -451,7 +451,7 @@ class Brain(object):
         if type(template) is nib.nifti1.Nifti1Image:
             img = template
 
-        elif type(template) is str:
+        elif isinstance(template, str) or isinstance(template, basestring):
 
             if os.path.exists(template):
                 img = nib.load(template)
@@ -473,6 +473,7 @@ class Brain(object):
             self.sessions = sessions
             self.sample_rate = sample_rate
 
+
         hdr = img.get_header()
         temp_v_size = hdr.get_zooms()[0:3]
 
@@ -480,24 +481,25 @@ class Brain(object):
             warnings.warn('Voxel sizes of reconstruction and template do not match. '
                           'Voxel sizes calculated from model locations.')
 
-        R = self.get_locs()
-        Y = self.data.as_matrix()
-        Y = np.array(Y, ndmin=2)
-        S = img.affine
-        locs = np.array(np.dot(R - S[:3, 3], np.linalg.inv(S[0:3, 0:3])), dtype='int')
-
-        shape = np.max(np.vstack([np.max(locs, axis=0) + 1, img.shape[0:3]]), axis=0)
-        data = np.zeros(tuple(list(shape) + [Y.shape[0]]))
-        counts = np.zeros(data.shape)
-
-        for i in range(Y.shape[0]):
-            for j in range(R.shape[0]):
-                data[locs[j, 0], locs[j, 1], locs[j, 2], i] += Y[i, j]
-                counts[locs[j, 0], locs[j, 1], locs[j, 2], i] += 1
-        with np.errstate(invalid='ignore'):
-            data = np.divide(data, counts)
-        data[np.isnan(data)] = 0
-        nifti =  nib.Nifti1Image(data, affine=img.affine)
+        nifti = _brain_to_nifti(self, img)
+        # R = self.get_locs()
+        # Y = self.data.as_matrix()
+        # Y = np.array(Y, ndmin=2)
+        # S = img.affine
+        # locs = np.array(np.dot(R - S[:3, 3], np.linalg.inv(S[0:3, 0:3])), dtype='int')
+        #
+        # shape = np.max(np.vstack([np.max(locs, axis=0) + 1, img.shape[0:3]]), axis=0)
+        # data = np.zeros(tuple(list(shape) + [Y.shape[0]]))
+        # counts = np.zeros(data.shape)
+        #
+        # for i in range(Y.shape[0]):
+        #     for j in range(R.shape[0]):
+        #         data[locs[j, 0], locs[j, 1], locs[j, 2], i] += Y[i, j]
+        #         counts[locs[j, 0], locs[j, 1], locs[j, 2], i] += 1
+        # with np.errstate(invalid='ignore'):
+        #     data = np.divide(data, counts)
+        # data[np.isnan(data)] = 0
+        # nifti =  nib.Nifti1Image(data, affine=img.affine)
 
         if filepath:
             nifti.to_filename(filepath)

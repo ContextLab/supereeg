@@ -120,7 +120,7 @@ def test_electrode_contingencies_1_null_set():
     noise = 0
 
     # load mini model
-    gray = se.load('gray_mask_20mm_brain')
+    gray = se.Brain(se.load('gray', vox_size=20))
 
     # extract 20 locations
     gray_locs = gray.locs.iloc[:5]
@@ -167,7 +167,7 @@ def test_electrode_contingencies_2_subset():
 
     noise = 0
 
-    gray = se.load('gray_mask_20mm_brain')
+    gray = se.Brain(se.load('gray', vox_size=20))
 
     # extract locations
     gray_locs = gray.locs.iloc[:5]
@@ -208,7 +208,7 @@ def test_electrode_contingencies_3_locations_can_subset():
     noise = 0
 
     # load mini model
-    gray = se.load('gray_mask_20mm_brain')
+    gray = se.Brain(se.load('gray', vox_size=20))
 
     # extract 20 locations
     gray_locs = gray.locs.iloc[:5]

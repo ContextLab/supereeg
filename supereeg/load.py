@@ -76,39 +76,6 @@ def load(fname, vox_size=None):
                 model = pd.read_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/mini_model.mo')
                 return model
 
-
-    elif fname is 'pyFR_k10r20_20mm':
-        try:
-            with open(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/mini_model.mo', 'rb') as handle:
-                example_model = pickle.load(handle)
-            return example_model
-        except:
-            try:
-                mo = dd.io.load(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/mini_model.mo')
-                return Model(numerator=mo['numerator'], denominator=mo['denominator'],
-                             locs=mo['locs'], n_subs=mo['n_subs'], meta=mo['meta'],
-                             date_created=mo['date_created'])
-            except:
-                model = pd.read_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/mini_model.mo')
-                return model
-
-
-    elif fname is 'pyFR_k10r20_6mm':
-        try:
-            with open(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_6mm_brain.mo', 'rb') as handle:
-                example_model = pickle.load(handle)
-            return example_model
-        except:
-            try:
-                mo = dd.io.load(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_6mm_brain.mo')
-                return Model(numerator=mo['numerator'], denominator=mo['denominator'],
-                             locs=mo['locs'], n_subs=mo['n_subs'], meta=mo['meta'],
-                             date_created=mo['date_created'])
-            except:
-                model = pd.read_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_6mm_brain.mo')
-                return model
-
-
     elif fname is 'example_locations':
         bo = Brain(_gray(20))
         return bo.get_locs()
@@ -133,31 +100,38 @@ def load(fname, vox_size=None):
             print(('subjects = ', data['subjs']))
         return locs
 
-    # load gray matter masked MNI 152 brain downsampled to 20mm voxels
-    elif fname is 'gray_mask_20mm_brain':
-        bo = Brain(_gray(20))
-        return bo
+## need this model still:
 
-    # load gray matter masked MNI 152 brain downsampled to 6mm voxels
-    elif fname is 'gray_mask_6mm_brain':
-        bo = Brain( _gray(6))
-        return bo
+    # elif fname is 'pyFR':
+    #     try:
+    #         with open(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_6mm_brain.mo', 'rb') as handle:
+    #             example_model = pickle.load(handle)
+    #         return example_model
+    #     except:
+    #         try:
+    #             mo = dd.io.load(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_6mm_brain.mo')
+    #             return Model(numerator=mo['numerator'], denominator=mo['denominator'],
+    #                          locs=mo['locs'], n_subs=mo['n_subs'], meta=mo['meta'],
+    #                          date_created=mo['date_created'])
+    #         except:
+    #             model = pd.read_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_6mm_brain.mo')
+    #             return model
 
     # load MNI 152 standard brain
     elif fname is 'std':
         if vox_size:
-            bo = Brain(_std(vox_size))
+            bo = _std(vox_size)
         else:
-            bo = Brain(_std())
+            bo = _std()
         return bo
 
     # load gray matter masked MNI 152 brain
     elif fname is 'gray':
 
         if vox_size:
-            bo = Brain(_gray(vox_size))
+            bo = _gray(vox_size)
         else:
-            bo = Brain(_gray())
+            bo = _gray()
         return bo
 
     # load brain object

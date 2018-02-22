@@ -14,14 +14,14 @@ This example loads a nifti file and converts it into a brain object.
 # import
 import supereeg as se
 from nilearn import plotting as ni_plt
-from supereeg.helpers import _gray
 
 # load nifti -> brain object
-#bo = se.load('gray_mask_20mm_brain')
+nii = se.load('gray', vox_size=20)
 
-bo = se.Brain(_gray(20))
+bo = se.Brain(nii)
+
 # export brain object -> nifti
-nifti = bo.to_nii()
+nifti = bo.to_nii(template='gray', vox_size=20)
 
 # plot the result
 ni_plt.plot_anat(nifti)

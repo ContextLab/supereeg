@@ -31,7 +31,7 @@ reconstructed_bo = model.predict(bo)
 reconstructed_bo.info()
 
 # convert to nifti
-reconstructed_nifti = reconstructed_bo.to_nii()
+reconstructed_nifti = reconstructed_bo.to_nii('gray', vox_size=20)
 
 # make gif, default time window is 1000 to 1500, but you can specifiy
 # se.make_gif_pngs(reconstructed_nifti, result_dir='/your/path/to/gif')
