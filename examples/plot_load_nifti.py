@@ -17,8 +17,9 @@ from nilearn import plotting as ni_plt
 from supereeg.helpers import _gray
 
 # load nifti -> brain object
-bo = se.load('gray_mask_20mm_brain')
+#bo = se.load('gray_mask_20mm_brain')
 
+bo = se.Brain(_gray(20))
 # export brain object -> nifti
 nifti = bo.to_nii()
 

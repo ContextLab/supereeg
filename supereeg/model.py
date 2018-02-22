@@ -111,8 +111,9 @@ class Model(object):
                     template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_20mm_brain.nii'
 
                 # get locations from template
-                from .load import load_nifti
-                bo = load_nifti(template)
+                from .helpers import _get_brain_object
+
+                bo = _get_brain_object(template)
                 self.locs = pd.DataFrame(bo.get_locs(), columns=['x', 'y', 'z'])
 
             else:

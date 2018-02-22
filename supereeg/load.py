@@ -4,9 +4,10 @@ import pickle
 import numpy as np
 import deepdish as dd
 import pandas as pd
+import nibabel as nib
 from .brain import Brain
 from .model import Model
-from .helpers import tal2mni, _gray, _std, _get_brain_object
+from .helpers import tal2mni, _gray, _std
 
 def load(fname):
     """
@@ -107,7 +108,7 @@ def load(fname):
 
 
     elif fname is 'example_locations':
-        bo = _get_brain_object(_gray(20))
+        bo = Brain(_gray(20))
         return bo.get_locs()
 
     # load example nifti
@@ -132,22 +133,22 @@ def load(fname):
 
     # load gray matter masked MNI 152 brain downsampled to 20mm voxels
     elif fname is 'gray_mask_20mm_brain':
-        bo = _get_brain_object(_gray(20))
+        bo = Brain(_gray(20))
         return bo
 
     # load gray matter masked MNI 152 brain downsampled to 6mm voxels
     elif fname is 'gray_mask_6mm_brain':
-        bo = _get_brain_object( _gray(6))
+        bo = Brain( _gray(6))
         return bo
 
     # load MNI 152 standard brain
     elif fname is 'std':
-        bo = _get_brain_object(_std())
+        bo = Brain(_std())
         return bo
 
     # load gray matter masked MNI 152 brain
     elif fname is 'gray':
-        bo = _get_brain_object(_gray())
+        bo = Brain(_gray())
         return bo
 
     # load brain object
@@ -166,4 +167,4 @@ def load(fname):
 
     # load nifti
     elif fname.split('.')[-1]=='nii' or '.'.join(fname.split('.')[-2:])=='nii.gz':
-        return _get_brain_object(fname)
+        return nib.load(fname)

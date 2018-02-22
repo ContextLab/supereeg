@@ -65,5 +65,5 @@ def test_mo_load(tmpdir):
 def test_nii_load(tmpdir):
     p = tmpdir.mkdir("sub").join("example")
     test_bo.to_nii(filepath=p.strpath)
-    bo = se.load(os.path.join(p.strpath + '.nii'))
-    assert isinstance(bo, se.Brain)
+    nii = se.load(os.path.join(p.strpath + '.nii'))
+    assert isinstance(nii, nib.nifti1.Nifti1Image)

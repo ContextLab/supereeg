@@ -1102,4 +1102,4 @@ def _get_brain_object(nifti, mask_file=None):
 
     R = np.array(np.dot(vox_coords, S[0:3, 0:3])) + S[:3, 3]
 
-    return Brain(data=Y, locs=R, meta={'header': hdr})
+    return Y, R, {'header': hdr}

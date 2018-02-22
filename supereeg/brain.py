@@ -100,6 +100,9 @@ class Brain(object):
     def __init__(self, data=None, locs=None, sessions=None, sample_rate=None,
                  meta=None, date_created=None, label=None):
 
+        if isinstance(data, nib.nifti1.Nifti1Image):
+           data, locs, meta = _get_brain_object(data)
+
         if isinstance(data, pd.DataFrame):
             self.data = data
         else:

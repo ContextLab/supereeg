@@ -16,7 +16,6 @@ import supereeg as se
 from nilearn import plotting as ni_plt
 from nilearn import image
 from supereeg.helpers import _std, _gray
-from supereeg.load import get_brain_object
 import nibabel as nib
 import os
 import hypertools as hyp
@@ -25,7 +24,9 @@ import hypertools as hyp
 # load example data as brain object
 bo = se.load('example_data')
 
-# export brain object -> nifti
+
+# load example model
+model = se.load('example_model')
 
 bor = model.predict(bo)
 
