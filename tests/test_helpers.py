@@ -10,9 +10,9 @@ from scipy.stats import kurtosis, zscore
 import os
 
 ## don't understand why i have to do this:
-from supereeg.helpers import _apply_by_file_index, _kurt_vals, _get_corrmat, _z2r, _r2z, _rbf, _uniquerows, \
-    _expand_corrmat_fit, _expand_corrmat_predict, _chunk_bo, _timeseries_recon, _chunker, \
-    _round_it, _corr_column, _normalize_Y, _near_neighbor, _vox_size
+from supereeg.helpers import _std, _gray, _resample_nii, _apply_by_file_index, _kurt_vals, _get_corrmat, _z2r, _r2z, _rbf, \
+    _uniquerows, _expand_corrmat_fit, _expand_corrmat_predict, _chunk_bo, _timeseries_recon, _chunker, \
+    _round_it, _corr_column, _normalize_Y, _near_neighbor, _vox_size, _count_overlapping, _resample, _get_brain_object
 
 locs = se.load('example_locations')[0::17]
 # number of timeseries samples
@@ -33,6 +33,18 @@ data = [se.simulate_model_bos(n_samples=10, locs=locs, sample_locs=n_elecs) for 
 # test model to compare
 test_model = se.Model(data=data, locs=locs)
 
+
+def test_std():
+    nii = _std(20)
+    assert isinstance(nii, nib.nifti1.Nifti1Image)
+
+def test_gray():
+    nii = _gray(20)
+    assert isinstance(nii, nib.nifti1.Nifti1Image)
+
+def test_resample_nii():
+    nii = _resample_nii(_gray(), 20, precision=5)
+    assert isinstance(nii, nib.nifti1.Nifti1Image)
 
 def test__apply_by_file_index():
     def aggregate(prev, next):
@@ -200,8 +212,6 @@ def test_normalize_Y():
     assert normed_y.iloc[1][0] == 1.0
     assert normed_y.iloc[1][1] == 2.0
 
-### not sure how to write tests for the Nifti conversion functions
-
 def test_model_compile(tmpdir):
     p = tmpdir.mkdir("sub")
     for m in range(len(data)):
@@ -253,3 +263,22 @@ def test_vox_size():
 def test_sort_unique_locs():
     sorted = sort_unique_locs(locs)
     assert isinstance(sorted, np.ndarray)
+
+def test_count_overlapping():
+    bool_overlap = _count_overlapping(bo_full, bo)
+    assert sum(bool_overlap)==bo.locs.shape[0]
+    assert isinstance(bool_overlap, np.ndarray)
+
+def test_resample():
+    samp_data, samp_sess, samp_rate = _resample(bo, 8)
+    assert isinstance(samp_data, pd.DataFrame)
+    assert isinstance(samp_sess, pd.Series)
+    assert isinstance(samp_rate, list)
+    assert samp_rate==[8,8]
+
+
+def test_get_brain_object():
+    b_d, b_l, b_h = _get_brain_object(_gray(20))
+    assert isinstance(b_d, np.ndarray)
+    assert isinstance(b_l, np.ndarray)
+    assert isinstance(b_h, dict)

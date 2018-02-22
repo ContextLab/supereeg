@@ -113,7 +113,7 @@ def _resample_nii(x, target_res, precision=5):
     if np.any(np.isnan(x.get_data())):
         img = x.get_data()
         img[np.isnan(img)] = 0.0
-        x = nb.nifti1.Nifti1Image(img, x.affine)
+        x = nib.nifti1.Nifti1Image(img, x.affine)
 
     res = x.header.get_zooms()[0:3]
     scale = np.divide(res, target_res)
