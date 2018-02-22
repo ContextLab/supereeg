@@ -27,6 +27,8 @@ bo = se.load('example_data')
 
 # export brain object -> nifti
 
+bor = model.predict(bo)
+
 # If no parameters are passed:
 # default uses gray matter masked brain downsampled to 10 mm resolution
 

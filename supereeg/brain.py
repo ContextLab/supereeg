@@ -12,7 +12,8 @@ import pandas as pd
 import nibabel as nib
 import deepdish as dd
 import matplotlib.pyplot as plt
-from .helpers import _kurt_vals, _z_score, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, _plot_locs_hyp, _resample_nii, _std, _gray
+from .helpers import _kurt_vals, _z_score, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, \
+    _plot_locs_hyp, _resample_nii, _std, _gray, _get_brain_object
 
 class Brain(object):
     """
@@ -414,13 +415,6 @@ class Brain(object):
             If template is Nifti1Image :
                 - Uses specified Nifti image
 
-            and allow user to specify voxel size as well - max 20 mm
-            10mm as default - deal with special cases in vox_size
-
-            to_nii - default gray, str( std, gray, or fileapth, nifti object or brainobject)
-            - if brain object - convert to nii with default arguement
-            - if str(load with nibable and use as template) - if bad throw an error and dont proceed
-            -
 
         Returns
         ----------
@@ -466,7 +460,7 @@ class Brain(object):
                 img = _std(v_size)
 
             else:
-                warnings.warn('String not understood')
+                warnings.warn('Nifti format not supported')
         else:
             warnings.warn('Nifti format not supported')
 

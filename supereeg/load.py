@@ -1,15 +1,12 @@
 from __future__ import print_function
 import os
 import pickle
-import warnings
 import numpy as np
 import deepdish as dd
 import pandas as pd
-import nibabel as nib
-from nilearn.input_data import NiftiMasker
 from .brain import Brain
 from .model import Model
-from .helpers import tal2mni, _fullfact, _gray, _std
+from .helpers import tal2mni, _gray, _std, _get_brain_object
 
 def load(fname):
     """
@@ -110,12 +107,12 @@ def load(fname):
 
 
     elif fname is 'example_locations':
-        bo = get_brain_object(_gray(20))
+        bo = _get_brain_object(_gray(20))
         return bo.get_locs()
 
     # load example nifti
     elif fname is 'example_nifti':
-        nii = _std(20)
+        nii = _gray(20)
         return nii
 
     # load example patient data with kurtosis thresholded channels
@@ -135,22 +132,22 @@ def load(fname):
 
     # load gray matter masked MNI 152 brain downsampled to 20mm voxels
     elif fname is 'gray_mask_20mm_brain':
-        bo = get_brain_object(_gray(20))
+        bo = _get_brain_object(_gray(20))
         return bo
 
     # load gray matter masked MNI 152 brain downsampled to 6mm voxels
     elif fname is 'gray_mask_6mm_brain':
-        bo = get_brain_object( _gray(6))
+        bo = _get_brain_object( _gray(6))
         return bo
 
     # load MNI 152 standard brain
     elif fname is 'std':
-        bo = get_brain_object(_std())
+        bo = _get_brain_object(_std())
         return bo
 
     # load gray matter masked MNI 152 brain
     elif fname is 'gray':
-        bo = get_brain_object(_gray())
+        bo = _get_brain_object(_gray())
         return bo
 
     # load brain object
@@ -169,54 +166,4 @@ def load(fname):
 
     # load nifti
     elif fname.split('.')[-1]=='nii' or '.'.join(fname.split('.')[-2:])=='nii.gz':
-        return get_brain_object(fname)
-
-
-
-def get_brain_object(nifti, mask_file=None):
-
-    """
-    Takes or loads nifti file and converts to brain object
-
-    Parameters
-    ----------
-    nifti : str or nifti image
-
-        If nifti is a nifti filepath, loads nifti and returns brain object
-
-        If nifti is a nifti image, it returns a brain object
-
-    Returns
-    ----------
-    results: brain object
-
-
-    """
-
-    if type(nifti) is nib.nifti1.Nifti1Image:
-        img = nifti
-
-    elif type(nifti) is str:
-        if os.path.exists(nifti):
-            img = nib.load(nifti)
-        else:
-            warnings.warn('Nifti format not supported')
-    else:
-        warnings.warn('Nifti format not supported')
-
-    mask = NiftiMasker(mask_strategy='background')
-    if mask_file is None:
-        mask.fit(nifti)
-    else:
-        mask.fit(mask_file)
-
-    hdr = img.header
-    S = img.get_sform()
-
-    Y = np.float64(mask.transform(nifti)).copy()
-    vmask = np.nonzero(np.array(np.reshape(mask.mask_img_.dataobj, (1, np.prod(mask.mask_img_.shape)), order='C')))[1]
-    vox_coords = _fullfact(img.shape[0:3])[vmask, ::-1] - 1
-
-    R = np.array(np.dot(vox_coords, S[0:3, 0:3])) + S[:3, 3]
-
-    return Brain(data=Y, locs=R, meta={'header': hdr})
+        return _get_brain_object(fname)

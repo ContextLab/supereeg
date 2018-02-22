@@ -6,22 +6,24 @@ from builtins import range
 import multiprocessing
 import copy
 import os
+import warnings
 import numpy.matlib as mat
 import pandas as pd
 import numpy as np
 import imageio
+import nibabel as nib
+import hypertools as hyp
 
 from nilearn import plotting as ni_plt
 from nilearn import image
+from nilearn.input_data import NiftiMasker
 from scipy.stats import kurtosis, zscore, pearsonr
 from scipy.spatial.distance import pdist
 from scipy.spatial.distance import cdist
 from scipy.spatial.distance import squareform
 from scipy import linalg
-import hypertools as hyp
-from joblib import Parallel, delayed
 from scipy.ndimage.interpolation import zoom
-import nibabel as nb
+from joblib import Parallel, delayed
 
 
 def _std(res=None):
@@ -43,7 +45,7 @@ def _std(res=None):
     """
 
     std_fname = os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/std.nii'
-    std_img = nb.load(std_fname)
+    std_img = nib.load(std_fname)
     if res:
         return _resample_nii(std_img, res)
     else:
@@ -69,16 +71,16 @@ def _gray(res=None):
     """
 
     gray_fname = os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray.nii'
-    gray_img = nb.load(gray_fname)
+    gray_img = nib.load(gray_fname)
 
     threshold = 100
     gray_data = gray_img.get_data()
     gray_data[np.isnan(gray_data) | (gray_data < threshold)] = 0
 
     if res:
-        return _resample_nii(nb.Nifti1Image(gray_data, gray_img.affine), res)
+        return _resample_nii(nib.Nifti1Image(gray_data, gray_img.affine), res)
     else:
-        return nb.Nifti1Image(gray_data, gray_img.affine)
+        return nib.Nifti1Image(gray_data, gray_img.affine)
 
 
 def _resample_nii(x, target_res, precision=5):
@@ -134,7 +136,7 @@ def _resample_nii(x, target_res, precision=5):
         z[z < 1e-5] = np.nan
     except:
         pass
-    return nb.nifti1.Nifti1Image(z, target_affine)
+    return nib.nifti1.Nifti1Image(z, target_affine)
 
 
 def _apply_by_file_index(bo, xform, aggregator):
@@ -1053,3 +1055,51 @@ def _plot_locs_hyp(locs, pdfpath):
     """
     hyp.plot(locs, 'k.', save_path=pdfpath)
 
+def _get_brain_object(nifti, mask_file=None):
+
+    """
+    Takes or loads nifti file and converts to brain object
+
+    Parameters
+    ----------
+    nifti : str or nifti image
+
+        If nifti is a nifti filepath, loads nifti and returns brain object
+
+        If nifti is a nifti image, it returns a brain object
+
+    Returns
+    ----------
+    results: brain object
+
+
+    """
+    from .brain import Brain
+
+    if type(nifti) is nib.nifti1.Nifti1Image:
+        img = nifti
+
+    elif type(nifti) is str:
+        if os.path.exists(nifti):
+            img = nib.load(nifti)
+        else:
+            warnings.warn('Nifti format not supported')
+    else:
+        warnings.warn('Nifti format not supported')
+
+    mask = NiftiMasker(mask_strategy='background')
+    if mask_file is None:
+        mask.fit(nifti)
+    else:
+        mask.fit(mask_file)
+
+    hdr = img.header
+    S = img.get_sform()
+
+    Y = np.float64(mask.transform(nifti)).copy()
+    vmask = np.nonzero(np.array(np.reshape(mask.mask_img_.dataobj, (1, np.prod(mask.mask_img_.shape)), order='C')))[1]
+    vox_coords = _fullfact(img.shape[0:3])[vmask, ::-1] - 1
+
+    R = np.array(np.dot(vox_coords, S[0:3, 0:3])) + S[:3, 3]
+
+    return Brain(data=Y, locs=R, meta={'header': hdr})
