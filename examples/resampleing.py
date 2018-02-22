@@ -20,17 +20,20 @@ bo = se.load('example_data')
 # info contains sample rate
 bo.info()
 
-# default resample to 64Hz
+# default resample returns the brain object
 bo.resample()
 
 # show new info - nothing changed if resample_rate isn't specified
 bo.info()
 
 # resample to specified sample rate
-bo.resample(64)
+bo.resample(100)
 
 # show new info
 bo.info()
+
+# can also change sample rate when convert to nifti image
+bo.to_nii(sample_rate=64)
 
 
 

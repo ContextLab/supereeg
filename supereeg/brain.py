@@ -13,7 +13,7 @@ import nibabel as nib
 import deepdish as dd
 import matplotlib.pyplot as plt
 from .helpers import _kurt_vals, _z_score, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, \
-    _plot_locs_hyp, _resample_nii, _std, _gray, _get_brain_object
+    _plot_locs_hyp, _std, _gray, _get_brain_object
 
 class Brain(object):
     """
@@ -385,7 +385,7 @@ class Brain(object):
         dd.io.save(fname, bo, compression=compression)
 
 
-    def to_nii(self, filepath=None, template=None, vox_size=None):
+    def to_nii(self, filepath=None, template=None, vox_size=None, sample_rate=None):
 
         """
         Save brain object as a nifti file.
@@ -466,6 +466,12 @@ class Brain(object):
                 warnings.warn('Nifti format not supported')
         else:
             warnings.warn('Nifti format not supported')
+
+        if sample_rate:
+            data, sessions, sample_rate = _resample(self, sample_rate)
+            self.data = data
+            self.sessions = sessions
+            self.sample_rate = sample_rate
 
         hdr = img.get_header()
         temp_v_size = hdr.get_zooms()[0:3]

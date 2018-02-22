@@ -9,7 +9,7 @@ from .brain import Brain
 from .model import Model
 from .helpers import tal2mni, _gray, _std
 
-def load(fname):
+def load(fname, vox_size=None):
     """
     Load nifti file, brain or model object, or example data.
 
@@ -39,6 +39,8 @@ def load(fname):
         
         pyFR_k10r20_6mm - model used for analyses from
         `Owen LLW and Manning JR (2017) Towards Human Super EEG.  bioRxiv: 121020` with 6 mm resolution (n = 10K)
+
+    vox_size : voxel size for loading and resampling nifti image
 
     Returns
     ----------
@@ -143,12 +145,19 @@ def load(fname):
 
     # load MNI 152 standard brain
     elif fname is 'std':
-        bo = Brain(_std())
+        if vox_size:
+            bo = Brain(_std(vox_size))
+        else:
+            bo = Brain(_std())
         return bo
 
     # load gray matter masked MNI 152 brain
     elif fname is 'gray':
-        bo = Brain(_gray())
+
+        if vox_size:
+            bo = Brain(_gray(vox_size))
+        else:
+            bo = Brain(_gray())
         return bo
 
     # load brain object
