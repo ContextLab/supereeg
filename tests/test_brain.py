@@ -6,13 +6,16 @@ import numpy as np
 import pandas as pd
 import nibabel as nib
 
-data = np.random.multivariate_normal(np.zeros(10), np.eye(10), size=100)
-locs = np.random.multivariate_normal(np.zeros(3), np.eye(3), size=10)
-bo = se.Brain(data=data, locs=locs)
+bo = se.simulate_bo(n_samples=10, sample_rate=100)
 
+nii = se.load('example_nifti')
+bo_n = se.Brain(nii)
 
 def test_create_bo():
     assert isinstance(bo, se.Brain)
+
+def test_bo_data_nifti():
+    assert isinstance(bo_n, se.Brain)
 
 def test_bo_data_df():
     assert isinstance(bo.data, pd.DataFrame)
@@ -27,7 +30,7 @@ def test_bo_nelecs_int():
     assert isinstance(bo.n_elecs, int)
 
 def test_bo_nsecs_list():
-    assert (bo.n_secs is None) or (type(bo.n_secs) is (np.ndarray, int))
+    assert (bo.n_secs is None) or (type(bo.n_secs) is np.ndarray) or (type(bo.n_secs) is int) or (type(bo.n_secs) is float)
 
 def test_bo_nsessions_int():
     assert isinstance(bo.n_sessions, int)
@@ -46,6 +49,16 @@ def test_bo_zscoredata_nparray():
 
 def test_bo_get_locs_nparray():
     assert isinstance(bo.get_locs(), np.ndarray)
+
+def test_bo_get_slice():
+    bo_d = bo.get_slice(sample_inds=[1, 2], loc_inds=[1])
+    assert isinstance(bo_d, se.Brain)
+    assert bo_d.data.shape==(2,1)
+
+def test_bo_resample():
+    bo.resample(resample_rate=60)
+    assert isinstance(bo, se.Brain)
+    assert bo.sample_rate == [60]
 
 def test_bo_save(tmpdir):
     p = tmpdir.mkdir("sub").join("example")
