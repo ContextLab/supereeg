@@ -30,8 +30,12 @@ reconstructed_bo = model.predict(bo)
 # print out info on new brain object
 reconstructed_bo.info()
 
+# plot
+reconstructed_bo.plot_glass_brain(template='gray', vox_size=20)
+
 # convert to nifti
-reconstructed_nifti = reconstructed_bo.to_nii('gray', vox_size=20)
+reconstructed_nifti = reconstructed_bo.to_nii(template='gray', vox_size=20)
+
 
 # make gif, default time window is 1000 to 1500, but you can specifiy
 # se.make_gif_pngs(reconstructed_nifti, result_dir='/your/path/to/gif')

@@ -1055,6 +1055,27 @@ def _plot_locs_hyp(locs, pdfpath):
     """
     hyp.plot(locs, 'k.', save_path=pdfpath)
 
+def _plot_glass_brain(nifti, pdfpath, index=1):
+    """
+    Plots nifti data
+
+    Parameters
+    ----------
+    nifti : nifti image
+        Nifti image to plot
+
+    Returns
+    ----------
+    results: nilearn plot_glass_brain
+        plot data
+
+
+    """
+    nii = image.index_img(nifti, index)
+    ni_plt.plot_glass_brain(nii)
+    if not pdfpath:
+        ni_plt.show()
+
 def _nifti_to_brain(nifti, mask_file=None):
 
     """

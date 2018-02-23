@@ -9,7 +9,7 @@ from .brain import Brain
 from .model import Model
 from .helpers import tal2mni, _gray, _std
 
-def load(fname, vox_size=None):
+def load(fname, vox_size=None, return_type=None):
     """
     Load nifti file, brain or model object, or example data.
 
@@ -41,6 +41,10 @@ def load(fname, vox_size=None):
         `Owen LLW and Manning JR (2017) Towards Human Super EEG.  bioRxiv: 121020` with 6 mm resolution (n = 10K)
 
     vox_size : voxel size for loading and resampling nifti image
+
+    return_type : Option for loading data
+
+
 
     Returns
     ----------
@@ -151,3 +155,6 @@ def load(fname, vox_size=None):
     # load nifti
     elif fname.split('.')[-1]=='nii' or '.'.join(fname.split('.')[-2:])=='nii.gz':
         return nib.load(fname)
+    #
+    # if return_type == bo:
+    #

@@ -1,5 +1,4 @@
 from builtins import range
-import pytest
 import supereeg as se
 import numpy as np
 import pandas as pd

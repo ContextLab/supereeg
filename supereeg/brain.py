@@ -13,7 +13,7 @@ import nibabel as nib
 import deepdish as dd
 import matplotlib.pyplot as plt
 from .helpers import _kurt_vals, _z_score, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, \
-    _plot_locs_hyp, _std, _gray, _nifti_to_brain, _brain_to_nifti
+    _plot_locs_hyp, _plot_glass_brain, _std, _gray, _nifti_to_brain, _brain_to_nifti
 
 class Brain(object):
     """
@@ -349,6 +349,21 @@ class Brain(object):
         else:
             _plot_locs_hyp(locs, pdfpath)
 
+    def plot_glass_brain(self, pdfpath=None, template=None, vox_size=None, sample_rate=None):
+        """
+        Plots electrode locations from brain object
+
+
+        Parameters
+        ----------
+        pdfpath : str
+            A name for the file.  If the file extension (.pdf) is not specified, it
+        will be appended.
+
+        """
+
+        _plot_glass_brain(self.to_nii(template=template, vox_size=vox_size, sample_rate=sample_rate), pdfpath)
+
     def save(self, fname, compression='blosc'):
         """
         Save method for the brain object
@@ -482,24 +497,6 @@ class Brain(object):
                           'Voxel sizes calculated from model locations.')
 
         nifti = _brain_to_nifti(self, img)
-        # R = self.get_locs()
-        # Y = self.data.as_matrix()
-        # Y = np.array(Y, ndmin=2)
-        # S = img.affine
-        # locs = np.array(np.dot(R - S[:3, 3], np.linalg.inv(S[0:3, 0:3])), dtype='int')
-        #
-        # shape = np.max(np.vstack([np.max(locs, axis=0) + 1, img.shape[0:3]]), axis=0)
-        # data = np.zeros(tuple(list(shape) + [Y.shape[0]]))
-        # counts = np.zeros(data.shape)
-        #
-        # for i in range(Y.shape[0]):
-        #     for j in range(R.shape[0]):
-        #         data[locs[j, 0], locs[j, 1], locs[j, 2], i] += Y[i, j]
-        #         counts[locs[j, 0], locs[j, 1], locs[j, 2], i] += 1
-        # with np.errstate(invalid='ignore'):
-        #     data = np.divide(data, counts)
-        # data[np.isnan(data)] = 0
-        # nifti =  nib.Nifti1Image(data, affine=img.affine)
 
         if filepath:
             nifti.to_filename(filepath)
