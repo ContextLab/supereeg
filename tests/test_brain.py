@@ -11,11 +11,17 @@ bo = se.simulate_bo(n_samples=10, sample_rate=100)
 nii = se.load('example_nifti')
 bo_n = se.Brain(nii)
 
+mo = se.load('example_model')
+bo_m = se.Brain(mo)
+
 def test_create_bo():
     assert isinstance(bo, se.Brain)
 
 def test_bo_data_nifti():
     assert isinstance(bo_n, se.Brain)
+
+def test_bo_data_model():
+    assert isinstance(bo_m, se.Brain)
 
 def test_bo_data_df():
     assert isinstance(bo.data, pd.DataFrame)

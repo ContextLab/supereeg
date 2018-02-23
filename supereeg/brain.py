@@ -103,6 +103,24 @@ class Brain(object):
         if isinstance(data, nib.nifti1.Nifti1Image):
            data, locs, meta = _nifti_to_brain(data)
 
+        from .model import Model
+
+        if isinstance(data, Model):
+            if all(v is not None for v in [data.numerator, data.denominator, data.locs]):
+
+                model = copy.copy(data)
+
+                numerator= model.numerator
+                denominator = model.denominator
+                with np.errstate(invalid='ignore'):
+                    data = np.divide(numerator, denominator)
+                #np.fill_diagonal(data, 0)
+
+                locs = model.locs
+
+            else:
+                warnings.warn('Model object incomplete')
+
         if isinstance(data, pd.DataFrame):
             self.data = data
         else:
