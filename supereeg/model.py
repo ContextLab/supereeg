@@ -113,6 +113,7 @@ class Model(object):
                 # get locations from template
                 from .helpers import _nifti_to_brain
 
+                ## output for this is wrong
                 bo = _nifti_to_brain(template)
                 self.locs = pd.DataFrame(bo.get_locs(), columns=['x', 'y', 'z'])
 

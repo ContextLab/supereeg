@@ -12,7 +12,8 @@ import os
 ## don't understand why i have to do this:
 from supereeg.helpers import _std, _gray, _resample_nii, _apply_by_file_index, _kurt_vals, _get_corrmat, _z2r, _r2z, _rbf, \
     _uniquerows, _expand_corrmat_fit, _expand_corrmat_predict, _chunk_bo, _timeseries_recon, _chunker, \
-    _round_it, _corr_column, _normalize_Y, _near_neighbor, _vox_size, _count_overlapping, _resample, _nifti_to_brain
+    _round_it, _corr_column, _normalize_Y, _near_neighbor, _vox_size, _count_overlapping, _resample, \
+    _nifti_to_brain, _brain_to_nifti
 
 locs = se.load('example_locations')[0::17]
 # number of timeseries samples
@@ -32,6 +33,8 @@ bo = se.Brain(data=sub_data.as_matrix(), sessions=bo_full.sessions, locs=sub_loc
 data = [se.simulate_model_bos(n_samples=10, locs=locs, sample_locs=n_elecs) for x in range(n_subs)]
 # test model to compare
 test_model = se.Model(data=data, locs=locs)
+bo_nii = se.Brain(_gray(20))
+nii = _brain_to_nifti(bo_nii, _gray(20))
 
 
 def test_std():
@@ -276,9 +279,25 @@ def test_resample():
     assert isinstance(samp_rate, list)
     assert samp_rate==[8,8]
 
-
 def test_nifti_to_brain():
     b_d, b_l, b_h = _nifti_to_brain(_gray(20))
     assert isinstance(b_d, np.ndarray)
     assert isinstance(b_l, np.ndarray)
     assert isinstance(b_h, dict)
+
+def test_brain_to_nifti():
+    nii = _brain_to_nifti(bo, _gray(20))
+    assert isinstance(nii, nib.nifti1.Nifti1Image)
+
+def test_bo_nii_bo():
+    nii = _brain_to_nifti(bo, _gray(20))
+    b_d, b_l, b_h =_nifti_to_brain(nii)
+    assert np.allclose(bo.get_locs(), b_l)
+
+def test_nii_bo_nii():
+
+    bo_nii = se.Brain(_gray(20))
+    nii = _brain_to_nifti(bo_nii, _gray(20))
+    nii_0 = _gray(20).get_data().flatten()
+    nii_0[np.isnan(nii_0)] = 0
+    assert np.allclose(nii_0, nii.get_data().flatten())

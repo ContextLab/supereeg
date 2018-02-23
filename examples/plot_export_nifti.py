@@ -34,24 +34,5 @@ bor = model.predict(bo)
 # If no parameters are passed:
 # default uses gray matter masked brain downsampled to 10 mm resolution
 
-nifti_a = bo.to_nii(vox_size=20)
-a = image.index_img(nifti_a, 1)
-ni_plt.plot_glass_brain(a)
+bor.plot_glass_brain(template='gray', vox_size=20)
 
-# If no template parameter is passed, uses gray matter masked
-
-# You can specify integer or float as voxel size for nifti export
-nifti_b = bo.to_nii(vox_size=6)
-b = image.index_img(nifti_b, 1)
-ni_plt.plot_glass_brain(b)
-
-
-# Or you can specify a list as voxel size
-nifti_c = bo.to_nii(vox_size=[10, 10, 10])
-c = image.index_img(nifti_c, 1)
-ni_plt.plot_glass_brain(c)
-
-# You can also specify a template with specific voxel sizes
-nifti_d = bo.to_nii(template=_gray([10, 10, 10]))
-d = image.index_img(nifti_d, 1)
-ni_plt.plot_glass_brain(d)

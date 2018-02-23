@@ -66,18 +66,18 @@ def load(fname, vox_size=None, return_type=None):
 
     elif fname is 'example_model':
         try:
-            with open(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/mini_model.mo', 'rb') as handle:
+            with open(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/example_model.mo', 'rb') as handle:
                 example_model = pickle.load(handle)
             return example_model
 
         except:
             try:
-                mo = dd.io.load(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/mini_model.mo')
+                mo = dd.io.load(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/example_model.mo')
                 return Model(numerator=mo['numerator'], denominator=mo['denominator'],
                              locs=mo['locs'], n_subs=mo['n_subs'], meta=mo['meta'],
                              date_created=mo['date_created'])
             except:
-                model = pd.read_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/mini_model.mo')
+                model = pd.read_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/example_model.mo')
                 return model
 
     elif fname is 'example_locations':
