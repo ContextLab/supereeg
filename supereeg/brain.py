@@ -29,8 +29,13 @@ class Brain(object):
     Parameters
     ----------
 
-    data : numpy.ndarray or pandas.DataFrame
+    data : numpy.ndarray or pandas.DataFrame,  supereeg.Model, supereeg.Nifti, or Nifti1Image
+
         Samples x electrodes array containing the iEEG data
+
+        If data is a model, returns correlation matrix.
+
+        If data is a nifti image (either supereeg.Nifti or Nifti1Image), returns nifti values.
 
     locs : numpy.ndarray or pandas.DataFrame
         Electrode by MNI coordinate (x,y,z) array containing electrode locations
@@ -114,7 +119,7 @@ class Brain(object):
                 denominator = model.denominator
                 with np.errstate(invalid='ignore'):
                     data = np.divide(numerator, denominator)
-                #np.fill_diagonal(data, 0)
+                np.fill_diagonal(data, 0) # what should be in the diagnonal here?
 
                 locs = model.locs
 
