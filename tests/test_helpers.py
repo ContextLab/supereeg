@@ -39,15 +39,15 @@ nii = _brain_to_nifti(bo_nii, _gray(20))
 
 def test_std():
     nii = _std(20)
-    assert isinstance(nii, nib.nifti1.Nifti1Image)
+    assert isinstance(nii, se.Nifti)
 
 def test_gray():
     nii = _gray(20)
-    assert isinstance(nii, nib.nifti1.Nifti1Image)
+    assert isinstance(nii, se.Nifti)
 
 def test_resample_nii():
     nii = _resample_nii(_gray(), 20, precision=5)
-    assert isinstance(nii, nib.nifti1.Nifti1Image)
+    assert isinstance(nii, se.Nifti)
 
 def test__apply_by_file_index():
     def aggregate(prev, next):
@@ -287,7 +287,7 @@ def test_nifti_to_brain():
 
 def test_brain_to_nifti():
     nii = _brain_to_nifti(bo, _gray(20))
-    assert isinstance(nii, nib.nifti1.Nifti1Image)
+    assert isinstance(nii, se.Nifti)
 
 def test_bo_nii_bo():
     nii = _brain_to_nifti(bo, _gray(20))

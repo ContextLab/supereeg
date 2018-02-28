@@ -43,9 +43,11 @@ def _std(res=None):
          Nifti image of the standard brain
 
     """
+    from .nifti import Nifti
 
     std_fname = os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/std.nii'
-    std_img = nib.load(std_fname)
+    #std_img = nib.load(std_fname)
+    std_img = Nifti(std_fname)
     if res:
         return _resample_nii(std_img, res)
     else:
@@ -69,18 +71,20 @@ def _gray(res=None):
          Nifti image of gray masked brain
 
     """
+    from .nifti import Nifti
 
     gray_fname = os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray.nii'
-    gray_img = nib.load(gray_fname)
+    #gray_img = nib.load(gray_fname)
+    gray_img = Nifti(gray_fname)
 
     threshold = 100
     gray_data = gray_img.get_data()
     gray_data[np.isnan(gray_data) | (gray_data < threshold)] = 0
 
     if res:
-        return _resample_nii(nib.Nifti1Image(gray_data, gray_img.affine), res)
+        return _resample_nii(Nifti(gray_data, gray_img.affine), res)
     else:
-        return nib.Nifti1Image(gray_data, gray_img.affine)
+        return Nifti(gray_data, gray_img.affine)
 
 
 def _resample_nii(x, target_res, precision=5):
@@ -105,6 +109,9 @@ def _resample_nii(x, target_res, precision=5):
          Re-scaled Nifti image
 
     """
+
+    from .nifti import Nifti
+
     if np.iterable(target_res):
         target_res = [(lambda i: 1.0 if i < 1 else i)(i) for i in target_res]
     elif target_res < 1:
@@ -136,7 +143,7 @@ def _resample_nii(x, target_res, precision=5):
         z[z < 1e-5] = np.nan
     except:
         pass
-    return nib.nifti1.Nifti1Image(z, target_affine)
+    return Nifti(z, target_affine)
 
 
 def _apply_by_file_index(bo, xform, aggregator):
@@ -1150,6 +1157,8 @@ def _brain_to_nifti(bo, nii_template):
 
 
     """
+    from .nifti import Nifti
+
     hdr = nii_template.get_header()
     temp_v_size = hdr.get_zooms()[0:3]
 
@@ -1171,4 +1180,4 @@ def _brain_to_nifti(bo, nii_template):
         data = np.divide(data, counts)
     data[np.isnan(data)] = 0
 
-    return nib.Nifti1Image(data, affine=nii_template.affine)
+    return Nifti(data, affine=nii_template.affine)

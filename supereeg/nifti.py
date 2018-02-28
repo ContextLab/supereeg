@@ -1,11 +1,10 @@
 from __future__ import division
 from __future__ import print_function
 
-import nibabel as nib
-from nibabel import Nifti1Image
-import numpy as np
-from .helpers import _nifti_to_brain
 
+from nibabel import Nifti1Image
+from nilearn import plotting as ni_plt
+import numpy as np
 import six # Python 2 and 3 compatibility
 
 class Nifti(Nifti1Image):
@@ -17,9 +16,9 @@ class Nifti(Nifti1Image):
     Parameters
     ----------
 
-    data : Nifti1Image or supereeg.Brain, supereeg.Nifti
+    data : path to Nifti1Image, supereeg.Brain, supereeg.Nifti
 
-        If data is a nifti image (either supereeg.Nifti or Nifti1Image), returns nifti values.
+        If data is a nifti image (either supereeg.Nifti or path to Nifti1Image), returns nifti values.
 
 
     Attributes
@@ -46,6 +45,8 @@ class Nifti(Nifti1Image):
             else:
                 super(Nifti,self).__init__(data,affine,**kwargs)
 
+        elif isinstance(data, Nifti):
+            super(Nifti, self).__init__(data.dataobj, data.affine)
 
     def to_bo(self):
 
@@ -53,4 +54,22 @@ class Nifti(Nifti1Image):
 
         return Brain(self)
 
+    def to_mo(self):
 
+        from .brain import Brain
+        from .model import Model
+
+        bo = Brain(self)
+        return Model(bo)
+
+    def plot_anat(self, pdfpath=None):
+
+        ni_plt.plot_anat(self)
+        if not pdfpath:
+            ni_plt.show()
+
+    def plot_glass_brain(self, pdfpath=None):
+
+        ni_plt.plot_glass_brain(self)
+        if not pdfpath:
+            ni_plt.show()

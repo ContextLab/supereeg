@@ -75,7 +75,7 @@ def test_bo_save(tmpdir):
     assert isinstance(test_bo, se.Brain)
 
 def test_nii_nifti():
-    assert isinstance(bo.to_nii(), nib.nifti1.Nifti1Image)
+    assert isinstance(bo.to_nii(), se.Nifti)
 
 
 ## can't get tests for plots to work

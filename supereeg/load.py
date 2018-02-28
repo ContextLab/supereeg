@@ -7,6 +7,7 @@ import pandas as pd
 import nibabel as nib
 from .brain import Brain
 from .model import Model
+from .nifti import Nifti
 from .helpers import tal2mni, _gray, _std
 
 def load(fname, vox_size=None, return_type=None):
@@ -154,7 +155,7 @@ def load(fname, vox_size=None, return_type=None):
 
     # load nifti
     elif fname.split('.')[-1]=='nii' or '.'.join(fname.split('.')[-2:])=='nii.gz':
-        return nib.load(fname)
+        return Nifti(fname)
     #
     # if return_type == bo:
     #
