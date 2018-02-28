@@ -12,8 +12,9 @@ import seaborn as sns
 import deepdish as dd
 import matplotlib.pyplot as plt
 from .helpers import filter_elecs, _get_corrmat, _r2z, _z2r, _rbf, _expand_corrmat_fit, _expand_corrmat_predict,\
-    _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp
+    _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp, _gray
 from .brain import Brain
+from .nifti import Nifti
 
 
 class Model(object):
@@ -108,15 +109,15 @@ class Model(object):
             if locs is None:
 
                 if template is None:
-                    template = os.path.dirname(os.path.abspath(__file__)) + '/data/gray_mask_20mm_brain.nii'
+                    template = _gray(20)
 
                 # get locations from template
                 from .helpers import _nifti_to_brain
 
                 ## output for this is wrong
-                bo = _nifti_to_brain(template)
-                self.locs = pd.DataFrame(bo.get_locs(), columns=['x', 'y', 'z'])
-
+                nii_data, nii_locs, nii_meta = _nifti_to_brain(template)
+                #self.locs = pd.DataFrame(bo.get_locs(), columns=['x', 'y', 'z'])
+                self.locs = nii_locs
             else:
 
                 # otherwise, create df from locs passed as arg
