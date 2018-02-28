@@ -105,6 +105,11 @@ class Brain(object):
     def __init__(self, data=None, locs=None, sessions=None, sample_rate=None,
                  meta=None, date_created=None, label=None):
 
+        from .nifti import Nifti
+
+        if isinstance(data, Nifti):
+           data, locs, meta = _nifti_to_brain(data)
+
         if isinstance(data, nib.nifti1.Nifti1Image):
            data, locs, meta = _nifti_to_brain(data)
 

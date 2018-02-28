@@ -1095,6 +1095,10 @@ def _nifti_to_brain(nifti, mask_file=None):
 
 
     """
+    from .nifti import Nifti
+
+    if type(nifti) is Nifti:
+        img = nifti
 
     if type(nifti) is nib.nifti1.Nifti1Image:
         img = nifti
