@@ -12,6 +12,8 @@ import pandas as pd
 import nibabel as nib
 import deepdish as dd
 import matplotlib.pyplot as plt
+from .model import Model
+from .nifti import Nifti
 from .helpers import _kurt_vals, _z_score, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, \
     _plot_locs_hyp, _plot_glass_brain, _std, _gray, _nifti_to_brain, _brain_to_nifti
 
@@ -105,15 +107,11 @@ class Brain(object):
     def __init__(self, data=None, locs=None, sessions=None, sample_rate=None,
                  meta=None, date_created=None, label=None):
 
-        from .nifti import Nifti
-
         if isinstance(data, Nifti):
            data, locs, meta = _nifti_to_brain(data)
 
         if isinstance(data, nib.nifti1.Nifti1Image):
            data, locs, meta = _nifti_to_brain(data)
-
-        from .model import Model
 
         if isinstance(data, Model):
             if all(v is not None for v in [data.numerator, data.denominator, data.locs]):
@@ -124,7 +122,7 @@ class Brain(object):
                 denominator = model.denominator
                 with np.errstate(invalid='ignore'):
                     data = np.divide(numerator, denominator)
-                np.fill_diagonal(data, 0) # what should be in the diagnonal here?
+                np.fill_diagonal(data, 1)
 
                 locs = model.locs
 

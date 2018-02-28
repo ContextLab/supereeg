@@ -12,9 +12,10 @@ import seaborn as sns
 import deepdish as dd
 import matplotlib.pyplot as plt
 from .helpers import filter_elecs, _get_corrmat, _r2z, _z2r, _rbf, _expand_corrmat_fit, _expand_corrmat_predict,\
-    _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp, _gray
+    _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp, _gray, _nifti_to_brain
 from .brain import Brain
 from .nifti import Nifti
+
 
 
 class Model(object):
@@ -89,6 +90,10 @@ class Model(object):
                  measure='kurtosis', threshold=10, numerator=None, denominator=None,
                  n_subs=None, meta=None, date_created=None):
 
+        if isinstance(data, Nifti):
+            bo_data, bo_locs, bo_meta = _nifti_to_brain(data)
+            Brain(bo_data, bo_locs, bo_meta)
+
         # if all of these fields are not none, shortcut the model creation
         if all(v is not None for v in [numerator, denominator, locs, n_subs]):
 
@@ -111,11 +116,9 @@ class Model(object):
                 if template is None:
                     template = _gray(20)
 
-                # get locations from template
-                from .helpers import _nifti_to_brain
-
                 ## output for this is wrong
                 nii_data, nii_locs, nii_meta = _nifti_to_brain(template)
+
                 #self.locs = pd.DataFrame(bo.get_locs(), columns=['x', 'y', 'z'])
                 self.locs = nii_locs
             else:

@@ -15,6 +15,7 @@ data = [se.simulate_model_bos(n_samples=10, sample_rate=10, locs=locs,
                               sample_locs = n_elecs) for x in range(n_subs)]
 test_bo = data[0]
 test_model = se.Model(data=data, locs=locs)
+bo = se.load('example_data')
 
 def test_load_example_data():
     bo = se.load('example_data')

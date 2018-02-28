@@ -6,6 +6,8 @@ from nibabel import Nifti1Image
 from nilearn import plotting as ni_plt
 import numpy as np
 import six # Python 2 and 3 compatibility
+from .brain import Brain
+from .model import Model
 
 class Nifti(Nifti1Image):
     """
@@ -48,16 +50,19 @@ class Nifti(Nifti1Image):
         elif isinstance(data, Nifti):
             super(Nifti, self).__init__(data.dataobj, data.affine)
 
-    def to_bo(self):
+        elif isinstance(data, Brain):
+            data.to_nii()
 
-        from .brain import Brain
+        elif isinstance(data, Model):
+            bo = Brain(data)
+            bo.to_nii()
+
+
+    def to_bo(self):
 
         return Brain(self)
 
     def to_mo(self):
-
-        from .brain import Brain
-        from .model import Model
 
         bo = Brain(self)
         return Model(bo)
@@ -69,6 +74,8 @@ class Nifti(Nifti1Image):
             ni_plt.show()
 
     def plot_glass_brain(self, pdfpath=None):
+        ## check if 3D or 4D and index img if 4D
+
 
         ni_plt.plot_glass_brain(self)
         if not pdfpath:
