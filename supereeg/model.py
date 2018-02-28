@@ -14,8 +14,6 @@ import matplotlib.pyplot as plt
 from .helpers import filter_elecs, _get_corrmat, _r2z, _z2r, _rbf, _expand_corrmat_fit, _expand_corrmat_predict,\
     _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp, _gray, _nifti_to_brain
 from .brain import Brain
-from .nifti import Nifti
-
 
 
 class Model(object):
@@ -89,6 +87,9 @@ class Model(object):
     def __init__(self, data=None, locs=None, template=None,
                  measure='kurtosis', threshold=10, numerator=None, denominator=None,
                  n_subs=None, meta=None, date_created=None):
+
+        from .brain import Brain
+        from .nifti import Nifti
 
         if isinstance(data, Nifti):
             bo_data, bo_locs, bo_meta = _nifti_to_brain(data)

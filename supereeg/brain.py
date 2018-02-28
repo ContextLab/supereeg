@@ -12,8 +12,6 @@ import pandas as pd
 import nibabel as nib
 import deepdish as dd
 import matplotlib.pyplot as plt
-from .model import Model
-from .nifti import Nifti
 from .helpers import _kurt_vals, _z_score, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, \
     _plot_locs_hyp, _plot_glass_brain, _std, _gray, _nifti_to_brain, _brain_to_nifti
 
@@ -106,6 +104,9 @@ class Brain(object):
 
     def __init__(self, data=None, locs=None, sessions=None, sample_rate=None,
                  meta=None, date_created=None, label=None):
+
+        from .model import Model
+        from .nifti import Nifti
 
         if isinstance(data, Nifti):
            data, locs, meta = _nifti_to_brain(data)

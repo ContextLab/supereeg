@@ -6,8 +6,6 @@ from nibabel import Nifti1Image
 from nilearn import plotting as ni_plt
 import numpy as np
 import six # Python 2 and 3 compatibility
-from .brain import Brain
-from .model import Model
 
 class Nifti(Nifti1Image):
     """
@@ -36,7 +34,12 @@ class Nifti(Nifti1Image):
 
     """
 
+
     def __init__(self,data,affine=None,**kwargs):
+
+        from .brain import Brain
+        from .model import Model
+
         if isinstance(data,six.string_types):
             image = Nifti1Image.load(data)
             super(Nifti, self).__init__(image.dataobj,image.affine)
@@ -59,10 +62,13 @@ class Nifti(Nifti1Image):
 
 
     def to_bo(self):
+        from .brain import Brain
 
         return Brain(self)
 
     def to_mo(self):
+        from .brain import Brain
+        from .model import Model
 
         bo = Brain(self)
         return Model(bo)

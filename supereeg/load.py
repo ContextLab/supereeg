@@ -189,6 +189,8 @@ def load(fname, vox_size=None, return_type=None):
 
     assert isinstance(loaded, (Brain, Model, Nifti))
 
+    return loaded
+
     # if return_type == 'nii':
     #
     #
