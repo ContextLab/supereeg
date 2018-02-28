@@ -23,10 +23,11 @@ nii = se.load('gray', vox_size=20)
 nifti = se.Nifti(std_fname)
 ni_plt.plot_anat(nifti)
 
-bo_b = nifti.nii_to_brain()
+bo_b = nifti.to_bo()
 
 bo_n = se.Brain(nii)
 se_nii = se.Nifti(nii)
+
 
 bo = se.Brain(se_nii)
 

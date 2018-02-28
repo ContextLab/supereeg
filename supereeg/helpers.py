@@ -1131,6 +1131,25 @@ def _nifti_to_brain(nifti, mask_file=None):
 
 def _brain_to_nifti(bo, nii_template):
 
+    """
+    Takes or loads nifti file and converts to brain object
+
+    Parameters
+    ----------
+    bo : brain object
+
+    template : str, Nifti1Image, or None
+
+        Template is a nifti file with the desired resolution to save the brain object activity
+
+
+    Returns
+    ----------
+    results: nibabel.Nifti1Image
+        A nibabel nifti image
+
+
+    """
     hdr = nii_template.get_header()
     temp_v_size = hdr.get_zooms()[0:3]
 

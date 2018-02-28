@@ -47,9 +47,10 @@ class Nifti(Nifti1Image):
                 super(Nifti,self).__init__(data,affine,**kwargs)
 
 
-    def nii_to_brain(self):
+    def to_bo(self):
 
         from .brain import Brain
 
-        return Brain(_nifti_to_brain(self))
+        return Brain(self)
+
 
