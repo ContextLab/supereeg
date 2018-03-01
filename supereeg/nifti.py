@@ -161,7 +161,7 @@ class Nifti(Nifti1Image):
         if not pdfpath:
             ni_plt.show()
 
-    def make_gif(self, gifpath, index=range(100, 200),name=None, **kwargs):
+    def make_gif(self, gifpath, index=range(0, 10), name=None, **kwargs):
 
         """
         Plots nifti data as png and compiles as gif
