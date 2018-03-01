@@ -4,7 +4,7 @@
 Load and save nifti file
 =============================
 
-This example loads a nifti file and converts it into a brain object.
+This example loads a nifti file.  It also converts a brain object into a nifti and saves it.
 
 """
 
