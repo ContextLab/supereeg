@@ -1,10 +1,10 @@
 from __future__ import print_function
 import os
 import pickle
+import warnings
 import numpy as np
 import deepdish as dd
 import pandas as pd
-import nibabel as nib
 from .brain import Brain
 from .model import Model
 from .nifti import Nifti
@@ -189,26 +189,34 @@ def load(fname, vox_size=None, return_type=None):
 
     assert isinstance(loaded, (Brain, Model, Nifti))
 
-    return loaded
+    if return_type == 'nii':
 
-    # if return_type == 'nii':
-    #
-    #
-    #
-    #
-    #
-    #     if vox_size:
-    #
-    #
-    #     if type(loaded) is Nifti vox_size:
-    #         return _resample_nii(loaded, target_res=vox_size)
-    #
-    #     else:
-    #         return loaded
-    #
-    #     if type(loaded) is Brain and vox_size:
-    #
-    #         return _resample_nii(loaded, target_res=vox_size)
-    #
-    # if return_type == 'bo':
-    #     return Brain(loaded)
+        if not type(loaded) is Nifti:
+            loaded = Nifti(loaded)
+
+        if vox_size:
+            return _resample_nii(loaded, target_res=vox_size)
+
+        else:
+            return loaded
+
+    elif return_type == 'bo':
+
+        if not type(loaded) is Brain:
+            loaded = Brain(loaded)
+
+        return loaded
+
+    elif return_type == 'mo':
+
+        if not type(loaded) is Model:
+            loaded = Model(loaded)
+
+        return loaded
+
+    elif return_type is None:
+
+        return loaded
+
+    else:
+        warnings.warn('return_type not understood')

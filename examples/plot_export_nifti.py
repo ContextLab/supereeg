@@ -13,26 +13,23 @@ This example loads a nifti file and converts it into a brain object.
 
 # import
 import supereeg as se
-from nilearn import plotting as ni_plt
-from nilearn import image
-from supereeg.helpers import _std, _gray
-import nibabel as nib
-import os
-import hypertools as hyp
 
 
-# load example data as brain object
+# load example nifti
+nii = se.load('example_nifti')
+
+# or load example data to convert to nifti
 bo = se.load('example_data')
 
-
-# load example model
-model = se.load('example_model')
-
-bor = model.predict(bo)
-
-
+# convert to nifti two ways:
 # If no parameters are passed:
-# default uses gray matter masked brain downsampled to 10 mm resolution
+# default uses gray matter masked brain downsampled to 6 mm resolution
 
-bor.plot_glass_brain(template='gray', vox_size=20)
+# 1: convert with brain object method
+nii_bo1 = bo.to_nii(template='gray', vox_size=20)
 
+# 2: pass to initialize nifti
+nii_bo2 = se.Nifti(bo, template='gray', vox_size=20)
+
+# save nifti
+#nii_bo2.save('/path/to/save/nifti')

@@ -895,7 +895,7 @@ def _count_overlapping(X, Y):
     return np.sum([(X.locs == y).all(1) for idy, y in Y.locs.iterrows()], 0).astype(bool)
 
 
-def make_gif_pngs(nifti, gif_path, name=None, window_min=1000, window_max=1100, **kwargs):
+def make_gif_pngs(nifti, gif_path, index=range(100, 200), name=None, **kwargs):
     """
     Plots series of nifti timepoints as nilearn plot_glass_brain in .png format
 
@@ -923,7 +923,7 @@ def make_gif_pngs(nifti, gif_path, name=None, window_min=1000, window_max=1100, 
 
     """
 
-    for i in range(window_min, window_max):
+    for i in index:
         nii_i = image.index_img(nifti, i)
         outfile = os.path.join(gif_path, str(i).zfill(4) + '.png')
         ni_plt.plot_glass_brain(nii_i, output_file=outfile, **kwargs)
@@ -933,11 +933,12 @@ def make_gif_pngs(nifti, gif_path, name=None, window_min=1000, window_max=1100, 
         if file.endswith(".png"):
             images.append(imageio.imread(os.path.join(gif_path, file)))
     if name is None:
-        gif_outfile = os.path.join(gif_path, 'gif_' + str(window_min) + '_' + str(window_max) + '.gif')
+        gif_outfile = os.path.join(gif_path, 'gif_' + str(min(index)) + '_' + str(max(index)) + '.gif')
 
     else:
         gif_outfile = os.path.join(gif_path, str(name) + '.gif')
     imageio.mimsave(gif_outfile, images)
+
 
 def _data_and_samplerate_by_file_index(bo, xform, **kwargs):
     """

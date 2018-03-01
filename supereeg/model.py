@@ -92,8 +92,7 @@ class Model(object):
         from .nifti import Nifti
 
         if isinstance(data, Nifti):
-            bo_data, bo_locs, bo_meta = _nifti_to_brain(data)
-            Brain(bo_data, bo_locs, bo_meta)
+            data = Brain(data)
 
         # if all of these fields are not none, shortcut the model creation
         if all(v is not None for v in [numerator, denominator, locs, n_subs]):
@@ -132,6 +131,7 @@ class Model(object):
 
             if type(data) is not list:
                 data = [data]
+
 
             for bo in data:
 
