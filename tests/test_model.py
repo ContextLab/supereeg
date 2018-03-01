@@ -7,8 +7,22 @@ import supereeg as se
 import numpy as np
 import scipy
 
-# load example model to get locations
-locs = se.load('example_locations')[0::17]
+# some example locations
+
+locs = np.array([[-61., -77.,  -3.],
+                 [-41., -77., -23.],
+                 [-21., -97.,  17.],
+                 [-21., -37.,  77.],
+                 [-21.,  63.,  -3.],
+                 [ -1., -37.,  37.],
+                 [ -1.,  23.,  17.],
+                 [ 19., -57., -23.],
+                 [ 19.,  23.,  -3.],
+                 [ 39., -57.,  17.],
+                 [ 39.,   3.,  37.],
+                 [ 59., -17.,  17.]])
+
+
 # number of timeseries samples
 n_samples = 10
 # number of subjects

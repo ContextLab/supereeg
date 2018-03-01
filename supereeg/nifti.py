@@ -63,18 +63,28 @@ class Nifti(Nifti1Image):
             data = bo.to_nii(**kwargs)
             super(Nifti, self).__init__(data.dataobj, data.affine)
 
+    def info(self):
+        """
+        Print info about the Nifti
 
-    def to_bo(self):
-        from .brain import Brain
+        Prints the header information
+        Could print more if necessary
 
-        return Brain(self)
+        """
+        print('Header: ' + str(self.header))
 
-    def to_mo(self):
-        from .brain import Brain
-        from .model import Model
-
-        bo = Brain(self)
-        return Model(bo)
+    ### Ask if we want this type for method for each of the classes
+    # def to_bo(self):
+    #     from .brain import Brain
+    #
+    #     return Brain(self)
+    #
+    # def to_mo(self):
+    #     from .brain import Brain
+    #     from .model import Model
+    #
+    #     bo = Brain(self)
+    #     return Model(bo)
 
     def plot_anat(self, pdfpath=None, index=1):
 
@@ -180,6 +190,7 @@ class Nifti(Nifti1Image):
         assert len(self.shape)>3, '4D necessary for gif'
 
         make_gif_pngs(self, gifpath, index, name, **kwargs)
+
 
     def save(self, filepath):
 

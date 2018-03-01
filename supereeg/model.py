@@ -33,7 +33,7 @@ class Model(object):
     data : supereeg.Brain or list
         A list of supereeg.Brain objects used to create the model
 
-    locs : pandas.DataFrame
+    locs : pandas.DataFrame or np.ndarray
         MNI coordinate (x,y,z) by number of electrode df containing electrode
         locations
 
