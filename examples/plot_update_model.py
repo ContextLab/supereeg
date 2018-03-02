@@ -19,15 +19,13 @@ new data.
 
 # import libraries
 from builtins import range
-import pandas as pd
 import matplotlib.pyplot as plt
 import supereeg as se
 
-# load example model to get locations
-locs = se.load('example_locations')
 
-# convert to pandas
-locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
+# load example model to get locations
+mo = se.load('example_model')
+locs = mo.locs
 
 # simulate correlation matrix
 R = se.create_cov(cov='toeplitz', n_elecs=len(locs))
