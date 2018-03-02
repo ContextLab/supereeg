@@ -4,7 +4,7 @@
 Plot Nifti
 =============================
 
-Here, we load an example nifti image and plot it
+Here, we load an example nifti image and plot it.
 
 """
 
