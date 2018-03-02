@@ -23,7 +23,7 @@ nii = se.load('example_nifti')
 nii.plot_anat()
 
 # nifti -> brain object
-bo = nii.to_bo()
+bo = se.Brain(nii)
 
 # export brain object -> nifti
 nii_r = bo.to_nii(template='gray', vox_size=20)

@@ -376,20 +376,6 @@ class Brain(object):
         else:
             _plot_locs_hyp(locs, pdfpath)
 
-    def plot_glass_brain(self, pdfpath=None, template=None, vox_size=None, sample_rate=None):
-        """
-        Plots electrode locations from brain object
-
-
-        Parameters
-        ----------
-        pdfpath : str
-            A name for the file.  If the file extension (.pdf) is not specified, it
-        will be appended.
-
-        """
-
-        _plot_glass_brain(self.to_nii(template=template, vox_size=vox_size, sample_rate=sample_rate), pdfpath)
 
     def save(self, fname, compression='blosc'):
         """

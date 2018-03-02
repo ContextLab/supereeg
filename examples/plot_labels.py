@@ -5,7 +5,7 @@ Explore labels
 =============================
 
 In this example, we load in a single subject example, load a model, and predict activity at all
-model locations. We then parse the values based on the labels.
+model locations. We then slice the brain object based on the labels.
 
 """
 
