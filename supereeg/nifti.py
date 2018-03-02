@@ -110,7 +110,9 @@ class Nifti(Nifti1Image):
 
         """
         if len(self.shape)>3:
+
             if self.shape[3]>1:
+
                 if hasattr(type(index), "__iter__"):
                     for i in index:
                         nii = image.index_img(self, i)
@@ -118,6 +120,9 @@ class Nifti(Nifti1Image):
                 else:
                     nii = image.index_img(self, index)
                     ni_plt.plot_anat(nii)
+
+            else:
+                ni_plt.plot_anat(self)
         else:
             ni_plt.plot_anat(self)
 
