@@ -25,13 +25,21 @@ class Nifti(Nifti1Image):
     Attributes
     ----------
 
+    dataobj : np.ndarray
+        an N-D array containing the image data
+
+    affine : np.ndarray
+        a (4, 4) affine matrix mapping array coordinates to coordinates in MNI coordinate space
+
+    header : nibabel.nifti1.Nifti1Header
+        image metadata in the form of a header
 
 
     Returns
     ----------
 
     nii : supereeg.Nifti
-        Instance of Nifti data class
+        Instance of Nifti data class, (nibabel.nifti1.Nifti1Image subclass)
 
     """
 
