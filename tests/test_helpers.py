@@ -15,7 +15,19 @@ from supereeg.helpers import _std, _gray, _resample_nii, _apply_by_file_index, _
     _round_it, _corr_column, _normalize_Y, _near_neighbor, _vox_size, _count_overlapping, _resample, \
     _nifti_to_brain, _brain_to_nifti
 
-locs = se.load('example_locations')[0::17]
+locs = np.array([[-61., -77.,  -3.],
+                 [-41., -77., -23.],
+                 [-21., -97.,  17.],
+                 [-21., -37.,  77.],
+                 [-21.,  63.,  -3.],
+                 [ -1., -37.,  37.],
+                 [ -1.,  23.,  17.],
+                 [ 19., -57., -23.],
+                 [ 19.,  23.,  -3.],
+                 [ 39., -57.,  17.],
+                 [ 39.,   3.,  37.],
+                 [ 59., -17.,  17.]])
+
 # number of timeseries samples
 n_samples = 10
 # number of subjects
