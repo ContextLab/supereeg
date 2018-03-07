@@ -22,7 +22,7 @@ setup(
         'scikit-learn>=0.18.1',
         'pandas>=0.21.1',
         'seaborn>=0.7.1',
-        'matplotlib>=1.5.1',
+        'matplotlib>=2.1.2',
         'scipy>=0.17.1',
         'numpy>=1.10.4',
         'nilearn',
