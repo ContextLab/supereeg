@@ -13,7 +13,7 @@ import nibabel as nib
 import deepdish as dd
 import matplotlib.pyplot as plt
 from .helpers import _kurt_vals, _z_score, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, \
-    _plot_locs_hyp, _plot_glass_brain, _std, _gray, _nifti_to_brain, _brain_to_nifti
+    _plot_locs_hyp, _std, _gray, _nifti_to_brain, _brain_to_nifti
 
 class Brain(object):
     """
