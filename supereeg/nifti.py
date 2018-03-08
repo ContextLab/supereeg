@@ -178,15 +178,18 @@ class Nifti(Nifti1Image):
 
         """
         if len(self.shape)>3:
-            if hasattr(type(index), "__iter__"):
-                for i in index:
-                    nii = index_img(self, i)
+
+            if self.shape[3] > 1:
+
+                if hasattr(type(index), "__iter__"):
+                    for i in index:
+                        nii = index_img(self, i)
+                        ni_plt.plot_glass_brain(nii)
+                else:
+                    nii = index_img(self, index)
                     ni_plt.plot_glass_brain(nii)
             else:
-                nii = index_img(self, index)
-                ni_plt.plot_glass_brain(nii)
-        else:
-            ni_plt.plot_glass_brain(self)
+                ni_plt.plot_glass_brain(self)
 
         if not pdfpath:
             ni_plt.show()

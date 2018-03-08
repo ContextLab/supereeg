@@ -25,6 +25,9 @@ nii.plot_anat()
 # nifti -> brain object
 bo = se.Brain(nii)
 
+# plot brain object
+bo.plot_data()
+
 # export brain object -> nifti
 nii_r = bo.to_nii(template='gray', vox_size=20)
 

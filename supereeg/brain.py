@@ -320,42 +320,48 @@ class Brain(object):
         # adds 1 to each row so that the y-axis value corresponds to electrode
         # location in the MNI coordinate (x,y,z) by electrode df containing
         # electrode locations
-        Y = _normalize_Y(self.data)
 
-        # if filtered in passed, filter by electrodes that do not pass kurtosis
-        # thresholding
-        if filtered:
-            thresh_bool = self.kurtosis > threshold
-            Y = Y.iloc[:, ~thresh_bool]
+        if self.data.shape[0] == 1:
+            nii = self.to_nii()
+            nii.plot_glass_brain()
 
-        if electrode is not None:
-            Y = Y.columns[int(electrode)]
-
-        # divide index by sample rate so that index corresponds to time
-        if self.sample_rate:
-            Y.index = np.divide(Y.index,np.mean(self.sample_rate))
-
-        # if a time window is designated index data in that window
-        if all([time_min, time_max]):
-            mask = (Y.index >= time_min) & (Y.index <= time_max)
-            Y = Y[mask]
-
-        # if a time window is not designated, default to the first 500 seconds
         else:
-            time_min = 0
-            time_max =  10
-            mask = (Y.index >= time_min) & (Y.index <= time_max)
-            Y= Y[mask]
+            Y = _normalize_Y(self.data)
 
-        ax = Y.plot(legend=False, title=title, color='k', lw=.6)
-        ax.set_facecolor('w')
-        ax.set_xlabel("time")
-        ax.set_ylabel("electrode")
-        ax.set_ylim([0, len(Y.columns) + 1])
-        if filepath:
-            plt.savefig(filename=filepath)
-        else:
-            plt.show()
+            # if filtered in passed, filter by electrodes that do not pass kurtosis
+            # thresholding
+            if filtered:
+                thresh_bool = self.kurtosis > threshold
+                Y = Y.iloc[:, ~thresh_bool]
+
+            if electrode is not None:
+                Y = Y.columns[int(electrode)]
+
+            # divide index by sample rate so that index corresponds to time
+            if self.sample_rate:
+                Y.index = np.divide(Y.index,np.mean(self.sample_rate))
+
+            # if a time window is designated index data in that window
+            if all([time_min, time_max]):
+                mask = (Y.index >= time_min) & (Y.index <= time_max)
+                Y = Y[mask]
+
+            # if a time window is not designated, default to the first 500 seconds
+            else:
+                time_min = 0
+                time_max =  10
+                mask = (Y.index >= time_min) & (Y.index <= time_max)
+                Y= Y[mask]
+
+            ax = Y.plot(legend=False, title=title, color='k', lw=.6)
+            ax.set_facecolor('w')
+            ax.set_xlabel("time")
+            ax.set_ylabel("electrode")
+            ax.set_ylim([0, len(Y.columns) + 1])
+            if filepath:
+                plt.savefig(filename=filepath)
+            else:
+                plt.show()
 
     def plot_locs(self, pdfpath=None):
         """
