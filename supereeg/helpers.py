@@ -1108,7 +1108,7 @@ def _nifti_to_brain(nifti, mask_file=None):
     if type(nifti) is Nifti:
         img = nifti
 
-    if type(nifti) is nib.nifti1.Nifti1Image:
+    elif type(nifti) is nib.nifti1.Nifti1Image:
         img = nifti
 
     elif type(nifti) is str:

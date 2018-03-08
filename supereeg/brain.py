@@ -164,17 +164,17 @@ class Brain(object):
             assert len(self.sample_rate) ==  len(self.sessions.unique()), \
             'Should be one sample rate for each session.'
 
-        elif sample_rate is None:
-            self.sample_rate = None
-            self.n_secs = None
-            warnings.warn('No sample rate given.  Number of seconds cant be computed')
-
         elif type(sample_rate) in [int, float]:
             self.sample_rate = [sample_rate]*len(self.sessions.unique())
+
         else:
             self.sample_rate = None
-            warnings.warn('Format of sample rate not recognized. Number of '
-                          'seconds cannot be computed. Setting sample rate to None')
+
+            if self.data.shape[0] == 1:
+                self.n_secs = 0
+            else:
+                self.n_secs = None
+                warnings.warn('No sample rate given.  Number of seconds cant be computed')
 
         if sample_rate is not None:
             index, counts = np.unique(self.sessions, return_counts=True)
