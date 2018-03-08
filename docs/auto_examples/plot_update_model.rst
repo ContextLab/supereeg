@@ -34,15 +34,13 @@ new data.
 
     # import libraries
     from builtins import range
-    import pandas as pd
     import matplotlib.pyplot as plt
     import supereeg as se
 
-    # load example model to get locations
-    locs = se.load('example_locations')
 
-    # convert to pandas
-    locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
+    # load example model to get locations
+    mo = se.load('example_model')
+    locs = mo.locs
 
     # simulate correlation matrix
     R = se.create_cov(cov='toeplitz', n_elecs=len(locs))
@@ -65,7 +63,7 @@ new data.
 
     # initialize subplots
     f, (ax1, ax2) = plt.subplots(1, 2)
-    f.set_size_inches(15,5)
+    f.set_size_inches(14,6)
 
     # plot it and set the title
     model.plot_data(ax=ax1, show=False, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
@@ -78,7 +76,7 @@ new data.
     plt.tight_layout()
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  2.329 seconds)
+**Total running time of the script:** ( 0 minutes  3.028 seconds)
 
 
 

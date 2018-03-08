@@ -6,8 +6,8 @@ Make gif
 
 In this example, we load in a single subject example, remove electrodes that exceed
 a kurtosis threshold (in place), load a model, and predict activity at all
-model locations.  We then convert the reconstruction to a nifti and convert 500 consecutive timepoints
-to .png files and then compile as a gif.
+model locations.  We then convert the reconstruction to a nifti and plot 3 consecutive timepoints
+first with the plot_glass_brain and then create .png files and compile as a gif.
 
 """
 
@@ -30,8 +30,15 @@ reconstructed_bo = model.predict(bo)
 # print out info on new brain object
 reconstructed_bo.info()
 
-# convert to nifti
-reconstructed_nifti = reconstructed_bo.to_nii()
+# slice first 3 timepoints
+samples = [0,1,2]
+reconstructed_bo.get_slice(sample_inds=samples, inplace=True)
 
-# make gif, default time window is 1000 to 1500, but you can specifiy
-# se.make_gif_pngs(reconstructed_nifti, result_dir='/your/path/to/gif')
+# convert to nifti
+reconstructed_nifti = reconstructed_bo.to_nii(template='gray', vox_size=20)
+
+# plot first 5 timepoints
+reconstructed_nifti.plot_glass_brain(index=samples)
+
+# make gif, default time window is 0 to 10, but you can specifiy by setting a range with index
+# reconstructed_nifti.make_gif(gif_path='/your/path/to/gif', index=samples, name='sample_gif')

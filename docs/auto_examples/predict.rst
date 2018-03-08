@@ -22,14 +22,11 @@ model locations.  We then convert the reconstruction to a nifti.
 
     import supereeg as se
 
-
     # load example data
     bo = se.load('example_data')
 
     # load example model
     model = se.load('example_model')
-
-    bo.get_zscore_data()
 
     # the default will replace the electrode location with the nearest voxel and reconstruct at all other locations
     reconstructed_bo = model.predict(bo)
@@ -38,8 +35,10 @@ model locations.  We then convert the reconstruction to a nifti.
     reconstructed_bo.info()
 
     # save as nifti
-    reconstructed_nifti = reconstructed_bo.to_nii()
+    reconstructed_nii = reconstructed_bo.to_nii(template='gray', vox_size=20)
 
+    # plot nifti reconstruction
+    reconstructed_nii.plot_glass_brain()
 **Total running time of the script:** ( 0 minutes  0.000 seconds)
 
 

@@ -21,6 +21,14 @@ Introduction to `Brain` objects
 
    tutorial/model_objects.ipynb
 
+`Nifti` objects
+------------------
+
+.. toctree::
+   :maxdepth: 2
+
+   tutorial/nifti_objects.ipynb
+
 Simulations
 ------------------
 

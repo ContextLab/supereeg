@@ -12,6 +12,7 @@ Load in the required libraries
 
 .. code:: ipython2
 
+    %matplotlib inline
     import supereeg as se
     import pandas as pd
     import seaborn as sns
@@ -60,33 +61,33 @@ To begin, we can either simulate locations:
       <tbody>
         <tr>
           <th>0</th>
-          <td>2</td>
-          <td>19</td>
-          <td>-23</td>
+          <td>-50</td>
+          <td>-14</td>
+          <td>10</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>41</td>
-          <td>-21</td>
-          <td>-23</td>
+          <td>-46</td>
+          <td>-4</td>
+          <td>9</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>22</td>
-          <td>-4</td>
-          <td>-38</td>
+          <td>-22</td>
+          <td>-40</td>
+          <td>-43</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>44</td>
-          <td>20</td>
-          <td>21</td>
+          <td>-16</td>
+          <td>1</td>
+          <td>47</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>-50</td>
-          <td>45</td>
-          <td>29</td>
+          <td>-15</td>
+          <td>-29</td>
+          <td>-18</td>
         </tr>
       </tbody>
     </table>
@@ -95,78 +96,6 @@ To begin, we can either simulate locations:
 
 
 Or extract example locations:
-
-.. code:: ipython2
-
-    # load example locations
-    locs = se.load('example_locations')
-    locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
-    locs.head()
-
-
-
-
-.. raw:: html
-
-    <div>
-    <style scoped>
-        .dataframe tbody tr th:only-of-type {
-            vertical-align: middle;
-        }
-    
-        .dataframe tbody tr th {
-            vertical-align: top;
-        }
-    
-        .dataframe thead th {
-            text-align: right;
-        }
-    </style>
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>x</th>
-          <th>y</th>
-          <th>z</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>0</th>
-          <td>-50.0</td>
-          <td>-66.0</td>
-          <td>8.0</td>
-        </tr>
-        <tr>
-          <th>1</th>
-          <td>-50.0</td>
-          <td>-46.0</td>
-          <td>-12.0</td>
-        </tr>
-        <tr>
-          <th>2</th>
-          <td>-50.0</td>
-          <td>-46.0</td>
-          <td>8.0</td>
-        </tr>
-        <tr>
-          <th>3</th>
-          <td>-50.0</td>
-          <td>-46.0</td>
-          <td>28.0</td>
-        </tr>
-        <tr>
-          <th>4</th>
-          <td>-50.0</td>
-          <td>-26.0</td>
-          <td>-12.0</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-
-
 
 Simulate brain object
 =====================
@@ -195,7 +124,7 @@ locations with ``bo.plot_locs``.
 
 
 
-.. image:: simulate_objects_files/simulate_objects_13_0.png
+.. image:: simulate_objects_files/simulate_objects_12_0.png
 
 
 .. code:: ipython2
@@ -204,14 +133,8 @@ locations with ``bo.plot_locs``.
     bo.plot_locs()
 
 
-.. parsed-literal::
 
-    /Library/Python/2.7/site-packages/nilearn/plotting/displays.py:1291: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
-      if node_color == 'auto':
-
-
-
-.. image:: simulate_objects_files/simulate_objects_14_1.png
+.. image:: simulate_objects_files/simulate_objects_13_0.png
 
 
 Replicating simulated data with a random seed
@@ -255,6 +178,9 @@ include:
 
 .. code:: ipython2
 
+    # simulate more locations
+    locs = se.simulate_locations(n_elecs=100)
+    
     # create brain object with specified correlation matrix
     bo = se.simulate_bo(n_samples=100, sample_rate=1000, locs=locs, cov='toeplitz')
 
@@ -265,6 +191,7 @@ You can also pass a custom covariance matrix in ``cov``.
     # create correlation matrix
     R = se.create_cov(cov='toeplitz', n_elecs=len(locs))
     
+    R
     # and use it to create brain object
     bo = se.simulate_bo(n_samples=100, sample_rate=1000, locs=locs, cov=R)
 
@@ -288,12 +215,20 @@ brain objects.
     model = se.Model(data=model_bos, locs=locs)
     
     # plot the model
-    model.plot()
-    plt.show()
+    model.plot_data()
 
 
 
-.. image:: simulate_objects_files/simulate_objects_25_0.png
+
+.. image:: simulate_objects_files/simulate_objects_24_0.png
+
+
+
+
+.. parsed-literal::
+
+    <matplotlib.axes._subplots.AxesSubplot at 0x118d3ea90>
+
 
 
 Simulation Example 1:
@@ -329,18 +264,17 @@ electrodes, the better then recovery of the true model.
             model = se.Model(data=model_bos, locs=locs)
     
             # plot it
-            model.plot(ax=axarr[isub, ielec], yticklabels=False,
+            model.plot_data(ax=axarr[isub, ielec], yticklabels=False,
                         xticklabels=False, cmap='RdBu_r', cbar=False, vmin=0, vmax=1)
     
             # set the title
             axarr[isub, ielec].set_title(str(n_subs) + ' Subjects, ' + str(n_elecs) + ' Electrodes')
     
     f.tight_layout()
-    plt.show()
 
 
 
-.. image:: simulate_objects_files/simulate_objects_28_0.png
+.. image:: simulate_objects_files/simulate_objects_27_0.png
 
 
 Simulation Example 2:
@@ -400,15 +334,15 @@ recovered.
     f.set_size_inches(15,5)
     
     # plot it and set the title
-    model.plot(ax=ax1, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
+    model.plot_data(ax=ax1, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
     ax1.set_title('Before updating model: 10 subjects total')
     
     # plot it and set the title
-    new_model.plot(ax=ax2, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
+    new_model.plot_data(ax=ax2, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
     ax2.set_title('After updating model: 11 subjects total')
     
     # plot it and set the title
-    better_model.plot(ax=ax3, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
+    better_model.plot_data(ax=ax3, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
     ax3.set_title('After updating model: 20 subjects total')
     
     f.tight_layout()
@@ -416,7 +350,7 @@ recovered.
 
 
 
-.. image:: simulate_objects_files/simulate_objects_31_0.png
+.. image:: simulate_objects_files/simulate_objects_30_0.png
 
 
 Simulation Example 3:
@@ -436,100 +370,89 @@ recovery of the true model.
 
 .. code:: ipython2
 
-    # n_electrodes - number of electrodes for reconstructed patient
-    n_elecs = range(10, 160, 50)
+    # # n_electrodes - number of electrodes for reconstructed patient
+    # n_elecs = range(10, 160, 50)
     
-    # m_patients - number of patients in the model
-    m_patients = [5, 10]
+    # # m_patients - number of patients in the model
+    # m_patients = [5, 10]
     
-    # m_electrodes - number of electrodes for each patient in the model
-    m_elecs = range(10, 160, 50)
+    # # m_electrodes - number of electrodes for each patient in the model
+    # m_elecs = range(10, 160, 50)
     
-    iter_val = 1
+    # iter_val = 1
     
-    append_d = pd.DataFrame()
+    # append_d = pd.DataFrame()
     
-    param_grid = [(p, m, n) for p in m_patients for m in m_elecs for n in n_elecs]
+    # param_grid = [(p, m, n) for p in m_patients for m in m_elecs for n in n_elecs]
     
-    for p, m, n in param_grid:
-        d = []
+    # for p, m, n in param_grid:
+    #     d = []
     
-        for i in range(iter_val):
-            # create brain objects with m_patients and loop over the number of model locations and subset locations to build model
-            model_bos = [se.simulate_model_bos(n_samples=100, sample_rate=1000, locs=locs, sample_locs=m, noise =.3) for x in range(p)]
+    #     for i in range(iter_val):
+    #         # create brain objects with m_patients and loop over the number of model locations and subset locations to build model
+    #         model_bos = [se.simulate_model_bos(n_samples=100, sample_rate=1000, locs=locs, sample_locs=m, noise =.3) for x in range(p)]
     
-            # create model from subsampled gray locations
-            model = se.Model(model_bos, locs=locs)
+    #         # create model from subsampled gray locations
+    #         model = se.Model(model_bos, locs=locs)
     
-            # brain object locations subsetted entirely from both model and gray locations
-            sub_locs = locs.sample(n).sort_values(['x', 'y', 'z'])
+    #         # brain object locations subsetted entirely from both model and gray locations
+    #         sub_locs = locs.sample(n).sort_values(['x', 'y', 'z'])
     
-            # simulate brain object
-            bo = se.simulate_bo(n_samples=100, sample_rate=1000, locs=locs, noise =.3)
+    #         # simulate brain object
+    #         bo = se.simulate_bo(n_samples=100, sample_rate=1000, locs=locs, noise =.3)
     
-            # parse brain object to create synthetic patient data
-            data = bo.data.iloc[:, sub_locs.index]
+    #         # parse brain object to create synthetic patient data
+    #         data = bo.data.iloc[:, sub_locs.index]
     
-            # create synthetic patient (will compare remaining activations to predictions)
-            bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs)
+    #         # create synthetic patient (will compare remaining activations to predictions)
+    #         bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs)
     
-            # reconstruct at 'unknown' locations
-            bo_r = model.predict(bo_sample)
+    #         # reconstruct at 'unknown' locations
+    #         bo_r = model.predict(bo_sample)
     
-            # find the reconstructed indices
-            recon_inds = [i for i, x in enumerate(bo_r.label) if x == 'reconstructed']
+    #         # find the reconstructed indices
+    #         recon_inds = [i for i, x in enumerate(bo_r.label) if x == 'reconstructed']
     
-            # sample reconstructed data a reconstructed indices
-            recon = bo_r.data.iloc[:, recon_inds]
+    #         # sample reconstructed data a reconstructed indices
+    #         recon = bo_r.data.iloc[:, recon_inds]
     
-            # sample actual data at reconstructed locations
-            actual = bo.data.iloc[:, recon_inds]
+    #         # sample actual data at reconstructed locations
+    #         actual = bo.data.iloc[:, recon_inds]
     
-            # correlate reconstruction with actual data
-            corr_vals = _corr_column(actual.as_matrix(), recon.as_matrix())
-            corr_vals_sample = np.random.choice(corr_vals, 5)
+    #         # correlate reconstruction with actual data
+    #         corr_vals = _corr_column(actual.as_matrix(), recon.as_matrix())
+    #         corr_vals_sample = np.random.choice(corr_vals, 5)
     
-            d.append(
-                {'Subjects in model': p, 'Electrodes per subject in model': m, 'Electrodes per reconstructed subject': n,
-                 'Average Correlation': corr_vals_sample.mean(), 'Correlations': corr_vals})
+    #         d.append(
+    #             {'Subjects in model': p, 'Electrodes per subject in model': m, 'Electrodes per reconstructed subject': n,
+    #              'Average Correlation': corr_vals_sample.mean(), 'Correlations': corr_vals})
     
-        d = pd.DataFrame(d, columns=['Subjects in model', 'Electrodes per subject in model',
-                                     'Electrodes per reconstructed subject', 'Average Correlation', 'Correlations'])
-        append_d = append_d.append(d)
-        append_d.index.rename('Iteration', inplace=True)
+    #     d = pd.DataFrame(d, columns=['Subjects in model', 'Electrodes per subject in model',
+    #                                  'Electrodes per reconstructed subject', 'Average Correlation', 'Correlations'])
+    #     append_d = append_d.append(d)
+    #     append_d.index.rename('Iteration', inplace=True)
     
-    new_df = append_d.groupby('Average Correlation').mean()
+    # new_df = append_d.groupby('Average Correlation').mean()
     
-    #fig, axs = plt.subplots(ncols=len(np.unique(new_df['Subjects in model'])), sharex=True, sharey=True)
-    fig, axs = plt.subplots(ncols=2, sharex=True, sharey=True)
+    # #fig, axs = plt.subplots(ncols=len(np.unique(new_df['Subjects in model'])), sharex=True, sharey=True)
+    # fig, axs = plt.subplots(ncols=2, sharex=True, sharey=True)
     
-    axs_iter = 0
+    # axs_iter = 0
     
-    cbar_ax = fig.add_axes([.92, .3, .03, .4])
+    # cbar_ax = fig.add_axes([.92, .3, .03, .4])
     
-    fig.subplots_adjust(right=0.85)
-    fig.set_size_inches(14,5)
-    for i in np.unique(new_df['Subjects in model']):
-        data_plot = append_d[append_d['Subjects in model'] == i].pivot_table(index=['Electrodes per subject in model'],
-                                                                             columns='Electrodes per reconstructed subject',
-                                                                             values='Average Correlation')
-        axs[axs_iter].set_title('Patients = ' + str(i))
-        sns.heatmap(data_plot, cmap="coolwarm", cbar=axs_iter == 0, ax=axs[axs_iter], cbar_ax=None if axs_iter else cbar_ax)
-        axs[axs_iter].invert_yaxis()
-        axs_iter += 1
+    # fig.subplots_adjust(right=0.85)
+    # fig.set_size_inches(14,5)
+    # for i in np.unique(new_df['Subjects in model']):
+    #     data_plot = append_d[append_d['Subjects in model'] == i].pivot_table(index=['Electrodes per subject in model'],
+    #                                                                          columns='Electrodes per reconstructed subject',
+    #                                                                          values='Average Correlation')
+    #     axs[axs_iter].set_title('Patients = ' + str(i))
+    #     sns.heatmap(data_plot, cmap="coolwarm", cbar=axs_iter == 0, ax=axs[axs_iter], cbar_ax=None if axs_iter else cbar_ax)
+    #     axs[axs_iter].invert_yaxis()
+    #     axs_iter += 1
     
-    plt.show()
-
-
-.. parsed-literal::
-
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:139: UserWarning: No sample rate given.  Number of seconds cant be computed
-      warnings.warn('No sample rate given.  Number of seconds cant be computed')
-
-
-
-.. image:: simulate_objects_files/simulate_objects_34_1.png
-
+    # plt.show()
 
 Simulations run on the cluster:
 
@@ -541,7 +464,7 @@ Simulations run on the cluster:
 
 
 
-.. image:: simulate_objects_files/simulate_objects_36_0.png
+.. image:: simulate_objects_files/simulate_objects_35_0.png
 
 
 

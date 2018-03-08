@@ -5,7 +5,7 @@ Explore labels
 =============================
 
 In this example, we load in a single subject example, load a model, and predict activity at all
-model locations. We then parse the values based on the labels.
+model locations. We then slice the brain object based on the labels.
 
 """
 
@@ -19,24 +19,26 @@ import pandas as pd
 # load example data
 bo = se.load('example_data')
 
+# plot original locations
+bo.plot_locs()
+
 # load example model
 model = se.load('example_model')
 
 # the default will replace the electrode location with the nearest voxel and reconstruct at all other locations
 reconstructed_bo = model.predict(bo)
 
+# plot the all reconstructed locations
+reconstructed_bo.plot_locs()
+
 # find the observed indices
 obs_inds = [i for i, x in enumerate(reconstructed_bo.label) if x == 'observed']
+#
+# # make a copy of the brain object
+# o_bo = copy.copy(reconstructed_bo)
 
-# make a copy of the brain object
-o_bo = copy.copy(reconstructed_bo)
-
-# replace fields with indexed data and locations
-o_bo.data = pd.DataFrame(o_bo.get_data()[:, obs_inds])
-o_bo.locs = pd.DataFrame(o_bo.get_locs()[obs_inds], columns=['x', 'y', 'z'])
-
-# plot the original locations
-bo.plot_locs()
+# slice data at observed indices inplace
+reconstructed_bo.get_slice(sample_inds=obs_inds, loc_inds=obs_inds, inplace=True)
 
 # plot the nearest voxel used in the reconstruction
-o_bo.plot_locs()
+reconstructed_bo.plot_locs()

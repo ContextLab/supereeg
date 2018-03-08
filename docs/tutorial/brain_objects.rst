@@ -58,16 +58,16 @@ We’ll also simulate some electrode locations
 .. parsed-literal::
 
         x   y   z
-    0 -49 -12  20
-    1 -47 -39 -48
-    2 -37  -6  43
-    3 -35 -36   3
-    4  17 -48 -18
-    5  18 -18  35
-    6  30 -22 -18
-    7  31   4   5
-    8  31   7  21
-    9  46  24 -19
+    0 -44 -50  20
+    1 -41  28  -3
+    2 -36  -8  36
+    3 -21 -21 -23
+    4 -14  40  12
+    5 -11   0  -5
+    6  -9 -45  12
+    7  10   4 -41
+    8  24  -9 -33
+    9  43  31 -13
 
 
 Creating a brain object
@@ -94,7 +94,7 @@ To view a summary of the contents of the brain object, you can call the
     Recording time in seconds: [10.]
     Sample Rate in Hz: [100]
     Number of sessions: 1
-    Date created: Thu Mar  8 10:41:57 2018
+    Date created: Thu Mar  8 12:14:43 2018
     Meta data: {}
 
 
@@ -115,7 +115,7 @@ each session. For example:
     Recording time in seconds: [0.5 0.5]
     Sample Rate in Hz: [1000, 1000]
     Number of sessions: 2
-    Date created: Thu Mar  8 10:41:57 2018
+    Date created: Thu Mar  8 12:14:43 2018
     Meta data: {}
 
 
@@ -140,7 +140,7 @@ you want:
     Recording time in seconds: [0.5 0.5]
     Sample Rate in Hz: [1000, 1000]
     Number of sessions: 2
-    Date created: Thu Mar  8 10:41:57 2018
+    Date created: Thu Mar  8 12:14:43 2018
     Meta data: {'Hospital': 'DHMC', 'subjectID': '123', 'Investigator': 'Andy'}
 
 
@@ -162,7 +162,7 @@ For example, you can load a nifti object as a brain object:
 
 .. parsed-literal::
 
-    <supereeg.brain.Brain at 0x11552a250>
+    <supereeg.brain.Brain at 0x10db64a90>
 
 
 
@@ -214,68 +214,68 @@ that can be accessed directly:
       <tbody>
         <tr>
           <th>0</th>
-          <td>0.567270</td>
-          <td>1.571735</td>
-          <td>0.687147</td>
-          <td>-0.806358</td>
-          <td>0.386306</td>
-          <td>0.503631</td>
-          <td>-1.669945</td>
-          <td>-0.105044</td>
-          <td>0.223022</td>
-          <td>1.148812</td>
+          <td>-0.164898</td>
+          <td>0.449080</td>
+          <td>-0.123422</td>
+          <td>-0.487585</td>
+          <td>-0.558142</td>
+          <td>-0.068899</td>
+          <td>-1.062847</td>
+          <td>-0.598438</td>
+          <td>-0.608100</td>
+          <td>0.264699</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>0.393624</td>
-          <td>0.483532</td>
-          <td>0.814324</td>
-          <td>-0.603827</td>
-          <td>-0.597659</td>
-          <td>0.037127</td>
-          <td>-0.978627</td>
-          <td>-0.298726</td>
-          <td>-0.192210</td>
-          <td>-0.175140</td>
+          <td>-0.158617</td>
+          <td>0.195738</td>
+          <td>0.283509</td>
+          <td>0.309854</td>
+          <td>0.256612</td>
+          <td>0.042650</td>
+          <td>0.392309</td>
+          <td>0.243883</td>
+          <td>0.385083</td>
+          <td>0.228009</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>1.022924</td>
-          <td>0.524780</td>
-          <td>0.910607</td>
-          <td>-0.277372</td>
-          <td>0.554604</td>
-          <td>0.318984</td>
-          <td>-0.641164</td>
-          <td>-0.353763</td>
-          <td>0.279058</td>
-          <td>0.375646</td>
+          <td>-0.088609</td>
+          <td>0.002041</td>
+          <td>0.492744</td>
+          <td>0.423460</td>
+          <td>0.127684</td>
+          <td>-0.080433</td>
+          <td>0.112324</td>
+          <td>0.598199</td>
+          <td>0.314062</td>
+          <td>0.057484</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>-0.580082</td>
-          <td>-0.249284</td>
-          <td>-0.038028</td>
-          <td>-0.690756</td>
-          <td>-0.691062</td>
-          <td>-0.349361</td>
-          <td>-0.315365</td>
-          <td>-0.633677</td>
-          <td>-0.557212</td>
-          <td>-0.434741</td>
+          <td>0.498890</td>
+          <td>1.118350</td>
+          <td>0.696200</td>
+          <td>0.934301</td>
+          <td>0.483936</td>
+          <td>0.753088</td>
+          <td>0.530552</td>
+          <td>0.757954</td>
+          <td>-0.010164</td>
+          <td>0.690289</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>0.270530</td>
-          <td>0.522444</td>
-          <td>0.455709</td>
-          <td>1.028060</td>
-          <td>1.076976</td>
-          <td>0.435147</td>
-          <td>1.251693</td>
-          <td>0.870343</td>
-          <td>0.423300</td>
-          <td>0.346171</td>
+          <td>-0.495082</td>
+          <td>-0.797964</td>
+          <td>-0.442069</td>
+          <td>-0.238359</td>
+          <td>-0.111551</td>
+          <td>-0.685585</td>
+          <td>-0.968015</td>
+          <td>-0.255937</td>
+          <td>-0.715173</td>
+          <td>-0.107770</td>
         </tr>
       </tbody>
     </table>
@@ -294,19 +294,19 @@ or returned as a numpy array using the ``get_data`` method:
 
 .. parsed-literal::
 
-    array([[ 0.56726994,  1.5717352 ,  0.68714678, ..., -0.10504354,
-             0.22302192,  1.14881205],
-           [ 0.39362446,  0.48353157,  0.81432427, ..., -0.29872572,
-            -0.19221047, -0.17513971],
-           [ 1.02292373,  0.52478022,  0.91060691, ..., -0.35376295,
-             0.27905833,  0.37564592],
+    array([[-0.16489751,  0.44908036, -0.12342183, ..., -0.59843798,
+            -0.60810028,  0.26469928],
+           [-0.15861694,  0.19573777,  0.28350922, ...,  0.2438828 ,
+             0.38508338,  0.22800868],
+           [-0.08860861,  0.00204105,  0.49274423, ...,  0.59819917,
+             0.31406165,  0.05748386],
            ...,
-           [-0.18653459, -0.0035791 , -0.60695455, ..., -0.26821   ,
-            -0.57499093, -0.2657185 ],
-           [ 0.3211099 ,  1.74675948,  0.41327613, ..., -0.98191572,
-            -0.42069791,  0.57161526],
-           [-0.35578489, -0.14550246, -0.46235317, ..., -0.63510035,
-            -0.68559669, -0.76856951]])
+           [-0.42121278, -0.4665349 , -0.17873552, ...,  0.94870931,
+             0.52978121,  0.23011087],
+           [-0.88400841, -0.79266786, -0.59817874, ..., -0.36894899,
+            -0.1108448 , -0.60039107],
+           [ 0.47997522,  0.28857125,  0.64570221, ..., -0.66169582,
+            -0.03126307,  0.7099525 ]])
 
 
 
@@ -348,33 +348,33 @@ can be retrieved as a numpy array using the ``get_locs`` method:
       <tbody>
         <tr>
           <th>0</th>
-          <td>-49</td>
-          <td>-12</td>
+          <td>-44</td>
+          <td>-50</td>
           <td>20</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>-47</td>
-          <td>-39</td>
-          <td>-48</td>
+          <td>-41</td>
+          <td>28</td>
+          <td>-3</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>-37</td>
-          <td>-6</td>
-          <td>43</td>
+          <td>-36</td>
+          <td>-8</td>
+          <td>36</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>-35</td>
-          <td>-36</td>
-          <td>3</td>
+          <td>-21</td>
+          <td>-21</td>
+          <td>-23</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>17</td>
-          <td>-48</td>
-          <td>-18</td>
+          <td>-14</td>
+          <td>40</td>
+          <td>12</td>
         </tr>
       </tbody>
     </table>
@@ -391,16 +391,16 @@ can be retrieved as a numpy array using the ``get_locs`` method:
 
 .. parsed-literal::
 
-    array([[-49, -12,  20],
-           [-47, -39, -48],
-           [-37,  -6,  43],
-           [-35, -36,   3],
-           [ 17, -48, -18],
-           [ 18, -18,  35],
-           [ 30, -22, -18],
-           [ 31,   4,   5],
-           [ 31,   7,  21],
-           [ 46,  24, -19]])
+    array([[-44, -50,  20],
+           [-41,  28,  -3],
+           [-36,  -8,  36],
+           [-21, -21, -23],
+           [-14,  40,  12],
+           [-11,   0,  -5],
+           [ -9, -45,  12],
+           [ 10,   4, -41],
+           [ 24,  -9, -33],
+           [ 43,  31, -13]])
 
 
 
@@ -417,9 +417,9 @@ return a subset of the brain object
 
 .. parsed-literal::
 
-    array([[ 0.48353157,  0.81432427, -0.60382666],
-           [ 0.52478022,  0.91060691, -0.27737183],
-           [-0.24928399, -0.03802751, -0.6907561 ]])
+    array([[0.19573777, 0.28350922, 0.30985394],
+           [0.00204105, 0.49274423, 0.42346033],
+           [1.11835032, 0.69620039, 0.93430131]])
 
 
 
@@ -501,7 +501,7 @@ This method will give you a summary of the brain object:
     Recording time in seconds: [0.5 0.5]
     Sample Rate in Hz: [64, 64]
     Number of sessions: 2
-    Date created: Thu Mar  8 10:41:57 2018
+    Date created: Thu Mar  8 12:14:43 2018
     Meta data: {'Hospital': 'DHMC', 'subjectID': '123', 'Investigator': 'Andy'}
 
 
@@ -555,7 +555,7 @@ This method allows you resample a brain object in place.
 
 .. parsed-literal::
 
-    <supereeg.brain.Brain at 0x1166f5210>
+    <supereeg.brain.Brain at 0x10dd2a250>
 
 
 

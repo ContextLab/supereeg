@@ -33,6 +33,14 @@ Model data object
 
   Model
 
+Nifti data object
+------------------
+
+.. autosummary::
+  :toctree:
+
+  Nifti
+
 Simulations
 ------------------
 

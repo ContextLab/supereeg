@@ -14,15 +14,12 @@ objects and plot it.
 # Code source: Lucy Owen & Andrew Heusser
 # License: MIT
 
-import pandas as pd
 import supereeg as se
 
 
 # load example model to get locations
-locs = se.load('example_locations')
-
-# convert to pandas
-locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
+mo = se.load('example_model')
+locs = mo.locs
 
 # simulate correlation matrix
 R = se.create_cov(cov='toeplitz', n_elecs=len(locs))
