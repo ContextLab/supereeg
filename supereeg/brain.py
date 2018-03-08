@@ -450,10 +450,11 @@ class Brain(object):
         Returns
         ----------
 
-        nifti : nibabel.Nifti1Image
-            A nibabel nifti image
+        nifti : supereeg.Nifti
+            A supereeg nifti image
 
         """
+        from .nifti import Nifti
 
         recon_v_size = _vox_size(self.locs)
 
@@ -476,8 +477,11 @@ class Brain(object):
         if template is None:
             img = _gray(v_size)
 
-        if type(template) is nib.nifti1.Nifti1Image:
+        elif type(template) is nib.nifti1.Nifti1Image:
             img = template
+
+        # elif type(template) is Nifti:
+        #     img = template
 
         elif isinstance(template, str) or isinstance(template, basestring):
 
@@ -491,7 +495,7 @@ class Brain(object):
                 img = _std(v_size)
 
             else:
-                warnings.warn('Nifti format not supported')
+                warnings.warn('template format not supported')
         else:
             warnings.warn('Nifti format not supported')
 

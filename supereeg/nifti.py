@@ -5,6 +5,7 @@ import numpy as np
 import six # Python 2 and 3 compatibility
 from nibabel import Nifti1Image
 from nilearn import image
+from nilearn.image import concat_imgs, index_img
 from nilearn import plotting as ni_plt
 from .helpers import make_gif_pngs
 
@@ -94,6 +95,21 @@ class Nifti(Nifti1Image):
     #     bo = Brain(self)
     #     return Model(bo)
 
+    def get_slice(self, index):
+
+        if len(self.shape)>3:
+
+            if self.shape[3]>1:
+
+                cat_nii = []
+                if hasattr(type(index), "__iter__"):
+                    for i in index:
+                        nii = index_img(self, i)
+                        cat_nii.append(nii)
+
+                    return concat_imgs(cat_nii)
+
+
     def plot_anat(self, pdfpath=None, index=1):
 
         """
@@ -123,10 +139,10 @@ class Nifti(Nifti1Image):
 
                 if hasattr(type(index), "__iter__"):
                     for i in index:
-                        nii = image.index_img(self, i)
+                        nii = index_img(self, i)
                         ni_plt.plot_anat(nii)
                 else:
-                    nii = image.index_img(self, index)
+                    nii = index_img(self, index)
                     ni_plt.plot_anat(nii)
 
             else:
@@ -164,10 +180,10 @@ class Nifti(Nifti1Image):
         if len(self.shape)>3:
             if hasattr(type(index), "__iter__"):
                 for i in index:
-                    nii = image.index_img(self, i)
+                    nii = index_img(self, i)
                     ni_plt.plot_glass_brain(nii)
             else:
-                nii = image.index_img(self, index)
+                nii = index_img(self, index)
                 ni_plt.plot_glass_brain(nii)
         else:
             ni_plt.plot_glass_brain(self)

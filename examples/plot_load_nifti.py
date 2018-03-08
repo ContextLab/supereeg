@@ -30,6 +30,3 @@ nii_r = bo.to_nii(template='gray', vox_size=20)
 
 # # plot the result (same as before)
 nii_r.plot_anat()
-
-# or you can initialize a nifti object with a brain object or model object
-bo_nii = se.load('example_data', return_type='nii')

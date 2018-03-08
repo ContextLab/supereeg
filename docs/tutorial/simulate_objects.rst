@@ -61,33 +61,33 @@ To begin, we can either simulate locations:
       <tbody>
         <tr>
           <th>0</th>
-          <td>-50</td>
-          <td>-14</td>
-          <td>10</td>
+          <td>-42</td>
+          <td>14</td>
+          <td>44</td>
         </tr>
         <tr>
           <th>1</th>
+          <td>-39</td>
+          <td>-9</td>
           <td>-46</td>
-          <td>-4</td>
-          <td>9</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>-22</td>
-          <td>-40</td>
-          <td>-43</td>
+          <td>-36</td>
+          <td>-32</td>
+          <td>41</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>-16</td>
-          <td>1</td>
-          <td>47</td>
+          <td>-32</td>
+          <td>12</td>
+          <td>-6</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>-15</td>
-          <td>-29</td>
-          <td>-18</td>
+          <td>-16</td>
+          <td>3</td>
+          <td>21</td>
         </tr>
       </tbody>
     </table>
@@ -227,7 +227,7 @@ brain objects.
 
 .. parsed-literal::
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x118d3ea90>
+    <matplotlib.axes._subplots.AxesSubplot at 0x10c77ea90>
 
 
 

@@ -40,6 +40,12 @@ For example, you can load a brain object as a nifti object:
 .. code:: ipython2
 
     bo_nii = se.load('example_data', return_type='nii')
+    bo_nii.plot_glass_brain()
+
+
+
+.. image:: nifti_objects_files/nifti_objects_6_0.png
+
 
 Nifti object methods
 ====================
@@ -140,6 +146,27 @@ arguments that ``nilearn.plot_anat`` accepts are supported by
 .. image:: nifti_objects_files/nifti_objects_13_0.png
 
 
+``nifti.make_gif()``
+--------------------
+
+This method will plot 4D nifti data as ``nilearn.plot_glass_brain``,
+save as png files, and compile the files as gif.
+
+This method wraps ``nilearn.plot_glass_brain`` to plot the nifti object,
+so any arguments that ``nilearn.plot_glass_brain`` accepts are supported
+by ``nifti.plot_glass_brain``.
+
 .. code:: ipython2
 
-    #nii.make_gif
+    #nii.make_gif(gifpath='/path/to/save/gif', index=range(0, 10), name=None, **kwargs)
+
+``nifti.save()``
+----------------
+
+This method will save your nifti object to the specified filepath
+location as a ‘nii’ file.
+
+.. code:: ipython2
+
+    #nii.save(filepath='/path/to/save/nifti')
+
