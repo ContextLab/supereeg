@@ -16,25 +16,11 @@ Load in the required libraries
 
 .. code:: ipython2
 
-    # import warnings 
-    # warnings.simplefilter("ignore")
+    import warnings 
+    warnings.simplefilter("ignore")
+    %matplotlib inline
     import supereeg as se
-    import seaborn as sns
-    import matplotlib.pyplot as plt
-    from nilearn import plotting
-    from nilearn import image
     import numpy as np
-
-
-.. parsed-literal::
-
-    /Library/Python/2.7/site-packages/matplotlib/__init__.py:1401: UserWarning:  This call to matplotlib.use() has no effect
-    because the backend has already been chosen;
-    matplotlib.use() must be called *before* pylab, matplotlib.pyplot,
-    or matplotlib.backends is imported for the first time.
-    
-      warnings.warn(_use_error_msg)
-
 
 First, let’s load in our default model, ``example_model``, that we made
 from the pyFR dataset sampled at 20mm resolution. Electrodes with a
@@ -55,15 +41,37 @@ other model options:
 Note: The last option is the same as the example_model, but saved as
 ``.npz`` instead of ``.mo``.
 
+Initialize model objects
+========================
+
+Model objects can be initialized by passing a model object (ending in
+``.mo``), but can also be initialized with a brain object or nifti
+object by specifying ``return_type`` as ``mo`` in the load function.
+
+For example, you can load a nifti object as a model object:
+
+.. code:: ipython2
+
+    se.load('example_nift', return_type='mo')
+
+
+
+
+.. parsed-literal::
+
+    <supereeg.model.Model at 0x1107b38d0>
+
+
+
 Model object methods
 ====================
 
-There are a few other useful methods on a brain object:
+There are a few other useful methods on a model object:
 
 ``mo.info()``
 -------------
 
-This method will give you a summary of the brain object:
+This method will give you a summary of the model object:
 
 .. code:: ipython2
 
@@ -72,9 +80,9 @@ This method will give you a summary of the brain object:
 
 .. parsed-literal::
 
-    Number of locations: 170
-    Number of subjects: 66
-    Date created: Tue Dec 19 06:13:33 2017
+    Number of locations: 210
+    Number of subjects: 67
+    Date created: Thu Mar  8 10:17:39 2018
     Meta data: None
 
 
@@ -95,7 +103,19 @@ accepts are supported by ``model.plot``.
 .. code:: ipython2
 
     model.plot_data(xticklabels=False, yticklabels=False)
-    plt.show()
+
+
+
+.. image:: model_objects_files/model_objects_12_0.png
+
+
+
+
+.. parsed-literal::
+
+    <matplotlib.axes._subplots.AxesSubplot at 0x1178d3550>
+
+
 
 ``mo.plot_locs()``
 ------------------
@@ -105,7 +125,11 @@ This method will plot the locations in your model.
 .. code:: ipython2
 
     model.plot_locs()
-    plt.show()
+
+
+
+.. image:: model_objects_files/model_objects_14_0.png
+
 
 ``mo.update()``
 ---------------
@@ -124,11 +148,11 @@ data as a brain object. First, let’s load in an example subjects data:
 .. parsed-literal::
 
     Number of electrodes: 64
-    Recording time in seconds: [[  5.3984375  14.1328125]]
+    Recording time in seconds: [[ 5.3984375 14.1328125]]
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
-    Date created: Fri Feb 16 13:41:59 2018
-    Meta data: CH003
+    Date created: Thu Mar  8 10:31:48 2018
+    Meta data: {'patient': 'CH003'}
 
 
 Now you can update the model with that brain object:
@@ -141,9 +165,9 @@ Now you can update the model with that brain object:
 
 .. parsed-literal::
 
-    Number of locations: 170
-    Number of subjects: 67
-    Date created: Fri Feb 16 13:42:00 2018
+    Number of locations: 210
+    Number of subjects: 68
+    Date created: Thu Mar  8 10:31:49 2018
     Meta data: None
 
 
@@ -175,13 +199,13 @@ For example, if you have a dataset of iEEG patients, we provide a way to
 construct a model that will predict whole brain activity. The more
 subjects you include in the model, the better it will be! To create a
 model, first you’ll need to format your subject data into brain objects.
-For the purpose of demonstration, we will simulate 10 subjects and
-construct the model from that data:
+For the purpose of demonstration, we will simulate 100 locations across
+10 subjects and construct the model from that data:
 
 .. code:: ipython2
 
-    # load locations
-    locs = se.load('example_locations')
+    # simulate 100 locations
+    locs = se.simulate_locations(100)
     
     # simulate 10 brain objects to create a model
     n_subs = 10
@@ -194,10 +218,10 @@ construct the model from that data:
 .. parsed-literal::
 
     Number of electrodes: 20
-    Recording time in seconds: [ 1.]
+    Recording time in seconds: [1.]
     Sample Rate in Hz: [1000]
     Number of sessions: 1
-    Date created: Fri Feb 16 13:42:00 2018
+    Date created: Thu Mar  8 10:31:49 2018
     Meta data: {}
 
 
@@ -214,9 +238,9 @@ new model will be generated:
 
 .. parsed-literal::
 
-    Number of locations: 170
+    Number of locations: 100
     Number of subjects: 10
-    Date created: Fri Feb 16 13:42:05 2018
+    Date created: Thu Mar  8 10:31:52 2018
     Meta data: None
 
 
@@ -247,18 +271,32 @@ of locations to ``cov`` and the number of location to ``n_elecs``.
 
     R = se.create_cov(cov='toeplitz', n_elecs=len(locs))
     p = 10
-    model = se.Model(numerator=R, denominator=np.ones(np.shape(R)), locs=locs, n_subs=p)
-    model.plot_data(xticklabels=False, yticklabels=False)
-    plt.show()
+    toe_model = se.Model(numerator=R, denominator=np.ones(np.shape(R)), locs=locs, n_subs=p)
+    toe_model.plot_data(xticklabels=False, yticklabels=False)
+
+
+
+.. image:: model_objects_files/model_objects_27_0.png
+
+
+
+
+.. parsed-literal::
+
+    <matplotlib.axes._subplots.AxesSubplot at 0x1184d3a10>
+
+
 
 In this example we passed a numpy array of custom MNI locations to
 predict.
 
 However coordinates can also be derived by specifiying a ``template``
-nifti file. By default, the model is in MNI coordinates with 20mm
-resolution, but this can be easily switched to a different space using
-some templates we include in the package (6mm, 8mm, 20mm), or your own
-custom space (note: the model space MUST be in MNI coordinates).
+nifti file. By default, the model is in MNI coordinates derived from a
+gray matter masked brain at 6mm resolution, but this can be easily
+switched to a different space specifying either the standard brain
+(``std``) or gray matter masked brain (``gray``) as ``template`` as well
+as desired resolution passed as ``vox_size`` , or your own custom space
+(note: the model space MUST be in MNI coordinates).
 
 .. code:: ipython2
 
@@ -297,10 +335,8 @@ model with the subject’s correlation matrix.
     print('BEFORE')
     print('------')
     bo.info()
-    nii = bo.to_nii()
-    nii_0 = image.index_img(nii, 1)
-    plotting.plot_glass_brain(nii_0, display_mode='lyrz', threshold=0, colorbar='True')
-    plotting.show()
+    nii = bo.to_nii(template='gray', vox_size=20)
+    nii.plot_glass_brain()
     
     # voodoo magic
     bor = model.predict(bo)
@@ -310,10 +346,8 @@ model with the subject’s correlation matrix.
     print('AFTER')
     print('------')
     bor.info()
-    nii = bor.to_nii()
-    nii_0 = image.index_img(nii, 1)
-    plotting.plot_glass_brain(nii_0, display_mode='lyrz', threshold=0, colorbar='True')
-    plotting.show()
+    nii = bor.to_nii(template='gray', vox_size=20)
+    nii.plot_glass_brain()
 
 
 .. parsed-literal::
@@ -321,39 +355,44 @@ model with the subject’s correlation matrix.
     BEFORE
     ------
     Number of electrodes: 64
-    Recording time in seconds: [[  5.3984375  14.1328125]]
+    Recording time in seconds: [[ 5.3984375 14.1328125]]
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
-    Date created: Fri Feb 16 13:41:59 2018
-    Meta data: CH003
+    Date created: Thu Mar  8 10:31:48 2018
+    Meta data: {'patient': 'CH003'}
 
 
-.. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:425: UserWarning: Template is None.  Default to using a template with 20mm voxels.
-      warnings.warn('Template is None.  Default to using a template with 20mm voxels.')
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:453: UserWarning: Voxel sizes of reconstruction and template do not match. Voxel sizes calculated from model locations.
-      warnings.warn('Voxel sizes of reconstruction and template do not match. '
+.. image:: model_objects_files/model_objects_33_1.png
 
 
 .. parsed-literal::
 
     AFTER
     ------
-    Number of electrodes: 170
-    Recording time in seconds: [  5.3984375  14.1328125]
+    Number of electrodes: 210
+    Recording time in seconds: [ 5.3984375 14.1328125]
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
-    Date created: Fri Feb 16 13:42:07 2018
+    Date created: Thu Mar  8 10:31:54 2018
     Meta data: {}
 
 
-.. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:430: UserWarning: Template is None.  Default to b using a template with 20 voxels.
-      'Default to b using a template with ' + str(int(recon_v_size[0][0])) + ' voxels.')
+.. image:: model_objects_files/model_objects_33_3.png
 
 
 Using the ``supereeg`` algorithm, we’ve ‘reconstructed’ whole brain
 activity from a smaller sample of electrodes.
+
+.. code:: ipython2
+
+    ## this doesn't look great
+    
+    nii.plot_anat()
+
+
+
+.. image:: model_objects_files/model_objects_35_0.png
+
 
