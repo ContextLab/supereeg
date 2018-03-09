@@ -29,13 +29,13 @@ class Brain(object):
     Parameters
     ----------
 
-    data : numpy.ndarray or pandas.DataFrame,  supereeg.Model, supereeg.Nifti, or Nifti1Image
+    data : numpy.ndarray or pandas.DataFrame, supereeg.Model, supereeg.Nifti, or Nifti1Image
 
-        Samples x electrodes array containing the iEEG data
+        Samples x electrodes array containing the iEEG data.
 
         If data is a model, returns correlation matrix.
 
-        If data is a nifti image (either supereeg.Nifti or Nifti1Image), returns nifti values.
+        If data is a nifti image (either supereeg.Nifti or Nifti1Image), returns nifti values as samples by electrodes array.
 
     locs : numpy.ndarray or pandas.DataFrame
         Electrode by MNI coordinate (x,y,z) array containing electrode locations
@@ -45,7 +45,7 @@ class Brain(object):
         If str or int, the value will be copied for each time sample.
 
     sample_rates : float, int or list
-        Sample rate of the data. If different over multiple sessions, this is a
+        Sample rate (Hz) of the data. If different over multiple sessions, this is a
         list.
 
     meta : dict

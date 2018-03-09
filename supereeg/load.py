@@ -21,7 +21,7 @@ def load(fname, vox_size=None, return_type=None):
 
     Parameters
     ----------
-    fname : string
+    fname : str
 
         The name of the example data or a filepath.
 
@@ -55,7 +55,7 @@ def load(fname, vox_size=None, return_type=None):
 
         Voxel size for loading and resampling nifti image
 
-    return_type : Option for loading data
+    return_type : str
 
         Option for loading data
 
@@ -105,10 +105,6 @@ def load(fname, vox_size=None, return_type=None):
                     model = pd.read_pickle(
                         os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/example_model.mo')
                     loaded = model
-
-        # elif fname is 'example_locations':
-        #     bo = Brain(_gray(20))
-        #     return bo.get_locs()
 
         # load example nifti
         elif fname is 'example_nifti':
