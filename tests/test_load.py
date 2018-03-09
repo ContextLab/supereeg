@@ -9,8 +9,19 @@ import nibabel as nib
 bo = se.load('example_data')
 bo_s = bo.get_slice(sample_inds=[0,1,2])
 
-# downsample locations
-locs = se.load('example_locations')[0::17]
+locs = np.array([[-61., -77.,  -3.],
+                 [-41., -77., -23.],
+                 [-21., -97.,  17.],
+                 [-21., -37.,  77.],
+                 [-21.,  63.,  -3.],
+                 [ -1., -37.,  37.],
+                 [ -1.,  23.,  17.],
+                 [ 19., -57., -23.],
+                 [ 19.,  23.,  -3.],
+                 [ 39., -57.,  17.],
+                 [ 39.,   3.,  37.],
+                 [ 59., -17.,  17.]])
+
 n_samples = 10
 n_subs = 3
 n_elecs = 10
@@ -31,10 +42,6 @@ def test_load_example_filter():
 def test_load_example_model():
     model = se.load('example_model')
     assert isinstance(model, se.Model)
-
-def test_load_example_locations():
-    locs = se.load('example_locations')
-    assert isinstance(locs, np.ndarray)
 
 def test_load_nifti():
     nii = se.load('example_nifti')

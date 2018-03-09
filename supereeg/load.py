@@ -106,9 +106,9 @@ def load(fname, vox_size=None, return_type=None):
                         os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/example_model.mo')
                     loaded = model
 
-        elif fname is 'example_locations':
-            bo = Brain(_gray(20))
-            return bo.get_locs()
+        # elif fname is 'example_locations':
+        #     bo = Brain(_gray(20))
+        #     return bo.get_locs()
 
         # load example nifti
         elif fname is 'example_nifti':
