@@ -42,7 +42,7 @@ def simulate_model_bos(n_samples=1000, locs=None, sample_locs=None, cov='random'
     n_samples : int
         Number of time samples
 
-    locs :  np.ndarray
+    locs :  np.ndarray or pd.DataFrame
          A location by coordinate (x,y,z) matrix of simulated electrode locations
 
     sample_locs : int
@@ -104,7 +104,7 @@ def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None
     n_elecs : int
         Number of electrodes
 
-    locs :  np.ndarray
+    locs :  np.ndarray or pd.DataFrame
          A location by coordinate (x,y,z) matrix of simulated electrode locations
 
     sample_locs : int
@@ -186,7 +186,7 @@ def simulate_bo(n_samples=1000, n_elecs=10, locs=None, cov='random',
     n_elecs : int
         Number of electrodes
 
-    locs :  np.ndarray
+    locs :  np.ndarray or pd.DataFrame
          A location by coordinate (x,y,z) matrix of simulated electrode locations
 
     cov : str or np.array

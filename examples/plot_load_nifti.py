@@ -22,7 +22,7 @@ nii = se.load('example_nifti')
 # plot nifti
 nii.plot_anat()
 
-# nifti -> brain object
+# nifti -> brain object - initialize brain object with nifti object
 bo = se.Brain(nii)
 
 # plot brain object
