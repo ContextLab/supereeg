@@ -430,7 +430,7 @@ class Brain(object):
 
                     - If 'std':
                         - Uses standard brain downsampled to brain object voxel size
-    
+
                     - If 'gray':
                         - Uses gray matter masked brain downsampled to brain object voxel size
 

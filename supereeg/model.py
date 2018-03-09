@@ -30,8 +30,10 @@ class Model(object):
     Parameters
     ----------
 
-    data : supereeg.Brain or list
-        A list of supereeg.Brain objects used to create the model
+    data : supereeg.Brain or list supereeg.Brain, or supereeg.Nifti
+
+        A supereeg.Brain object,  list of supereeg.Brain objects, or a supereeg.Nifti object used to create the model.
+
 
     locs : pandas.DataFrame or np.ndarray
         MNI coordinate (x,y,z) by number of electrode df containing electrode
@@ -458,8 +460,7 @@ class Model(object):
         Parameters
         ----------
         pdfpath : str
-        A name for the file.  If the file extension (.pdf) is not specified, it
-        will be appended.
+        A name for the file.  If the file extension (.pdf) is not specified, it will be appended.
 
         """
 
