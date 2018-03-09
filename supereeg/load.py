@@ -1,7 +1,7 @@
 from __future__ import print_function
 import os
-import pickle
 import warnings
+import requests
 import numpy as np
 import deepdish as dd
 import pandas as pd
@@ -9,6 +9,19 @@ from .brain import Brain
 from .model import Model
 from .nifti import Nifti
 from .helpers import tal2mni, _gray, _std, _resample_nii
+
+BASE_URL = 'https://docs.google.com/uc?export=download'
+homedir = os.path.expanduser('~/')
+datadir = os.path.join(homedir, 'supereeg_data')
+
+datadict = {
+    'example_data' : ['1kijSKt-QLEZ1O3J5Pk-8aByn33bPCAFl', 'bo'],
+    'example_model' : ['1l4s7mE0KbPMmIcIA9JQzSZHCA8LWFq1I', 'mo'],
+    'example_nifti' : ['1a8wptBaMIFEl4j8TFhlTQVUAbyC0sN4p', 'nii'],
+    'example_filter' : ['1eHcYg1idIK8y2LMLK_tqSxB7jI_l7OsL', 'bo'],
+    'std' : ['1P-WcEBVYnoMQAYhvSCf1BBMIDMe9VZIM', 'nii'],
+    'gray' : ['1a8wptBaMIFEl4j8TFhlTQVUAbyC0sN4p', 'nii'],
+}
 
 def load(fname, vox_size=None, return_type=None):
     """
@@ -65,154 +78,94 @@ def load(fname, vox_size=None, return_type=None):
 
             'nii' - returns supereeg.Nifti
 
-
-
     Returns
     ----------
     data : supereeg.Nifti, supereeg.Brain or supereeg.Model
         Data to be returned
 
     """
-    global loaded
 
-    if type(fname) is str:
-
-        if fname is 'example_data':
-            with open(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/CH003.npz', 'rb') as handle:
-                f = np.load(handle)
-                data = f['Y']
-                sample_rate = f['samplerate']
-                sessions = f['fname_labels']
-                locs = tal2mni(f['R'])
-                meta = {'patient':'CH003'}
-
-            loaded = Brain(data=data, locs=locs, sessions=sessions, sample_rate=sample_rate, meta=meta)
-
-        elif fname is 'example_model':
-            try:
-                with open(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/example_model.mo',
-                          'rb') as handle:
-                    example_model = pickle.load(handle)
-                loaded = example_model
-
-            except:
-                try:
-                    mo = dd.io.load(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/example_model.mo')
-                    loaded = Model(numerator=mo['numerator'], denominator=mo['denominator'],
-                                 locs=mo['locs'], n_subs=mo['n_subs'], meta=mo['meta'],
-                                 date_created=mo['date_created'])
-                except:
-                    model = pd.read_pickle(
-                        os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/example_model.mo')
-                    loaded = model
-
-        # load example nifti
-        elif fname is 'example_nifti':
-            nii = _gray(20)
-            loaded = nii
-
-        # load example patient data with kurtosis thresholded channels
-        elif fname is 'example_filter':
-            bo = dd.io.load(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/example_filter.bo')
-            loaded = Brain(data=bo['data'], locs=bo['locs'], sessions=bo['sessions'],
-                         sample_rate=bo['sample_rate'], meta=bo['meta'],
-                         date_created=bo['date_created'])
-
-        # load union of pyFR electrode locations
-        elif fname is 'pyFR_union':
-            with open(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/pyFR_k10_locs.npz',
-                      'rb') as handle:
-                data = np.load(handle)
-                locs = data['locs']
-                print(('subjects = ', data['subjs']))
-            return locs
-
-            ## need this model still:
-
-        # elif fname is 'pyFR':
-        #     try:
-        #         with open(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_6mm_brain.mo', 'rb') as handle:
-        #             example_model = pickle.load(handle)
-        #         return example_model
-        #     except:
-        #         try:
-        #             mo = dd.io.load(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_6mm_brain.mo')
-        #             return Model(numerator=mo['numerator'], denominator=mo['denominator'],
-        #                          locs=mo['locs'], n_subs=mo['n_subs'], meta=mo['meta'],
-        #                          date_created=mo['date_created'])
-        #         except:
-        #             model = pd.read_pickle(os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray_mask_6mm_brain.mo')
-        #             return model
-
-        # load MNI 152 standard brain
-        elif fname is 'std':
-            if vox_size:
-                std = _std(vox_size)
-            else:
-                std = _std()
-            loaded = std
-
-        # load gray matter masked MNI 152 brain
-        elif fname is 'gray':
-
-            if vox_size:
-                gray = _gray(vox_size)
-            else:
-                gray = _gray()
-            loaded = gray
-
-        # load brain object
-        elif fname.split('.')[-1] == 'bo':
-            bo = dd.io.load(fname)
-            loaded = Brain(data=bo['data'], locs=bo['locs'], sessions=bo['sessions'],
-                         sample_rate=bo['sample_rate'], meta=bo['meta'],
-                         date_created=bo['date_created'])
-
-        # load model object
-        elif fname.split('.')[-1] == 'mo':
-            mo = dd.io.load(fname)
-            loaded = Model(numerator=mo['numerator'], denominator=mo['denominator'],
-                         locs=mo['locs'], n_subs=mo['n_subs'], meta=mo['meta'],
-                         date_created=mo['date_created'])
-
-        # load nifti
-        elif fname.split('.')[-1] == 'nii' or '.'.join(fname.split('.')[-2:]) == 'nii.gz':
-            loaded = Nifti(fname)
-
-
+    if fname in datadict.keys():
+        data = _load_example(fname, datadict[fname])
     else:
-        loaded = fname
+        data = _load_from_path(fname)
+    return _convert(data, return_type, vox_size)
 
-    assert isinstance(loaded, (Brain, Model, Nifti))
-
-    if return_type == 'nii':
-
-        if not type(loaded) is Nifti:
-            loaded = Nifti(loaded)
-
+def _convert(data, return_type, vox_size):
+    """ Converts between bo, mo and nifti """
+    if return_type is None:
+        return data
+    elif return_type is 'nii':
+        if type(data) is not Nifti:
+            data = Nifti(data)
         if vox_size:
-            return _resample_nii(loaded, target_res=vox_size)
-
+            return _resample_nii(data, target_res=vox_size)
         else:
-            return loaded
+            return data
+    elif return_type is 'bo':
+        if type(data) is not Brain:
+            data = Brain(data)
+        return data
+    elif return_type is 'mo':
+        if type(data) is not Model:
+            data = Model(data)
+        return data
 
-    elif return_type == 'bo':
-
-        if not type(loaded) is Brain:
-            loaded = Brain(loaded)
-
-        return loaded
-
-    elif return_type == 'mo':
-
-        if not type(loaded) is Model:
-            loaded = Model(loaded)
-
-        return loaded
-
-    elif return_type is None:
-
-        return loaded
-
+def _load_example(fname, fileid):
+    """ Loads in dataset given a google file id """
+    fullpath = os.path.join(homedir, 'supereeg_data', fname)
+    if not os.path.exists(datadir):
+        os.makedirs(datadir)
+    if not os.path.exists(fullpath):
+        _download(fname, _load_stream(fileid[0]), fileid[1])
+        data = _load_from_cache(fname, fileid[1])
     else:
-        warnings.warn('return_type not understood')
+        data = _load_from_cache(fname, fileid[1])
+    return data
+
+def _load_stream(fileid):
+    """ Retrieve data from google drive """
+    def _get_confirm_token(response):
+        for key, value in response.cookies.items():
+            if key.startswith('download_warning'):
+                return value
+        return None
+    url = BASE_URL + fileid
+    session = requests.Session()
+    response = session.get(BASE_URL, params = { 'id' : fileid }, stream = True)
+    token = _get_confirm_token(response)
+    if token:
+        params = { 'id' : fileid, 'confirm' : token }
+        response = session.get(BASE_URL, params = params, stream = True)
+    return response
+
+def _download(fname, data, ext):
+    """ Download data to cache """
+    fullpath = os.path.join(homedir, 'supereeg_data', fname)
+    with open(fullpath + '.' + ext, 'wb') as f:
+        f.write(data.content)
+
+def _load_from_path(fpath):
+    """ Load a file from a local path """
+    try:
+        ext = fpath.split('.')[-1]
+    except:
+        raise ValueError("Must specify a file extension.")
+    if ext=='bo':
+        return Brain(**dd.io.load(fpath))
+    elif ext=='mo':
+        return Model(**dd.io.load(fpath))
+    elif ext=='nii':
+        return Nifti(fpath)
+    else:
+        raise ValueError("Filetype not recognized. Must be .bo, .mo or .nii.")
+
+def _load_from_cache(fname, ftype):
+    """ Load a file from local data cache """
+    fullpath = os.path.join(homedir, 'supereeg_data', fname + '.' + ftype)
+    if ftype is 'bo':
+        return Brain(**dd.io.load(fullpath))
+    elif ftype is 'mo':
+        return Model(**dd.io.load(fullpath))
+    elif ftype is 'nii':
+        return Nifti(fullpath)
