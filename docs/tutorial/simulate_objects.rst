@@ -18,7 +18,6 @@ Load in the required libraries
     import seaborn as sns
     import numpy as np
     import matplotlib.pyplot as plt
-    #plt.ioff()
     from supereeg.helpers import _corr_column
 
 Simulate locations
@@ -62,33 +61,33 @@ To begin, we can either simulate locations:
       <tbody>
         <tr>
           <th>0</th>
-          <td>-50</td>
-          <td>-11</td>
-          <td>-1</td>
+          <td>-46</td>
+          <td>-40</td>
+          <td>-6</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>-48</td>
-          <td>-7</td>
-          <td>47</td>
+          <td>-43</td>
+          <td>28</td>
+          <td>-15</td>
         </tr>
         <tr>
           <th>2</th>
+          <td>-41</td>
           <td>-37</td>
-          <td>-6</td>
-          <td>-47</td>
+          <td>43</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>2</td>
-          <td>-9</td>
-          <td>-23</td>
+          <td>-37</td>
+          <td>-50</td>
+          <td>-45</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>3</td>
-          <td>-3</td>
-          <td>22</td>
+          <td>-34</td>
+          <td>-24</td>
+          <td>16</td>
         </tr>
       </tbody>
     </table>
@@ -135,9 +134,6 @@ locations with ``bo.plot_locs``.
 
     # plot locations
     bo.plot_locs()
-    
-    # close plot
-    plt.close()
 
 
 
@@ -200,7 +196,6 @@ You can also pass a custom covariance matrix in ``cov``.
     
     # and use it to create a brain object
     bo = se.simulate_bo(n_samples=100, sample_rate=1000, locs=locs, cov=R)
-
 
 Simulate model object
 ---------------------
@@ -267,7 +262,7 @@ electrodes, the better then recovery of the true model.
     
             # plot it
             model.plot_data(ax=axarr[isub, ielec], yticklabels=False,
-                        xticklabels=False, cmap='RdBu_r', cbar=False, vmin=0, vmax=1, show=False)
+                        xticklabels=False, cbar=False, vmin=0, vmax=1, show=False)
     
             # set the title
             axarr[isub, ielec].set_title(str(n_subs) + ' Subjects, ' + str(n_elecs) + ' Electrodes')
@@ -340,19 +335,19 @@ recovered.
     f.set_size_inches(15,5)
     
     # plot it and set the title
-    model.plot_data(ax=ax1, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1, show=False)
+    model.plot_data(ax=ax1, yticklabels=False, xticklabels=False, cbar=True, vmin=0, vmax=1, show=False)
     ax1.set_title('Before updating model: 10 subjects total')
     ax1.plot()
     
     
     # plot it and set the title
     
-    new_model.plot_data(ax=ax2, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1, show=False)
+    new_model.plot_data(ax=ax2, yticklabels=False, xticklabels=False, cbar=True, vmin=0, vmax=1, show=False)
     ax2.set_title('After updating model: 11 subjects total')
     
     
     # plot it and set the title
-    better_model.plot_data(ax=ax3, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1, show=False)
+    better_model.plot_data(ax=ax3, yticklabels=False, xticklabels=False, cbar=True, vmin=0, vmax=1, show=False)
     ax3.set_title('After updating model: 20 subjects total')
     
     plt.tight_layout()

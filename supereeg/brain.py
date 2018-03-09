@@ -233,7 +233,21 @@ class Brain(object):
 
     def get_slice(self, sample_inds=None, loc_inds=None, inplace=False):
         """
-        Gets a time slice of the data
+        Indexes brain object data
+
+
+
+        Parameters
+        ----------
+        sample_inds : int or list
+            Times you wish to index
+
+        loc_inds : int or list
+            Locations you with to index
+
+        inplace : bool
+            If True, indexes in place.
+
         """
         if not sample_inds:
             sample_inds = list(range(self.data.shape[0]))
@@ -272,6 +286,14 @@ class Brain(object):
     def resample(self, resample_rate=None):
         """
         Resamples data
+
+
+
+        Parameters
+        ----------
+        resample_rate : int or float
+            Desired sample rate
+
         """
         if resample_rate is None:
             return self
@@ -305,14 +327,13 @@ class Brain(object):
             Title for plot
 
         electrode : int
-            Location in MNI coordinate (x,y,z) by electrode df containing
-            electrode locations
+            Location in MNI coordinate (x,y,z) by electrode df containing electrode locations
 
         threshold : int
-        Value of kurtosis threshold
+            Value of kurtosis threshold
 
         filtered : True
-        Default to filter by kurtosis threshold.  If False, will show all original data.
+            Default to filter by kurtosis threshold.  If False, will show all original data.
 
         """
 
@@ -371,8 +392,7 @@ class Brain(object):
         Parameters
         ----------
         pdfpath : str
-            A name for the file.  If the file extension (.pdf) is not specified, it
-        will be appended.
+            A name for the file.  If the file extension (.pdf) is not specified, it will be appended.
 
         """
 
@@ -381,42 +401,6 @@ class Brain(object):
             _plot_locs_connectome(locs, pdfpath)
         else:
             _plot_locs_hyp(locs, pdfpath)
-
-
-    def save(self, fname, compression='blosc'):
-        """
-        Save method for the brain object
-
-        The data will be saved as a 'bo' file, which is a dictionary containing
-        the elements of a brain object saved in the hd5 format using
-        `deepdish`.
-
-        Parameters
-        ----------
-
-        fname : str
-            A name for the file.  If the file extension (.bo) is not specified,
-            it will be appended.
-
-        compression : str
-            The kind of compression to use.  See the deepdish documentation for
-            options: http://deepdish.readthedocs.io/en/latest/api_io.html#deepdish.io.save
-
-        """
-
-        bo = {
-            'data' : self.data.as_matrix(),
-            'locs' : self.locs.as_matrix(),
-            'sessions' : self.sessions,
-            'sample_rate' : self.sample_rate,
-            'meta' : self.meta,
-            'date_created' : self.date_created
-        }
-
-        if fname[-3:]!='.bo':
-            fname+='.bo'
-
-        dd.io.save(fname, bo, compression=compression)
 
 
     def to_nii(self, filepath=None, template=None, vox_size=None, sample_rate=None):
@@ -429,28 +413,29 @@ class Brain(object):
         ----------
 
         filepath : str
+
             Path to save the nifti file
 
         template : str, Nifti1Image, or None
 
             Template is a nifti file with the desired resolution to save the brain object activity
 
-            If template is None (default) :
-                - Uses gray matter masked brain downsampled to brain object voxel size (max 20 mm)
+                If template is None (default) :
+                    - Uses gray matter masked brain downsampled to brain object voxel size (max 20 mm)
 
-            If template is str :
-                - Checks if nifti file path and uses specified nifti
+                If template is str :
+                    - Checks if nifti file path and uses specified nifti
 
-                - If not a filepath, checks if 'std' or 'gray'
+                    - If not a filepath, checks if 'std' or 'gray'
 
-                - If 'std':
-                    - Uses standard brain downsampled to brain object voxel size
+                    - If 'std':
+                        - Uses standard brain downsampled to brain object voxel size
+    
+                    - If 'gray':
+                        - Uses gray matter masked brain downsampled to brain object voxel size
 
-                - If 'gray':
-                    - Uses gray matter masked brain downsampled to brain object voxel size
-
-            If template is Nifti1Image :
-                - Uses specified Nifti image
+                If template is Nifti1Image :
+                    - Uses specified Nifti image
 
 
         Returns
@@ -525,3 +510,39 @@ class Brain(object):
             nifti.to_filename(filepath)
 
         return nifti
+
+
+    def save(self, fname, compression='blosc'):
+        """
+        Save method for the brain object
+
+        The data will be saved as a 'bo' file, which is a dictionary containing
+        the elements of a brain object saved in the hd5 format using
+        `deepdish`.
+
+        Parameters
+        ----------
+
+        fname : str
+            A name for the file.  If the file extension (.bo) is not specified,
+            it will be appended.
+
+        compression : str
+            The kind of compression to use.  See the deepdish documentation for
+            options: http://deepdish.readthedocs.io/en/latest/api_io.html#deepdish.io.save
+
+        """
+
+        bo = {
+            'data': self.data.as_matrix(),
+            'locs': self.locs.as_matrix(),
+            'sessions': self.sessions,
+            'sample_rate': self.sample_rate,
+            'meta': self.meta,
+            'date_created': self.date_created
+        }
+
+        if fname[-3:] != '.bo':
+            fname += '.bo'
+
+        dd.io.save(fname, bo, compression=compression)
