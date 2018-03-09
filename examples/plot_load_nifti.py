@@ -19,6 +19,12 @@ import supereeg as se
 # example nifti is the gray matter masked MNI152 brain downsampled to 20mm
 nii = se.load('example_nifti')
 
+af = nii.affine
+
+do = nii.dataobj
+
+try_it = se.Nifti(do, affine=af)
+
 # plot nifti
 nii.plot_anat()
 
