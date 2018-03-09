@@ -35,7 +35,7 @@ Here, we load an example dataset and then print out some information about it.
     Recording time in seconds: [[ 5.3984375 14.1328125]]
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
-    Date created: Thu Mar  8 12:22:34 2018
+    Date created: Fri Mar  9 12:44:40 2018
     Meta data: {'patient': 'CH003'}
 
 
@@ -69,7 +69,7 @@ Here, we load an example dataset and then print out some information about it.
     # the default time window is the first 10 seconds, but you can specify your own timewindow
     bo.plot_data(time_min=10, time_max=12)
 
-**Total running time of the script:** ( 0 minutes  0.685 seconds)
+**Total running time of the script:** ( 0 minutes  0.669 seconds)
 
 
 

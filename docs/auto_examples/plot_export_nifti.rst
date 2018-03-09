@@ -45,7 +45,7 @@ This example loads a nifti file.  It also converts a brain object into a nifti a
 
     # save nifti
     #nii_bo.save('/path/to/save/nifti')
-**Total running time of the script:** ( 0 minutes  0.970 seconds)
+**Total running time of the script:** ( 0 minutes  0.963 seconds)
 
 
 

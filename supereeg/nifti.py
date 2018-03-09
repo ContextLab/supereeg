@@ -11,16 +11,15 @@ from .helpers import make_gif_pngs
 
 class Nifti(Nifti1Image):
     """
-    Nifti class for the supereeg package
-
-    Child class for nifti parent class
+    Nifti class for the supereeg package.  Extends the Nibabel.Nifti1Image class.
 
     Parameters
     ----------
 
-    data : path to Nifti1Image, supereeg.Brain, supereeg.Nifti
+    data : object or path to Nifti1Image, supereeg.Brain, supereeg.Nifti
 
         If data is a nifti image (either supereeg.Nifti or path to Nifti1Image), returns nifti values.
+
 
 
     Attributes
@@ -82,18 +81,6 @@ class Nifti(Nifti1Image):
         """
         print('Header: ' + str(self.header))
 
-    ### Ask if we want this type for method for each of the classes
-    # def to_bo(self):
-    #     from .brain import Brain
-    #
-    #     return Brain(self)
-    #
-    # def to_mo(self):
-    #     from .brain import Brain
-    #     from .model import Model
-    #
-    #     bo = Brain(self)
-    #     return Model(bo)
 
     def get_slice(self, index):
 

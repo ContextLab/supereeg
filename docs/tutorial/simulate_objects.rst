@@ -16,8 +16,9 @@ Load in the required libraries
     import supereeg as se
     import pandas as pd
     import seaborn as sns
-    import matplotlib.pyplot as plt
     import numpy as np
+    import matplotlib.pyplot as plt
+    #plt.ioff()
     from supereeg.helpers import _corr_column
 
 Simulate locations
@@ -61,33 +62,33 @@ To begin, we can either simulate locations:
       <tbody>
         <tr>
           <th>0</th>
-          <td>-42</td>
-          <td>14</td>
-          <td>44</td>
+          <td>-50</td>
+          <td>-11</td>
+          <td>-1</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>-39</td>
-          <td>-9</td>
-          <td>-46</td>
+          <td>-48</td>
+          <td>-7</td>
+          <td>47</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>-36</td>
-          <td>-32</td>
-          <td>41</td>
+          <td>-37</td>
+          <td>-6</td>
+          <td>-47</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>-32</td>
-          <td>12</td>
-          <td>-6</td>
+          <td>2</td>
+          <td>-9</td>
+          <td>-23</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>-16</td>
           <td>3</td>
-          <td>21</td>
+          <td>-3</td>
+          <td>22</td>
         </tr>
       </tbody>
     </table>
@@ -121,6 +122,9 @@ locations with ``bo.plot_locs``.
 
     # for plotting data, the default time window is first 10 seconds, but you can specifiy your own window
     bo.plot_data(time_min=5, time_max=10)
+    
+    # close plot
+    plt.close()
 
 
 
@@ -131,6 +135,9 @@ locations with ``bo.plot_locs``.
 
     # plot locations
     bo.plot_locs()
+    
+    # close plot
+    plt.close()
 
 
 
@@ -191,8 +198,7 @@ You can also pass a custom covariance matrix in ``cov``.
     # create correlation matrix
     R = se.create_cov(cov='toeplitz', n_elecs=len(locs))
     
-    R
-    # and use it to create brain object
+    # and use it to create a brain object
     bo = se.simulate_bo(n_samples=100, sample_rate=1000, locs=locs, cov=R)
 
 
@@ -207,28 +213,25 @@ brain objects.
 
 .. code:: ipython2
 
+    # number of subjects 
+    n_sub = 5
+    
     # list of 5 simulated brain objects, each with 20 locations, for model 
     model_bos = [se.simulate_model_bos(n_samples=100, sample_rate=1000, sample_locs=20, 
-                                       locs=locs, cov=R) for x in range(5)]
+                                       locs=locs, cov=R) for x in range(n_sub)]
     
     # create model from list of brain objects
     model = se.Model(data=model_bos, locs=locs)
     
     # plot the model
     model.plot_data()
-
+    
+    # close plot
+    plt.close()
 
 
 
 .. image:: simulate_objects_files/simulate_objects_24_0.png
-
-
-
-
-.. parsed-literal::
-
-    <matplotlib.axes._subplots.AxesSubplot at 0x10c77ea90>
-
 
 
 Simulation Example 1:
@@ -252,7 +255,6 @@ electrodes, the better then recovery of the true model.
     
     # loop over simulated subjects size
     for isub, n_subs in enumerate([10, 25, 50, 100]):
-    
         # loop over simulated electrodes
         for ielec, n_elecs in enumerate([10, 25, 50, 100]):
     
@@ -265,12 +267,16 @@ electrodes, the better then recovery of the true model.
     
             # plot it
             model.plot_data(ax=axarr[isub, ielec], yticklabels=False,
-                        xticklabels=False, cmap='RdBu_r', cbar=False, vmin=0, vmax=1)
+                        xticklabels=False, cmap='RdBu_r', cbar=False, vmin=0, vmax=1, show=False)
     
             # set the title
             axarr[isub, ielec].set_title(str(n_subs) + ' Subjects, ' + str(n_elecs) + ' Electrodes')
     
-    f.tight_layout()
+    
+    plt.show()
+    
+    # close plot
+    plt.close()
 
 
 
@@ -334,19 +340,26 @@ recovered.
     f.set_size_inches(15,5)
     
     # plot it and set the title
-    model.plot_data(ax=ax1, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
+    model.plot_data(ax=ax1, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1, show=False)
     ax1.set_title('Before updating model: 10 subjects total')
+    ax1.plot()
+    
     
     # plot it and set the title
-    new_model.plot_data(ax=ax2, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
+    
+    new_model.plot_data(ax=ax2, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1, show=False)
     ax2.set_title('After updating model: 11 subjects total')
     
+    
     # plot it and set the title
-    better_model.plot_data(ax=ax3, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
+    better_model.plot_data(ax=ax3, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1, show=False)
     ax3.set_title('After updating model: 20 subjects total')
     
-    f.tight_layout()
+    plt.tight_layout()
     plt.show()
+    
+    # close plot
+    plt.close()
 
 
 
@@ -370,89 +383,103 @@ recovery of the true model.
 
 .. code:: ipython2
 
-    # # n_electrodes - number of electrodes for reconstructed patient
-    # n_elecs = range(10, 160, 50)
+    # n_electrodes - number of electrodes for reconstructed patient
+    n_elecs = range(10, 100, 10)
     
-    # # m_patients - number of patients in the model
-    # m_patients = [5, 10]
     
-    # # m_electrodes - number of electrodes for each patient in the model
-    # m_elecs = range(10, 160, 50)
+    # m_patients - number of patients in the model
+    m_patients = [5, 10]
     
-    # iter_val = 1
     
-    # append_d = pd.DataFrame()
+    # m_electrodes - number of electrodes for each patient in the model
+    m_elecs = range(10, 100, 10)
     
-    # param_grid = [(p, m, n) for p in m_patients for m in m_elecs for n in n_elecs]
     
-    # for p, m, n in param_grid:
-    #     d = []
+    iter_val = 5
     
-    #     for i in range(iter_val):
-    #         # create brain objects with m_patients and loop over the number of model locations and subset locations to build model
-    #         model_bos = [se.simulate_model_bos(n_samples=100, sample_rate=1000, locs=locs, sample_locs=m, noise =.3) for x in range(p)]
+    append_d = pd.DataFrame()
     
-    #         # create model from subsampled gray locations
-    #         model = se.Model(model_bos, locs=locs)
+    param_grid = [(p, m, n) for p in m_patients for m in m_elecs for n in n_elecs]
     
-    #         # brain object locations subsetted entirely from both model and gray locations
-    #         sub_locs = locs.sample(n).sort_values(['x', 'y', 'z'])
+    for p, m, n in param_grid:
+        d = []
     
-    #         # simulate brain object
-    #         bo = se.simulate_bo(n_samples=100, sample_rate=1000, locs=locs, noise =.3)
+        for i in range(iter_val):
+            # create brain objects with m_patients and loop over the number of model locations and subset locations to build model
+            model_bos = [se.simulate_model_bos(n_samples=100, sample_rate=1000, locs=locs, sample_locs=m, noise =.3) for x in range(p)]
     
-    #         # parse brain object to create synthetic patient data
-    #         data = bo.data.iloc[:, sub_locs.index]
+            # create model from subsampled gray locations
+            model = se.Model(model_bos, locs=locs)
     
-    #         # create synthetic patient (will compare remaining activations to predictions)
-    #         bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs)
+            # brain object locations subsetted entirely from both model and gray locations
+            sub_locs = locs.sample(n).sort_values(['x', 'y', 'z'])
     
-    #         # reconstruct at 'unknown' locations
-    #         bo_r = model.predict(bo_sample)
+            # simulate brain object
+            bo = se.simulate_bo(n_samples=100, sample_rate=1000, locs=locs, noise =.3)
     
-    #         # find the reconstructed indices
-    #         recon_inds = [i for i, x in enumerate(bo_r.label) if x == 'reconstructed']
+            # parse brain object to create synthetic patient data
+            data = bo.data.iloc[:, sub_locs.index]
     
-    #         # sample reconstructed data a reconstructed indices
-    #         recon = bo_r.data.iloc[:, recon_inds]
+            # create synthetic patient (will compare remaining activations to predictions)
+            bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs)
     
-    #         # sample actual data at reconstructed locations
-    #         actual = bo.data.iloc[:, recon_inds]
+            # reconstruct at 'unknown' locations
+            bo_r = model.predict(bo_sample)
     
-    #         # correlate reconstruction with actual data
-    #         corr_vals = _corr_column(actual.as_matrix(), recon.as_matrix())
-    #         corr_vals_sample = np.random.choice(corr_vals, 5)
+            # find the reconstructed indices
+            recon_inds = [i for i, x in enumerate(bo_r.label) if x == 'reconstructed']
     
-    #         d.append(
-    #             {'Subjects in model': p, 'Electrodes per subject in model': m, 'Electrodes per reconstructed subject': n,
-    #              'Average Correlation': corr_vals_sample.mean(), 'Correlations': corr_vals})
+            # sample reconstructed data a reconstructed indices
+            recon = bo_r.data.iloc[:, recon_inds]
     
-    #     d = pd.DataFrame(d, columns=['Subjects in model', 'Electrodes per subject in model',
-    #                                  'Electrodes per reconstructed subject', 'Average Correlation', 'Correlations'])
-    #     append_d = append_d.append(d)
-    #     append_d.index.rename('Iteration', inplace=True)
+            # sample actual data at reconstructed locations
+            actual = bo.data.iloc[:, recon_inds]
     
-    # new_df = append_d.groupby('Average Correlation').mean()
+            # correlate reconstruction with actual data
+            corr_vals = _corr_column(actual.as_matrix(), recon.as_matrix())
+            corr_vals_sample = np.random.choice(corr_vals, 5)
     
-    # #fig, axs = plt.subplots(ncols=len(np.unique(new_df['Subjects in model'])), sharex=True, sharey=True)
-    # fig, axs = plt.subplots(ncols=2, sharex=True, sharey=True)
+            d.append(
+                {'Subjects in model': p, 'Electrodes per subject in model': m, 'Electrodes per reconstructed subject': n,
+                 'Average Correlation': corr_vals_sample.mean(), 'Correlations': corr_vals})
     
-    # axs_iter = 0
+        d = pd.DataFrame(d, columns=['Subjects in model', 'Electrodes per subject in model',
+                                     'Electrodes per reconstructed subject', 'Average Correlation', 'Correlations'])
+        append_d = append_d.append(d)
+        append_d.index.rename('Iteration', inplace=True)
     
-    # cbar_ax = fig.add_axes([.92, .3, .03, .4])
+    new_df = append_d.groupby('Average Correlation').mean()
     
-    # fig.subplots_adjust(right=0.85)
-    # fig.set_size_inches(14,5)
-    # for i in np.unique(new_df['Subjects in model']):
-    #     data_plot = append_d[append_d['Subjects in model'] == i].pivot_table(index=['Electrodes per subject in model'],
-    #                                                                          columns='Electrodes per reconstructed subject',
-    #                                                                          values='Average Correlation')
-    #     axs[axs_iter].set_title('Patients = ' + str(i))
-    #     sns.heatmap(data_plot, cmap="coolwarm", cbar=axs_iter == 0, ax=axs[axs_iter], cbar_ax=None if axs_iter else cbar_ax)
-    #     axs[axs_iter].invert_yaxis()
-    #     axs_iter += 1
+    #fig, axs = plt.subplots(ncols=len(np.unique(new_df['Subjects in model'])), sharex=True, sharey=True)
+    fig, axs = plt.subplots(ncols=2, sharex=True, sharey=True)
     
-    # plt.show()
+    axs_iter = 0
+    
+    cbar_ax = fig.add_axes([.92, .3, .03, .4])
+    
+    fig.subplots_adjust(right=0.85)
+    fig.set_size_inches(14,5)
+    for i in np.unique(new_df['Subjects in model']):
+        data_plot = append_d[append_d['Subjects in model'] == i].pivot_table(index=['Electrodes per subject in model'],
+                                                                             columns='Electrodes per reconstructed subject',
+                                                                             values='Average Correlation')
+        axs[axs_iter].set_title('Patients = ' + str(i))
+        sns.heatmap(data_plot, cmap="coolwarm", cbar=axs_iter == 0, ax=axs[axs_iter], cbar_ax=None if axs_iter else cbar_ax)
+        axs[axs_iter].invert_yaxis()
+        axs_iter += 1
+    
+    plt.show()
+
+
+.. parsed-literal::
+
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:177: UserWarning: No sample rate given.  Number of seconds cant be computed
+      warnings.warn('No sample rate given.  Number of seconds cant be computed')
+
+
+
+.. image:: simulate_objects_files/simulate_objects_33_1.png
+
 
 Simulations run on the cluster:
 

@@ -59,7 +59,7 @@ For example, you can load a nifti object as a model object:
 
 .. parsed-literal::
 
-    <supereeg.model.Model at 0x1035c2310>
+    <supereeg.model.Model at 0x103e92790>
 
 
 
@@ -113,7 +113,7 @@ accepts are supported by ``model.plot``.
 
 .. parsed-literal::
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x10a497750>
+    <matplotlib.axes._subplots.AxesSubplot at 0x10bccb790>
 
 
 
@@ -151,7 +151,7 @@ data as a brain object. First, let’s load in an example subjects data:
     Recording time in seconds: [[ 5.3984375 14.1328125]]
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
-    Date created: Thu Mar  8 12:52:04 2018
+    Date created: Fri Mar  9 12:04:45 2018
     Meta data: {'patient': 'CH003'}
 
 
@@ -167,7 +167,7 @@ Now you can update the model with that brain object:
 
     Number of locations: 210
     Number of subjects: 68
-    Date created: Thu Mar  8 12:52:05 2018
+    Date created: Fri Mar  9 12:04:46 2018
     Meta data: None
 
 
@@ -221,7 +221,7 @@ For the purpose of demonstration, we will simulate 100 locations across
     Recording time in seconds: [1.]
     Sample Rate in Hz: [1000]
     Number of sessions: 1
-    Date created: Thu Mar  8 12:52:05 2018
+    Date created: Fri Mar  9 12:04:46 2018
     Meta data: {}
 
 
@@ -240,7 +240,7 @@ new model will be generated:
 
     Number of locations: 100
     Number of subjects: 10
-    Date created: Thu Mar  8 12:52:07 2018
+    Date created: Fri Mar  9 12:04:48 2018
     Meta data: None
 
 
@@ -283,7 +283,7 @@ of locations to ``cov`` and the number of location to ``n_elecs``.
 
 .. parsed-literal::
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x10ba3af90>
+    <matplotlib.axes._subplots.AxesSubplot at 0x10c2ebf90>
 
 
 
@@ -358,7 +358,7 @@ model with the subject’s correlation matrix.
     Recording time in seconds: [[ 5.3984375 14.1328125]]
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
-    Date created: Thu Mar  8 12:52:04 2018
+    Date created: Fri Mar  9 12:04:45 2018
     Meta data: {'patient': 'CH003'}
 
 
@@ -374,7 +374,7 @@ model with the subject’s correlation matrix.
     Recording time in seconds: [ 5.3984375 14.1328125]
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
-    Date created: Thu Mar  8 12:52:09 2018
+    Date created: Fri Mar  9 12:04:50 2018
     Meta data: {}
 
 

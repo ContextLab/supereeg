@@ -38,9 +38,8 @@ new data.
     import supereeg as se
 
 
-    # load example model to get locations
-    mo = se.load('example_model')
-    locs = mo.locs
+    # simulate 100 locations
+    locs = se.simulate_locations(n_elecs=100)
 
     # simulate correlation matrix
     R = se.create_cov(cov='toeplitz', n_elecs=len(locs))
@@ -76,7 +75,7 @@ new data.
     plt.tight_layout()
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  3.028 seconds)
+**Total running time of the script:** ( 0 minutes  0.899 seconds)
 
 
 

@@ -110,6 +110,16 @@ This method will give you a summary of the nifti object:
     magic           : n+1
 
 
+``nifti.get_slice()``
+---------------------
+
+This method allows you to slice out images from your nifti object, and
+returns the indexed nifti.
+
+.. code:: ipython2
+
+    nii_sliced = bo_nii.get_slice(index=[0,1,2])
+
 ``nifti.plot_glass_brain()``
 ----------------------------
 
@@ -122,11 +132,6 @@ by ``nifti.plot_glass_brain``.
 .. code:: ipython2
 
     nii.plot_glass_brain()
-
-
-
-.. image:: nifti_objects_files/nifti_objects_11_0.png
-
 
 ``nifti.plot_anat()``
 ---------------------
@@ -143,7 +148,7 @@ arguments that ``nilearn.plot_anat`` accepts are supported by
 
 
 
-.. image:: nifti_objects_files/nifti_objects_13_0.png
+.. image:: nifti_objects_files/nifti_objects_15_0.png
 
 
 ``nifti.make_gif()``

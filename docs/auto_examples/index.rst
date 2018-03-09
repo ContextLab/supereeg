@@ -69,6 +69,26 @@ Gallery of Examples
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we load a brain object as a nifti object, and index 5 timepoints.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_nifti_get_slice_thumb.png
+
+        :ref:`sphx_glr_auto_examples_nifti_get_slice.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/nifti_get_slice
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="Here, we load an example dataset, and then slice out some electrodes and time samples.">
 
 .. only:: html
@@ -109,26 +129,6 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This example filters electrodes based on kurtosis thresholding (default=10).">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_filtering_thumb.png
-
-        :ref:`sphx_glr_auto_examples_plot_filtering.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/plot_filtering
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="This example loads a nifti file and converts it into a brain object.">
 
 .. only:: html
@@ -146,6 +146,26 @@ Gallery of Examples
    :hidden:
 
    /auto_examples/plot_load_nifti
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example filters electrodes based on kurtosis thresholding (default=10).">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_filtering_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_filtering.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_filtering
 
 .. raw:: html
 
@@ -169,26 +189,6 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This example shows you how to resample your data">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_resampleing_thumb.png
-
-        :ref:`sphx_glr_auto_examples_resampleing.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/resampleing
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="In this example, we simulate 3 brain objects using a subset of 10 locations. We will impose a c...">
 
 .. only:: html
@@ -206,6 +206,26 @@ Gallery of Examples
    :hidden:
 
    /auto_examples/plot_simulate_mo
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example shows you how to resample your data">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_resampleing_thumb.png
+
+        :ref:`sphx_glr_auto_examples_resampleing.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/resampleing
 
 .. raw:: html
 

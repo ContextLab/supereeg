@@ -13,18 +13,8 @@ Here, we load an example nifti image and plot it.
 
 
 
-.. rst-class:: sphx-glr-horizontal
-
-
-    *
-
-      .. image:: /auto_examples/images/sphx_glr_plot_nifti_001.png
-            :scale: 47
-
-    *
-
-      .. image:: /auto_examples/images/sphx_glr_plot_nifti_002.png
-            :scale: 47
+.. image:: /auto_examples/images/sphx_glr_plot_nifti_001.png
+    :align: center
 
 
 
@@ -51,7 +41,7 @@ Here, we load an example nifti image and plot it.
 
 
 
-**Total running time of the script:** ( 0 minutes  1.097 seconds)
+**Total running time of the script:** ( 0 minutes  0.452 seconds)
 
 
 

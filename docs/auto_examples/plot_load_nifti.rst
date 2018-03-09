@@ -26,6 +26,11 @@ This example loads a nifti file and converts it into a brain object.
       .. image:: /auto_examples/images/sphx_glr_plot_load_nifti_002.png
             :scale: 47
 
+    *
+
+      .. image:: /auto_examples/images/sphx_glr_plot_load_nifti_003.png
+            :scale: 47
+
 
 
 
@@ -47,8 +52,11 @@ This example loads a nifti file and converts it into a brain object.
     # plot nifti
     nii.plot_anat()
 
-    # nifti -> brain object
+    # nifti -> brain object - initialize brain object with nifti object
     bo = se.Brain(nii)
+
+    # plot brain object
+    bo.plot_data()
 
     # export brain object -> nifti
     nii_r = bo.to_nii(template='gray', vox_size=20)
@@ -56,9 +64,7 @@ This example loads a nifti file and converts it into a brain object.
     # # plot the result (same as before)
     nii_r.plot_anat()
 
-    # or you can initialize a nifti object with a brain object or model object
-    bo_nii = se.load('example_data', return_type='nii')
-**Total running time of the script:** ( 0 minutes  6.147 seconds)
+**Total running time of the script:** ( 0 minutes  1.903 seconds)
 
 
 

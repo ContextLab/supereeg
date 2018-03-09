@@ -32,9 +32,8 @@ objects and plot it.
     import supereeg as se
 
 
-    # load example model to get locations
-    mo = se.load('example_model')
-    locs = mo.locs
+    # simulate 100 locations
+    locs = se.simulate_locations(n_elecs=100)
 
     # simulate correlation matrix
     R = se.create_cov(cov='toeplitz', n_elecs=len(locs))
@@ -49,7 +48,7 @@ objects and plot it.
     # plot the model
     model.plot_data()
 
-**Total running time of the script:** ( 0 minutes  2.458 seconds)
+**Total running time of the script:** ( 0 minutes  0.710 seconds)
 
 
 

@@ -22,14 +22,14 @@ nii = se.load('example_nifti')
 # plot nifti
 nii.plot_anat()
 
-# nifti -> brain object
+# nifti -> brain object - initialize brain object with nifti object
 bo = se.Brain(nii)
+
+# plot brain object
+bo.plot_data()
 
 # export brain object -> nifti
 nii_r = bo.to_nii(template='gray', vox_size=20)
 
 # # plot the result (same as before)
 nii_r.plot_anat()
-
-# or you can initialize a nifti object with a brain object or model object
-bo_nii = se.load('example_data', return_type='nii')

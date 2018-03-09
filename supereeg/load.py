@@ -14,7 +14,7 @@ def load(fname, vox_size=None, return_type=None):
     """
     Load nifti file, brain or model object, or example data.
 
-    This function can load in example data, as well as nifti files, brain objects (.bo)
+    This function can load in example data, as well as nifti objects (.nii), brain objects (.bo)
     and model objects (.mo) by detecting the extension and calling the appropriate
     load function.  Thus, be sure to include the file extension in the fname
     parameter.
@@ -22,54 +22,54 @@ def load(fname, vox_size=None, return_type=None):
     Parameters
     ----------
     fname : string
+
         The name of the example data or a filepath.
+
 
         Examples includes :
 
-        example_data - example brain object (n = 64)
+            example_data - example brain object (n = 64)
 
-        example_filter - load example patient data with kurtosis thresholded channels
+            example_filter - load example patient data with kurtosis thresholded channels (n = 40)
 
-        example_model - example model object with locations from gray masked brain downsampled to 20mm (n = 210)
+            example_model - example model object with locations from gray masked brain downsampled to 20mm (n = 210)
 
-        example_locations - example location from gray masked brain downsampled to 20mm (n = 210)
+            example_nifti - example nifti file from gray masked brain downsampled to 20mm (n = 210)
 
-        example_nifti - example nifti file from gray masked brain downsampled to 20mm (n = 210)
 
         Nifti templates :
 
-        gray - load gray matter masked MNI 152 brain
+            gray - load gray matter masked MNI 152 brain
 
-        std - load MNI 152 standard brain
+            std - load MNI 152 standard brain
+
 
         Models :
 
-        pyfr - model used for analyses from Owen LLW and Manning JR (2017) Towards Human Super EEG. bioRxiv: 121020`
+            pyfr - model used for analyses from Owen LLW and Manning JR (2017) Towards Human Super EEG. bioRxiv: 121020`
 
-            vox_size options: 6mm and 20mm
+                vox_size options: 6mm and 20mm
 
-        ### need to recompute these with the new 210 locations
-        pyFR_k10r20_20mm - model used for analyses from
-        `Owen LLW and Manning JR (2017) Towards Human Super EEG.  bioRxiv: 121020` with 20mm resolution (n = 170)
-        
-        pyFR_k10r20_6mm - model used for analyses from
-        `Owen LLW and Manning JR (2017) Towards Human Super EEG.  bioRxiv: 121020` with 6 mm resolution (n = 10K)
 
-    vox_size : voxel size for loading and resampling nifti image
+    vox_size : int or float
+
+        Voxel size for loading and resampling nifti image
 
     return_type : Option for loading data
 
-        'bo' - returns supereeg.Brain
+        Option for loading data
 
-        'mo' - returns supereeg.Model
+            'bo' - returns supereeg.Brain
 
-        'nii' - returns supereeg.Nifti
+            'mo' - returns supereeg.Model
+
+            'nii' - returns supereeg.Nifti
 
 
 
     Returns
     ----------
-    data : nibabel.Nifti1, supereeg.Brain or supereeg.Model
+    data : supereeg.Nifti, supereeg.Brain or supereeg.Model
         Data to be returned
 
     """

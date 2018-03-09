@@ -42,9 +42,9 @@ original brain object.
 
     import supereeg as se
 
-    # load example model to get locations
-    mo = se.load('example_model')
-    locs = mo.locs
+
+    # simulate 100 locations
+    locs = se.simulate_locations(n_elecs=100)
 
     # simulate brain object
     bo = se.simulate_bo(n_samples=1000, sample_rate=1000, cov='toeplitz', locs=locs, noise =.3)
@@ -61,7 +61,7 @@ original brain object.
     # plot sample patient data
     bo_sample.plot_data()
 
-**Total running time of the script:** ( 0 minutes  0.521 seconds)
+**Total running time of the script:** ( 0 minutes  0.606 seconds)
 
 
 
