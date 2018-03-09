@@ -38,17 +38,24 @@ Then, navigate to the folder and type:
 
 <h2>Requirements</h2>
 
-+ python 2.7, 3.4+
-+ pandas>=0.18.0
++ python 2.7
++ pandas>=0.21.1
 + seaborn>=0.7.1
-+ matplotlib>=1.5.1
++ matplotlib==2.1.0
 + scipy>=0.17.1
 + numpy>=1.10.4
 + scikit-learn>=0.18.1
++ nilearn
++ nibabel
++ joblib
 + multiprocessing
-+ tensorflow
++ deepdish
 + future
++ imageio
++ hypertools
++ scikit-image
 + pytest (for development)
+
 
 If installing from github (instead of pip), you must also install the requirements:
 `pip install -r requirements.txt`
