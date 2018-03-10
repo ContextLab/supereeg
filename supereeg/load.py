@@ -93,8 +93,15 @@ def load(fname, vox_size=None, return_type=None):
 
 def _convert(data, return_type, vox_size):
     """ Converts between bo, mo and nifti """
-    if return_type is None:
+    if return_type is None and vox_size is None:
         return data
+    elif return_type is None and vox_size is not None:
+        if type(data) is Nifti:
+            return _resample_nii(data, target_res=vox_size)
+        else:
+            warnings.warn('Data is not a Nifti file, therefore vox_size was not computed '
+                          ' Please specify nii as return_type if you would like a Nifti returned.')
+            return data
     elif return_type is 'nii':
         if type(data) is not Nifti:
             data = Nifti(data)

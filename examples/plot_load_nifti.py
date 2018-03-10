@@ -14,9 +14,6 @@ This example loads a nifti file and converts it into a brain object.
 # import
 import supereeg as se
 
-from supereeg.helpers import _gray, _resample_nii
-
-
 # not taking vox_size as option, just looking for return type
 nii = se.load('gray', vox_size=20)
 
