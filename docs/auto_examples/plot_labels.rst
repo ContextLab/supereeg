@@ -73,7 +73,7 @@ model locations. We then slice the brain object based on the labels.
     # plot the nearest voxel used in the reconstruction
     reconstructed_bo.plot_locs()
 
-**Total running time of the script:** ( 0 minutes  1.497 seconds)
+**Total running time of the script:** ( 0 minutes  1.472 seconds)
 
 
 

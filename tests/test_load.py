@@ -1,6 +1,5 @@
 from builtins import str
 from builtins import range
-import pytest
 import supereeg as se
 import numpy as np
 import os

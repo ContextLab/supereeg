@@ -61,7 +61,7 @@ original brain object.
     # plot sample patient data
     bo_sample.plot_data()
 
-**Total running time of the script:** ( 0 minutes  0.606 seconds)
+**Total running time of the script:** ( 0 minutes  0.575 seconds)
 
 
 

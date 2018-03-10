@@ -15,12 +15,18 @@ This example loads a nifti file and converts it into a brain object.
 import supereeg as se
 
 
-# load nifti
+# load Nifti
 # example nifti is the gray matter masked MNI152 brain downsampled to 20mm
 nii = se.load('example_nifti')
 
 # plot nifti
 nii.plot_anat()
+
+# create Nifti with affine and dataobj
+af = nii.affine
+do = nii.dataobj
+make_nii= se.Nifti(do, affine=af)
+
 
 # nifti -> brain object - initialize brain object with nifti object
 bo = se.Brain(nii)
@@ -31,5 +37,11 @@ bo.plot_data()
 # export brain object -> nifti
 nii_r = bo.to_nii(template='gray', vox_size=20)
 
-# # plot the result (same as before)
+# plot the result (same as before)
 nii_r.plot_anat()
+
+# or initialize nifti object with brain object
+nii_bo = se.Nifti(bo)
+
+# # plot the result (same as before)
+nii_bo.plot_anat()

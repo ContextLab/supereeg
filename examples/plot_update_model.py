@@ -50,11 +50,11 @@ f, (ax1, ax2) = plt.subplots(1, 2)
 f.set_size_inches(14,6)
 
 # plot it and set the title
-model.plot_data(ax=ax1, show=False, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
+model.plot_data(ax=ax1, show=False, yticklabels=False, xticklabels=False, cbar=True, vmin=0, vmax=1)
 ax1.set_title('Before updating model: 3 subjects total')
 
 # plot it and set the title
-new_model.plot_data(ax=ax2, show=False, yticklabels=False, xticklabels=False, cmap='RdBu_r', cbar=True, vmin=0, vmax=1)
+new_model.plot_data(ax=ax2, show=False, yticklabels=False, xticklabels=False, cbar=True, vmin=0, vmax=1)
 ax2.set_title('After updating model: 4 subjects total')
 
 plt.tight_layout()
