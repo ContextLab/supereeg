@@ -16,23 +16,18 @@ class Nifti(Nifti1Image):
     Parameters
     ----------
 
-    data : object or path to Nifti1Image, supereeg.Brain, supereeg.Nifti
+    data : object or path to Nifti1Image, supereeg.Brain, supereeg.Model, supereeg.Nifti or np.ndarray
 
-        If data is a nifti image (either supereeg.Nifti or path to Nifti1Image), returns nifti values.
+        Data can be a nifti image (either supereeg.Nifti or path to Nifti1Image) or a np.ndarray an N-D array containing the image data
 
-
-
-    Attributes
-    ----------
-
-    dataobj : np.ndarray
-        an N-D array containing the image data
 
     affine : np.ndarray
-        a (4, 4) affine matrix mapping array coordinates to coordinates in MNI coordinate space
+
+        A (4, 4) affine matrix mapping array coordinates to coordinates in MNI coordinate space.
+
 
     header : nibabel.nifti1.Nifti1Header
-        image metadata in the form of a header
+        Image metadata in the form of a header (optional parameter, use when creating nifti object from np.ndarray).
 
 
     Returns
@@ -55,7 +50,7 @@ class Nifti(Nifti1Image):
 
         elif isinstance(data,np.ndarray):
             if affine is None:
-                raise IOError("If data is provided as array, affine and header must also be provided")
+                raise IOError("If data is provided as array, affine must also be provided")
             else:
                 super(Nifti,self).__init__(data,affine,**kwargs)
 
