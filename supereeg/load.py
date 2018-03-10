@@ -117,10 +117,21 @@ def _load_example(fname, fileid):
     if not os.path.exists(datadir):
         os.makedirs(datadir)
     if not os.path.exists(fullpath):
-        _download(fname, _load_stream(fileid[0]), fileid[1])
-        data = _load_from_cache(fname, fileid[1])
+        try:
+            _download(fname, _load_stream(fileid[0]), fileid[1])
+            data = _load_from_cache(fname, fileid[1])
+        except:
+            raise ValueError('Download failed.')
     else:
-        data = _load_from_cache(fname, fileid[1])
+        try:
+            data = _load_from_cache(fname, fileid[1])
+        except:
+            try:
+                _download(fname, _load_stream(fileid[0]), fileid[1])
+                data = _load_from_cache(fname, fileid[1])
+            except:
+                raise ValueError('Download failed. Try deleting cache data in'
+                                 ' /Users/homedir/supereeg_data.')
     return data
 
 def _load_stream(fileid):
