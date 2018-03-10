@@ -166,7 +166,7 @@ def _load_from_path(fpath):
         return Brain(**dd.io.load(fpath))
     elif ext=='mo':
         return Model(**dd.io.load(fpath))
-    elif ext=='nii':
+    elif ext in ('nii', 'gz'):
         return Nifti(fpath)
     else:
         raise ValueError("Filetype not recognized. Must be .bo, .mo or .nii.")
