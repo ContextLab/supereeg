@@ -208,6 +208,22 @@ class Brain(object):
             else:
                 self.label = label
 
+    def __getitem__(self, slice):
+        if isinstance(slice, int):
+            slice=[slice]
+        return self.get_slice(sample_inds=slice)
+
+    def __iter__(self):
+        self.counter = 0
+        return self
+
+    def __next__(self):
+        if self.counter >= self.data.shape[0]:
+            raise StopIteration
+        s = self[self.counter]
+        self.counter+=1
+        return s
+
     def info(self):
         """
         Print info about the brain object

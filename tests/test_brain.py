@@ -86,6 +86,16 @@ def test_brain_brain():
     bo = se.Brain(bo)
     assert isinstance(bo, se.Brain)
 
+def test_brain_getitem():
+    bo = se.simulate_bo(n_samples=10, sample_rate=100)
+    bo = bo[:2]
+    assert bo.data.shape[0]==2
+
+def test_brain_getitem():
+    bo = se.simulate_bo(n_samples=10, sample_rate=100)
+    bos = [b for b in bo[:2]]
+    assert all(isinstance(b, se.Brain) for b in bos)
+
 ## can't get tests for plots to work
 
 # def test_bo_plot_locs(tmpdir):
