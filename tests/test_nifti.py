@@ -46,8 +46,9 @@ def test_bo_save(tmpdir):
     test_bo = se.load(os.path.join(p.strpath + '.nii'))
     assert isinstance(test_bo, se.Nifti)
 
-
-
+def test_nifti_str():
+    nii = se.Nifti('std')
+    assert isinstance(nii, se.Nifti)
 
 # def test_nifti_to_bo():
 #     bo = nii.to_bo()

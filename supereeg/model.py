@@ -6,6 +6,7 @@ from builtins import object
 import time
 import os
 import copy
+import six
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -90,88 +91,96 @@ class Model(object):
                  measure='kurtosis', threshold=10, numerator=None, denominator=None,
                  n_subs=None, meta=None, date_created=None):
 
+        from .load import load, datadict
         from .brain import Brain
         from .nifti import Nifti
 
-        if isinstance(data, Nifti):
-            data = Brain(data)
+        if isinstance(data, six.string_types):
+            if data in datadict.keys():
+                data = load(data)
 
-        # if all of these fields are not none, shortcut the model creation
-        if all(v is not None for v in [numerator, denominator, locs, n_subs]):
-
-            self.numerator = numerator
-            self.denominator = denominator
-
-            # if locs arent already a df, turn them into df
-            if isinstance(locs, pd.DataFrame):
-                self.locs = locs
-            else:
-                self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
-
-            self.n_subs = n_subs
-
+        if isinstance(data, Model):
+            self = copy.copy(data)
         else:
+            if isinstance(data, Nifti):
+                data = Brain(data)
 
-            # get locations from template, or from locs arg
-            if locs is None:
+            # if all of these fields are not none, shortcut the model creation
+            if all(v is not None for v in [numerator, denominator, locs, n_subs]):
 
-                if template is None:
-                    template = _gray(20)
+                self.numerator = numerator
+                self.denominator = denominator
 
-                ## output for this is wrong
-                nii_data, nii_locs, nii_meta = _nifti_to_brain(template)
+                # if locs arent already a df, turn them into df
+                if isinstance(locs, pd.DataFrame):
+                    self.locs = locs
+                else:
+                    self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
-                #self.locs = pd.DataFrame(bo.get_locs(), columns=['x', 'y', 'z'])
-                self.locs = nii_locs
+                self.n_subs = n_subs
+
             else:
 
-                # otherwise, create df from locs passed as arg
-                self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
+                # get locations from template, or from locs arg
+                if locs is None:
 
-            numerator = np.zeros((self.locs.shape[0], self.locs.shape[0]))
-            denominator = np.zeros((self.locs.shape[0], self.locs.shape[0]))
+                    if template is None:
+                        template = _gray(20)
 
-            if type(data) is not list:
-                data = [data]
+                    ## output for this is wrong
+                    nii_data, nii_locs, nii_meta = _nifti_to_brain(template)
+
+                    #self.locs = pd.DataFrame(bo.get_locs(), columns=['x', 'y', 'z'])
+                    self.locs = nii_locs
+                else:
+
+                    # otherwise, create df from locs passed as arg
+                    self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
+
+                numerator = np.zeros((self.locs.shape[0], self.locs.shape[0]))
+                denominator = np.zeros((self.locs.shape[0], self.locs.shape[0]))
+
+                if type(data) is not list:
+                    data = [data]
 
 
-            for bo in data:
+                for bo in data:
 
-                # filter bad electrodes
-                bo = filter_elecs(bo, measure=measure, threshold=threshold)
+                    # filter bad electrodes
+                    bo = filter_elecs(bo, measure=measure, threshold=threshold)
 
-                # get subject-specific correlation matrix
-                sub_corrmat = _get_corrmat(bo)
+                    # get subject-specific correlation matrix
+                    sub_corrmat = _get_corrmat(bo)
 
-                # convert diag to zeros
-                np.fill_diagonal(sub_corrmat, 0)
+                    # convert diag to zeros
+                    np.fill_diagonal(sub_corrmat, 0)
 
-                # z-score the corrmat
-                sub_corrmat_z = _r2z(sub_corrmat)
+                    # z-score the corrmat
+                    sub_corrmat_z = _r2z(sub_corrmat)
 
-                # get _rbf weights
-                sub__rbf_weights = _rbf(self.locs, bo.locs)
+                    # get _rbf weights
+                    sub__rbf_weights = _rbf(self.locs, bo.locs)
 
-                #  get subject expanded correlation matrix
-                num_corrmat_x, denom_corrmat_x = _expand_corrmat_fit(sub_corrmat_z, sub__rbf_weights)
+                    #  get subject expanded correlation matrix
+                    num_corrmat_x, denom_corrmat_x = _expand_corrmat_fit(sub_corrmat_z, sub__rbf_weights)
 
-                # add in new subj data to numerator
-                numerator += num_corrmat_x
+                    # add in new subj data to numerator
+                    numerator += num_corrmat_x
 
-                # add in new subj data to denominator
-                denominator += denom_corrmat_x
+                    # add in new subj data to denominator
+                    denominator += denom_corrmat_x
 
-            self.numerator = numerator
-            self.denominator = denominator
-            self.n_subs = len(data)
+                self.numerator = numerator
+                self.denominator = denominator
+                self.n_subs = len(data)
 
-        self.n_locs = self.locs.shape[0]
-        self.meta = meta
+            self.n_locs = self.locs.shape[0]
+            self.meta = meta
 
-        if not date_created:
-            self.date_created = time.strftime("%c")
-        else:
-            self.date_created = date_created
+            if not date_created:
+                self.date_created = time.strftime("%c")
+            else:
+                self.date_created = date_created
 
     def predict(self, bo, nearest_neighbor=True, match_threshold='auto',
                 force_update=False, kthreshold=10):
@@ -449,7 +458,7 @@ class Model(object):
 
         if show:
             plt.show()
-            
+
         return ax
 
     def plot_locs(self, pdfpath=None):

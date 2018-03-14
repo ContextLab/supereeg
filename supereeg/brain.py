@@ -7,6 +7,7 @@ import time
 import os
 import warnings
 import copy
+import six
 import numpy as np
 import pandas as pd
 import nibabel as nib
@@ -105,99 +106,107 @@ class Brain(object):
     def __init__(self, data=None, locs=None, sessions=None, sample_rate=None,
                  meta=None, date_created=None, label=None):
 
+        from .load import load, datadict
         from .model import Model
         from .nifti import Nifti
 
-        if isinstance(data, Nifti):
-           data, locs, meta = _nifti_to_brain(data)
+        if isinstance(data, six.string_types):
+            if data in datadict.keys():
+                data = load(data)
 
-        if isinstance(data, nib.nifti1.Nifti1Image):
-           data, locs, meta = _nifti_to_brain(data)
+        if isinstance(data, Brain):
+            self = copy.copy(data)
+        else:
+            if isinstance(data, Nifti):
+               data, locs, meta = _nifti_to_brain(data)
 
-        if isinstance(data, Model):
-            if all(v is not None for v in [data.numerator, data.denominator, data.locs]):
+            if isinstance(data, nib.nifti1.Nifti1Image):
+               data, locs, meta = _nifti_to_brain(data)
 
-                model = copy.copy(data)
+            if isinstance(data, Model):
+                if all(v is not None for v in [data.numerator, data.denominator, data.locs]):
 
-                numerator= model.numerator
-                denominator = model.denominator
-                with np.errstate(invalid='ignore'):
-                    data = np.divide(numerator, denominator)
-                np.fill_diagonal(data, 1)
+                    model = copy.copy(data)
 
-                locs = model.locs
+                    numerator= model.numerator
+                    denominator = model.denominator
+                    with np.errstate(invalid='ignore'):
+                        data = np.divide(numerator, denominator)
+                    np.fill_diagonal(data, 1)
 
+                    locs = model.locs
+
+                else:
+                    warnings.warn('Model object incomplete')
+
+            if isinstance(data, pd.DataFrame):
+                self.data = data
             else:
-                warnings.warn('Model object incomplete')
+                self.data = pd.DataFrame(data)
 
-        if isinstance(data, pd.DataFrame):
-            self.data = data
-        else:
-            self.data = pd.DataFrame(data)
+            if isinstance(locs, pd.DataFrame):
+                self.locs = locs
+            else:
+                self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
-        if isinstance(locs, pd.DataFrame):
-            self.locs = locs
-        else:
-            self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
+            if isinstance(sessions, str) or isinstance(sessions, int):
+                self.sessions = pd.Series([sessions for i in range(self.data.shape[0])])
 
-        if isinstance(sessions, str) or isinstance(sessions, int):
-            self.sessions = pd.Series([sessions for i in range(self.data.shape[0])])
+            elif sessions is None:
+                self.sessions = pd.Series([1 for i in range(self.data.shape[0])])
+            else:
+                self.sessions = pd.Series(sessions.ravel())
 
-        elif sessions is None:
-            self.sessions = pd.Series([1 for i in range(self.data.shape[0])])
-        else:
-            self.sessions = pd.Series(sessions.ravel())
+            if isinstance(sample_rate, np.ndarray):
+                if np.shape(sample_rate)[1]>1:
+                    self.sample_rate = list(sample_rate[0])
+                elif np.shape(sample_rate)[1] == 1:
+                    self.sample_rate = [sample_rate[0]]
+                assert len(self.sample_rate) ==  len(self.sessions.unique()), \
+                    'Should be one sample rate for each session.'
 
-        if isinstance(sample_rate, np.ndarray):
-            if np.shape(sample_rate)[1]>1:
-                self.sample_rate = list(sample_rate[0])
-            elif np.shape(sample_rate)[1] == 1:
-                self.sample_rate = [sample_rate[0]]
-            assert len(self.sample_rate) ==  len(self.sessions.unique()), \
+            elif isinstance(sample_rate, list):
+                if isinstance(sample_rate[0], np.ndarray):
+                    self.sample_rate = list(sample_rate[0][0])
+                else:
+                    self.sample_rate = sample_rate
+                assert len(self.sample_rate) ==  len(self.sessions.unique()), \
                 'Should be one sample rate for each session.'
 
-        elif isinstance(sample_rate, list):
-            if isinstance(sample_rate[0], np.ndarray):
-                self.sample_rate = list(sample_rate[0][0])
+            elif type(sample_rate) in [int, float]:
+                self.sample_rate = [sample_rate]*len(self.sessions.unique())
+
             else:
-                self.sample_rate = sample_rate
-            assert len(self.sample_rate) ==  len(self.sessions.unique()), \
-            'Should be one sample rate for each session.'
+                self.sample_rate = None
 
-        elif type(sample_rate) in [int, float]:
-            self.sample_rate = [sample_rate]*len(self.sessions.unique())
+                if self.data.shape[0] == 1:
+                    self.n_secs = 0
+                else:
+                    self.n_secs = None
+                    warnings.warn('No sample rate given.  Number of seconds cant be computed')
 
-        else:
-            self.sample_rate = None
+            if sample_rate is not None:
+                index, counts = np.unique(self.sessions, return_counts=True)
+                self.n_secs = np.true_divide(counts, np.array(sample_rate))
 
-            if self.data.shape[0] == 1:
-                self.n_secs = 0
+            if meta:
+                self.meta = meta
             else:
-                self.n_secs = None
-                warnings.warn('No sample rate given.  Number of seconds cant be computed')
+                self.meta = {}
 
-        if sample_rate is not None:
-            index, counts = np.unique(self.sessions, return_counts=True)
-            self.n_secs = np.true_divide(counts, np.array(sample_rate))
+            if not date_created:
+                self.date_created = time.strftime("%c")
+            else:
+                self.date_created = date_created
 
-        if meta:
-            self.meta = meta
-        else:
-            self.meta = {}
+            self.n_elecs = self.data.shape[1] # needs to be calculated by sessions
+            self.n_sessions = len(self.sessions.unique())
+            self.kurtosis = _kurt_vals(self)
 
-        if not date_created:
-            self.date_created = time.strftime("%c")
-        else:
-            self.date_created = date_created
-
-        self.n_elecs = self.data.shape[1] # needs to be calculated by sessions
-        self.n_sessions = len(self.sessions.unique())
-        self.kurtosis = _kurt_vals(self)
-
-        if not label:
-            self.label = len(self.locs) * ['observed']
-        else:
-            self.label = label
+            if not label:
+                self.label = len(self.locs) * ['observed']
+            else:
+                self.label = label
 
     def info(self):
         """

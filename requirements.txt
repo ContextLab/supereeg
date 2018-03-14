@@ -12,3 +12,4 @@ imageio
 future
 hypertools
 scikit-image
+six

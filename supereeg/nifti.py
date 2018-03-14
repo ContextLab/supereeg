@@ -39,16 +39,20 @@ class Nifti(Nifti1Image):
     """
 
 
-    def __init__(self,data,affine=None,**kwargs):
+    def __init__(self, data, affine=None, **kwargs):
 
+        from .load import load, datadict
         from .brain import Brain
         from .model import Model
 
-        if isinstance(data,six.string_types):
-            image = Nifti1Image.load(data)
-            super(Nifti, self).__init__(image.dataobj,image.affine)
+        if isinstance(data, six.string_types):
+            if data in datadict.keys():
+                data = load(data)
+            else:
+                image = Nifti1Image.load(data)
+                super(Nifti, self).__init__(image.dataobj, image.affine)
 
-        elif isinstance(data,np.ndarray):
+        elif isinstance(data, np.ndarray):
             if affine is None:
                 raise IOError("If data is provided as array, affine must also be provided")
             else:

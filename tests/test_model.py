@@ -80,3 +80,12 @@ def test_update():
     assert isinstance(mo, se.Model)
     assert np.allclose(mo.numerator, test_model.numerator)
     assert np.allclose(mo.denominator, test_model.denominator)
+
+def test_create_model_str():
+    model = se.Model('example_data')
+    assert isinstance(model, se.Model)
+
+def test_create_model_model():
+    mo = se.Model(data=data[1:3], locs=locs)
+    model = se.Model(mo)
+    assert isinstance(model, se.Model)

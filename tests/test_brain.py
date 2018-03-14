@@ -77,6 +77,14 @@ def test_bo_save(tmpdir):
 def test_nii_nifti():
     assert isinstance(bo.to_nii(), se.Nifti)
 
+def test_brain_load_str():
+    bo = se.Brain('std')
+    assert isinstance(bo, se.Brain)
+
+def test_brain_brain():
+    bo = se.simulate_bo(n_samples=10, sample_rate=100)
+    bo = se.Brain(bo)
+    assert isinstance(bo, se.Brain)
 
 ## can't get tests for plots to work
 
