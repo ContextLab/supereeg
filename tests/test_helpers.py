@@ -188,7 +188,7 @@ def test_reconstruct():
     actual_test = bo_full.data.iloc[:, recon_test.locs.index]
     zbo = copy.copy(bo)
     zbo.data = pd.DataFrame(bo.get_zscore_data())
-    mo = test_model.update(zbo)
+    mo = test_model.update(zbo, inplace=False)
     model_corrmat_x = np.divide(mo.numerator, mo.denominator)
     model_corrmat_x = _z2r(model_corrmat_x)
     np.fill_diagonal(model_corrmat_x, 0)
@@ -232,7 +232,6 @@ def test_model_compile(tmpdir):
     for m in range(len(data)):
         model = se.Model(data=data[m], locs=locs)
         model.save(fname=os.path.join(p.strpath, str(m)))
-
     model_data = glob.glob(os.path.join(p.strpath, '*.mo'))
     mo = se.model_compile(model_data)
     assert isinstance(mo, se.Model)

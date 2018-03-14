@@ -34,7 +34,6 @@ data = [se.simulate_model_bos(n_samples=10, sample_rate=10, locs=locs, sample_lo
 # test model to compare
 test_model = se.Model(data=data, locs=locs)
 
-
 def test_create_model_1bo():
     model = se.Model(data=data[0], locs=locs)
     assert isinstance(model, se.Model)
@@ -74,7 +73,7 @@ def test_model_predict_nn_0():
 
 def test_update():
     model = se.Model(data=data[1:3], locs=locs)
-    mo = model.update(data[0])
+    mo = model.update(data[0], inplace=False)
     print(test_model.n_subs)
     print(mo.n_subs)
     assert isinstance(mo, se.Model)
@@ -89,3 +88,13 @@ def test_create_model_model():
     mo = se.Model(data=data[1:3], locs=locs)
     model = se.Model(mo)
     assert isinstance(model, se.Model)
+
+def test_model_update_inplace():
+    mo = se.Model(data=data[1:3], locs=locs)
+    mo = mo.update(data[0])
+    assert mo is None
+
+def test_model_update_not_inplace():
+    mo = se.Model(data=data[1:3], locs=locs)
+    mo = mo.update(data[0], inplace=False)
+    assert isinstance(mo, se.Model)

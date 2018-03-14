@@ -357,7 +357,7 @@ class Model(object):
                     sample_rate=bo.sample_rate, label=loc_label)
 
 
-    def update(self, data, measure='kurtosis', threshold=10):
+    def update(self, data, measure='kurtosis', threshold=10, inplace=True):
         """
         Update a model with new data.
 
@@ -373,51 +373,32 @@ class Model(object):
         threshold : 10 or int
             Kurtosis threshold
 
+        inplace : bool
+            Whether to run update in place or return a new model (default True).
+
         Returns
         ----------
         model : supereeg.Model
             A new updated model object
 
         """
-
-        m = copy.deepcopy(self)
-
-        numerator = m.numerator
-        denominator = m.denominator
-        n_subs = m.n_subs
-
         if type(data) is not list:
             data = [data]
-
+        if inplace:
+            m = self
+        else:
+            m = copy.deepcopy(self)
         for bo in data:
-
-            # filter bad electrodes
             bo = filter_elecs(bo, measure=measure, threshold=threshold)
-
-            # get subject-specific correlation matrix
             sub_corrmat = _r2z(_get_corrmat(bo))
-
-            # get _rbf weights
             sub__rbf_weights = _rbf(m.locs, bo.locs)
-
-            #  get subject expanded correlation matrix
             num_corrmat_x, denom_corrmat_x = _expand_corrmat_fit(sub_corrmat, sub__rbf_weights)
-
-            # set weights equal to zero where the numerator is equal to nan
             denom_corrmat_x[np.isnan(num_corrmat_x)] = 0
-
-            # add in new subj data to numerator
-            numerator = np.nansum(np.dstack((numerator, num_corrmat_x)), 2)
-
-            # add in new subj data to denominator
-            denominator += denom_corrmat_x
-
-            # add to n_subs
-            n_subs+=1
-
-        return Model(numerator=numerator, denominator=denominator,
-                     locs=m.locs, n_subs=n_subs)
-
+            m.numerator = np.nansum(np.dstack((m.numerator, num_corrmat_x)), 2)
+            m.denominator += denom_corrmat_x
+            m.n_subs+=1
+        if not inplace:
+            return m
 
     def info(self):
         """
