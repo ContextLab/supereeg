@@ -46,9 +46,9 @@ def test_load_nifti():
     nii = se.load('example_nifti')
     assert isinstance(nii, nib.nifti1.Nifti1Image)
 
-def test_load_pyFR_union():
-    data = se.load('pyFR_union')
-    assert isinstance(data, np.ndarray)
+# def test_load_pyFR_union():
+#     data = se.load('pyFR_union')
+#     assert isinstance(data, np.ndarray)
 
 # def test_load_pyFR():
 #     model = se.load('pyFR')
@@ -110,16 +110,4 @@ def test_return_type_nii_with_mo():
 # passes
 def test_return_type_nii_with_nii():
     nii = se.load('example_nifti', return_type='nii')
-    assert isinstance(nii, se.Nifti)
-
-def test_return_type_nii_with_bo_vs():
-    nii = se.load(bo_s, vox_size = 20, return_type='nii')
-    assert isinstance(nii, se.Nifti)
-
-def test_return_type_nii_with_mo_vs():
-    nii = se.load(bo_s, vox_size = 20, return_type='nii')
-    assert isinstance(nii, se.Nifti)
-
-def test_return_type_nii_with_nii_vs():
-    nii = se.load(bo_s, vox_size = 20, return_type='nii')
     assert isinstance(nii, se.Nifti)
