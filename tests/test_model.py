@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
-from builtins import range
-import pytest
+#from builtins import range
 import supereeg as se
 import numpy as np
 import scipy
