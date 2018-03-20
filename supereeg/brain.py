@@ -169,7 +169,11 @@ class Brain(object):
 
             elif isinstance(sample_rate, list):
                 if isinstance(sample_rate[0], np.ndarray):
-                    self.sample_rate = list(sample_rate[0][0])
+                    if sample_rate[0].ndim == 1:
+                        sample_rate = np.atleast_2d(sample_rate)
+                        self.sample_rate = [sample_rate[0]]
+                    else:
+                        self.sample_rate = list(sample_rate[0][0])
                 else:
                     self.sample_rate = sample_rate
                 assert len(self.sample_rate) ==  len(self.sessions.unique()), \
