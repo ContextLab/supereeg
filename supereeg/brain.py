@@ -158,7 +158,9 @@ class Brain(object):
                 self.sessions = pd.Series(sessions.ravel())
 
             if isinstance(sample_rate, np.ndarray):
-                if np.shape(sample_rate)[1]>1:
+                if sample_rate.ndim == 1:
+                    self.sample_rate = [sample_rate[0]]
+                elif np.shape(sample_rate)[1]>1:
                     self.sample_rate = list(sample_rate[0])
                 elif np.shape(sample_rate)[1] == 1:
                     self.sample_rate = [sample_rate[0]]
