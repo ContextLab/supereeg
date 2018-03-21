@@ -6,6 +6,7 @@ from builtins import object
 import time
 import os
 import copy
+import warnings
 import six
 import pandas as pd
 import numpy as np
@@ -127,15 +128,16 @@ class Model(object):
                     if template is None:
                         template = _gray(20)
 
-                    ## output for this is wrong
                     nii_data, nii_locs, nii_meta = _nifti_to_brain(template)
 
-                    #self.locs = pd.DataFrame(bo.get_locs(), columns=['x', 'y', 'z'])
                     self.locs = nii_locs
                 else:
 
                     # otherwise, create df from locs passed as arg
                     self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
+
+                if self.locs.shape[0]>1000:
+                    warnings.warn('Model locations exceed 1000, this may take a while. Good time for a cup of coffee.')
 
                 numerator = np.zeros((self.locs.shape[0], self.locs.shape[0]))
                 denominator = np.zeros((self.locs.shape[0], self.locs.shape[0]))
