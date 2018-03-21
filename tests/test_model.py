@@ -98,3 +98,19 @@ def test_model_update_not_inplace():
     mo = se.Model(data=data[1:3], locs=locs)
     mo = mo.update(data[0], inplace=False)
     assert isinstance(mo, se.Model)
+
+def test_model_update_with_model():
+    mo = se.Model(data=data[1:3], locs=locs)
+    mo = mo.update(mo, inplace=False)
+    assert isinstance(mo, se.Model)
+
+def test_model_update_with_model_and_bo():
+    mo = se.Model(data=data[1:3], locs=locs)
+    mo = mo.update([mo, data[0]], inplace=False)
+    assert isinstance(mo, se.Model)
+
+def test_model_update_with_array():
+    mo = se.Model(data=data[1:3], locs=locs)
+    d = np.random.rand(*mo.numerator.shape)
+    mo = mo.update(d, inplace=False)
+    assert isinstance(mo, se.Model)

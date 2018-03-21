@@ -357,7 +357,8 @@ class Model(object):
                     sample_rate=bo.sample_rate, label=loc_label)
 
 
-    def update(self, data, measure='kurtosis', threshold=10, inplace=True):
+    def update(self, data, measure='kurtosis', threshold=10, inplace=True,
+               locs=None, n=1):
         """
         Update a model with new data.
 
@@ -388,15 +389,32 @@ class Model(object):
             m = self
         else:
             m = copy.deepcopy(self)
-        for bo in data:
-            bo = filter_elecs(bo, measure=measure, threshold=threshold)
-            sub_corrmat = _r2z(_get_corrmat(bo))
-            sub__rbf_weights = _rbf(m.locs, bo.locs)
-            num_corrmat_x, denom_corrmat_x = _expand_corrmat_fit(sub_corrmat, sub__rbf_weights)
-            denom_corrmat_x[np.isnan(num_corrmat_x)] = 0
-            m.numerator = np.nansum(np.dstack((m.numerator, num_corrmat_x)), 2)
-            m.denominator += denom_corrmat_x
-            m.n_subs+=1
+        for d in data:
+            if isinstance(d, Brain):
+                bo = filter_elecs(d, measure=measure, threshold=threshold)
+                sub_corrmat = _r2z(_get_corrmat(bo))
+                sub_rbf_weights = _rbf(m.locs, bo.locs)
+                num_corrmat_x, denom_corrmat_x = _expand_corrmat_fit(sub_corrmat, sub_rbf_weights)
+                denom_corrmat_x[np.isnan(num_corrmat_x)] = 0
+                m.numerator = np.nansum(np.dstack((m.numerator, num_corrmat_x)), 2)
+                m.denominator += denom_corrmat_x
+                m.n_subs += 1
+            elif isinstance(d, Model):
+                m.numerator = np.nansum(np.dstack((m.numerator, d.numerator)), 2)
+                m.denominator = np.nansum(np.dstack((m.denominator, d.denominator)), 2)
+                m.n_subs += d.n_subs
+            elif isinstance(d, np.ndarray):
+                if locs is None:
+                    assert np.array_equal(m.numerator.shape, d.shape), 'If array'
+                    ' is passed to update model, must be same dimensions as model.'
+                    m.numerator = np.nansum(np.dstack((m.numerator, d)), 2)
+                else:
+                    sub_rbf_weights = _rbf(m.locs, locs)
+                    num_corrmat_x, denom_corrmat_x = _expand_corrmat_fit(d, sub_rbf_weights)
+                    denom_corrmat_x[np.isnan(num_corrmat_x)] = 0
+                    m.numerator = np.nansum(np.dstack((m.numerator, num_corrmat_x)), 2)
+                m.denominator = np.nansum(m.denominator, n)
+                m.n_subs += n
         if not inplace:
             return m
 
