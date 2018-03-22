@@ -113,3 +113,8 @@ def test_model_update_with_array():
     d = np.random.rand(*mo.numerator.shape)
     mo = mo.update(d, inplace=False)
     assert isinstance(mo, se.Model)
+
+def test_model_get_model():
+    mo = se.Model(data=data[1:3], locs=locs)
+    m = mo.get_model()
+    assert isinstance(m, np.ndarray)

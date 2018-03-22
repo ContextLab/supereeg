@@ -122,6 +122,11 @@ class Model(object):
         self.n_locs = self.locs.shape[0]
         self.meta = meta
 
+    def get_model(self):
+        """ Returns a copy the model in the form of a correlation matrix"""
+        with np.errstate(invalid='ignore'):
+            return _z2r(np.divide(self.numerator, self.denominator))
+
     def predict(self, bo, nearest_neighbor=True, match_threshold='auto',
                 force_update=False, kthreshold=10):
         """
@@ -381,9 +386,8 @@ def _mo2model(mo, locs):
         return mo.numerator.copy(), mo.denominator.copy(), mo.n_subs
     else:
         # if the locations are not equivalent, map input model into locs space
-        old_err_state = np.seterr(divide='raise')
-        ignored_states = np.seterr(**old_err_state)
-        sub_corrmat_z = np.divide(mo.numerator, mo.denominator)
+        with np.errstate(invalid='ignore'):
+            sub_corrmat_z = np.divide(mo.numerator, mo.denominator)
         np.fill_diagonal(sub_corrmat_z, 0)
         sub_rbf_weights = _rbf(locs, mo.locs)
         n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
