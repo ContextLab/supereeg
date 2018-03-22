@@ -1182,17 +1182,3 @@ def _brain_to_nifti(bo, nii_template):
     data[np.isnan(data)] = 0
 
     return Nifti(data, affine=nii_template.affine)
-
-def format_data(d):
-    """Formats data to generate model object"""
-    if isinstance(d, six.string_types):
-        d = load(d)
-    if isinstance(d, Brain):
-        return d
-    elif isinstance(d, Nifti):
-        return Brain(d)
-    elif isinstance(d, np.ndarray):
-        np.fill_diagonal(d, 0)
-        return Model(data=_r2z(d), locs=locs)
-    elif isinstance(d, Model):
-        return d

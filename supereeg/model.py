@@ -92,97 +92,35 @@ class Model(object):
                  measure='kurtosis', threshold=10, numerator=None, denominator=None,
                  n_subs=None, meta=None, date_created=None):
 
-        from .load import load, datadict
-        from .brain import Brain
-        from .nifti import Nifti
-
-        if isinstance(data, six.string_types):
-            if data in datadict.keys():
-                data = load(data)
-
-        if isinstance(data, Model):
-            self = copy.copy(data)
+        if all(v is not None for v in [numerator, denominator, locs, n_subs]):
+            _handle_superuser(self, numerator, denominator, locs, n_subs)
         else:
-            if isinstance(data, Nifti):
-                data = Brain(data)
+            _create_locs(self, locs, template)
 
-            # if all of these fields are not none, shortcut the model creation
-            if all(v is not None for v in [numerator, denominator, locs, n_subs]):
+            s = self.locs.shape[0]
+            self.numerator = np.zeros((s, s))
+            self.denominator = np.zeros((s, s))
+            self.n_subs = 0
 
-                self.numerator = numerator
-                self.denominator = denominator
+            if type(data) is not list:
+                data = [data]
+                
+            for d in data:
+                d = _format_data(d)
+                if isinstance(d, Brain):
+                    num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d, self.locs, measure, threshold)
+                elif isinstance(d, Model):
+                    num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, self.locs)
+                self.numerator += num_corrmat_x
+                self.denominator += denom_corrmat_x
+                self.n_subs += n_subs
 
-                # if locs arent already a df, turn them into df
-                if isinstance(locs, pd.DataFrame):
-                    self.locs = locs
-                else:
-                    self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
-
-                self.n_subs = n_subs
-
-            else:
-
-                # get locations from template, or from locs arg
-                if locs is None:
-
-                    if template is None:
-                        template = _gray(20)
-
-                    nii_data, nii_locs, nii_meta = _nifti_to_brain(template)
-
-                    self.locs = nii_locs
-                else:
-
-                    # otherwise, create df from locs passed as arg
-                    self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
-
-                if self.locs.shape[0]>1000:
-                    warnings.warn('Model locations exceed 1000, this may take a while. Good time for a cup of coffee.')
-
-                numerator = np.zeros((self.locs.shape[0], self.locs.shape[0]))
-                denominator = np.zeros((self.locs.shape[0], self.locs.shape[0]))
-
-                if type(data) is not list:
-                    data = [data]
-
-
-                for bo in data:
-
-                    # filter bad electrodes
-                    bo = filter_elecs(bo, measure=measure, threshold=threshold)
-
-                    # get subject-specific correlation matrix
-                    sub_corrmat = _get_corrmat(bo)
-
-                    # convert diag to zeros
-                    np.fill_diagonal(sub_corrmat, 0)
-
-                    # z-score the corrmat
-                    sub_corrmat_z = _r2z(sub_corrmat)
-
-                    # get _rbf weights
-                    sub__rbf_weights = _rbf(self.locs, bo.locs)
-
-                    #  get subject expanded correlation matrix
-                    num_corrmat_x, denom_corrmat_x = _expand_corrmat_fit(sub_corrmat_z, sub__rbf_weights)
-
-                    # add in new subj data to numerator
-                    numerator += num_corrmat_x
-
-                    # add in new subj data to denominator
-                    denominator += denom_corrmat_x
-
-                self.numerator = numerator
-                self.denominator = denominator
-                self.n_subs = len(data)
-
-            self.n_locs = self.locs.shape[0]
-            self.meta = meta
-
-            if not date_created:
-                self.date_created = time.strftime("%c")
-            else:
-                self.date_created = date_created
+        if not date_created:
+            self.date_created = time.strftime("%c")
+        else:
+            self.date_created = date_created
+        self.n_locs = self.locs.shape[0]
+        self.meta = meta
 
     def predict(self, bo, nearest_neighbor=True, match_threshold='auto',
                 force_update=False, kthreshold=10):
@@ -513,3 +451,72 @@ class Model(object):
             fname+='.mo'
 
         dd.io.save(fname, mo, compression=compression)
+
+# model helper functions
+def _handle_superuser(self, numerator, denominator, locs, n_subs):
+    """Shortcuts model building if these args are passed"""
+    self.numerator = numerator
+    self.denominator = denominator
+
+    # if locs arent already a df, turn them into df
+    if isinstance(locs, pd.DataFrame):
+        self.locs = locs
+    else:
+        self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
+
+    self.n_subs = n_subs
+
+def _create_locs(self, locs, template):
+    """get locations from template, or from locs arg"""
+    if locs is None:
+        if template is None:
+            template = _gray(20)
+        nii_data, nii_locs, nii_meta = _nifti_to_brain(template)
+        self.locs = pd.DataFrame(nii_locs, columns=['x', 'y', 'z'])
+    else:
+        self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
+    if self.locs.shape[0]>1000:
+        warnings.warn('Model locations exceed 1000, this may take a while. Good time for a cup of coffee.')
+
+def _bo2model(bo, locs, measure, threshold):
+    """Returns numerator and denominator given a brain object"""
+    bo = filter_elecs(bo, measure=measure, threshold=threshold)
+    sub_corrmat = _get_corrmat(bo)
+    np.fill_diagonal(sub_corrmat, 0)
+    sub_corrmat_z = _r2z(sub_corrmat)
+    sub_rbf_weights = _rbf(locs, bo.locs)
+    n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
+    return n, d, 1
+
+def _mo2model(mo, locs):
+    """Returns numerator and denominator for model object"""
+    if locs.equals(mo.locs):
+        return mo.numerator.copy(), mo.denominator.copy(), mo.n_subs
+    else:
+        # if the locations are not equivalent, map input model into locs space
+        old_err_state = np.seterr(divide='raise')
+        ignored_states = np.seterr(**old_err_state)
+        sub_corrmat_z = np.divide(mo.numerator, mo.denominator)
+        np.fill_diagonal(sub_corrmat_z, 0)
+        sub_rbf_weights = _rbf(locs, mo.locs)
+        n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
+        return n, d, mo.n_subs
+
+def _format_data(d):
+    """Formats data to generate model object"""
+    from .load import load
+    from .brain import Brain
+    from .nifti import Nifti
+    if isinstance(d, six.string_types):
+        d = load(d)
+    if isinstance(d, Brain):
+        return d
+    elif isinstance(d, Nifti):
+        return Brain(d)
+    elif isinstance(d, np.ndarray):
+        np.fill_diagonal(d, 0)
+        return Model(data=_r2z(d), locs=locs)
+    elif isinstance(d, Model):
+        return d
+    else:
+        raise TypeError("Did not recognize the type of one of your inputs to the model")
