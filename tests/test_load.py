@@ -4,6 +4,7 @@ import supereeg as se
 import numpy as np
 import os
 import nibabel as nib
+import pytest
 
 bo = se.load('example_data')
 bo_s = bo.get_slice(sample_inds=[0,1,2])
@@ -111,3 +112,11 @@ def test_return_type_nii_with_mo():
 def test_return_type_nii_with_nii():
     nii = se.load('example_nifti', return_type='nii')
     assert isinstance(nii, se.Nifti)
+
+def test_bo_load_slice():
+    bo = se.load('example_data', sample_inds=range(10))
+    assert bo.data.shape==(10,64)
+
+def test_bo_load_slice_raise_error():
+    with pytest.raises(IndexError):
+        bo = se.load('example_data', sample_inds=range(10), loc_inds=range(10))

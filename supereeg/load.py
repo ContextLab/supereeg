@@ -23,7 +23,8 @@ datadict = {
     'gray' : ['1a8wptBaMIFEl4j8TFhlTQVUAbyC0sN4p', 'nii'],
 }
 
-def load(fname, vox_size=None, return_type=None):
+def load(fname, vox_size=None, return_type=None, sample_inds=None,
+         loc_inds=None):
     """
     Load nifti file, brain or model object, or example data.
 
@@ -78,6 +79,12 @@ def load(fname, vox_size=None, return_type=None):
 
             'nii' - returns supereeg.Nifti
 
+    sample_inds : int, list or slice
+        Indices of samples you'd like to load in. Only works for Brain object.
+
+    loc_inds : int, list or slice
+        Indices of slices you'd like to load in. Only works for Brain object.
+
     Returns
     ----------
     data : supereeg.Nifti, supereeg.Brain or supereeg.Model
@@ -86,9 +93,9 @@ def load(fname, vox_size=None, return_type=None):
     """
 
     if fname in datadict.keys():
-        data = _load_example(fname, datadict[fname])
+        data = _load_example(fname, datadict[fname], sample_inds, loc_inds)
     else:
-        data = _load_from_path(fname)
+        data = _load_from_path(fname, sample_inds, loc_inds)
     return _convert(data, return_type, vox_size)
 
 def _convert(data, return_type, vox_size):
@@ -118,7 +125,7 @@ def _convert(data, return_type, vox_size):
             data = Model(data)
         return data
 
-def _load_example(fname, fileid):
+def _load_example(fname, fileid, sample_inds, loc_inds):
     """ Loads in dataset given a google file id """
     fullpath = os.path.join(homedir, 'supereeg_data', fname)
     if not os.path.exists(datadir):
@@ -126,16 +133,17 @@ def _load_example(fname, fileid):
     if not os.path.exists(fullpath):
         try:
             _download(fname, _load_stream(fileid[0]), fileid[1])
-            data = _load_from_cache(fname, fileid[1])
-        except:
+            data = _load_from_cache(fname, fileid[1], sample_inds, loc_inds)
+        except ValueError as e:
+            print(e)
             raise ValueError('Download failed.')
     else:
         try:
-            data = _load_from_cache(fname, fileid[1])
+            data = _load_from_cache(fname, fileid[1], sample_inds, loc_inds)
         except:
             try:
                 _download(fname, _load_stream(fileid[0]), fileid[1])
-                data = _load_from_cache(fname, fileid[1])
+                data = _load_from_cache(fname, fileid[1], sample_inds, loc_inds)
             except:
                 raise ValueError('Download failed. Try deleting cache data in'
                                  ' /Users/homedir/supereeg_data.')
@@ -163,14 +171,17 @@ def _download(fname, data, ext):
     with open(fullpath + '.' + ext, 'wb') as f:
         f.write(data.content)
 
-def _load_from_path(fpath):
+def _load_from_path(fpath, sample_inds=None, loc_inds=None):
     """ Load a file from a local path """
     try:
         ext = fpath.split('.')[-1]
     except:
         raise ValueError("Must specify a file extension.")
     if ext=='bo':
-        return Brain(**dd.io.load(fpath))
+        if sample_inds!=None or loc_inds!=None:
+            return Brain(**_load_slice(fpath, sample_inds, loc_inds))
+        else:
+            return Brain(**dd.io.load(fpath))
     elif ext=='mo':
         return Model(**dd.io.load(fpath))
     elif ext in ('nii', 'gz'):
@@ -178,12 +189,59 @@ def _load_from_path(fpath):
     else:
         raise ValueError("Filetype not recognized. Must be .bo, .mo or .nii.")
 
-def _load_from_cache(fname, ftype):
+def _load_from_cache(fname, ftype, sample_inds=None, loc_inds=None):
     """ Load a file from local data cache """
     fullpath = os.path.join(homedir, 'supereeg_data', fname + '.' + ftype)
     if ftype is 'bo':
-        return Brain(**dd.io.load(fullpath))
+        if sample_inds!=None or loc_inds!=None:
+            return Brain(**_load_slice(fullpath, sample_inds, loc_inds))
+        else:
+            return Brain(**dd.io.load(fullpath))
     elif ftype is 'mo':
         return Model(**dd.io.load(fullpath))
     elif ftype is 'nii':
         return Nifti(fullpath)
+
+def _load_slice(fname, sample_inds=None, loc_inds=None):
+    """
+    Load a slice of a brain object
+
+    Parameters
+    ----------
+    fname : str
+        Path to brain object
+
+    sample_inds : int, list or slice
+        Indices of samples you'd like to load in
+
+    loc_inds : int, list or slice
+        Indices of slices you'd like to load in
+
+    Returns
+    ----------
+    data : dict
+        Dictionary of contents to pass to brain object
+
+    """
+    print(loc_inds)
+
+    sr = dd.io.load(fname, group='/sample_rate')
+    meta = dd.io.load(fname, group='/meta')
+    date_created = dd.io.load(fname, group='/date_created')
+
+    if sample_inds!=None and loc_inds!=None:
+        if not isinstance(sample_inds, int) or not isinstance(sample_inds, int):
+            raise IndexError("Slicing with 2 lists is currently not supported.")
+        data = dd.io.load(fname, group='/data', sel=dd.aslice[sample_inds, loc_inds])
+        locs = dd.io.load(fname, group='/locs', sel=dd.aslice[loc_inds, :])
+        sessions = dd.io.load(fname, group='/sessions').iloc[sample_inds]
+    elif loc_inds==None:
+        data = dd.io.load(fname, group='/data', sel=dd.aslice[sample_inds, :])
+        locs = dd.io.load(fname, group='/locs')
+        sessions = dd.io.load(fname, group='/sessions').iloc[sample_inds]
+    elif sample_inds==None:
+        data = dd.io.load(fname, group='/data', sel=dd.aslice[:, loc_inds])
+        locs = dd.io.load(fname, group='/locs', sel=dd.aslice[loc_inds, :])
+        sessions = dd.io.load(fname, group='/sessions')
+    sample_rate = [sr[int(s-1)] for s in np.unique(sessions)]
+    return dict(data=data, locs=locs, sample_rate=sample_rate, meta=meta, date_created=date_created)
