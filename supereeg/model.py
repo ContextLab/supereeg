@@ -234,12 +234,15 @@ class Model(object):
         else:
             m = copy.deepcopy(self)
 
+        if locs is None:
+            locs = m.locs
+
         for d in data:
             d = _format_data(d, m.locs)
             if isinstance(d, Brain):
                 num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d, m.locs, measure, threshold)
             elif isinstance(d, Model):
-                num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, m.locs)
+                num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, locs)
             m.numerator += num_corrmat_x
             m.denominator += denom_corrmat_x
             m.n_subs += n_subs
