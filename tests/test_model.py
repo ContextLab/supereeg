@@ -5,6 +5,7 @@ from __future__ import print_function
 import supereeg as se
 import numpy as np
 import scipy
+import pytest
 
 # some example locations
 
@@ -112,6 +113,18 @@ def test_model_update_with_array():
     mo = se.Model(data=data[1:3], locs=locs)
     d = np.random.rand(*mo.numerator.shape)
     mo = mo.update(d, inplace=False)
+    assert isinstance(mo, se.Model)
+
+def test_model_update_with_smaller_array():
+    mo = se.Model(data=data[1:3], locs=locs)
+    d = np.random.rand(3,3)
+    with pytest.raises(ValueError):
+        mo = mo.update(d, inplace=False)
+
+def test_model_update_with_smaller_array_locs_specified():
+    mo = se.Model(data=data[1:3], locs=locs)
+    d = np.random.rand(3,3)
+    mo = mo.update(d, inplace=False, locs=d)
     assert isinstance(mo, se.Model)
 
 def test_model_get_model():

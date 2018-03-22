@@ -226,6 +226,7 @@ class Model(object):
             A new updated model object
 
         """
+
         if type(data) is not list:
             data = [data]
 
@@ -233,16 +234,12 @@ class Model(object):
             m = self
         else:
             m = copy.deepcopy(self)
-
-        if locs is None:
-            locs = m.locs
-
         for d in data:
-            d = _format_data(d, m.locs)
+            d = _format_data(d, m.locs, locs, n)
             if isinstance(d, Brain):
                 num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d, m.locs, measure, threshold)
             elif isinstance(d, Model):
-                num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, locs)
+                num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, m.locs)
             m.numerator += num_corrmat_x
             m.denominator += denom_corrmat_x
             m.n_subs += n_subs
@@ -385,6 +382,8 @@ def _bo2model(bo, locs, measure, threshold):
 
 def _mo2model(mo, locs):
     """Returns numerator and denominator for model object"""
+    if not isinstance(locs, pd.DataFrame):
+        locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
     if locs.equals(mo.locs):
         return mo.numerator.copy(), mo.denominator.copy(), mo.n_subs
     else:
@@ -396,20 +395,26 @@ def _mo2model(mo, locs):
         n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
         return n, d, mo.n_subs
 
-def _format_data(d, locs=None):
+def _format_data(d, model_locs, new_locs=None, n_subs=1):
     """Formats data to generate model object"""
     from .load import load
     from .brain import Brain
     from .nifti import Nifti
     if isinstance(d, six.string_types):
         d = load(d)
-    if isinstance(d, Brain):
+    if isinstance(d, np.ndarray):
+        if new_locs is None:
+            new_locs = model_locs
+            if d.shape[0]!=new_locs.shape[0]:
+                raise ValueError("Array must have same dimensions as model or"
+                                 " you must passed custom locations")
+        np.fill_diagonal(d, 0)
+        return Model(numerator=_r2z(d), denominator=np.ones_like(d)*n_subs,
+                     n_subs=n_subs, locs=new_locs)
+    elif isinstance(d, Brain):
         return d
     elif isinstance(d, Nifti):
         return Brain(d)
-    elif isinstance(d, np.ndarray):
-        np.fill_diagonal(d, 0)
-        return Model(numerator=_r2z(d), denominator=np.ones_like(d), n_subs=1, locs=locs.copy())
     elif isinstance(d, Model):
         return d
     else:
