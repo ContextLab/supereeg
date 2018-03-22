@@ -1187,12 +1187,12 @@ def format_data(d):
     """Formats data to generate model object"""
     if isinstance(d, six.string_types):
         d = load(d)
-    if isinstance(d, Brain)
+    if isinstance(d, Brain):
         return d
     elif isinstance(d, Nifti):
         return Brain(d)
     elif isinstance(d, np.ndarray):
         np.fill_diagonal(d, 0)
         return Model(data=_r2z(d), locs=locs)
-    elif isinstance(d, Model)
+    elif isinstance(d, Model):
         return d

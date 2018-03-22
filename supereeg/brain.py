@@ -215,9 +215,13 @@ class Brain(object):
                 self.label = label
 
     def __getitem__(self, slice):
-        if isinstance(slice, int):
-            slice=[slice]
-        return self.get_slice(sample_inds=slice)
+        print(slice)
+        if isinstance(slice, tuple):
+            timeslice, locslice = slice
+        else:
+            timeslice = slice
+            locslice = None
+        return self.get_slice(sample_inds=timeslice, loc_inds=locslice)
 
     def __iter__(self):
         self.counter = 0
@@ -229,6 +233,9 @@ class Brain(object):
         s = self[self.counter]
         self.counter+=1
         return s
+
+    def next(self):
+        return self.__next__()
 
     def info(self):
         """
@@ -284,6 +291,10 @@ class Brain(object):
             sample_inds = list(range(self.data.shape[0]))
         if not loc_inds:
             loc_inds = list(range(self.locs.shape[0]))
+        if isinstance(sample_inds, int):
+            sample_inds = [sample_inds]
+        if isinstance(loc_inds, int):
+            loc_inds = [loc_inds]
 
         if sample_inds and loc_inds:
             data = self.data.iloc[sample_inds, loc_inds].copy()

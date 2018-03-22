@@ -96,6 +96,11 @@ def test_brain_getitem():
     bos = [b for b in bo[:2]]
     assert all(isinstance(b, se.Brain) for b in bos)
 
+def test_brain_getrowcols():
+    bo = se.simulate_bo(n_samples=10, sample_rate=100)
+    bo = bo[:5, 3]
+    assert bo.data.shape==(5, 1)
+
 ## can't get tests for plots to work
 
 # def test_bo_plot_locs(tmpdir):
