@@ -106,7 +106,7 @@ class Model(object):
                 data = [data]
 
             for d in data:
-                d = _format_data(d)
+                d = _format_data(d, self.locs)
                 if isinstance(d, Brain):
                     num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d, self.locs, measure, threshold)
                 elif isinstance(d, Model):
@@ -223,36 +223,22 @@ class Model(object):
         """
         if type(data) is not list:
             data = [data]
+
         if inplace:
             m = self
         else:
             m = copy.deepcopy(self)
+
         for d in data:
+            d = _format_data(d, m.locs)
             if isinstance(d, Brain):
-                bo = filter_elecs(d, measure=measure, threshold=threshold)
-                sub_corrmat = _r2z(_get_corrmat(bo))
-                sub_rbf_weights = _rbf(m.locs, bo.locs)
-                num_corrmat_x, denom_corrmat_x = _expand_corrmat_fit(sub_corrmat, sub_rbf_weights)
-                denom_corrmat_x[np.isnan(num_corrmat_x)] = 0
-                m.numerator = np.nansum(np.dstack((m.numerator, num_corrmat_x)), 2)
-                m.denominator += denom_corrmat_x
-                m.n_subs += 1
+                num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d, m.locs, measure, threshold)
             elif isinstance(d, Model):
-                m.numerator = np.nansum(np.dstack((m.numerator, d.numerator)), 2)
-                m.denominator = np.nansum(np.dstack((m.denominator, d.denominator)), 2)
-                m.n_subs += d.n_subs
-            elif isinstance(d, np.ndarray):
-                if locs is None:
-                    assert np.array_equal(m.numerator.shape, d.shape), 'If array'
-                    ' is passed to update model, must be same dimensions as model.'
-                    m.numerator = np.nansum(np.dstack((m.numerator, d)), 2)
-                else:
-                    sub_rbf_weights = _rbf(m.locs, locs)
-                    num_corrmat_x, denom_corrmat_x = _expand_corrmat_fit(d, sub_rbf_weights)
-                    denom_corrmat_x[np.isnan(num_corrmat_x)] = 0
-                    m.numerator = np.nansum(np.dstack((m.numerator, num_corrmat_x)), 2)
-                m.denominator = np.nansum(m.denominator, n)
-                m.n_subs += n
+                num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, m.locs)
+            m.numerator += num_corrmat_x
+            m.denominator += denom_corrmat_x
+            m.n_subs += n_subs
+
         if not inplace:
             return m
 
@@ -403,7 +389,7 @@ def _mo2model(mo, locs):
         n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
         return n, d, mo.n_subs
 
-def _format_data(d):
+def _format_data(d, locs=None):
     """Formats data to generate model object"""
     from .load import load
     from .brain import Brain
@@ -416,7 +402,7 @@ def _format_data(d):
         return Brain(d)
     elif isinstance(d, np.ndarray):
         np.fill_diagonal(d, 0)
-        return Model(data=_r2z(d), locs=locs)
+        return Model(numerator=_r2z(d), denominator=np.ones_like(d), n_subs=1, locs=locs.copy())
     elif isinstance(d, Model):
         return d
     else:
