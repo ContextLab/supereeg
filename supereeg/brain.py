@@ -1,8 +1,8 @@
 from __future__ import division
 from __future__ import print_function
-from builtins import str
-from builtins import range
-from builtins import object
+# from builtins import str
+# from builtins import range
+# from builtins import object
 import time
 import os
 import warnings
@@ -158,6 +158,8 @@ class Brain(object):
                 self.sessions = pd.Series(sessions.ravel())
 
             if isinstance(sample_rate, np.ndarray):
+                if sample_rate.ndim == 1:
+                    sample_rate = np.atleast_2d(sample_rate)
                 if np.shape(sample_rate)[1]>1:
                     self.sample_rate = list(sample_rate[0])
                 elif np.shape(sample_rate)[1] == 1:
@@ -167,7 +169,11 @@ class Brain(object):
 
             elif isinstance(sample_rate, list):
                 if isinstance(sample_rate[0], np.ndarray):
-                    self.sample_rate = list(sample_rate[0][0])
+                    if sample_rate[0].ndim == 1:
+                        sample_rate = np.atleast_2d(sample_rate)
+                        self.sample_rate = [sample_rate[0]]
+                    else:
+                        self.sample_rate = list(sample_rate[0][0])
                 else:
                     self.sample_rate = sample_rate
                 assert len(self.sample_rate) ==  len(self.sessions.unique()), \

@@ -43,7 +43,7 @@ sub_locs = locs.sample(10).sort_values(['x', 'y', 'z'])
 bo = se.simulate_bo(n_samples=1000, sample_rate=1000, locs=sub_locs, cov='toeplitz')
 
 # update the model
-new_model = model.update(bo)
+new_model = model.update(bo, inplace=False)
 
 # initialize subplots
 f, (ax1, ax2) = plt.subplots(1, 2)

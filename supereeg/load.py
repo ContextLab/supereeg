@@ -39,7 +39,7 @@ def load(fname, vox_size=None, return_type=None):
         The name of the example data or a filepath.
 
 
-        Examples includes :
+        Examples include :
 
             example_data - example brain object (n = 64)
 
