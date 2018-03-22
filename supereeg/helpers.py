@@ -1021,7 +1021,7 @@ def _resample(bo, resample_rate=64):
     return _data_and_samplerate_by_file_index(bo, _resamp, resample_rate=resample_rate)
 
 
-def _plot_locs_connectome(locs, pdfpath):
+def _plot_locs_connectome(locs, label, pdfpath):
     """
     Plots locations in nilearn plot connectome
 

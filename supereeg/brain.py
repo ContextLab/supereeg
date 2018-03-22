@@ -439,8 +439,9 @@ class Brain(object):
         """
 
         locs = self.locs
+        label = self.label
         if self.locs .shape[0] <= 10000:
-            _plot_locs_connectome(locs, pdfpath)
+            _plot_locs_connectome(locs, label, pdfpath)
         else:
             _plot_locs_hyp(locs, pdfpath)
 
