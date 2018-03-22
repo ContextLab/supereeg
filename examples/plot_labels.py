@@ -26,7 +26,7 @@ bo.plot_locs()
 model = se.load('example_model')
 
 # the default will replace the electrode location with the nearest voxel and reconstruct at all other locations
-reconstructed_bo = model.predict(bo)
+reconstructed_bo = model.predict(bo, nearest_neighbor=False)
 
 # plot the all reconstructed locations
 reconstructed_bo.plot_locs()

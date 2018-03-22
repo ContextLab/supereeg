@@ -1037,10 +1037,17 @@ def _plot_locs_connectome(locs, label, pdfpath):
 
 
     """
+    import seaborn as sns
+    obs_list = [i for i, x in enumerate(label) if x == 'observed']
+    recon_list = [i for i, x in enumerate(label) if x == 'reconstructed']
+    obs_colors = np.repeat([(1, 0, 0)], np.shape(obs_list)[0], axis=0)
+    recon_colors = np.repeat([(0, 0, 0)], np.shape(recon_list)[0], axis=0)
+    colors = np.vstack([recon_colors, obs_colors])
+    colors = list(map(lambda x: x[0], np.array_split(colors, colors.shape[0], axis=0)))
 
     ni_plt.plot_connectome(np.eye(locs.shape[0]), locs, output_file=pdfpath,
                            node_kwargs={'alpha': 0.5, 'edgecolors': None},
-                           node_size=10, node_color='k')
+                           node_size=10, node_color=colors)
     if not pdfpath:
         ni_plt.show()
 
