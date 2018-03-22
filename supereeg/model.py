@@ -104,7 +104,7 @@ class Model(object):
 
             if type(data) is not list:
                 data = [data]
-                
+
             for d in data:
                 d = _format_data(d)
                 if isinstance(d, Brain):
@@ -160,142 +160,40 @@ class Model(object):
 
         """
 
+        # if match_threshold auto, ignore all electrodes whose distance from the
+        # nearest matching voxel is greater than the maximum voxel dimension
         if nearest_neighbor:
-            # if match_threshold auto, ignore all electrodes whose distance from the nearest matching voxel is
-            # greater than the maximum voxel dimension
             bo = _near_neighbor(bo, self, match_threshold=match_threshold)
 
-        # filter bad electrodes
         bo = filter_elecs(bo, measure='kurtosis', threshold=kthreshold)
 
-        # if force_update is True it will update the model with subject's correlation matrix
+        # if True will update the model with subject's correlation matrix
         if force_update:
-
-            # get subject-specific correlation matrix
-            sub_corrmat = _get_corrmat(bo)
-
-            # fill diag with zeros
-            np.fill_diagonal(sub_corrmat, 0) # <- possible failpoint
-
-            # z-score the corrmat
-            sub_corrmat_z = _r2z(sub_corrmat)
-
-            # get _rbf weights
-            sub__rbf_weights = _rbf(self.locs, bo.locs)
-
-            #  get subject expanded correlation matrix
-            num_corrmat_x, denom_corrmat_x = _expand_corrmat_fit(sub_corrmat_z, sub__rbf_weights)
-
-            # add in new subj data
-            with np.errstate(invalid='ignore'):
-                model_corrmat_x = np.divide(np.add(self.numerator, num_corrmat_x), np.add(self.denominator, denom_corrmat_x))
-
+            model_corrmat_x = _force_update(self, bo)
         else:
             with np.errstate(invalid='ignore'):
-                model_corrmat_x = np.divide(self.numerator,self.denominator)
+                model_corrmat_x = np.divide(self.numerator, self.denominator)
 
-        # find overlapping locations
         bool_mask = _count_overlapping(self, bo)
-
-        # get model indices where subject locs overlap with model locs
-        #bool_mask = np.sum([(self.locs == y).all(1) for idy, y in bo.locs.iterrows()], 0).astype(bool)
-
-        # if model locs is a subset of patient locs, nothing to reconstruct
-        assert not all(bool_mask),"model is a complete subset of patient locations"
+        assert not all(bool_mask), "model is a complete subset of patient locations"
 
         # indices of the mask (where there is overlap
         joint_model_inds = np.where(bool_mask)[0]
 
-        # if there is no overlap, expand the model and predict at unknown locs
-        if not any(bool_mask):
+        # compute model for 3 possible scenarios
+        case = _which_case(bo, bool_mask)
+        if case is 'no_overlap':
+            model_corrmat_x, loc_label, perm_locs = _no_overlap(self, bo, model_corrmat_x)
+        elif case is 'some_overlap':
+            model_corrmat_x, loc_label, perm_locs = _some_overlap(self, bo, model_corrmat_x, joint_model_inds)
+        elif case is 'subset':
+            model_corrmat_x, loc_label, perm_locs = _subset(self, bo, model_corrmat_x, joint_model_inds)
 
-            # expanded _rbf weights
-            model__rbf_weights = _rbf(pd.concat([self.locs, bo.locs]), self.locs)
-
-            # get model expanded correlation matrix
-            num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(model_corrmat_x, model__rbf_weights)
-
-            # divide the numerator and denominator
-            with np.errstate(invalid='ignore'):
-                model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
-
-            # label locations as reconstructed or observed
-            loc_label = ['reconstructed'] * len(self.locs) + ['observed'] * len(bo.locs)
-
-            # grab the locs
-            perm_locs = self.locs.append(bo.locs)
-
-        # else if all of the subject locations are in the set of model locations
-        elif sum(bool_mask) == bo.locs.shape[0]:
-
-            # permute the correlation matrix so that the inds to reconstruct are on the right edge of the matrix
-            perm_inds = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds)) + sorted(set(joint_model_inds))
-            model_corrmat_x = model_corrmat_x[:, perm_inds][perm_inds, :]
-
-            # label locations as reconstructed or observed
-            loc_label = ['reconstructed'] * (len(self.locs)-len(bo.locs)) + ['observed'] * len(bo.locs)
-
-            # grab permuted locations
-
-            perm_locs = self.locs.iloc[perm_inds]
-
-        # else if some of the subject and model locations overlap
-        elif sum(bool_mask) != bo.locs.shape[0]:
-
-            # get subject indices where subject locs do not overlap with model locs
-            bool_bo_mask= np.sum([(bo.locs == y).all(1) for idy, y in self.locs.iterrows()], 0).astype(bool)
-            disjoint_bo_inds = np.where(~bool_bo_mask)[0]
-
-            # permute the correlation matrix so that the inds to reconstruct are on the right edge of the matrix
-            perm_inds = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds)) + sorted(set(joint_model_inds))
-            model_permuted = model_corrmat_x[:, perm_inds][perm_inds, :]
-
-            # permute the model locations (important for the _rbf calculation later)
-            model_locs_permuted = self.locs.iloc[perm_inds]
-
-            # permute the subject locations arranging them
-            bo_perm_inds = sorted(set(range(bo.locs.shape[0])) - set(disjoint_bo_inds)) + sorted(set(disjoint_bo_inds))
-            sub_bo = bo.locs.iloc[disjoint_bo_inds]
-            bo.locs = bo.locs.iloc[bo_perm_inds]
-            bo.data = bo.data[bo_perm_inds]
-
-            # permuted indices for unknown model locations
-            perm_inds_unknown = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds))
-
-            # expanded _rbf weights
-            #model__rbf_weights = _rbf(pd.concat([model_locs_permuted, bo.locs]), model_locs_permuted)
-            model__rbf_weights = _rbf(pd.concat([model_locs_permuted, sub_bo]), model_locs_permuted)
-
-            # get model expanded correlation matrix
-            num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(model_permuted, model__rbf_weights)
-
-            # divide the numerator and denominator
-            with np.errstate(invalid='ignore'):
-                model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
-
-            # add back the permuted correlation matrix for complete subject prediction
-            model_corrmat_x[:model_permuted.shape[0], :model_permuted.shape[0]] = model_permuted
-
-            # label locations as reconstructed or observed
-            loc_label = ['reconstructed'] * len(self.locs.iloc[perm_inds_unknown]) + ['observed'] * len(bo.locs)
-
-            ## unclear if this will return too many locations
-            perm_locs = self.locs.iloc[perm_inds_unknown].append(bo.locs)
-
-        #convert from z to r
         model_corrmat_x = _z2r(model_corrmat_x)
-
-        # convert diagonals to zeros
         np.fill_diagonal(model_corrmat_x, 0)
-
-        # timeseries reconstruction
         activations = _timeseries_recon(bo, model_corrmat_x)
-
-
-        # return all data
         return Brain(data=activations, locs=perm_locs, sessions=bo.sessions,
                     sample_rate=bo.sample_rate, label=loc_label)
-
 
     def update(self, data, measure='kurtosis', threshold=10, inplace=True,
                locs=None, n=1):
@@ -452,7 +350,10 @@ class Model(object):
 
         dd.io.save(fname, mo, compression=compression)
 
-# model helper functions
+###################################
+# helper functions for init
+###################################
+
 def _handle_superuser(self, numerator, denominator, locs, n_subs):
     """Shortcuts model building if these args are passed"""
     self.numerator = numerator
@@ -520,3 +421,118 @@ def _format_data(d):
         return d
     else:
         raise TypeError("Did not recognize the type of one of your inputs to the model")
+
+def _force_update(self, bo):
+
+    # get subject-specific correlation matrix
+    sub_corrmat = _get_corrmat(bo)
+
+    # fill diag with zeros
+    np.fill_diagonal(sub_corrmat, 0) # <- possible failpoint
+
+    # z-score the corrmat
+    sub_corrmat_z = _r2z(sub_corrmat)
+
+    # get _rbf weights
+    sub__rbf_weights = _rbf(self.locs, bo.locs)
+
+    #  get subject expanded correlation matrix
+    num_corrmat_x, denom_corrmat_x = _expand_corrmat_fit(sub_corrmat_z, sub__rbf_weights)
+
+    # add in new subj data
+    with np.errstate(invalid='ignore'):
+        model_corrmat_x = np.divide(np.add(self.numerator, num_corrmat_x), np.add(self.denominator, denom_corrmat_x))
+
+    return model_corrmat_x
+
+###################################
+# helper functions for predict
+###################################
+
+def _which_case(bo, bool_mask):
+    """Determine which predict scenario we are in"""
+    if not any(bool_mask):
+        return 'no_overlap'
+    elif sum(bool_mask) == bo.locs.shape[0]:
+        return 'subset'
+    elif sum(bool_mask) != bo.locs.shape[0]:
+        return 'some_overlap'
+
+def _no_overlap(self, bo, model_corrmat_x):
+    """ Compute model when there is no overlap """
+    # expanded _rbf weights
+    model__rbf_weights = _rbf(pd.concat([self.locs, bo.locs]), self.locs)
+
+    # get model expanded correlation matrix
+    num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(model_corrmat_x, model__rbf_weights)
+
+    # divide the numerator and denominator
+    with np.errstate(invalid='ignore'):
+        model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
+
+    # label locations as reconstructed or observed
+    loc_label = ['reconstructed'] * len(self.locs) + ['observed'] * len(bo.locs)
+
+    # grab the locs
+    perm_locs = self.locs.append(bo.locs)
+
+    return model_corrmat_x, loc_label, perm_locs
+
+def _subset(self, bo, model_corrmat_x, joint_model_inds):
+    """ Compute model when bo is a subset of the model """
+    # permute the correlation matrix so that the inds to reconstruct are on the right edge of the matrix
+    perm_inds = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds)) + sorted(set(joint_model_inds))
+    model_corrmat_x = model_corrmat_x[:, perm_inds][perm_inds, :]
+
+    # label locations as reconstructed or observed
+    loc_label = ['reconstructed'] * (len(self.locs)-len(bo.locs)) + ['observed'] * len(bo.locs)
+
+    # grab permuted locations
+    perm_locs = self.locs.iloc[perm_inds]
+
+    return model_corrmat_x, loc_label, perm_locs
+
+def _some_overlap(self, bo, model_corrmat_x, joint_model_inds):
+    """ Compute model when there is some overlap """
+
+    # get subject indices where subject locs do not overlap with model locs
+    bool_bo_mask= np.sum([(bo.locs == y).all(1) for idy, y in self.locs.iterrows()], 0).astype(bool)
+    disjoint_bo_inds = np.where(~bool_bo_mask)[0]
+
+    # permute the correlation matrix so that the inds to reconstruct are on the right edge of the matrix
+    perm_inds = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds)) + sorted(set(joint_model_inds))
+    model_permuted = model_corrmat_x[:, perm_inds][perm_inds, :]
+
+    # permute the model locations (important for the _rbf calculation later)
+    model_locs_permuted = self.locs.iloc[perm_inds]
+
+    # permute the subject locations arranging them
+    bo_perm_inds = sorted(set(range(bo.locs.shape[0])) - set(disjoint_bo_inds)) + sorted(set(disjoint_bo_inds))
+    sub_bo = bo.locs.iloc[disjoint_bo_inds]
+    bo.locs = bo.locs.iloc[bo_perm_inds]
+    bo.data = bo.data[bo_perm_inds]
+
+    # permuted indices for unknown model locations
+    perm_inds_unknown = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds))
+
+    # expanded _rbf weights
+    #model__rbf_weights = _rbf(pd.concat([model_locs_permuted, bo.locs]), model_locs_permuted)
+    model__rbf_weights = _rbf(pd.concat([model_locs_permuted, sub_bo]), model_locs_permuted)
+
+    # get model expanded correlation matrix
+    num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(model_permuted, model__rbf_weights)
+
+    # divide the numerator and denominator
+    with np.errstate(invalid='ignore'):
+        model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
+
+    # add back the permuted correlation matrix for complete subject prediction
+    model_corrmat_x[:model_permuted.shape[0], :model_permuted.shape[0]] = model_permuted
+
+    # label locations as reconstructed or observed
+    loc_label = ['reconstructed'] * len(self.locs.iloc[perm_inds_unknown]) + ['observed'] * len(bo.locs)
+
+    ## unclear if this will return too many locations
+    perm_locs = self.locs.iloc[perm_inds_unknown].append(bo.locs)
+
+    return model_corrmat_x, loc_label, perm_locs
