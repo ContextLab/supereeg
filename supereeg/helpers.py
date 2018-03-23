@@ -797,6 +797,7 @@ def _near_neighbor(bo, mo, match_threshold='auto'):
     """
 
     nbo = copy.deepcopy(bo)
+    nbo.orig_locs = nbo.locs
     d = cdist(nbo.locs, mo.locs, metric='Euclidean')
     for i in range(len(nbo.locs)):
         min_ind = list(zip(*np.where(d == d.min())))[0]
@@ -814,7 +815,7 @@ def _near_neighbor(bo, mo, match_threshold='auto'):
             thresh_bool = thresh_bool.any(1).ravel()
             assert match_threshold > 0, 'Negative Euclidean distances are not allowed'
         nbo.data = nbo.data.loc[:, ~thresh_bool]
-        nbo.locs = nbo.locs.loc[~thresh_bool]
+        nbo.orig_locs = nbo.locs
         nbo.n_elecs = nbo.data.shape[1]
         nbo.kurtosis = nbo.kurtosis[~thresh_bool]
         return nbo
