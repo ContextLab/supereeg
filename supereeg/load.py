@@ -127,10 +127,11 @@ def _convert(data, return_type, vox_size):
 
 def _load_example(fname, fileid, sample_inds, loc_inds):
     """ Loads in dataset given a google file id """
-    fullpath = os.path.join(homedir, 'supereeg_data', fname)
+    fullpath = os.path.join(homedir, 'supereeg_data', fname + '.' + fileid[1])
     if not os.path.exists(datadir):
         os.makedirs(datadir)
     if not os.path.exists(fullpath):
+        print(fullpath)
         try:
             _download(fname, _load_stream(fileid[0]), fileid[1])
             data = _load_from_cache(fname, fileid[1], sample_inds, loc_inds)
@@ -144,7 +145,8 @@ def _load_example(fname, fileid, sample_inds, loc_inds):
             try:
                 _download(fname, _load_stream(fileid[0]), fileid[1])
                 data = _load_from_cache(fname, fileid[1], sample_inds, loc_inds)
-            except:
+            except ValueError as e:
+                print(e)
                 raise ValueError('Download failed. Try deleting cache data in'
                                  ' /Users/homedir/supereeg_data.')
     return data
@@ -223,25 +225,30 @@ def _load_slice(fname, sample_inds=None, loc_inds=None):
         Dictionary of contents to pass to brain object
 
     """
-    print(loc_inds)
 
     sr = dd.io.load(fname, group='/sample_rate')
     meta = dd.io.load(fname, group='/meta')
     date_created = dd.io.load(fname, group='/date_created')
 
     if sample_inds!=None and loc_inds!=None:
-        if not isinstance(sample_inds, int) or not isinstance(sample_inds, int):
+        if not isinstance(sample_inds, int) and not isinstance(loc_inds, int):
             raise IndexError("Slicing with 2 lists is currently not supported.")
         data = dd.io.load(fname, group='/data', sel=dd.aslice[sample_inds, loc_inds])
         locs = dd.io.load(fname, group='/locs', sel=dd.aslice[loc_inds, :])
-        sessions = dd.io.load(fname, group='/sessions').iloc[sample_inds]
+        sessions = dd.io.load(fname, group='/sessions').iloc[sample_inds].tolist()
     elif loc_inds==None:
         data = dd.io.load(fname, group='/data', sel=dd.aslice[sample_inds, :])
         locs = dd.io.load(fname, group='/locs')
-        sessions = dd.io.load(fname, group='/sessions').iloc[sample_inds]
+        sessions = dd.io.load(fname, group='/sessions').iloc[sample_inds].tolist()
     elif sample_inds==None:
         data = dd.io.load(fname, group='/data', sel=dd.aslice[:, loc_inds])
         locs = dd.io.load(fname, group='/locs', sel=dd.aslice[loc_inds, :])
-        sessions = dd.io.load(fname, group='/sessions')
+        sessions = dd.io.load(fname, group='/sessions').tolist()
     sample_rate = [sr[int(s-1)] for s in np.unique(sessions)]
-    return dict(data=data, locs=locs, sample_rate=sample_rate, meta=meta, date_created=date_created)
+    data = np.atleast_2d(data)
+    locs = np.atleast_2d(locs)
+    if locs.shape[0]==1:
+        if data.shape[1]>data.shape[0]:
+            data = data.T
+    return dict(data=data, locs=locs,
+                sample_rate=sample_rate, meta=meta, date_created=date_created)
