@@ -24,7 +24,7 @@ datadict = {
 }
 
 def load(fname, vox_size=None, return_type=None, sample_inds=None,
-         loc_inds=None):
+         loc_inds=None, field=None):
     """
     Load nifti file, brain or model object, or example data.
 
@@ -85,18 +85,27 @@ def load(fname, vox_size=None, return_type=None, sample_inds=None,
     loc_inds : int, list or slice
         Indices of slices you'd like to load in. Only works for Brain object.
 
+    field : str
+        The particular field of the data you want to load. This will work for
+        Brain objects and Model objects.
+
     Returns
     ----------
     data : supereeg.Nifti, supereeg.Brain or supereeg.Model
         Data to be returned
 
     """
+    if field != None and (sample_inds!=None or loc_inds!=None):
+        raise ValueError("Using both field and slicing currently not supported.")
 
     if fname in datadict.keys():
-        data = _load_example(fname, datadict[fname], sample_inds, loc_inds)
+        data = _load_example(fname, datadict[fname], sample_inds, loc_inds, field)
     else:
-        data = _load_from_path(fname, sample_inds, loc_inds)
-    return _convert(data, return_type, vox_size)
+        data = _load_from_path(fname, sample_inds, loc_inds, field)
+    if field is None:
+        return _convert(data, return_type, vox_size)
+    else:
+        return data
 
 def _convert(data, return_type, vox_size):
     """ Converts between bo, mo and nifti """
@@ -125,26 +134,25 @@ def _convert(data, return_type, vox_size):
             data = Model(data)
         return data
 
-def _load_example(fname, fileid, sample_inds, loc_inds):
+def _load_example(fname, fileid, sample_inds, loc_inds, field):
     """ Loads in dataset given a google file id """
     fullpath = os.path.join(homedir, 'supereeg_data', fname + '.' + fileid[1])
     if not os.path.exists(datadir):
         os.makedirs(datadir)
     if not os.path.exists(fullpath):
-        print(fullpath)
         try:
             _download(fname, _load_stream(fileid[0]), fileid[1])
-            data = _load_from_cache(fname, fileid[1], sample_inds, loc_inds)
+            data = _load_from_cache(fname, fileid[1], sample_inds, loc_inds, field)
         except ValueError as e:
             print(e)
             raise ValueError('Download failed.')
     else:
         try:
-            data = _load_from_cache(fname, fileid[1], sample_inds, loc_inds)
+            data = _load_from_cache(fname, fileid[1], sample_inds, loc_inds, field)
         except:
             try:
                 _download(fname, _load_stream(fileid[0]), fileid[1])
-                data = _load_from_cache(fname, fileid[1], sample_inds, loc_inds)
+                data = _load_from_cache(fname, fileid[1], sample_inds, loc_inds, field)
             except ValueError as e:
                 print(e)
                 raise ValueError('Download failed. Try deleting cache data in'
@@ -173,13 +181,18 @@ def _download(fname, data, ext):
     with open(fullpath + '.' + ext, 'wb') as f:
         f.write(data.content)
 
-def _load_from_path(fpath, sample_inds=None, loc_inds=None):
+def _load_from_path(fpath, sample_inds=None, loc_inds=None, field=None):
     """ Load a file from a local path """
     try:
         ext = fpath.split('.')[-1]
     except:
         raise ValueError("Must specify a file extension.")
-    if ext=='bo':
+    if field != None:
+        if ftype in ['bo', 'mo']:
+            return _load_field(fpath, field)
+        else:
+            raise ValueError("Can only load field from Brain or Model object.")
+    elif ext=='bo':
         if sample_inds!=None or loc_inds!=None:
             return Brain(**_load_slice(fpath, sample_inds, loc_inds))
         else:
@@ -191,10 +204,15 @@ def _load_from_path(fpath, sample_inds=None, loc_inds=None):
     else:
         raise ValueError("Filetype not recognized. Must be .bo, .mo or .nii.")
 
-def _load_from_cache(fname, ftype, sample_inds=None, loc_inds=None):
+def _load_from_cache(fname, ftype, sample_inds=None, loc_inds=None, field=None):
     """ Load a file from local data cache """
     fullpath = os.path.join(homedir, 'supereeg_data', fname + '.' + ftype)
-    if ftype is 'bo':
+    if field != None:
+        if ftype in ['bo', 'mo']:
+            return _load_field(fullpath, field)
+        else:
+            raise ValueError("Can only load field from Brain or Model object.")
+    elif ftype is 'bo':
         if sample_inds!=None or loc_inds!=None:
             return Brain(**_load_slice(fullpath, sample_inds, loc_inds))
         else:
@@ -203,6 +221,10 @@ def _load_from_cache(fname, ftype, sample_inds=None, loc_inds=None):
         return Model(**dd.io.load(fullpath))
     elif ftype is 'nii':
         return Nifti(fullpath)
+
+def _load_field(fname, field):
+    """ Loads a particular field of a file """
+    return dd.io.load(fname, group='/' + field)
 
 def _load_slice(fname, sample_inds=None, loc_inds=None):
     """

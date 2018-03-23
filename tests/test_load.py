@@ -132,3 +132,20 @@ def test_bo_load_slice4():
 def test_bo_load_slice_raise_error():
     with pytest.raises(IndexError):
         bo = se.load('example_data', sample_inds=range(10), loc_inds=range(10))
+
+def test_bo_load_field_raise_error():
+    with pytest.raises(ValueError):
+        bo = se.load('example_data', field='locs', sample_inds=range(10),
+                     loc_inds=range(10))
+
+def test_bo_load_field_locs():
+    locs = se.load('example_data', field='locs')
+    assert locs.shape[0]==64
+
+def test_model_load_field_locs():
+    locs = se.load('example_model', field='locs')
+    assert locs.shape[0]==210
+
+def test_model_load_field_nii_raise_error():
+    with pytest.raises(ValueError):
+        bo = se.load('example_nifti', field='locs')
