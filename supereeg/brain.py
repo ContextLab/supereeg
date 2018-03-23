@@ -157,31 +157,34 @@ class Brain(object):
             else:
                 self.sessions = pd.Series(sessions.ravel())
 
-            if isinstance(sample_rate, np.ndarray):
-                if sample_rate.ndim == 1:
-                    sample_rate = np.atleast_2d(sample_rate)
-                if np.shape(sample_rate)[1]>1:
-                    self.sample_rate = list(sample_rate[0])
-                elif np.shape(sample_rate)[1] == 1:
-                    self.sample_rate = [sample_rate[0]]
-                assert len(self.sample_rate) ==  len(self.sessions.unique()), \
-                    'Should be one sample rate for each session.'
+            # if isinstance(sample_rate, np.ndarray):
+            #     if sample_rate.ndim == 1:
+            #         sample_rate = np.atleast_2d(sample_rate)
+            #     if np.shape(sample_rate)[1]>1:
+            #         self.sample_rate = list(sample_rate[0])
+            #     elif np.shape(sample_rate)[1] == 1:
+            #         self.sample_rate = [sample_rate[0]]
+            #     assert len(self.sample_rate) ==  len(self.sessions.unique()), \
+            #         'Should be one sample rate for each session.'
+            #
+            # elif isinstance(sample_rate, list):
+            #     if isinstance(sample_rate[0], np.ndarray):
+            #         if sample_rate[0].ndim == 1:
+            #             sample_rate = np.atleast_2d(sample_rate)
+            #             self.sample_rate = [sample_rate[0]]
+            #         else:
+            #             self.sample_rate = list(sample_rate[0][0])
+            #     else:
+            #         self.sample_rate = sample_rate
+            #     print(self.sample_rate)
+            #     print(self.sessions.unique())
+            #     assert len(self.sample_rate) ==  len(self.sessions.unique()), \
+            #     'Should be one sample rate for each session.'
 
-            elif isinstance(sample_rate, list):
-                if isinstance(sample_rate[0], np.ndarray):
-                    if sample_rate[0].ndim == 1:
-                        sample_rate = np.atleast_2d(sample_rate)
-                        self.sample_rate = [sample_rate[0]]
-                    else:
-                        self.sample_rate = list(sample_rate[0][0])
-                else:
-                    self.sample_rate = sample_rate
-                assert len(self.sample_rate) ==  len(self.sessions.unique()), \
-                'Should be one sample rate for each session.'
-
-            elif type(sample_rate) in [int, float]:
+            if type(sample_rate) in [int, float]:
                 self.sample_rate = [sample_rate]*len(self.sessions.unique())
-
+            elif isinstance(sample_rate, list):
+                self.sample_rate = sample_rate
             else:
                 self.sample_rate = None
 
@@ -215,7 +218,6 @@ class Brain(object):
                 self.label = label
 
     def __getitem__(self, slice):
-        print(slice)
         if isinstance(slice, tuple):
             timeslice, locslice = slice
         else:
@@ -273,8 +275,6 @@ class Brain(object):
         """
         Indexes brain object data
 
-
-
         Parameters
         ----------
         sample_inds : int or list
@@ -287,43 +287,38 @@ class Brain(object):
             If True, indexes in place.
 
         """
-        if not sample_inds:
+        if sample_inds is None:
             sample_inds = list(range(self.data.shape[0]))
-        if not loc_inds:
+        if loc_inds is None:
             loc_inds = list(range(self.locs.shape[0]))
         if isinstance(sample_inds, int):
             sample_inds = [sample_inds]
         if isinstance(loc_inds, int):
             loc_inds = [loc_inds]
 
-        if sample_inds and loc_inds:
-            data = self.data.iloc[sample_inds, loc_inds].copy()
-            sessions = self.sessions.iloc[sample_inds].copy()
-            ## check this:
-            if self.sample_rate:
-                sample_rate = [self.sample_rate[int(s-1)] for s in
-                               sessions.unique()]
-            else:
-                sample_rate = self.sample_rate
-            meta = copy.copy(self.meta)
-            locs = self.locs.iloc[loc_inds].copy()
-            date_created = self.date_created
-
-            if inplace:
-                self.data = data
-                self.locs = locs
-                self.sessions = sessions
-                self.sample_rate = sample_rate
-                self.meta = meta
-                self.date_created = date_created
-
-            else:
-                return Brain(data=data, locs=locs, sessions=sessions,
-                             sample_rate=sample_rate, meta=meta,
-                             date_created=date_created)
+        data = self.data.iloc[sample_inds, loc_inds].copy()
+        sessions = self.sessions.iloc[sample_inds].copy()
+        ## check this:
+        if self.sample_rate:
+            sample_rate = [self.sample_rate[int(s-1)] for s in
+                           sessions.unique()]
         else:
-            return self.copy()
+            sample_rate = self.sample_rate
+        meta = copy.copy(self.meta)
+        locs = self.locs.iloc[loc_inds].copy()
+        date_created = self.date_created
 
+        if inplace:
+            self.data = data
+            self.locs = locs
+            self.sessions = sessions
+            self.sample_rate = sample_rate
+            self.meta = meta
+            self.date_created = date_created
+        else:
+            return Brain(data=data, locs=locs, sessions=sessions,
+                         sample_rate=sample_rate, meta=meta,
+                         date_created=date_created)
 
     def resample(self, resample_rate=None):
         """
@@ -578,7 +573,7 @@ class Brain(object):
 
         bo = {
             'data': self.data.as_matrix(),
-            'locs': self.locs.as_matrix(),
+            'locs': self.locs,
             'sessions': self.sessions,
             'sample_rate': self.sample_rate,
             'meta': self.meta,

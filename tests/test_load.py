@@ -113,10 +113,39 @@ def test_return_type_nii_with_nii():
     nii = se.load('example_nifti', return_type='nii')
     assert isinstance(nii, se.Nifti)
 
-def test_bo_load_slice():
+def test_bo_load_slice1():
     bo = se.load('example_data', sample_inds=range(10))
     assert bo.data.shape==(10,64)
+
+def test_bo_load_slice2():
+    bo = se.load('example_data', sample_inds=range(10), loc_inds=0)
+    assert bo.data.shape==(10,1)
+
+def test_bo_load_slice3():
+    bo = se.load('example_data', sample_inds=0, loc_inds=range(10))
+    assert bo.data.shape==(1,10)
+
+def test_bo_load_slice4():
+    bo = se.load('example_data', sample_inds=0, loc_inds=0)
+    assert bo.data.shape==(1,1)
 
 def test_bo_load_slice_raise_error():
     with pytest.raises(IndexError):
         bo = se.load('example_data', sample_inds=range(10), loc_inds=range(10))
+
+def test_bo_load_field_raise_error():
+    with pytest.raises(ValueError):
+        bo = se.load('example_data', field='locs', sample_inds=range(10),
+                     loc_inds=range(10))
+
+def test_bo_load_field_locs():
+    locs = se.load('example_data', field='locs')
+    assert locs.shape[0]==64
+
+def test_model_load_field_locs():
+    locs = se.load('example_model', field='locs')
+    assert locs.shape[0]==210
+
+def test_model_load_field_nii_raise_error():
+    with pytest.raises(ValueError):
+        bo = se.load('example_nifti', field='locs')
