@@ -172,6 +172,9 @@ class Model(object):
 
         bo = filter_elecs(bo, measure='kurtosis', threshold=kthreshold)
 
+        if self.locs.shape[0] > 1000:
+            warnings.warn('Model locations exceed 1000, this may take a while. Good time for a cup of coffee.')
+
         # if True will update the model with subject's correlation matrix
         if force_update:
             model_corrmat_x = _force_update(self, bo)
