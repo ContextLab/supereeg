@@ -420,7 +420,7 @@ def _format_data(d, model_locs, new_locs=None, n_subs=1):
     else:
         raise TypeError("Did not recognize the type of one of your inputs to the model")
 
-def _force_update(self, bo):
+def _force_update(mo, bo):
 
     # get subject-specific correlation matrix
     sub_corrmat = _get_corrmat(bo)
@@ -432,14 +432,14 @@ def _force_update(self, bo):
     sub_corrmat_z = _r2z(sub_corrmat)
 
     # get _rbf weights
-    sub__rbf_weights = _rbf(self.locs, bo.locs)
+    sub__rbf_weights = _rbf(mo.locs, bo.locs)
 
     #  get subject expanded correlation matrix
     num_corrmat_x, denom_corrmat_x = _expand_corrmat_fit(sub_corrmat_z, sub__rbf_weights)
 
     # add in new subj data
     with np.errstate(invalid='ignore'):
-        model_corrmat_x = np.divide(np.add(self.numerator, num_corrmat_x), np.add(self.denominator, denom_corrmat_x))
+        model_corrmat_x = np.divide(np.add(mo.numerator, num_corrmat_x), np.add(mo.denominator, denom_corrmat_x))
 
     return model_corrmat_x
 

@@ -29,7 +29,7 @@ model = se.load('example_model')
 reconstructed_bo_nn = model.predict(bo)
 reconstructed_bo_nn.plot_locs()
 
-reconstructed_bo = model.predict(bo, nearest_neighbor=False)
+reconstructed_bo = model.predict(bo, nearest_neighbor=False, force_update=True)
 
 # plot the all reconstructed locations
 reconstructed_bo.plot_locs()
