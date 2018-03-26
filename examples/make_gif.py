@@ -34,6 +34,8 @@ reconstructed_bo.info()
 samples = [0,1,2]
 reconstructed_bo.get_slice(sample_inds=samples, inplace=True)
 
+
+
 # convert to nifti
 reconstructed_nifti = reconstructed_bo.to_nii(template='gray', vox_size=20)
 
