@@ -8,7 +8,7 @@ Here we load the example model, and then plot it along with the locations.
 
 """
 
-# Code source: Andrew Heusser & Lucy Owen
+# Code source: Lucy Owen & Andrew Heusser
 # License: MIT
 
 import supereeg as se

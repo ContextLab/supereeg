@@ -58,16 +58,16 @@ We’ll also simulate some electrode locations
 .. parsed-literal::
 
         x   y   z
-    0 -43  19  -4
-    1 -21  29  19
-    2  -8 -36 -16
-    3  -2  48 -45
-    4   1 -37  10
-    5  13   7 -37
-    6  13  -5  18
-    7  19  43  11
-    8  22 -39 -22
-    9  32  44  28
+    0 -32  44  18
+    1 -24   4  -8
+    2 -18  22  20
+    3 -16  18   2
+    4  -4  38  40
+    5   5  -1 -36
+    6   9 -12 -17
+    7  18  45  47
+    8  22  19 -37
+    9  34 -11 -40
 
 
 Creating a brain object
@@ -94,7 +94,7 @@ To view a summary of the contents of the brain object, you can call the
     Recording time in seconds: [10.]
     Sample Rate in Hz: [100]
     Number of sessions: 1
-    Date created: Fri Mar  9 14:56:10 2018
+    Date created: Mon Mar 26 14:20:49 2018
     Meta data: {}
 
 
@@ -115,13 +115,13 @@ each session. For example:
     Recording time in seconds: [0.5 0.5]
     Sample Rate in Hz: [1000, 1000]
     Number of sessions: 2
-    Date created: Fri Mar  9 14:56:10 2018
+    Date created: Mon Mar 26 14:20:49 2018
     Meta data: {}
 
 
-You can also pass add custom meta data to the brain object to help keep
-track of its contents. ``meta`` is a dictionary comprised of whatever
-you want:
+You can also add custom meta data to the brain object to help keep track
+of its contents. ``meta`` is a dictionary comprised of whatever you
+want:
 
 .. code:: ipython2
 
@@ -140,7 +140,7 @@ you want:
     Recording time in seconds: [0.5 0.5]
     Sample Rate in Hz: [1000, 1000]
     Number of sessions: 2
-    Date created: Fri Mar  9 14:56:10 2018
+    Date created: Mon Mar 26 14:20:49 2018
     Meta data: {'Hospital': 'DHMC', 'subjectID': '123', 'Investigator': 'Andy'}
 
 
@@ -155,16 +155,15 @@ For example, you can load a nifti object as a brain object:
 
 .. code:: ipython2
 
-    se.load('example_nifti', return_type='bo')
+    bo_nii = se.load('example_nifti', return_type='bo')
 
+Another feature, which can be particularly useful when working with lots
+of data, is loading only a subfield by specifiying ``field``. For
+example, if you only want to load locations:
 
+.. code:: ipython2
 
-
-.. parsed-literal::
-
-    <supereeg.brain.Brain at 0x10a46dad0>
-
-
+    bo_locs = se.load('example_data', field='locs') 
 
 The structure of a brain object
 ===============================
@@ -214,68 +213,68 @@ that can be accessed directly:
       <tbody>
         <tr>
           <th>0</th>
-          <td>0.446101</td>
-          <td>0.983013</td>
-          <td>0.828915</td>
-          <td>0.353332</td>
-          <td>1.034463</td>
-          <td>0.451128</td>
-          <td>0.601559</td>
-          <td>0.298156</td>
-          <td>0.746466</td>
-          <td>0.159167</td>
+          <td>-0.166721</td>
+          <td>-0.735446</td>
+          <td>0.136337</td>
+          <td>-0.493442</td>
+          <td>-0.669883</td>
+          <td>-0.067817</td>
+          <td>0.703807</td>
+          <td>-0.375587</td>
+          <td>-0.045724</td>
+          <td>0.447436</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>0.063207</td>
-          <td>0.745825</td>
-          <td>0.130399</td>
-          <td>-0.763795</td>
-          <td>0.069143</td>
-          <td>-0.241157</td>
-          <td>-1.008557</td>
-          <td>-0.917609</td>
-          <td>-0.294904</td>
-          <td>0.160549</td>
+          <td>0.977057</td>
+          <td>0.367045</td>
+          <td>1.213232</td>
+          <td>0.883331</td>
+          <td>0.421231</td>
+          <td>0.224865</td>
+          <td>0.494422</td>
+          <td>0.438879</td>
+          <td>0.768239</td>
+          <td>0.532497</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>0.667828</td>
-          <td>0.731240</td>
-          <td>0.958976</td>
-          <td>1.272938</td>
-          <td>1.764090</td>
-          <td>1.539499</td>
-          <td>2.359918</td>
-          <td>1.523332</td>
-          <td>1.479417</td>
-          <td>1.024265</td>
+          <td>-0.032824</td>
+          <td>0.059303</td>
+          <td>-0.260883</td>
+          <td>-0.095137</td>
+          <td>-0.127646</td>
+          <td>-0.314333</td>
+          <td>-0.416271</td>
+          <td>-0.401835</td>
+          <td>-0.277715</td>
+          <td>-0.278955</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>0.108189</td>
-          <td>-0.124277</td>
-          <td>-0.046767</td>
-          <td>-1.711225</td>
-          <td>-0.630269</td>
-          <td>-0.575492</td>
-          <td>-2.596009</td>
-          <td>-1.211577</td>
-          <td>-0.752652</td>
-          <td>-0.757757</td>
+          <td>-0.330126</td>
+          <td>-0.042770</td>
+          <td>0.404674</td>
+          <td>-0.291244</td>
+          <td>0.451615</td>
+          <td>-0.038787</td>
+          <td>0.660893</td>
+          <td>0.073266</td>
+          <td>-0.413868</td>
+          <td>-0.499040</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>1.407587</td>
-          <td>1.369144</td>
-          <td>0.810152</td>
-          <td>-0.115730</td>
-          <td>-0.004911</td>
-          <td>0.397875</td>
-          <td>-0.930972</td>
-          <td>0.218504</td>
-          <td>1.087353</td>
-          <td>0.643025</td>
+          <td>0.210748</td>
+          <td>0.458880</td>
+          <td>-0.198907</td>
+          <td>-0.767037</td>
+          <td>-0.400930</td>
+          <td>0.280938</td>
+          <td>-0.128577</td>
+          <td>-0.333963</td>
+          <td>0.128189</td>
+          <td>0.181897</td>
         </tr>
       </tbody>
     </table>
@@ -294,19 +293,19 @@ or returned as a numpy array using the ``get_data`` method:
 
 .. parsed-literal::
 
-    array([[ 0.44610069,  0.98301343,  0.82891549, ...,  0.29815613,
-             0.74646612,  0.15916716],
-           [ 0.06320684,  0.74582468,  0.13039931, ..., -0.91760885,
-            -0.29490365,  0.16054948],
-           [ 0.66782777,  0.73124044,  0.95897552, ...,  1.52333221,
-             1.47941682,  1.02426451],
+    array([[-0.16672125, -0.73544645,  0.13633688, ..., -0.37558716,
+            -0.045724  ,  0.44743646],
+           [ 0.97705674,  0.36704511,  1.21323242, ...,  0.43887919,
+             0.76823864,  0.53249679],
+           [-0.03282407,  0.05930328, -0.2608827 , ..., -0.40183459,
+            -0.27771469, -0.27895509],
            ...,
-           [-0.30684004, -0.14069592,  0.1506773 , ...,  1.04033499,
-             0.71087543,  0.46294924],
-           [ 0.36719233, -0.18202567,  0.51455433, ..., -0.01475498,
-             0.27303251,  0.84195336],
-           [ 0.00490388, -0.07080235, -0.29260557, ..., -0.22468919,
-            -0.9056613 , -0.35339708]])
+           [-0.15861685, -0.35000387, -0.53935005, ...,  0.3175927 ,
+            -0.25171538, -0.77606798],
+           [-0.18379987,  0.51628732,  0.0855524 , ..., -0.42966452,
+             0.45730719,  0.40093573],
+           [-0.8515807 , -0.74671065, -0.67795756, ..., -1.03631457,
+            -1.60744174, -0.81321251]])
 
 
 
@@ -348,33 +347,33 @@ can be retrieved as a numpy array using the ``get_locs`` method:
       <tbody>
         <tr>
           <th>0</th>
-          <td>-43</td>
-          <td>19</td>
-          <td>-4</td>
+          <td>-32</td>
+          <td>44</td>
+          <td>18</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>-21</td>
-          <td>29</td>
-          <td>19</td>
+          <td>-24</td>
+          <td>4</td>
+          <td>-8</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>-8</td>
-          <td>-36</td>
-          <td>-16</td>
+          <td>-18</td>
+          <td>22</td>
+          <td>20</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>-2</td>
-          <td>48</td>
-          <td>-45</td>
+          <td>-16</td>
+          <td>18</td>
+          <td>2</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>1</td>
-          <td>-37</td>
-          <td>10</td>
+          <td>-4</td>
+          <td>38</td>
+          <td>40</td>
         </tr>
       </tbody>
     </table>
@@ -391,25 +390,50 @@ can be retrieved as a numpy array using the ``get_locs`` method:
 
 .. parsed-literal::
 
-    array([[-43,  19,  -4],
-           [-21,  29,  19],
-           [ -8, -36, -16],
-           [ -2,  48, -45],
-           [  1, -37,  10],
-           [ 13,   7, -37],
-           [ 13,  -5,  18],
-           [ 19,  43,  11],
-           [ 22, -39, -22],
-           [ 32,  44,  28]])
+    array([[-32,  44,  18],
+           [-24,   4,  -8],
+           [-18,  22,  20],
+           [-16,  18,   2],
+           [ -4,  38,  40],
+           [  5,  -1, -36],
+           [  9, -12, -17],
+           [ 18,  45,  47],
+           [ 22,  19, -37],
+           [ 34, -11, -40]])
 
 
 
-You can also pass a list of indices for either ``times`` or ``locs`` and
-return a subset of the brain object
+Brain objects are iterable, so you index a brain object like this:
 
 .. code:: ipython2
 
-    bo_s = bo.get_slice(sample_inds=[1,2,3], loc_inds=[1,2,3])
+    #return first time sample
+    bo[0]
+    #return first 3 time samples
+    bo[:3] 
+    #return first electrode
+    bo[:, 0] 
+    #returns first 3 timesamples/elecs
+    bo_i = bo[:3, :3] 
+    bo_i.get_data()
+
+
+
+
+.. parsed-literal::
+
+    array([[-0.16672125, -0.73544645,  0.13633688],
+           [ 0.97705674,  0.36704511,  1.21323242],
+           [-0.03282407,  0.05930328, -0.2608827 ]])
+
+
+
+You can also pass a list of indices for either ``times`` or ``locs`` to
+the ``get_slice`` method and return a subset of the brain object
+
+.. code:: ipython2
+
+    bo_s = bo.get_slice(sample_inds=[0,1,2], loc_inds=[0,1,2])
     bo_s.get_data()
 
 
@@ -417,9 +441,9 @@ return a subset of the brain object
 
 .. parsed-literal::
 
-    array([[ 0.74582468,  0.13039931, -0.76379514],
-           [ 0.73124044,  0.95897552,  1.27293838],
-           [-0.12427739, -0.0467669 , -1.71122461]])
+    array([[-0.16672125, -0.73544645,  0.13633688],
+           [ 0.97705674,  0.36704511,  1.21323242],
+           [-0.03282407,  0.05930328, -0.2608827 ]])
 
 
 
@@ -428,6 +452,18 @@ You can resample your data by specifying a new resample rate
 .. code:: ipython2
 
     bo.resample(64)
+    bo.info()
+
+
+.. parsed-literal::
+
+    Number of electrodes: 10
+    Recording time in seconds: [0.5 0.5]
+    Sample Rate in Hz: [64, 64]
+    Number of sessions: 2
+    Date created: Mon Mar 26 14:20:49 2018
+    Meta data: {'Hospital': 'DHMC', 'subjectID': '123', 'Investigator': 'Andy'}
+
 
 You can also plot both the data and the electrode locations:
 
@@ -437,7 +473,7 @@ You can also plot both the data and the electrode locations:
 
 
 
-.. image:: brain_objects_files/brain_objects_29_0.png
+.. image:: brain_objects_files/brain_objects_33_0.png
 
 
 .. code:: ipython2
@@ -446,7 +482,7 @@ You can also plot both the data and the electrode locations:
 
 
 
-.. image:: brain_objects_files/brain_objects_30_0.png
+.. image:: brain_objects_files/brain_objects_34_0.png
 
 
 The other pieces of the brain object are listed below:
@@ -501,7 +537,7 @@ This method will give you a summary of the brain object:
     Recording time in seconds: [0.5 0.5]
     Sample Rate in Hz: [64, 64]
     Number of sessions: 2
-    Date created: Fri Mar  9 14:56:10 2018
+    Date created: Mon Mar 26 14:20:49 2018
     Meta data: {'Hospital': 'DHMC', 'subjectID': '123', 'Investigator': 'Andy'}
 
 
@@ -555,7 +591,7 @@ This method allows you resample a brain object in place.
 
 .. parsed-literal::
 
-    <supereeg.brain.Brain at 0x10a5d1210>
+    <supereeg.brain.Brain at 0x112c4c250>
 
 
 
@@ -570,7 +606,7 @@ This method normalizes and plots data from brain object:
 
 
 
-.. image:: brain_objects_files/brain_objects_47_0.png
+.. image:: brain_objects_files/brain_objects_51_0.png
 
 
 ``bo.plot_locs()``
@@ -584,29 +620,17 @@ This method plots electrode locations from brain object:
 
 
 
-.. image:: brain_objects_files/brain_objects_49_0.png
+.. image:: brain_objects_files/brain_objects_53_0.png
 
-
-``bo.save(fname='something')``
-------------------------------
-
-This method will save the brain object to the specified file location.
-The data will be saved as a ‘bo’ file, which is a dictionary containing
-the elements of a brain object saved in the hd5 format using
-``deepdish``.
-
-.. code:: ipython2
-
-    #bo.save(fname='brain_object')
 
 ``bo.to_nii()``
 ---------------
 
-This method converts the brain object into a ``nibabel`` nifti image. If
-``filepath`` is specified, the nifti file will be saved. You can also
-specify a nifti template with the ``template`` argument. If no template
-is specified, it will use the gray matter masked MNI 152 brain
-downsampled to 6mm.
+This method converts the brain object into supereeg’s ``nifti`` class (a
+subclass of the ``nibabel`` nifti class). If ``filepath`` is specified,
+the nifti file will be saved. You can also specify a nifti template with
+the ``template`` argument. If no template is specified, it will use the
+gray matter masked MNI 152 brain downsampled to 6mm.
 
 .. code:: ipython2
 
@@ -624,5 +648,17 @@ downsampled to 6mm.
 
 
 
-.. image:: brain_objects_files/brain_objects_53_0.png
+.. image:: brain_objects_files/brain_objects_55_0.png
 
+
+``bo.save(fname='something')``
+------------------------------
+
+This method will save the brain object to the specified file location.
+The data will be saved as a ‘bo’ file, which is a dictionary containing
+the elements of a brain object saved in the hd5 format using
+``deepdish``.
+
+.. code:: ipython2
+
+    #bo.save(fname='brain_object')

@@ -62,32 +62,32 @@ To begin, we can either simulate locations:
         <tr>
           <th>0</th>
           <td>-46</td>
-          <td>-40</td>
-          <td>-6</td>
+          <td>31</td>
+          <td>14</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>-43</td>
-          <td>28</td>
-          <td>-15</td>
+          <td>-25</td>
+          <td>4</td>
+          <td>-30</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>-41</td>
-          <td>-37</td>
-          <td>43</td>
+          <td>-18</td>
+          <td>28</td>
+          <td>-14</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>-37</td>
-          <td>-50</td>
-          <td>-45</td>
+          <td>-5</td>
+          <td>44</td>
+          <td>-1</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>-34</td>
-          <td>-24</td>
-          <td>16</td>
+          <td>2</td>
+          <td>39</td>
+          <td>-31</td>
         </tr>
       </tbody>
     </table>
@@ -320,14 +320,14 @@ recovered.
     bo = se.simulate_bo(n_samples=100, sample_rate=1000, locs=sub_locs, cov='toeplitz')
     
     # update the model
-    new_model = model.update(bo)
+    new_model = model.update(bo, inplace=False)
     
     # simulate brain objects for the model that subsample n_elecs for each synthetic patient
     model_update_bos = [se.simulate_model_bos(n_samples=100, sample_rate=1000, locs=locs, sample_locs=n_elecs, cov='toeplitz') for y in
                          range(n_subs)]
     
     # update the model
-    better_model = model.update(model_update_bos)
+    better_model = model.update(model_update_bos, inplace=False)
     
     # initialize subplots
     f, (ax1, ax2, ax3) = plt.subplots(1, 3)
@@ -468,7 +468,7 @@ recovery of the true model.
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:177: UserWarning: No sample rate given.  Number of seconds cant be computed
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:195: UserWarning: No sample rate given.  Number of seconds cant be computed
       warnings.warn('No sample rate given.  Number of seconds cant be computed')
 
 

@@ -4,10 +4,10 @@ Nifti objects data type
 
 Another option for plotting and importing/exporting data is using the
 Nifti objects. Nifti objects are a subclass of the neuroimaging format
-Nibabel NiftiImage, which is a file that generally has the extension
-“.nii” or “.nii.gz”. This allows the user to use not only our methods
-with the Nifti class but supports other functionality such as Nibabel
-and Nilearn methods.
+``Nibabel Nifti1Image``, which is a file that generally has the
+extension “.nii” or “.nii.gz”. This allows the user to use our methods
+with the Nifti class but also use other functionality such as
+``Nibabel`` and ``Nilearn`` methods.
 
 Load in the required libraries
 ==============================
@@ -40,12 +40,6 @@ For example, you can load a brain object as a nifti object:
 .. code:: ipython2
 
     bo_nii = se.load('example_data', return_type='nii')
-    bo_nii.plot_glass_brain()
-
-
-
-.. image:: nifti_objects_files/nifti_objects_6_0.png
-
 
 Nifti object methods
 ====================
@@ -131,7 +125,12 @@ by ``nifti.plot_glass_brain``.
 
 .. code:: ipython2
 
-    nii.plot_glass_brain()
+    nii_sliced.plot_glass_brain()
+
+
+
+.. image:: nifti_objects_files/nifti_objects_13_0.png
+
 
 ``nifti.plot_anat()``
 ---------------------
@@ -140,7 +139,7 @@ This method will plot your nifti object.
 
 This method wraps ``nilearn.plot_anat`` to plot the nifti object, so any
 arguments that ``nilearn.plot_anat`` accepts are supported by
-``nifti.anat``.
+``nifti.anat``. For example, you can plot the example nifti:
 
 .. code:: ipython2
 
@@ -174,4 +173,3 @@ location as a ‘nii’ file.
 .. code:: ipython2
 
     #nii.save(filepath='/path/to/save/nifti')
-

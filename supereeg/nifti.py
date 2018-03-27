@@ -52,7 +52,7 @@ class Nifti(Nifti1Image):
                 image = Nifti1Image.load(data)
                 super(Nifti, self).__init__(image.dataobj, image.affine)
 
-        elif isinstance(data, np.ndarray):
+        if isinstance(data, np.ndarray):
             if affine is None:
                 raise IOError("If data is provided as array, affine must also be provided")
             else:

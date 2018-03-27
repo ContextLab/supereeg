@@ -7,7 +7,8 @@ reconstructs full brain activity timeseries from a smaller sample of
 electrodes. The supereeg package offers a few premade models that you
 can use to reconstruct brain activity, but also a way to create your own
 model if you have a dataset of intracranial patient data converted into
-the brain object format. This tutorial will go over how to use the
+the brain object format or just even a correlation matrix and
+corresponding locations. This tutorial will go over how to use the
 premade models included in this package, as well as make a new model
 from scratch.
 
@@ -38,9 +39,6 @@ other model options:
 
 ``pyFR_k10r20_20mm``
 
-Note: The last option is the same as the example_model, but saved as
-``.npz`` instead of ``.mo``.
-
 Initialize model objects
 ========================
 
@@ -59,7 +57,7 @@ For example, you can load a nifti object as a model object:
 
 .. parsed-literal::
 
-    <supereeg.model.Model at 0x10fc074d0>
+    <supereeg.model.Model at 0x113e7ae90>
 
 
 
@@ -113,7 +111,7 @@ accepts are supported by ``model.plot``.
 
 .. parsed-literal::
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x116add790>
+    <matplotlib.axes._subplots.AxesSubplot at 0x113e8f910>
 
 
 
@@ -148,18 +146,20 @@ data as a brain object. First, let’s load in an example subjects data:
 .. parsed-literal::
 
     Number of electrodes: 64
-    Recording time in seconds: [[ 5.3984375 14.1328125]]
+    Recording time in seconds: [ 5.3984375 14.1328125]
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
-    Date created: Fri Mar  9 14:56:33 2018
-    Meta data: {'patient': 'CH003'}
+    Date created: Fri Mar  9 17:09:35 2018
+    Meta data: {'patient': u'CH003'}
 
 
-Now you can update the model with that brain object:
+Now you can update the model with that brain object. This can be done
+either inplace using ``inplace = True``, or you can save a new updated
+model:
 
 .. code:: ipython2
 
-    updated_model = model.update(bo)
+    updated_model = model.update(bo, inplace=False)
     updated_model.info()
 
 
@@ -167,12 +167,42 @@ Now you can update the model with that brain object:
 
     Number of locations: 210
     Number of subjects: 68
-    Date created: Fri Mar  9 14:56:35 2018
+    Date created: Thu Mar  8 10:17:39 2018
     Meta data: None
 
 
 Note that the model is now comprised of 67 subjects, instead of 66
 before we updated it.
+
+``mo.get_model()``
+------------------
+
+This method returns the model in the form of a correlation matrix.
+
+.. code:: ipython2
+
+    updated_model.get_model()
+
+
+
+
+.. parsed-literal::
+
+    array([[        nan, -0.09780031,  0.1873786 , ...,  0.26601281,
+             0.34548057,  0.25212948],
+           [-0.09780031,         nan,  0.22795873, ...,  0.35538136,
+             0.07600037, -0.01200271],
+           [ 0.1873786 ,  0.22795873,         nan, ...,  0.01061793,
+            -0.02072452,  0.16553029],
+           ...,
+           [ 0.26601281,  0.35538136,  0.01061793, ...,         nan,
+             0.08080247,  0.15149649],
+           [ 0.34548057,  0.07600037, -0.02072452, ...,  0.08080247,
+                    nan, -0.03894018],
+           [ 0.25212948, -0.01200271,  0.16553029, ...,  0.15149649,
+            -0.03894018,         nan]])
+
+
 
 ``mo.save(fname='something')``
 ------------------------------
@@ -221,7 +251,7 @@ For the purpose of demonstration, we will simulate 100 locations across
     Recording time in seconds: [1.]
     Sample Rate in Hz: [1000]
     Number of sessions: 1
-    Date created: Fri Mar  9 14:56:35 2018
+    Date created: Mon Mar 26 14:21:11 2018
     Meta data: {}
 
 
@@ -240,7 +270,7 @@ new model will be generated:
 
     Number of locations: 100
     Number of subjects: 10
-    Date created: Fri Mar  9 14:56:37 2018
+    Date created: Mon Mar 26 14:21:13 2018
     Meta data: None
 
 
@@ -249,19 +279,20 @@ Created by adding to model object fields:
 
 Another option is to add a model directly.
 
-You can add your model to ``model.numerator``, which comprises the sum
-of the zscored correlation matrices over subjects. The
-``model.denominator`` field comprises the sum of the number of subjects
-contributing to each matrix cell in the ``model.numerator`` field. You
-can add the locations for the model in the field ``locs`` and the number
-of subjects to ``n_subs``.
+You can add your model to ``model.data`` and add the corresponding
+locations for the model in the field ``locs``.
+
+Another option, allows you to add your model to ``model.numerator``,
+which comprises the sum of the zscored correlation matrices over
+subjects. The ``model.denominator`` field comprises the sum of the
+number of subjects contributing to each matrix cell in the
+``model.numerator`` field. You can add the locations for the model in
+the field ``locs`` and the number of subjects to ``n_subs``.
 
 In this next example, we’re constructing the model from a toeplitz
-matrix with 10 subjects. We’ve updated the ``model.numerator`` field
-with the toeplitz matrix created in the function, ``se.create_cov``, and
-locations loaded from ``example_locations``. The ``model.denominator``
-field in this case is a matrix of ones, but should be the number of
-subjects that contributed to each cell in the ``model.numerator`` field.
+matrix with 10 subjects using 100 simulated locations. We created the
+matrix using the function, ``se.create_cov`` and added it to the
+``model.data`` field.
 
 You can also create a custom covariance matrix in ``se.create_cov`` by
 simply passing numpy array as and that is number of locations by number
@@ -271,32 +302,24 @@ of locations to ``cov`` and the number of location to ``n_elecs``.
 
     R = se.create_cov(cov='toeplitz', n_elecs=len(locs))
     p = 10
-    toe_model = se.Model(numerator=R, denominator=np.ones(np.shape(R)), locs=locs, n_subs=p)
+    toe_model = se.Model(data=R, locs=locs, n_subs=p)
     toe_model.plot_data(xticklabels=False, yticklabels=False)
 
 
 
-.. image:: model_objects_files/model_objects_27_0.png
+.. image:: model_objects_files/model_objects_29_0.png
 
 
 
 
 .. parsed-literal::
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x11814bb90>
+    <matplotlib.axes._subplots.AxesSubplot at 0x11566bb90>
 
 
 
-In this example we passed a numpy array of custom MNI locations to
-predict.
-
-However coordinates can also be derived by specifiying a ``template``
-nifti file. By default, the model is in MNI coordinates derived from a
-gray matter masked brain at 6mm resolution, but this can be easily
-switched to a different space specifying either the standard brain
-(``std``) or gray matter masked brain (``gray``) as ``template`` as well
-as desired resolution passed as ``vox_size`` , or your own custom space
-(note: the model space MUST be in MNI coordinates).
+In this example we simulated 100 MNI locations. However coordinates can
+also be derived by specifiying a ``template`` nifti file.
 
 .. code:: ipython2
 
@@ -339,7 +362,7 @@ model with the subject’s correlation matrix.
     nii.plot_glass_brain()
     
     # voodoo magic
-    bor = model.predict(bo)
+    bor = model.predict(bo, nearest_neighbor=False, force_update=True)
     
     
     # plot a slice of the whole brain data
@@ -355,33 +378,44 @@ model with the subject’s correlation matrix.
     BEFORE
     ------
     Number of electrodes: 64
-    Recording time in seconds: [[ 5.3984375 14.1328125]]
+    Recording time in seconds: [ 5.3984375 14.1328125]
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
-    Date created: Fri Mar  9 14:56:33 2018
-    Meta data: {'patient': 'CH003'}
+    Date created: Fri Mar  9 17:09:35 2018
+    Meta data: {'patient': u'CH003'}
 
 
 
-.. image:: model_objects_files/model_objects_33_1.png
+.. image:: model_objects_files/model_objects_35_1.png
 
 
 .. parsed-literal::
 
     AFTER
     ------
-    Number of electrodes: 210
+    Number of electrodes: 274
     Recording time in seconds: [ 5.3984375 14.1328125]
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
-    Date created: Fri Mar  9 14:56:39 2018
+    Date created: Mon Mar 26 14:21:19 2018
     Meta data: {}
 
 
 
-.. image:: model_objects_files/model_objects_33_3.png
+.. image:: model_objects_files/model_objects_35_3.png
 
 
 Using the ``supereeg`` algorithm, we’ve ‘reconstructed’ whole brain
 activity from a smaller sample of electrodes.
+
+You can plot locations of the new brain object with predicted activity.
+Observed locations are in black and predicted locations are in red.
+
+.. code:: ipython2
+
+    bor.plot_locs()
+
+
+
+.. image:: model_objects_files/model_objects_38_0.png
 
