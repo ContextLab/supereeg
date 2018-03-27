@@ -16,7 +16,6 @@ objects and plot it.
 
 import supereeg as se
 
-
 # simulate 100 locations
 locs = se.simulate_locations(n_elecs=100)
 

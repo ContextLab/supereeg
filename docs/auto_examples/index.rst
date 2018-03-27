@@ -9,13 +9,13 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Here, we load an example nifti image and plot it.">
+    <div class="sphx-glr-thumbcontainer" tooltip="This example loads a nifti file and plots it.">
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_nifti_thumb.png
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_load_nifti_thumb.png
 
-        :ref:`sphx_glr_auto_examples_plot_nifti.py`
+        :ref:`sphx_glr_auto_examples_plot_load_nifti.py`
 
 .. raw:: html
 
@@ -25,7 +25,7 @@ Gallery of Examples
 .. toctree::
    :hidden:
 
-   /auto_examples/plot_nifti
+   /auto_examples/plot_load_nifti
 
 .. raw:: html
 
@@ -89,13 +89,13 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Here, we load an example dataset, and then slice out some electrodes and time samples.">
+    <div class="sphx-glr-thumbcontainer" tooltip="Here, we load an example nifti image and plot it two ways.">
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_slice_brain_object_thumb.png
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_nifti_thumb.png
 
-        :ref:`sphx_glr_auto_examples_slice_brain_object.py`
+        :ref:`sphx_glr_auto_examples_plot_nifti.py`
 
 .. raw:: html
 
@@ -105,7 +105,7 @@ Gallery of Examples
 .. toctree::
    :hidden:
 
-   /auto_examples/slice_brain_object
+   /auto_examples/plot_nifti
 
 .. raw:: html
 
@@ -129,6 +129,26 @@ Gallery of Examples
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we load in a single subject example, load a model, and predict activity at all...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_labels_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_labels.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_labels
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="This example filters electrodes based on kurtosis thresholding (default=10).">
 
 .. only:: html
@@ -149,13 +169,13 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we load in a single subject example, remove electrodes that exceed a kurtosis ...">
+    <div class="sphx-glr-thumbcontainer" tooltip="Here, we load an example dataset, and then slice out some electrodes and time samples.">
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_predict_thumb.png
+    .. figure:: /auto_examples/images/thumb/sphx_glr_index_brain_object_thumb.png
 
-        :ref:`sphx_glr_auto_examples_predict.py`
+        :ref:`sphx_glr_auto_examples_index_brain_object.py`
 
 .. raw:: html
 
@@ -165,27 +185,7 @@ Gallery of Examples
 .. toctree::
    :hidden:
 
-   /auto_examples/predict
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we simulate 3 brain objects using a subset of 10 locations. We will impose a c...">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_simulate_mo_thumb.png
-
-        :ref:`sphx_glr_auto_examples_plot_simulate_mo.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/plot_simulate_mo
+   /auto_examples/index_brain_object
 
 .. raw:: html
 
@@ -209,13 +209,13 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This example loads a nifti file.  It also converts a brain object into a nifti and saves it.">
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we simulate 3 brain objects using a subset of 10 locations. We will impose a c...">
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_export_nifti_thumb.png
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_simulate_mo_thumb.png
 
-        :ref:`sphx_glr_auto_examples_plot_export_nifti.py`
+        :ref:`sphx_glr_auto_examples_plot_simulate_mo.py`
 
 .. raw:: html
 
@@ -225,7 +225,7 @@ Gallery of Examples
 .. toctree::
    :hidden:
 
-   /auto_examples/plot_export_nifti
+   /auto_examples/plot_simulate_mo
 
 .. raw:: html
 
@@ -249,13 +249,13 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This example loads a nifti file and converts it into a brain object.">
+    <div class="sphx-glr-thumbcontainer" tooltip="This example converts a brain object into a nifti and saves it.">
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_load_nifti_thumb.png
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_export_nifti_thumb.png
 
-        :ref:`sphx_glr_auto_examples_plot_load_nifti.py`
+        :ref:`sphx_glr_auto_examples_plot_export_nifti.py`
 
 .. raw:: html
 
@@ -265,17 +265,17 @@ Gallery of Examples
 .. toctree::
    :hidden:
 
-   /auto_examples/plot_load_nifti
+   /auto_examples/plot_export_nifti
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we load in a single subject example, load a model, and predict activity at all...">
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we load in a single subject example, remove electrodes that exceed a kurtosis ...">
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_labels_thumb.png
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_predict_thumb.png
 
-        :ref:`sphx_glr_auto_examples_plot_labels.py`
+        :ref:`sphx_glr_auto_examples_plot_predict.py`
 
 .. raw:: html
 
@@ -285,7 +285,7 @@ Gallery of Examples
 .. toctree::
    :hidden:
 
-   /auto_examples/plot_labels
+   /auto_examples/plot_predict
 
 .. raw:: html
 

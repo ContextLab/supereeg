@@ -4,7 +4,7 @@
 Plot Nifti
 =============================
 
-Here, we load an example nifti image and plot it.
+Here, we load an example nifti image and plot it two ways.
 
 """
 
@@ -14,14 +14,13 @@ Here, we load an example nifti image and plot it.
 # import
 import supereeg as se
 
-# load nifti
-nii = se.load('example_nifti')
+# load nifti objects by passing directly to Nifti class
+# if no parameters are passed default uses gray matter masked brain downsampled to 6 mm resolution
+bo_nii = se.Nifti('example_data')
 
-# plot anatomy
-nii.plot_anat()
-
-# plot as plot_glass_brain
-nii.plot_glass_brain()
+# plot first 3 timepoints as plot_glass_brain
+# default will plot first timepoint
+bo_nii.plot_glass_brain(index=[0,1,2])
 
 
 

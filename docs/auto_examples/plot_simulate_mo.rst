@@ -31,7 +31,6 @@ objects and plot it.
 
     import supereeg as se
 
-
     # simulate 100 locations
     locs = se.simulate_locations(n_elecs=100)
 
@@ -48,7 +47,7 @@ objects and plot it.
     # plot the model
     model.plot_data()
 
-**Total running time of the script:** ( 0 minutes  0.714 seconds)
+**Total running time of the script:** ( 0 minutes  0.821 seconds)
 
 
 

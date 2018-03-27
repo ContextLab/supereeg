@@ -18,7 +18,6 @@ new data.
 # License: MIT
 
 # import libraries
-from builtins import range
 import matplotlib.pyplot as plt
 import supereeg as se
 

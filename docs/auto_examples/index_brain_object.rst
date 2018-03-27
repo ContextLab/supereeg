@@ -1,6 +1,6 @@
 
 
-.. _sphx_glr_auto_examples_slice_brain_object.py:
+.. _sphx_glr_auto_examples_index_brain_object.py:
 
 
 =============================
@@ -28,16 +28,22 @@ samples.
     # check out the brain object (bo)
     bo.info()
 
-    # index by first 5 timepoints
-    bo_t = bo.get_slice(sample_inds=range(5))
+    # indexing:
 
-    # or index by the 10th location
-    bo_l = bo.get_slice(loc_inds=10)
+    #returns first time sample
+    bo1 = bo[0]
 
-    # or index by both locations and times
-    bo_i = bo.get_slice(sample_inds=[1,2,3,4,5], loc_inds=[10,11,12])
+    #return first 5 time samples
+    bo2 = bo[:5]
 
-    bo_i.info()
+    #return first electrode
+    bo3 = bo[:, 0]
+
+    #returns first 5 timesamples/elecs
+    bo4 = bo[:5, :5]
+
+    # or index by both locations and times in place using get_slice method
+    bo.get_slice(sample_inds=[1,2,3,4,5], loc_inds=[10,11,12], inplace=True)
 
 **Total running time of the script:** ( 0 minutes  0.000 seconds)
 
@@ -50,13 +56,13 @@ samples.
 
   .. container:: sphx-glr-download
 
-     :download:`Download Python source code: slice_brain_object.py <slice_brain_object.py>`
+     :download:`Download Python source code: index_brain_object.py <index_brain_object.py>`
 
 
 
   .. container:: sphx-glr-download
 
-     :download:`Download Jupyter notebook: slice_brain_object.ipynb <slice_brain_object.ipynb>`
+     :download:`Download Jupyter notebook: index_brain_object.ipynb <index_brain_object.ipynb>`
 
 
 .. only:: html

@@ -33,7 +33,6 @@ new data.
     # License: MIT
 
     # import libraries
-    from builtins import range
     import matplotlib.pyplot as plt
     import supereeg as se
 
@@ -75,7 +74,7 @@ new data.
     plt.tight_layout()
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  0.908 seconds)
+**Total running time of the script:** ( 0 minutes  0.860 seconds)
 
 
 

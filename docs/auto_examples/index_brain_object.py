@@ -21,13 +21,19 @@ bo = se.load('example_data')
 # check out the brain object (bo)
 bo.info()
 
-# index by first 5 timepoints
-bo_t = bo.get_slice(sample_inds=range(5))
+# indexing:
 
-# or index by the 10th location
-bo_l = bo.get_slice(loc_inds=10)
+#returns first time sample
+bo1 = bo[0]
 
-# or index by both locations and times
-bo_i = bo.get_slice(sample_inds=[1,2,3,4,5], loc_inds=[10,11,12])
+#return first 5 time samples
+bo2 = bo[:5]
 
-bo_i.info()
+#return first electrode
+bo3 = bo[:, 0]
+
+#returns first 5 timesamples/elecs
+bo4 = bo[:5, :5]
+
+# or index by both locations and times in place using get_slice method
+bo.get_slice(sample_inds=[1,2,3,4,5], loc_inds=[10,11,12], inplace=True)

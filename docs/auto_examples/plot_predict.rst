@@ -1,6 +1,6 @@
 
 
-.. _sphx_glr_auto_examples_predict.py:
+.. _sphx_glr_auto_examples_plot_predict.py:
 
 
 =============================
@@ -9,9 +9,42 @@ Predict unknown location
 
 In this example, we load in a single subject example, remove electrodes that
 exceed a kurtosis threshold, load a model, and predict activity at all
-model locations.  We then convert the reconstruction to a nifti.
+model locations and plot those locations.  We then convert the reconstruction to
+a nifti and plot the reconstruction.
 
 
+
+
+
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image:: /auto_examples/images/sphx_glr_plot_predict_001.png
+            :scale: 47
+
+    *
+
+      .. image:: /auto_examples/images/sphx_glr_plot_predict_002.png
+            :scale: 47
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out::
+
+    Number of electrodes: 210
+    Recording time in seconds: [ 5.3984375 14.1328125]
+    Sample Rate in Hz: [256, 256]
+    Number of sessions: 2
+    Date created: Tue Mar 27 11:31:26 2018
+    Meta data: {}
+
+
+
+
+|
 
 
 .. code-block:: python
@@ -31,6 +64,9 @@ model locations.  We then convert the reconstruction to a nifti.
     # the default will replace the electrode location with the nearest voxel and reconstruct at all other locations
     reconstructed_bo = model.predict(bo)
 
+    # plot locations colored by label
+    reconstructed_bo.plot_locs()
+
     # print out info on new brain object
     reconstructed_bo.info()
 
@@ -39,7 +75,7 @@ model locations.  We then convert the reconstruction to a nifti.
 
     # plot nifti reconstruction
     reconstructed_nii.plot_glass_brain()
-**Total running time of the script:** ( 0 minutes  0.000 seconds)
+**Total running time of the script:** ( 0 minutes  3.979 seconds)
 
 
 
@@ -50,13 +86,13 @@ model locations.  We then convert the reconstruction to a nifti.
 
   .. container:: sphx-glr-download
 
-     :download:`Download Python source code: predict.py <predict.py>`
+     :download:`Download Python source code: plot_predict.py <plot_predict.py>`
 
 
 
   .. container:: sphx-glr-download
 
-     :download:`Download Jupyter notebook: predict.ipynb <predict.ipynb>`
+     :download:`Download Jupyter notebook: plot_predict.ipynb <plot_predict.ipynb>`
 
 
 .. only:: html

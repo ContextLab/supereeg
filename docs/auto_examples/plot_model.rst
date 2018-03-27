@@ -33,7 +33,7 @@ Here we load the example model, and then plot it along with the locations.
 .. code-block:: python
 
 
-    # Code source: Andrew Heusser & Lucy Owen
+    # Code source: Lucy Owen & Andrew Heusser
     # License: MIT
 
     import supereeg as se
@@ -46,7 +46,7 @@ Here we load the example model, and then plot it along with the locations.
 
     # plot locations
     model.plot_locs()
-**Total running time of the script:** ( 0 minutes  1.511 seconds)
+**Total running time of the script:** ( 0 minutes  0.451 seconds)
 
 
 

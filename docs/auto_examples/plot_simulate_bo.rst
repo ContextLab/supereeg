@@ -49,11 +49,11 @@ original brain object.
     # simulate brain object
     bo = se.simulate_bo(n_samples=1000, sample_rate=1000, cov='toeplitz', locs=locs, noise =.3)
 
-    # brain object locations, 10 sampled
-    sub_locs = locs.sample(10).sort_values(['x', 'y', 'z'])
+    # sample 10 locations, and get indices
+    sub_locs = locs.sample(10).sort_values(['x', 'y', 'z']).index.values.tolist()
 
-    # parse brain object to create synthetic patient data
-    bo_sample = bo.get_slice(loc_inds=sub_locs.index.values.tolist())
+    # index brain object to get sample patient
+    bo_sample = bo[: ,sub_locs]
 
     # plot sample patient locations
     bo_sample.plot_locs()
@@ -61,7 +61,7 @@ original brain object.
     # plot sample patient data
     bo_sample.plot_data()
 
-**Total running time of the script:** ( 0 minutes  0.590 seconds)
+**Total running time of the script:** ( 0 minutes  0.385 seconds)
 
 
 
