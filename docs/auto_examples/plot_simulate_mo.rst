@@ -47,7 +47,7 @@ objects and plot it.
     # plot the model
     model.plot_data()
 
-**Total running time of the script:** ( 0 minutes  0.702 seconds)
+**Total running time of the script:** ( 0 minutes  0.803 seconds)
 
 
 

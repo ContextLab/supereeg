@@ -50,7 +50,7 @@ Here, we load an example nifti image and plot it two ways.
 
 
 
-**Total running time of the script:** ( 0 minutes  5.664 seconds)
+**Total running time of the script:** ( 0 minutes  5.459 seconds)
 
 
 

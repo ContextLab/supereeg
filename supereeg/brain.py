@@ -184,7 +184,23 @@ class Brain(object):
             if type(sample_rate) in [int, float]:
                 self.sample_rate = [sample_rate]*len(self.sessions.unique())
             elif isinstance(sample_rate, list):
-                self.sample_rate = sample_rate
+                if isinstance(sample_rate[0], np.ndarray):
+                    if sample_rate[0].ndim == 1:
+                        sample_rate = np.atleast_2d(sample_rate)
+                        self.sample_rate = [sample_rate[0]]
+                    else:
+                        self.sample_rate = list(sample_rate[0][0])
+                else:
+                    self.sample_rate = sample_rate
+            elif isinstance(sample_rate, np.ndarray):
+                if sample_rate.ndim == 1:
+                    sample_rate = np.atleast_2d(sample_rate)
+                if np.shape(sample_rate)[1]>1:
+                    self.sample_rate = list(sample_rate[0])
+                elif np.shape(sample_rate)[1] == 1:
+                    self.sample_rate = [sample_rate[0]]
+                assert len(self.sample_rate) ==  len(self.sessions.unique()), \
+                    'Should be one sample rate for each session.'
             else:
                 self.sample_rate = None
 

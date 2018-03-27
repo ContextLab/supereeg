@@ -38,7 +38,7 @@ a nifti and plot the reconstruction.
     Recording time in seconds: [ 5.3984375 14.1328125]
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
-    Date created: Tue Mar 27 11:41:20 2018
+    Date created: Tue Mar 27 12:08:42 2018
     Meta data: {}
 
 
@@ -75,7 +75,7 @@ a nifti and plot the reconstruction.
 
     # plot nifti reconstruction
     reconstructed_nii.plot_glass_brain()
-**Total running time of the script:** ( 0 minutes  4.230 seconds)
+**Total running time of the script:** ( 0 minutes  3.993 seconds)
 
 
 
