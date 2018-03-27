@@ -32,11 +32,9 @@ bo.resample(100)
 # show new info
 bo.info()
 
-# can also change sample rate when convert to nifti image
+# can also change sample rate when converting to nifti image
 nii = bo.to_nii(template='gray', vox_size=20, sample_rate=64)
 
-# plot it
-nii.plot_glass_brain()
 
 
 

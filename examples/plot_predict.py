@@ -6,7 +6,8 @@ Predict unknown location
 
 In this example, we load in a single subject example, remove electrodes that
 exceed a kurtosis threshold, load a model, and predict activity at all
-model locations.  We then convert the reconstruction to a nifti.
+model locations and plot those locations.  We then convert the reconstruction to
+a nifti and plot the reconstruction.
 
 """
 
@@ -23,6 +24,9 @@ model = se.load('example_model')
 
 # the default will replace the electrode location with the nearest voxel and reconstruct at all other locations
 reconstructed_bo = model.predict(bo)
+
+# plot locations colored by label
+reconstructed_bo.plot_locs()
 
 # print out info on new brain object
 reconstructed_bo.info()
