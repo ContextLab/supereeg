@@ -188,7 +188,7 @@ def _load_from_path(fpath, sample_inds=None, loc_inds=None, field=None):
     except:
         raise ValueError("Must specify a file extension.")
     if field != None:
-        if ftype in ['bo', 'mo']:
+        if ext in ['bo', 'mo']:
             return _load_field(fpath, field)
         else:
             raise ValueError("Can only load field from Brain or Model object.")

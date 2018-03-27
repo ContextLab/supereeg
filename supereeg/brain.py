@@ -104,7 +104,7 @@ class Brain(object):
     """
 
     def __init__(self, data=None, locs=None, sessions=None, sample_rate=None,
-                 meta=None, date_created=None, label=None):
+                 meta=None, date_created=None, label=None, kurtosis=None):
 
         from .load import load, datadict
         from .model import Model
@@ -588,6 +588,7 @@ class Brain(object):
             'locs': self.locs,
             'sessions': self.sessions,
             'sample_rate': self.sample_rate,
+            'kurtosis': self.kurtosis,
             'meta': self.meta,
             'date_created': self.date_created
         }
