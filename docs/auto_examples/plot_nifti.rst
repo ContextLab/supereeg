@@ -26,11 +26,6 @@ Here, we load an example nifti image and plot it two ways.
       .. image:: /auto_examples/images/sphx_glr_plot_nifti_002.png
             :scale: 47
 
-    *
-
-      .. image:: /auto_examples/images/sphx_glr_plot_nifti_003.png
-            :scale: 47
-
 
 
 
@@ -48,14 +43,14 @@ Here, we load an example nifti image and plot it two ways.
     # if no parameters are passed default uses gray matter masked brain downsampled to 6 mm resolution
     bo_nii = se.Nifti('example_data')
 
-    # plot first 3 timepoints as plot_glass_brain
+    # plot first 2 timepoints as plot_glass_brain
     # default will plot first timepoint
-    bo_nii.plot_glass_brain(index=[0,1,2])
+    bo_nii.plot_glass_brain(index=[0,1])
 
 
 
 
-**Total running time of the script:** ( 0 minutes  6.014 seconds)
+**Total running time of the script:** ( 0 minutes  5.664 seconds)
 
 
 

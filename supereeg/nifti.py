@@ -18,7 +18,8 @@ class Nifti(Nifti1Image):
 
     data : object or path to Nifti1Image, supereeg.Brain, supereeg.Model, supereeg.Nifti or np.ndarray
 
-        Data can be a nifti image (either supereeg.Nifti or path to Nifti1Image) or a np.ndarray an N-D array containing the image data
+        Data can be a nifti image (either supereeg.Nifti or path to Nifti1Image), supereeg.Brain object,
+           supereeg.Model object, or a np.ndarray an N-D array containing the image data
 
 
     affine : np.ndarray

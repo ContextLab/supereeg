@@ -74,7 +74,7 @@ new data.
     plt.tight_layout()
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  0.860 seconds)
+**Total running time of the script:** ( 0 minutes  0.894 seconds)
 
 
 

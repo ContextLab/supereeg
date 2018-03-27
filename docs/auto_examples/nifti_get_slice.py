@@ -21,6 +21,4 @@ bo_nii = se.load('example_data', return_type='nii')
 # or you can slice first 5 time points
 bo_nii_slice = bo_nii.get_slice(index=[0,1,2,3,4])
 
-# plot just the first timepoint by default
-bo_nii_slice.plot_glass_brain()
 

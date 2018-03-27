@@ -28,8 +28,6 @@ In this example, we load a brain object as a nifti object, and index 5 timepoint
     # or you can slice first 5 time points
     bo_nii_slice = bo_nii.get_slice(index=[0,1,2,3,4])
 
-    # plot just the first timepoint by default
-    bo_nii_slice.plot_glass_brain()
 
 
 **Total running time of the script:** ( 0 minutes  0.000 seconds)

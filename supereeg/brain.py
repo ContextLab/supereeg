@@ -465,12 +465,8 @@ class Brain(object):
                     - Checks if nifti file path and uses specified nifti
 
                     - If not a filepath, checks if 'std' or 'gray'
-
-                    - If 'std':
-                        - Uses standard brain downsampled to brain object voxel size
-
-                    - If 'gray':
-                        - Uses gray matter masked brain downsampled to brain object voxel size
+                        - 'std': Uses standard brain downsampled to brain object voxel size
+                        - 'gray': Uses gray matter masked brain downsampled to brain object voxel size
 
                 If template is Nifti1Image :
                     - Uses specified Nifti image
@@ -480,7 +476,7 @@ class Brain(object):
         ----------
 
         nifti : supereeg.Nifti
-            A supereeg nifti image
+            A supereeg nifti object
 
         """
         from .nifti import Nifti

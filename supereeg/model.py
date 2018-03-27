@@ -24,22 +24,21 @@ class Model(object):
 
     This class holds your supereeg model.  To create an instance, pass a list
     of brain objects and the model will be generated from those brain objects.
-    Alternatively, you can bypass creating a new model by passing numerator,
-    denominator and n_subs (see parameters for details).  Additionally,
-    you can include a meta dictionary with any other information that you want
-    to save with the model.
+    You can also add your own model by passing a numpy array as your matrix and
+    the corresponding locations. Alternatively, you can bypass creating a
+    new model by passing numerator, denominator, locations, and n_subs
+    (see parameters for details).  Additionally, you can include a meta dictionary
+    with any other information that you want to save with the model.
 
     Parameters
     ----------
 
-    data : supereeg.Brain or list supereeg.Brain, or supereeg.Nifti
+    data : supereeg.Brain or list supereeg.Brain, supereeg.Nifti or list supereeg.Nifti, or Numpy.ndarray
 
-        A supereeg.Brain object,  list of supereeg.Brain objects, or a supereeg.Nifti object used to create the model.
-
+        A supereeg.Brain object or supereeg.Nifti object,  list of objects, or a Numpy.ndarray of your model.
 
     locs : pandas.DataFrame or np.ndarray
-        MNI coordinate (x,y,z) by number of electrode df containing electrode
-        locations
+        MNI coordinate (x,y,z) by number of electrode df containing electrode locations
 
     template : filepath
         Path to a template nifti file used to set model locations
