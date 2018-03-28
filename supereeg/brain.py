@@ -94,6 +94,12 @@ class Brain(object):
     kurtosis : list of floats
         1 by number of electrode list containing kurtosis for each electrode
 
+    minimum_voxel_size : positive scalar or 3D numpy array
+        used to construct Nifti objects; default: 3 (mm)
+
+    maximum_voxel_size : positive scalar or 3D numpy array
+        used to construct Nifti objects; default: 20 (mm)
+
 
     Returns
     ----------
@@ -104,7 +110,8 @@ class Brain(object):
     """
 
     def __init__(self, data=None, locs=None, sessions=None, sample_rate=None,
-                 meta=None, date_created=None, label=None, kurtosis=None):
+                 meta=None, date_created=None, label=None, kurtosis=None,
+                 minimum_voxel_size=3, maximum_voxel_size=20):
 
         from .load import load, datadict
         from .model import Model
@@ -232,6 +239,9 @@ class Brain(object):
                 self.label = len(self.locs) * ['observed'] #FIXME: don't reference self.locs directly
             else:
                 self.label = label
+
+            self.minimum_voxel_size = minimum_voxel_size
+            self.maximum_voxel_size = maximum_voxel_size
 
     def __getitem__(self, slice):
         if isinstance(slice, tuple):
@@ -457,7 +467,7 @@ class Brain(object):
             _plot_locs_hyp(locs, pdfpath)
 
 
-    def to_nii(self, filepath=None, template=None, vox_size=None, sample_rate=None):
+    def to_nii(self, filepath=None, template='gray', vox_size=None, sample_rate=None):
 
         """
         Save brain object as a nifti file.
@@ -497,23 +507,26 @@ class Brain(object):
         """
         from .nifti import Nifti
 
-        recon_v_size = _vox_size(self.locs) #FIXME: don't reference self.locs directly
-
         if vox_size:
             v_size = vox_size
-
-        ## if neither template or vox_size specified, uses gray matter masked downsampled to 6 mm
         else:
-            if not template:
-                v_size = 6
-            else:
-                v_size = recon_v_size[0].tolist()
+            v_size = _vox_size(self.locs)
 
-        if np.iterable(v_size):
-            v_size = [(lambda i: 20 if i > 20 else i)(i) for i in v_size]
+        if np.isscalar(self.minimum_voxel_size):
+            mnv = np.multiply(self.minimum_voxel_size, np.ones_like(v_size))
+        else:
+            mnv = self.minimum_voxel_size
 
-        elif v_size > 20:
-            v_size = 20
+        if np.isscalar(self.maximum_voxel_size):
+            mxv = np.multiply(self.maximum_voxel_size, np.ones_like(v_size))
+        else:
+            mxv = self.maximum_voxel_size
+
+        if np.any(v_size < self.minimum_voxel_size):
+            v_size[v_size < self.minimum_voxel_size] = mnv[v_size < self.minimum_voxel_size]
+
+        if np.any(v_size > self.maximum_voxel_size):
+            v_size[v_size > self.maximum_voxel_size] = mxv[v_size > self.maximum_voxel_size]
 
         if template is None:
             img = _gray(v_size)
@@ -550,7 +563,7 @@ class Brain(object):
         hdr = img.get_header()
         temp_v_size = hdr.get_zooms()[0:3]
 
-        if not np.array_equiv(temp_v_size, recon_v_size.ravel()):
+        if not np.array_equiv(temp_v_size, v_size):
             warnings.warn('Voxel sizes of reconstruction and template do not match. '
                           'Voxel sizes calculated from model locations.')
 
@@ -590,7 +603,9 @@ class Brain(object):
             'sample_rate': self.sample_rate,
             'kurtosis': self.kurtosis,
             'meta': self.meta,
-            'date_created': self.date_created
+            'date_created': self.date_created,
+            'minimum_voxel_size': self.minimum_voxel_size,
+            'maximum_voxel_size': self.maximum_voxel_size
         }
 
         if fname[-3:] != '.bo':

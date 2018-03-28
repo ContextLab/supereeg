@@ -81,7 +81,7 @@ def _gray(res=None):
     gray_data = gray_img.get_data()
     gray_data[np.isnan(gray_data) | (gray_data < threshold)] = 0
 
-    if res:
+    if np.iterable(res) or np.isscalar(res):
         return _resample_nii(Nifti(gray_data, gray_img.affine), res)
     else:
         return Nifti(gray_data, gray_img.affine)
@@ -112,18 +112,13 @@ def _resample_nii(x, target_res, precision=5):
 
     from .nifti import Nifti
 
-    if np.iterable(target_res):
-        target_res = [(lambda i: 1.0 if i < 1 else i)(i) for i in target_res]
-    elif target_res < 1:
-        target_res = 1.0
-
     if np.any(np.isnan(x.get_data())):
         img = x.get_data()
         img[np.isnan(img)] = 0.0
         x = nib.nifti1.Nifti1Image(img, x.affine)
 
     res = x.header.get_zooms()[0:3]
-    scale = np.divide(res, target_res)
+    scale = np.divide(res, target_res).ravel()
 
     target_affine = x.affine
 
@@ -131,8 +126,8 @@ def _resample_nii(x, target_res, precision=5):
     target_affine = np.round(target_affine, decimals=precision)
 
     # correct for 1-voxel shift
-    target_affine[0:3, 3] -= np.multiply(np.divide(target_res, 2.0), np.sign(target_affine[0:3, 3]))
-    target_affine[0:3, 3] += np.sign(target_affine[0:3, 3])
+    target_affine[0:3, 3] -= np.squeeze(np.multiply(np.divide(target_res, 2.0), np.sign(target_affine[0:3, 3])))
+    target_affine[0:3, 3] += np.squeeze(np.sign(target_affine[0:3, 3]))
 
     if len(scale) < np.ndim(x.get_data()):
         assert np.ndim(x.get_data()) == 4, 'Data must be 3D or 4D'
