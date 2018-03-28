@@ -647,17 +647,20 @@ def filter_elecs(bo, measure='kurtosis', threshold=10):
     return nbo
 
 
-def filter_subj(bo, measure='kurtosis', threshold=10):
+def filter_subj(bo, measure='kurtosis', return_locs=False, threshold=10):
     """
     Filter subjects if less than two electrodes pass kurtosis value
 
     Parameters
     ----------
-    bo : brain object
-        Brain object
+    bo : str
+        Path to brain object
 
     measure : 'kurtosis'
         Method to filter electrodes. Only kurtosis supported currently.
+
+    return_locs : bool
+        Default False, returns meta data. If True, returns electrode locations that pass kurtosis threshold
 
     threshold : int
         Threshold for filtering.
@@ -668,12 +671,23 @@ def filter_subj(bo, measure='kurtosis', threshold=10):
         Meta field from brain object if two or more electrodes pass kurtosis thresholding.
 
     """
-    if not bo.meta is None:
-        thresh_bool = bo.kurtosis > threshold
+    from .load import load
+
+    locs = load(bo, field='locs')
+    kurt_vals = load(bo, field='kurtosis')
+    meta = load(bo, field='meta')
+
+    if not meta is None:
+        thresh_bool = kurt_vals > threshold
         if sum(~thresh_bool) < 2:
-            print(bo.meta + ': not enough electrodes pass threshold')
+            print(meta + ': not enough electrodes pass threshold')
+
         else:
-            return bo.meta
+            if return_locs:
+                locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
+                return meta, locs[~thresh_bool]
+            else:
+                return meta
     else:
         print('no meta data for brain object')
 
