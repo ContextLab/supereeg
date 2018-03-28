@@ -96,7 +96,7 @@ class Model(object):
         else:
             _create_locs(self, locs, template)
 
-            s = self.locs.shape[0]
+            s = self.locs.shape[0] #FIXME: don't refernece bo.locs directly (use bo.get_locs())
             self.numerator = np.zeros((s, s))
             self.denominator = np.zeros((s, s))
             self.n_subs = 0
@@ -107,9 +107,9 @@ class Model(object):
             for d in data:
                 d = _format_data(d, self.locs)
                 if isinstance(d, Brain):
-                    num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d, self.locs, measure, threshold)
+                    num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d, self.locs, measure, threshold) #FIXME: don't refernece bo.locs directly (use bo.get_locs())
                 elif isinstance(d, Model):
-                    num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, self.locs)
+                    num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, self.locs) #FIXME: don't refernece bo.locs directly (use bo.get_locs())
                 self.numerator += num_corrmat_x
                 self.denominator += denom_corrmat_x
                 self.n_subs += n_subs
@@ -118,7 +118,7 @@ class Model(object):
             self.date_created = time.strftime("%c")
         else:
             self.date_created = date_created
-        self.n_locs = self.locs.shape[0]
+        self.n_locs = self.locs.shape[0] #FIXME: don't refernece bo.locs directly (use bo.get_locs())
         self.meta = meta
 
     def get_model(self):
@@ -171,7 +171,7 @@ class Model(object):
 
         bo = filter_elecs(bo, measure='kurtosis', threshold=kthreshold)
 
-        if self.locs.shape[0] > 1000:
+        if self.locs.shape[0] > 1000: #FIXME: don't refernece bo.locs directly (use bo.get_locs())
             warnings.warn('Model locations exceed 1000, this may take a while. Good time for a cup of coffee.')
 
         # if True will update the model with subject's correlation matrix
@@ -237,11 +237,11 @@ class Model(object):
         else:
             m = copy.deepcopy(self)
         for d in data:
-            d = _format_data(d, m.locs, locs, n)
+            d = _format_data(d, m.locs, locs, n) #FIXME: don't refernece bo.locs directly (use bo.get_locs())
             if isinstance(d, Brain):
-                num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d, m.locs, measure, threshold)
+                num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d, m.locs, measure, threshold) #FIXME: don't refernece bo.locs directly (use bo.get_locs())
             elif isinstance(d, Model):
-                num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, m.locs)
+                num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, m.locs) #FIXME: don't refernece bo.locs directly (use bo.get_locs())
             m.numerator += num_corrmat_x
             m.denominator += denom_corrmat_x
             m.n_subs += n_subs
@@ -303,8 +303,8 @@ class Model(object):
 
         """
 
-        locs = self.locs
-        if self.locs .shape[0] <= 10000:
+        locs = self.locs #FIXME: don't refernece bo.locs directly (use bo.get_locs())
+        if self.locs .shape[0] <= 10000: #FIXME: don't refernece bo.locs directly (use bo.get_locs())
             _plot_locs_connectome(locs, pdfpath)
         else:
             _plot_locs_hyp(locs, pdfpath)
@@ -332,7 +332,7 @@ class Model(object):
         mo = {
             'numerator' : self.numerator,
             'denominator' : self.denominator,
-            'locs' : self.locs,
+            'locs' : self.locs, #FIXME: don't refernece bo.locs directly (use bo.get_locs())
             'n_subs' : self.n_subs,
             'meta' : self.meta,
             'date_created' : self.date_created
@@ -366,11 +366,11 @@ def _create_locs(self, locs, template):
         if template is None:
             template = _gray(20)
         nii_data, nii_locs, nii_meta = _nifti_to_brain(template)
-        self.locs = pd.DataFrame(nii_locs, columns=['x', 'y', 'z'])
+        self.locs = pd.DataFrame(nii_locs, columns=['x', 'y', 'z']) #FIXME: don't refernece bo.locs directly (use bo.get_locs())
     else:
-        self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
-    if self.locs.shape[0]>1000:
-        warnings.warn('Model locations exceed 1000, this may take a while. Good time for a cup of coffee.')
+        self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z']) #FIXME: don't refernece bo.locs directly (use bo.get_locs())
+    if self.locs.shape[0]>1000: #FIXME: don't refernece bo.locs directly (use bo.get_locs())
+        warnings.warn('Model locations exceed 1000, this may take a while. Go get a cup of coffee or brew some tea!')
 
 def _bo2model(bo, locs, measure, threshold):
     """Returns numerator and denominator given a brain object"""
@@ -378,7 +378,7 @@ def _bo2model(bo, locs, measure, threshold):
     sub_corrmat = _get_corrmat(bo)
     np.fill_diagonal(sub_corrmat, 0)
     sub_corrmat_z = _r2z(sub_corrmat)
-    sub_rbf_weights = _rbf(locs, bo.locs)
+    sub_rbf_weights = _rbf(locs, bo.locs) #FIXME: don't refernece bo.locs directly (use bo.get_locs())
     n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
     return n, d, 1
 
@@ -386,18 +386,18 @@ def _mo2model(mo, locs):
     """Returns numerator and denominator for model object"""
     if not isinstance(locs, pd.DataFrame):
         locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
-    if locs.equals(mo.locs):
-        return mo.numerator.copy(), mo.denominator.copy(), mo.n_subs
+    if locs.equals(mo.locs): #FIXME: don't refernece bo.locs directly (use bo.get_locs())
+        return mo.numerator.copy(), mo.denominator.copy(), mo.n_subs #FIXME: copying these objects is really expensive-- is there a better/faster way?
     else:
         # if the locations are not equivalent, map input model into locs space
         with np.errstate(invalid='ignore'):
             sub_corrmat_z = np.divide(mo.numerator, mo.denominator)
         np.fill_diagonal(sub_corrmat_z, 0)
-        sub_rbf_weights = _rbf(locs, mo.locs)
+        sub_rbf_weights = _rbf(locs, mo.locs) #FIXME: don't refernece bo.locs directly (use bo.get_locs())
         n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
         return n, d, mo.n_subs
 
-def _format_data(d, model_locs, new_locs=None, n_subs=1):
+def _format_data(d, model_locs, new_locs=None, n_subs=1): #TODO: not sure what this function does...
     """Formats data to generate model object"""
     from .load import load
     from .brain import Brain
@@ -434,7 +434,7 @@ def _force_update(mo, bo):
     sub_corrmat_z = _r2z(sub_corrmat)
 
     # get _rbf weights
-    sub__rbf_weights = _rbf(mo.locs, bo.locs)
+    sub__rbf_weights = _rbf(mo.locs, bo.locs) #FIXME: don't reference bo.locs directly (use bo.get_locs())
 
     #  get subject expanded correlation matrix
     num_corrmat_x, denom_corrmat_x = _expand_corrmat_fit(sub_corrmat_z, sub__rbf_weights)
@@ -449,19 +449,19 @@ def _force_update(mo, bo):
 # helper functions for predict
 ###################################
 
-def _which_case(bo, bool_mask):
+def _which_case(bo, bool_mask): #TODO: do we need a separate function for this?
     """Determine which predict scenario we are in"""
     if not any(bool_mask):
         return 'no_overlap'
-    elif sum(bool_mask) == bo.locs.shape[0]:
+    elif sum(bool_mask) == bo.locs.shape[0]: #FIXME: don't refernece bo.locs directly (use bo.get_locs())
         return 'subset'
-    elif sum(bool_mask) != bo.locs.shape[0]:
+    elif sum(bool_mask) != bo.locs.shape[0]: #FIXME: don't refernece bo.locs directly (use bo.get_locs())
         return 'some_overlap'
 
 def _no_overlap(self, bo, model_corrmat_x):
     """ Compute model when there is no overlap """
     # expanded _rbf weights
-    model__rbf_weights = _rbf(pd.concat([self.locs, bo.locs]), self.locs)
+    model__rbf_weights = _rbf(pd.concat([self.locs, bo.locs]), self.locs) #FIXME: don't refernece bo.locs directly (use bo.get_locs())
 
     # get model expanded correlation matrix
     num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(model_corrmat_x, model__rbf_weights)
@@ -471,21 +471,21 @@ def _no_overlap(self, bo, model_corrmat_x):
         model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
 
     # label locations as reconstructed or observed
-    loc_label = ['reconstructed'] * len(self.locs) + ['observed'] * len(bo.locs)
+    loc_label = ['reconstructed'] * len(self.locs) + ['observed'] * len(bo.locs) #FIXME: don't refernece bo.locs directly (use bo.get_locs())
 
     # grab the locs
-    perm_locs = self.locs.append(bo.locs)
+    perm_locs = self.locs.append(bo.locs) #FIXME: don't refernece bo.locs directly (use bo.get_locs())
 
     return model_corrmat_x, loc_label, perm_locs
 
 def _subset(self, bo, model_corrmat_x, joint_model_inds):
     """ Compute model when bo is a subset of the model """
     # permute the correlation matrix so that the inds to reconstruct are on the right edge of the matrix
-    perm_inds = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds)) + sorted(set(joint_model_inds))
+    perm_inds = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds)) + sorted(set(joint_model_inds)) #FIXME: don't reference bo.locs directly (use bo.get_locs())
     model_corrmat_x = model_corrmat_x[:, perm_inds][perm_inds, :]
 
     # label locations as reconstructed or observed
-    loc_label = ['reconstructed'] * (len(self.locs)-len(bo.locs)) + ['observed'] * len(bo.locs)
+    loc_label = ['reconstructed'] * (len(self.locs)-len(bo.locs)) + ['observed'] * len(bo.locs) #FIXME: don't reference bo.locs directly (use bo.get_locs())
 
     # grab permuted locations
     perm_locs = self.locs.iloc[perm_inds]
@@ -496,25 +496,24 @@ def _some_overlap(self, bo, model_corrmat_x, joint_model_inds):
     """ Compute model when there is some overlap """
 
     # get subject indices where subject locs do not overlap with model locs
-    bool_bo_mask= np.sum([(bo.locs == y).all(1) for idy, y in self.locs.iterrows()], 0).astype(bool)
+    bool_bo_mask= np.sum([(bo.locs == y).all(1) for idy, y in self.locs.iterrows()], 0).astype(bool) #FIXME: don't reference bo.locs directly (use bo.get_locs())
     disjoint_bo_inds = np.where(~bool_bo_mask)[0]
 
     # permute the correlation matrix so that the inds to reconstruct are on the right edge of the matrix
-    perm_inds = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds)) + sorted(set(joint_model_inds))
+    perm_inds = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds)) + sorted(set(joint_model_inds)) #FIXME: don't reference bo.locs directly (use bo.get_locs())
     model_permuted = model_corrmat_x[:, perm_inds][perm_inds, :]
 
     # permute the model locations (important for the _rbf calculation later)
-    model_locs_permuted = self.locs.iloc[perm_inds]
+    model_locs_permuted = self.locs.iloc[perm_inds] #FIXME: don't reference bo.locs directly (use bo.get_locs())
 
     # permute the subject locations arranging them
-    bo_perm_inds = sorted(set(range(bo.locs.shape[0])) - set(disjoint_bo_inds)) + sorted(set(disjoint_bo_inds))
-    sub_bo = bo.locs.iloc[disjoint_bo_inds]
-    bo.locs = bo.locs.iloc[bo_perm_inds]
-    bo.data = bo.data[bo_perm_inds]
+    bo_perm_inds = sorted(set(range(bo.locs.shape[0])) - set(disjoint_bo_inds)) + sorted(set(disjoint_bo_inds))  #FIXME: don't reference bo.locs directly (use bo.get_locs())
+    sub_bo = bo.locs.iloc[disjoint_bo_inds] #FIXME: don't reference bo.locs directly (use bo.get_locs())
+    bo.locs = bo.locs.iloc[bo_perm_inds] #FIXME: don't reference bo.locs directly (use bo.get_locs())
+    bo.data = bo.data[bo_perm_inds] #FIXME: don't reference bo.data directly (use bo.get_data())
 
     # permuted indices for unknown model locations
-    perm_inds_unknown = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds))
-
+    perm_inds_unknown = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds)) #FIXME: don't reference bo.locs directly (use bo.get_locs())
     # expanded _rbf weights
     #model__rbf_weights = _rbf(pd.concat([model_locs_permuted, bo.locs]), model_locs_permuted)
     model__rbf_weights = _rbf(pd.concat([model_locs_permuted, sub_bo]), model_locs_permuted)
@@ -530,9 +529,9 @@ def _some_overlap(self, bo, model_corrmat_x, joint_model_inds):
     model_corrmat_x[:model_permuted.shape[0], :model_permuted.shape[0]] = model_permuted
 
     # label locations as reconstructed or observed
-    loc_label = ['reconstructed'] * len(self.locs.iloc[perm_inds_unknown]) + ['observed'] * len(bo.locs)
+    loc_label = ['reconstructed'] * len(self.locs.iloc[perm_inds_unknown]) + ['observed'] * len(bo.locs) #FIXME: don't reference bo.locs directly (use bo.get_locs())
 
     ## unclear if this will return too many locations
-    perm_locs = self.locs.iloc[perm_inds_unknown].append(bo.locs)
+    perm_locs = self.locs.iloc[perm_inds_unknown].append(bo.locs) #FIXME: don't reference bo.locs directly (use bo.get_locs())
 
     return model_corrmat_x, loc_label, perm_locs

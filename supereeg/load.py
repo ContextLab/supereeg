@@ -11,10 +11,10 @@ from .nifti import Nifti
 from .helpers import tal2mni, _gray, _std, _resample_nii
 
 BASE_URL = 'https://docs.google.com/uc?export=download'
-homedir = os.path.expanduser('~/')
+homedir = os.path.expanduser('~/') #FIXME: use os.path.join rather than using slashes
 datadir = os.path.join(homedir, 'supereeg_data')
 
-datadict = {
+datadict = { #TODO: do the data types need to be specified or could they be inferred from the downloaded objects?
     'example_data' : ['1kijSKt-QLEZ1O3J5Pk-8aByn33bPCAFl', 'bo'],
     'example_model' : ['1l4s7mE0KbPMmIcIA9JQzSZHCA8LWFq1I', 'mo'],
     'example_nifti' : ['1cG68j4-8R6LQrp4QISN_1Y0WPsXBdCDx', 'nii'],
@@ -156,7 +156,7 @@ def _load_example(fname, fileid, sample_inds, loc_inds, field):
             except ValueError as e:
                 print(e)
                 raise ValueError('Download failed. Try deleting cache data in'
-                                 ' /Users/homedir/supereeg_data.')
+                                 ' /Users/homedir/supereeg_data.') #FIXME: use generic home directory reference rather than platform-specific path
     return data
 
 def _load_stream(fileid):
@@ -224,7 +224,7 @@ def _load_from_cache(fname, ftype, sample_inds=None, loc_inds=None, field=None):
 
 def _load_field(fname, field):
     """ Loads a particular field of a file """
-    return dd.io.load(fname, group='/' + field)
+    return dd.io.load(fname, group='/' + field) #FIXME: use os.path.join rather than using slashes
 
 def _load_slice(fname, sample_inds=None, loc_inds=None):
     """
@@ -248,24 +248,24 @@ def _load_slice(fname, sample_inds=None, loc_inds=None):
 
     """
 
-    sr = dd.io.load(fname, group='/sample_rate')
-    meta = dd.io.load(fname, group='/meta')
-    date_created = dd.io.load(fname, group='/date_created')
+    sr = dd.io.load(fname, group='/sample_rate') #FIXME: use os.path.join rather than using slashes
+    meta = dd.io.load(fname, group='/meta') #FIXME: use os.path.join rather than using slashes
+    date_created = dd.io.load(fname, group='/date_created') #FIXME: use os.path.join rather than using slashes
 
     if sample_inds!=None and loc_inds!=None:
         if not isinstance(sample_inds, int) and not isinstance(loc_inds, int):
-            raise IndexError("Slicing with 2 lists is currently not supported.")
-        data = dd.io.load(fname, group='/data', sel=dd.aslice[sample_inds, loc_inds])
-        locs = dd.io.load(fname, group='/locs', sel=dd.aslice[loc_inds, :])
-        sessions = dd.io.load(fname, group='/sessions').iloc[sample_inds].tolist()
+            raise IndexError("Slicing with 2 lists is currently not supported.") #FIXME: make this message more specific
+        data = dd.io.load(fname, group='/data', sel=dd.aslice[sample_inds, loc_inds]) #FIXME: use os.path.join rather than using slashes
+        locs = dd.io.load(fname, group='/locs', sel=dd.aslice[loc_inds, :]) #FIXME: use os.path.join rather than using slashes
+        sessions = dd.io.load(fname, group='/sessions').iloc[sample_inds].tolist() #FIXME: use os.path.join rather than using slashes
     elif loc_inds==None:
-        data = dd.io.load(fname, group='/data', sel=dd.aslice[sample_inds, :])
-        locs = dd.io.load(fname, group='/locs')
-        sessions = dd.io.load(fname, group='/sessions').iloc[sample_inds].tolist()
+        data = dd.io.load(fname, group='/data', sel=dd.aslice[sample_inds, :]) #FIXME: use os.path.join rather than using slashes
+        locs = dd.io.load(fname, group='/locs') #FIXME: use os.path.join rather than using slashes
+        sessions = dd.io.load(fname, group='/sessions').iloc[sample_inds].tolist() #FIXME: use os.path.join rather than using slashes
     elif sample_inds==None:
-        data = dd.io.load(fname, group='/data', sel=dd.aslice[:, loc_inds])
-        locs = dd.io.load(fname, group='/locs', sel=dd.aslice[loc_inds, :])
-        sessions = dd.io.load(fname, group='/sessions').tolist()
+        data = dd.io.load(fname, group='/data', sel=dd.aslice[:, loc_inds]) #FIXME: use os.path.join rather than using slashes
+        locs = dd.io.load(fname, group='/locs', sel=dd.aslice[loc_inds, :]) #FIXME: use os.path.join rather than using slashes
+        sessions = dd.io.load(fname, group='/sessions').tolist() #FIXME: use os.path.join rather than using slashes
     sample_rate = [sr[int(s-1)] for s in np.unique(sessions)]
     data = np.atleast_2d(data)
     locs = np.atleast_2d(locs)

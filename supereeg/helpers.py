@@ -597,7 +597,7 @@ def _reconstruct_activity(bo, Kba, Kaa_inv):
 
     return np.atleast_2d(np.squeeze(np.dot(np.dot(Kba, Kaa_inv), Y.T).T))
 
-def _round_it(locs, places):
+def _round_it(locs, places): #TODO: do we need a separate function for this?  doesn't seem much more convenient than the np.round function...
     """
     Rounding function
 
@@ -640,7 +640,7 @@ def filter_elecs(bo, measure='kurtosis', threshold=10):
 
     """
     thresh_bool = bo.kurtosis > threshold
-    nbo = copy.deepcopy(bo)
+    nbo = copy.deepcopy(bo) #TODO: modify bo.get_locs rather than copying brain object again here
     nbo.data = bo.data.loc[:, ~thresh_bool]
     nbo.locs = bo.locs.loc[~thresh_bool]
     nbo.n_elecs = bo.data.shape[1]
@@ -696,7 +696,7 @@ def _corr_column(X, Y):
     return np.array([pearsonr(x, y)[0] for x, y in zip(X.T, Y.T)])
 
 
-def _normalize_Y(Y_matrix):
+def _normalize_Y(Y_matrix): #TODO: should be part of bo.get_data and/or Brain.__init__
     """
     Normalizes timeseries
 
@@ -776,7 +776,7 @@ def model_compile(data):
     #              locs=pd.concat([m.locs, bo.locs]), n_subs=n_subs)
 
 
-def _near_neighbor(bo, mo, match_threshold='auto'):
+def _near_neighbor(bo, mo, match_threshold='auto'): #TODO: should this be part of bo.get_locs() or Brain.__init__, or possibly model.__init__?
     """
     Finds the nearest voxel for each subject's electrode location and uses
     that as revised electrodes location matrix in the prediction.
@@ -810,7 +810,7 @@ def _near_neighbor(bo, mo, match_threshold='auto'):
 
     """
 
-    nbo = copy.deepcopy(bo)
+    nbo = copy.deepcopy(bo) #FIXME: copying is expensive...
     nbo.orig_locs = nbo.locs
     d = cdist(nbo.locs, mo.locs, metric='Euclidean')
     for i in range(len(nbo.locs)):
@@ -1071,7 +1071,7 @@ def _plot_locs_connectome(locs, label=None, pdfpath=None):
     if not pdfpath:
         ni_plt.show()
 
-def _plot_locs_hyp(locs, pdfpath):
+def _plot_locs_hyp(locs, pdfpath): #TODO: do we need a separate function for this?  doesn't look more convenient than calling hyp.plot directly...
 
     """
     Plots locations in hypertools
@@ -1090,7 +1090,7 @@ def _plot_locs_hyp(locs, pdfpath):
     """
     hyp.plot(locs, 'k.', save_path=pdfpath)
 
-def _plot_glass_brain(nifti, pdfpath, index=1):
+def _plot_glass_brain(nifti, pdfpath, index=1): #TODO: do we need a separate function for this?  doesn't look more convenient than calling plot_glas_brain directly...
     """
     Plots nifti data
 
@@ -1164,7 +1164,7 @@ def _nifti_to_brain(nifti, mask_file=None):
     return Y, R, {'header': hdr}
 
 
-def _brain_to_nifti(bo, nii_template):
+def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; could be done much faster using reshape and/or nilearn masking
 
     """
     Takes or loads nifti file and converts to brain object
