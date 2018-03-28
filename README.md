@@ -38,6 +38,8 @@ Then, navigate to the folder and type:
 
 <h2>Requirements</h2>
 
+The toolbox is currently supported on Mac/Linux (but not Windows).
+
 + python 2.7
 + pandas>=0.21.1
 + seaborn>=0.7.1
