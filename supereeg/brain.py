@@ -232,7 +232,6 @@ class Brain(object):
                 self.label = len(self.locs) * ['observed'] #FIXME: don't reference self.locs directly
             else:
                 self.label = label
-        return self #TODO: don't we want to return the new instance?
 
     def __getitem__(self, slice):
         if isinstance(slice, tuple):
