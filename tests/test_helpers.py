@@ -208,11 +208,11 @@ def test_filter_elecs():
     bo_f = filter_elecs(bo)
     assert isinstance(bo_f, se.Brain)
 
-def test_filter_subj():
-    bo_s = filter_subj(bo)
-    bo_f = filter_subj(bo_full)
-    assert isinstance(bo_s, (str, dict, type(None)))
-    assert isinstance(bo_f, (str, dict, type(None)))
+# def test_filter_subj():
+#     bo_s = filter_subj(bo)
+#     bo_f = filter_subj(bo_full)
+#     assert isinstance(bo_s, (str, dict, type(None)))
+#     assert isinstance(bo_f, (str, dict, type(None)))
 
 def test_corr_column():
     X = np.matrix([[1, 2, 3], [1, 2, 3]])
