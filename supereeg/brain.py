@@ -115,7 +115,7 @@ class Brain(object):
                 data = load(data)
 
         if isinstance(data, Brain):
-            self = copy.copy(data)
+            self = copy.copy(data) #TODO: do we *need* to copy the brain object, or can we just set self to data?
         else:
             if isinstance(data, Nifti):
                data, locs, meta = _nifti_to_brain(data)
@@ -144,16 +144,16 @@ class Brain(object):
             else:
                 self.data = pd.DataFrame(data)
 
-            if isinstance(locs, pd.DataFrame):
+            if isinstance(locs, pd.DataFrame): #FIXME: ensure column names are correct
                 self.locs = locs
             else:
                 self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
             if isinstance(sessions, str) or isinstance(sessions, int):
-                self.sessions = pd.Series([sessions for i in range(self.data.shape[0])])
+                self.sessions = pd.Series([sessions for i in range(self.data.shape[0])]) #FIXME: don't reference self.data directly
 
             elif sessions is None:
-                self.sessions = pd.Series([1 for i in range(self.data.shape[0])])
+                self.sessions = pd.Series([1 for i in range(self.data.shape[0])]) #FIXME: don't reference self.data directly
             else:
                 self.sessions = pd.Series(sessions.ravel())
 
@@ -204,7 +204,7 @@ class Brain(object):
             else:
                 self.sample_rate = None
 
-                if self.data.shape[0] == 1:
+                if self.data.shape[0] == 1: #FIXME: don't reference self.data directly
                     self.n_secs = 0
                 else:
                     self.n_secs = None
@@ -224,14 +224,15 @@ class Brain(object):
             else:
                 self.date_created = date_created
 
-            self.n_elecs = self.data.shape[1] # needs to be calculated by sessions
+            self.n_elecs = self.data.shape[1] # needs to be calculated by sessions #FIXME: don't reference self.data directly
             self.n_sessions = len(self.sessions.unique())
             self.kurtosis = _kurt_vals(self)
 
             if not label:
-                self.label = len(self.locs) * ['observed']
+                self.label = len(self.locs) * ['observed'] #FIXME: don't reference self.locs directly
             else:
                 self.label = label
+        return self #TODO: don't we want to return the new instance?
 
     def __getitem__(self, slice):
         if isinstance(slice, tuple):
@@ -246,7 +247,7 @@ class Brain(object):
         return self
 
     def __next__(self):
-        if self.counter >= self.data.shape[0]:
+        if self.counter >= self.data.shape[0]: #FIXME: don't reference self.data directly
             raise StopIteration
         s = self[self.counter]
         self.counter+=1
@@ -269,7 +270,7 @@ class Brain(object):
         print('Date created: ' + str(self.date_created))
         print('Meta data: ' + str(self.meta))
 
-    def get_data(self):
+    def get_data(self): #TODO: all filtering, z-scoring, etc. should be done here (with expensive computations precomputed and saved to other fields)
         """
         Gets data from brain object
         """
@@ -281,13 +282,13 @@ class Brain(object):
         """
         return _z_score(self)
 
-    def get_locs(self):
+    def get_locs(self): #TODO: all filtering, rounding, etc. should be done/managed here (with expensive computations precomputed and saved to other fields)
         """
         Gets locations from brain object
         """
         return self.locs.as_matrix()
 
-    def get_slice(self, sample_inds=None, loc_inds=None, inplace=False):
+    def get_slice(self, sample_inds=None, loc_inds=None, inplace=False): #TODO: does this need to be done as a copy?
         """
         Indexes brain object data
 
@@ -304,15 +305,15 @@ class Brain(object):
 
         """
         if sample_inds is None:
-            sample_inds = list(range(self.data.shape[0]))
+            sample_inds = list(range(self.data.shape[0])) #FIXME: don't reference self.data directly
         if loc_inds is None:
-            loc_inds = list(range(self.locs.shape[0]))
+            loc_inds = list(range(self.locs.shape[0])) #FIXME: don't reference self.locs directly
         if isinstance(sample_inds, int):
             sample_inds = [sample_inds]
         if isinstance(loc_inds, int):
             loc_inds = [loc_inds]
 
-        data = self.data.iloc[sample_inds, loc_inds].copy()
+        data = self.data.iloc[sample_inds, loc_inds].copy() #FIXME: don't reference self.data directly
         sessions = self.sessions.iloc[sample_inds].copy()
         ## check this:
         if self.sample_rate:
@@ -321,7 +322,7 @@ class Brain(object):
         else:
             sample_rate = self.sample_rate
         meta = copy.copy(self.meta)
-        locs = self.locs.iloc[loc_inds].copy()
+        locs = self.locs.iloc[loc_inds].copy() #FIXME: don't reference self.locs directly
         date_created = self.date_created
 
         if inplace:
@@ -395,12 +396,12 @@ class Brain(object):
         # location in the MNI coordinate (x,y,z) by electrode df containing
         # electrode locations
 
-        if self.data.shape[0] == 1:
+        if self.data.shape[0] == 1: #FIXME: don't reference self.data directly
             nii = self.to_nii()
             nii.plot_glass_brain()
 
         else:
-            Y = _normalize_Y(self.data)
+            Y = _normalize_Y(self.data) #FIXME: don't reference self.data directly
 
             # if filtered in passed, filter by electrodes that do not pass kurtosis
             # thresholding
@@ -449,9 +450,9 @@ class Brain(object):
 
         """
 
-        locs = self.locs
+        locs = self.locs #FIXME: don't reference self.locs directly...plus, why do we need a separate copy of locs?
         label = self.label
-        if self.locs .shape[0] <= 10000:
+        if self.locs .shape[0] <= 10000: #FIXME: don't reference self.locs directly
             _plot_locs_connectome(locs, label, pdfpath)
         else:
             _plot_locs_hyp(locs, pdfpath)
@@ -497,7 +498,7 @@ class Brain(object):
         """
         from .nifti import Nifti
 
-        recon_v_size = _vox_size(self.locs)
+        recon_v_size = _vox_size(self.locs) #FIXME: don't reference self.locs directly
 
         if vox_size:
             v_size = vox_size
@@ -584,8 +585,8 @@ class Brain(object):
         """
 
         bo = {
-            'data': self.data.as_matrix(),
-            'locs': self.locs,
+            'data': self.data.as_matrix(), #FIXME: don't reference self.data directly
+            'locs': self.locs, #FIXME: don't reference self.locs directly
             'sessions': self.sessions,
             'sample_rate': self.sample_rate,
             'kurtosis': self.kurtosis,
