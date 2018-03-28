@@ -385,8 +385,8 @@ def _expand_corrmat_fit(C, weights):
         Numerator for the expanded correlation matrix
     denominator : Numpy array
         Denominator for the expanded correlation matrix
-
     """
+
     C[np.eye(C.shape[0]) == 1] = 0
     C[np.where(np.isnan(C))] = 0
 
@@ -515,6 +515,7 @@ def _timeseries_recon(bo, K, chunk_size=1000):
     Kaa = K[s:, s:]
     Kaa_inv = np.linalg.pinv(Kaa)
 
+    #TODO: this needs refactoring...
     results = []
     for idx, session in enumerate(bo.sessions.unique()):
         block_results = []

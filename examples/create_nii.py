@@ -7,3 +7,4 @@ bo_recon = mo.predict(bo, nearest_neighbor=True)
 
 nii = bo_recon.to_nii()
 nii.plot_glass_brain()
+
