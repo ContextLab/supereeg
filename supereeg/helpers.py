@@ -512,7 +512,7 @@ def _timeseries_recon(bo, K, chunk_size=1000):
         Compiled reconstructed timeseries
 
     """
-    zbo = copy.copy(bo)
+    zbo = copy.copy(bo) #FIXME: something strange here...why copy the full brain object?  We could just get the z-scored data and use that...
     zbo.data = pd.DataFrame(bo.get_zscore_data())
 
     s = K.shape[0] - bo.locs.shape[0]
@@ -524,7 +524,7 @@ def _timeseries_recon(bo, K, chunk_size=1000):
     for idx, session in enumerate(bo.sessions.unique()):
         block_results = []
         if idx is 0:
-            for each in _chunker(zbo.sessions[bo.sessions == session].index.tolist(), chunk_size):
+            for each in _chunker(zbo.sessions[bo.sessions == session].index.tolist(), chunk_size): #FIXME: the chunking could happen on the DataFrame level, not the brain object level to make this more efficient
                 z_bo = _chunk_bo(zbo, each)
                 block = np.hstack((_reconstruct_activity(z_bo, Kba, Kaa_inv), z_bo.get_data()))
                 if block_results == []:

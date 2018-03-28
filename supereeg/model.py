@@ -86,7 +86,7 @@ class Model(object):
         A model that can be used to infer timeseries from unknown locations
 
     """
-
+    #TODO: __init__ should support data as a brain object, model object, nifti object, or string; if model object, just return data without copying it
     def __init__(self, data=None, locs=None, template=None,
                  measure='kurtosis', threshold=10, numerator=None, denominator=None,
                  n_subs=None, meta=None, date_created=None):
@@ -182,7 +182,7 @@ class Model(object):
                 model_corrmat_x = np.divide(self.numerator, self.denominator)
 
         bool_mask = _count_overlapping(self, bo)
-        assert not all(bool_mask), "model is a complete subset of patient locations"
+        assert not all(bool_mask), "model is a complete subset of patient locations" #FIXME: should return that subset (sample out the appropriate locations and data) and not throw an error-- so in this case the returned brain object will be *smaller* than the original
 
         # indices of the mask (where there is overlap
         joint_model_inds = np.where(bool_mask)[0]
