@@ -168,7 +168,7 @@ def test_electrode_contingencies_1_null_set():
     corr_vals = _corr_column(actual.as_matrix(), recon.data.as_matrix())
 
     assert 1 >= corr_vals.mean() >= -1
-    assert np.allclose(zscore(recon_1), recon.get_data(), equal_nan=True)
+    assert np.allclose(zscore(recon_1), recon.data, equal_nan=True)
 
 def test_electrode_contingencies_2_subset():
 
@@ -208,7 +208,7 @@ def test_electrode_contingencies_2_subset():
 
     corr_vals = _corr_column(actual.as_matrix(), recon.data.as_matrix())
 
-    assert np.allclose(zscore(recon_2), recon.get_data(), equal_nan=True)
+    assert np.allclose(zscore(recon_2), recon.data, equal_nan=True)
     assert 1 >= corr_vals.mean() >= -1
 
 def test_electrode_contingencies_3_locations_can_subset():
@@ -258,4 +258,4 @@ def test_electrode_contingencies_3_locations_can_subset():
     corr_vals = _corr_column(actual.as_matrix(), recon.data.as_matrix())
 
     assert 1 >= corr_vals.mean() >= -1
-    assert np.allclose(zscore(recon_3), recon.get_data(), equal_nan=True)
+    assert np.allclose(zscore(recon_3), recon.data, equal_nan=True)
