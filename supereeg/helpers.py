@@ -187,11 +187,17 @@ def _kurt_vals(bo):
         Maximum kurtosis across sessions for each channel
 
     """
+    sessions = bo.sessions.unique()
+    print(bo.data)
+    print('.......')
+    print(sessions[0]==bo.sessions)
+    results = list(map(lambda s: kurtosis(bo.data[(s==bo.sessions).values]), sessions))
+    return np.max(np.vstack(results), axis=0)
 
-    def aggregate(prev, next):
-        return np.max(np.vstack((prev, next)), axis=0)
-
-    return _apply_by_file_index(bo, kurtosis, aggregate)
+    # def aggregate(prev, next):
+    #     return np.max(np.vstack((prev, next)), axis=0)
+    #
+    # return _apply_by_file_index(bo, kurtosis, aggregate)
 
 
 def _get_corrmat(bo):
@@ -508,6 +514,7 @@ def _timeseries_recon(bo, K, chunk_size=1000):
 
     """
     data = bo.get_zscore_data()
+    print(K.shape)
     s = K.shape[0] - data.shape[1]
     Kba = K[:s, s:]
     Kaa = K[s:, s:]
@@ -515,7 +522,10 @@ def _timeseries_recon(bo, K, chunk_size=1000):
     sessions = bo.sessions.unique()
     chunks = [np.array(i) for session in sessions for i in _chunker(bo.sessions[bo.sessions == session].index.tolist(), chunk_size)]
     chunks = list(map(lambda x: np.array(x[x != np.array(None)], dtype=np.int8), chunks))
-    return np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv), chunks)))
+    results = np.vstack(Parallel(n_jobs=multiprocessing.cpu_count())(
+        delayed(_reconstruct_activity)(data[chunk, :], Kba, Kaa_inv) for chunk in chunks))
+    zresults = list(map(lambda s: zscore(results[bo.sessions==s, :]), sessions))
+    return np.hstack([data, np.vstack(zresults)])
 
 def _chunker(iterable, chunksize, fillvalue=None):
     """

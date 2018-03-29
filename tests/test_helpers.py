@@ -237,12 +237,12 @@ def test_model_compile(tmpdir):
     assert np.allclose(mo.numerator, test_model.numerator)
     assert np.allclose(mo.denominator, test_model.denominator)
 
-def test_chunk_bo():
-    chunk = tuple([1,2,3])
-    chunked_bo = _chunk_bo(bo_full, chunk)
-    print(type(_chunk_bo))
-    assert isinstance(chunked_bo, se.Brain)
-    assert np.shape(chunked_bo.data)[0]==np.shape(chunk)[0]
+# def test_chunk_bo():
+#     chunk = tuple([1,2,3])
+#     chunked_bo = _chunk_bo(bo_full, chunk)
+#     print(type(_chunk_bo))
+#     assert isinstance(chunked_bo, se.Brain)
+#     assert np.shape(chunked_bo.data)[0]==np.shape(chunk)[0]
 
 def test_timeseries_recon():
     mo = np.divide(test_model.numerator, test_model.denominator)
