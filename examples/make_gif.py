@@ -16,6 +16,7 @@ first with the plot_glass_brain and then create .png files and compile as a gif.
 
 # load
 import supereeg as se
+import numpy as np
 
 # load example data
 bo = se.load('example_data')
@@ -30,7 +31,7 @@ reconstructed_bo = model.predict(bo)
 reconstructed_bo.info()
 
 # slice first 3 timepoints and convert to nifti
-reconstructed_nifti = reconstructed_bo[0:3].to_nii(template='gray', vox_size=20)
+reconstructed_nifti = reconstructed_bo.to_nii(template='gray', vox_size=20)
 
 # make gif, default time window is 0 to 10, but you can specifiy by setting a range with index
-#reconstructed_nifti.make_gif(gif_path='/your/path/to/gif', index=samples, name='sample_gif')
+#reconstructed_nifti.make_gif('/your/path/to/gif/', index=np.arange(100), name='sample_gif')

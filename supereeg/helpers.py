@@ -81,7 +81,7 @@ def _gray(res=None):
     gray_data = gray_img.get_data()
     gray_data[np.isnan(gray_data) | (gray_data < threshold)] = 0
 
-    if res:
+    if np.iterable(res) or np.isscalar(res):
         return _resample_nii(Nifti(gray_data, gray_img.affine), res)
     else:
         return Nifti(gray_data, gray_img.affine)
@@ -112,18 +112,13 @@ def _resample_nii(x, target_res, precision=5):
 
     from .nifti import Nifti
 
-    if np.iterable(target_res):
-        target_res = [(lambda i: 1.0 if i < 1 else i)(i) for i in target_res]
-    elif target_res < 1:
-        target_res = 1.0
-
     if np.any(np.isnan(x.get_data())):
         img = x.get_data()
         img[np.isnan(img)] = 0.0
         x = nib.nifti1.Nifti1Image(img, x.affine)
 
     res = x.header.get_zooms()[0:3]
-    scale = np.divide(res, target_res)
+    scale = np.divide(res, target_res).ravel()
 
     target_affine = x.affine
 
@@ -131,8 +126,8 @@ def _resample_nii(x, target_res, precision=5):
     target_affine = np.round(target_affine, decimals=precision)
 
     # correct for 1-voxel shift
-    target_affine[0:3, 3] -= np.multiply(np.divide(target_res, 2.0), np.sign(target_affine[0:3, 3]))
-    target_affine[0:3, 3] += np.sign(target_affine[0:3, 3])
+    target_affine[0:3, 3] -= np.squeeze(np.multiply(np.divide(target_res, 2.0), np.sign(target_affine[0:3, 3])))
+    target_affine[0:3, 3] += np.squeeze(np.sign(target_affine[0:3, 3]))
 
     if len(scale) < np.ndim(x.get_data()):
         assert np.ndim(x.get_data()) == 4, 'Data must be 3D or 4D'
@@ -390,8 +385,8 @@ def _expand_corrmat_fit(C, weights):
         Numerator for the expanded correlation matrix
     denominator : Numpy array
         Denominator for the expanded correlation matrix
-
     """
+
     C[np.eye(C.shape[0]) == 1] = 0
     C[np.where(np.isnan(C))] = 0
 
@@ -512,7 +507,7 @@ def _timeseries_recon(bo, K, chunk_size=1000):
         Compiled reconstructed timeseries
 
     """
-    zbo = copy.copy(bo)
+    zbo = copy.copy(bo) #FIXME: something strange here...why copy the full brain object?  We could just get the z-scored data and use that...
     zbo.data = pd.DataFrame(bo.get_zscore_data())
 
     s = K.shape[0] - bo.locs.shape[0]
@@ -520,11 +515,12 @@ def _timeseries_recon(bo, K, chunk_size=1000):
     Kaa = K[s:, s:]
     Kaa_inv = np.linalg.pinv(Kaa)
 
+    #TODO: this needs refactoring...
     results = []
     for idx, session in enumerate(bo.sessions.unique()):
         block_results = []
         if idx is 0:
-            for each in _chunker(zbo.sessions[bo.sessions == session].index.tolist(), chunk_size):
+            for each in _chunker(zbo.sessions[bo.sessions == session].index.tolist(), chunk_size): #FIXME: the chunking could happen on the DataFrame level, not the brain object level to make this more efficient
                 z_bo = _chunk_bo(zbo, each)
                 block = np.hstack((_reconstruct_activity(z_bo, Kba, Kaa_inv), z_bo.get_data()))
                 if block_results == []:
@@ -597,7 +593,7 @@ def _reconstruct_activity(bo, Kba, Kaa_inv):
 
     return np.atleast_2d(np.squeeze(np.dot(np.dot(Kba, Kaa_inv), Y.T).T))
 
-def _round_it(locs, places):
+def _round_it(locs, places): #TODO: do we need a separate function for this?  doesn't seem much more convenient than the np.round function...
     """
     Rounding function
 
@@ -640,7 +636,7 @@ def filter_elecs(bo, measure='kurtosis', threshold=10):
 
     """
     thresh_bool = bo.kurtosis > threshold
-    nbo = copy.deepcopy(bo)
+    nbo = copy.deepcopy(bo) #TODO: modify bo.get_locs rather than copying brain object again here
     nbo.data = bo.data.loc[:, ~thresh_bool]
     nbo.locs = bo.locs.loc[~thresh_bool]
     nbo.n_elecs = bo.data.shape[1]
@@ -696,7 +692,7 @@ def _corr_column(X, Y):
     return np.array([pearsonr(x, y)[0] for x, y in zip(X.T, Y.T)])
 
 
-def _normalize_Y(Y_matrix):
+def _normalize_Y(Y_matrix): #TODO: should be part of bo.get_data and/or Brain.__init__
     """
     Normalizes timeseries
 
@@ -776,7 +772,7 @@ def model_compile(data):
     #              locs=pd.concat([m.locs, bo.locs]), n_subs=n_subs)
 
 
-def _near_neighbor(bo, mo, match_threshold='auto'):
+def _near_neighbor(bo, mo, match_threshold='auto'): #TODO: should this be part of bo.get_locs() or Brain.__init__, or possibly model.__init__?
     """
     Finds the nearest voxel for each subject's electrode location and uses
     that as revised electrodes location matrix in the prediction.
@@ -810,7 +806,7 @@ def _near_neighbor(bo, mo, match_threshold='auto'):
 
     """
 
-    nbo = copy.deepcopy(bo)
+    nbo = copy.deepcopy(bo) #FIXME: copying is expensive...
     nbo.orig_locs = nbo.locs
     d = cdist(nbo.locs, mo.locs, metric='Euclidean')
     for i in range(len(nbo.locs)):
@@ -1071,7 +1067,7 @@ def _plot_locs_connectome(locs, label=None, pdfpath=None):
     if not pdfpath:
         ni_plt.show()
 
-def _plot_locs_hyp(locs, pdfpath):
+def _plot_locs_hyp(locs, pdfpath): #TODO: do we need a separate function for this?  doesn't look more convenient than calling hyp.plot directly...
 
     """
     Plots locations in hypertools
@@ -1090,7 +1086,7 @@ def _plot_locs_hyp(locs, pdfpath):
     """
     hyp.plot(locs, 'k.', save_path=pdfpath)
 
-def _plot_glass_brain(nifti, pdfpath, index=1):
+def _plot_glass_brain(nifti, pdfpath, index=1): #TODO: do we need a separate function for this?  doesn't look more convenient than calling plot_glas_brain directly...
     """
     Plots nifti data
 
@@ -1164,7 +1160,7 @@ def _nifti_to_brain(nifti, mask_file=None):
     return Y, R, {'header': hdr}
 
 
-def _brain_to_nifti(bo, nii_template):
+def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; could be done much faster using reshape and/or nilearn masking
 
     """
     Takes or loads nifti file and converts to brain object
@@ -1200,12 +1196,12 @@ def _brain_to_nifti(bo, nii_template):
     data = np.zeros(tuple(list(shape) + [Y.shape[0]]))
     counts = np.zeros(data.shape)
 
-    for i in range(Y.shape[0]):
-        for j in range(R.shape[0]):
-            data[locs[j, 0], locs[j, 1], locs[j, 2], i] += Y[i, j]
-            counts[locs[j, 0], locs[j, 1], locs[j, 2], i] += 1
+    for i in range(R.shape[0]):
+        data[locs[i, 0], locs[i, 1], locs[i, 2], :] += Y[:, i]
+        counts[locs[i, 0], locs[i, 1], locs[i, 2], :] += 1
+
     with np.errstate(invalid='ignore'):
-        data = np.divide(data, counts)
-    data[np.isnan(data)] = 0
+        for i in range(R.shape[0]):
+            data[locs[i, 0], locs[i, 1], locs[i, 2], :] = np.divide(data[locs[i, 0], locs[i, 1], locs[i, 2], :], counts[locs[i, 0], locs[i, 1], locs[i, 2], :])
 
     return Nifti(data, affine=nii_template.affine)
