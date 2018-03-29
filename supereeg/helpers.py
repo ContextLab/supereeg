@@ -1196,12 +1196,12 @@ def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; c
     data = np.zeros(tuple(list(shape) + [Y.shape[0]]))
     counts = np.zeros(data.shape)
 
-    for i in range(Y.shape[0]):
-        for j in range(R.shape[0]):
-            data[locs[j, 0], locs[j, 1], locs[j, 2], i] += Y[i, j]
-            counts[locs[j, 0], locs[j, 1], locs[j, 2], i] += 1
+    for i in range(R.shape[0]):
+        data[locs[i, 0], locs[i, 1], locs[i, 2], :] += Y[:, i]
+        counts[locs[i, 0], locs[i, 1], locs[i, 2], :] += 1
+
     with np.errstate(invalid='ignore'):
-        data = np.divide(data, counts)
-    data[np.isnan(data)] = 0
+        for i in range(R.shape[0]):
+            data[locs[i, 0], locs[i, 1], locs[i, 2], :] = np.divide(data[locs[i, 0], locs[i, 1], locs[i, 2], :], counts[locs[i, 0], locs[i, 1], locs[i, 2], :])
 
     return Nifti(data, affine=nii_template.affine)
