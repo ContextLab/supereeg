@@ -1025,19 +1025,12 @@ def _plot_locs_connectome(locs, label=None, pdfpath=None):
 
 
     """
-    if label:
-        for (i, item) in enumerate(label):
-            if item == 'observed':
-                label[i] = [0, 0, 0]
-            elif item == 'reconstructed':
-                label[i] = [1, 0, 0]
-
+    if label is not None:
+        label = list(map(lambda x: [0,0,0] if x=='observed' else [1,0,0], label))
         colors = np.asarray(label)
         colors = list(map(lambda x: x[0], np.array_split(colors, colors.shape[0], axis=0)))
-
     else:
         colors = 'k'
-
     ni_plt.plot_connectome(np.eye(locs.shape[0]), locs, output_file=pdfpath,
                            node_kwargs={'alpha': 0.5, 'edgecolors': None},
                            node_size=10, node_color=colors)
