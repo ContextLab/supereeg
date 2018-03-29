@@ -146,10 +146,10 @@ class Brain(object):
                 self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
             if isinstance(sessions, str) or isinstance(sessions, int):
-                self.sessions = pd.Series([sessions for i in range(self.get_data().shape[0])])
+                self.sessions = pd.Series([sessions for i in range(self.data.shape[0])])
 
             elif sessions is None:
-                self.sessions = pd.Series([1 for i in range(self.get_data().shape[0])])
+                self.sessions = pd.Series([1 for i in range(self.data.shape[0])])
             else:
                 self.sessions = pd.Series(sessions.ravel())
 
@@ -203,7 +203,6 @@ class Brain(object):
             else:
                 self.kurtosis = _kurt_vals(self)
             self.kurtosis_threshold = kurtosis_threshold
-
             self.filter=filter
             self.filter_inds = self.update_filter_inds()
 
@@ -237,7 +236,7 @@ class Brain(object):
     def next(self):
         return self.__next__()
 
-    def update_filter_inds():
+    def update_filter_inds(self):
         if self.filter == 'kurtosis':
             self.filter_inds = self.kurtosis <= self.kurtosis_threshold
         else:
@@ -257,17 +256,29 @@ class Brain(object):
         print('Date created: ' + str(self.date_created))
         print('Meta data: ' + str(self.meta))
 
+    def get_filtered_bo(self):
+        """ Return a filtered copy """
+        x = self.__dict__
+        x['data'] = self.get_data()
+        x['locs'] = self.get_locs()
+        x['kurtosis'] = x['kurtosis'][x['kurtosis'] <= x['kurtosis_threshold']]
+        for key in ['n_subs', 'n_elecs', 'n_sessions', 'filter_inds', 'n_secs']:
+            if key in x.keys():
+                x.pop(key)
+        return Brain(**x)
+
     def get_data(self):
         """
         Gets data from brain object
         """
         self.update_filter_inds()
-        return self.data.iloc[:, self.filter_inds]
+        return self.data.iloc[:, self.filter_inds.ravel()]
 
     def get_zscore_data(self):
         """
         Gets zscored data from brain object
         """
+        self.update_filter_inds()
         return zscore(self.get_data())
 
     def get_locs(self):
@@ -275,7 +286,7 @@ class Brain(object):
         Gets locations from brain object
         """
         self.update_filter_inds()
-        return self.locs.iloc[self.filter_inds, :]
+        return self.locs.iloc[self.filter_inds.ravel(), :]
 
     def get_slice(self, sample_inds=None, loc_inds=None, inplace=False):
         """
@@ -429,7 +440,6 @@ class Brain(object):
             _plot_locs_connectome(locs, label, pdfpath)
         else:
             _plot_locs_hyp(locs, pdfpath)
-
 
     def to_nii(self, filepath=None, template='gray', vox_size=None, sample_rate=None):
 
