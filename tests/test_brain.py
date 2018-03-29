@@ -101,6 +101,13 @@ def test_brain_getrowcols():
     bo = bo[:5, 3]
     assert bo.data.shape==(5, 1)
 
+def test_brain_filter():
+    data = np.random.rand(10, 2)
+    locs = np.random.rand(2, 3)
+    bo = Brain(data=data, locs=locs, filter=None, sample_rate=1000)
+    assert bo.get_data().shape==(10,2)
+    assert bo.get_locs().shape==(2,3)
+
 ## can't get tests for plots to work
 
 # def test_bo_plot_locs(tmpdir):
