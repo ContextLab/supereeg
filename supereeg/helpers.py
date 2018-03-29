@@ -188,9 +188,6 @@ def _kurt_vals(bo):
 
     """
     sessions = bo.sessions.unique()
-    print(bo.data)
-    print('.......')
-    print(sessions[0]==bo.sessions)
     results = list(map(lambda s: kurtosis(bo.data[(s==bo.sessions).values]), sessions))
     return np.max(np.vstack(results), axis=0)
 
@@ -514,7 +511,6 @@ def _timeseries_recon(bo, K, chunk_size=1000):
 
     """
     data = bo.get_zscore_data()
-    print(K.shape)
     s = K.shape[0] - data.shape[1]
     Kba = K[:s, s:]
     Kaa = K[s:, s:]
