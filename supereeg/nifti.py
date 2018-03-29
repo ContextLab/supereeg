@@ -11,7 +11,7 @@ from .helpers import make_gif_pngs
 
 class Nifti(Nifti1Image):
     """
-    Nifti class for the supereeg package.  Extends the Nibabel.Nifti1Image class.
+    Nifti class for the supereeg package.  Extends the Nibabel.Nifti1Image class. #TODO: add note on documentation strangeness with reference to nilearn API
 
     Parameters
     ----------

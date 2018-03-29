@@ -11,7 +11,7 @@ import nibabel as nib
 import deepdish as dd
 import matplotlib.pyplot as plt
 from scipy.stats import zscore
-from .helpers import _kurt_vals, _z_score, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, \
+from .helpers import _kurt_vals, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, \
     _plot_locs_hyp, _std, _gray, _nifti_to_brain, _brain_to_nifti
 
 class Brain(object):
@@ -34,7 +34,8 @@ class Brain(object):
 
         If data is a model, returns correlation matrix.
 
-        If data is a nifti image (either supereeg.Nifti or Nifti1Image), returns nifti values as samples by electrodes array.
+        If data is a nifti image (either supereeg.Nifti or Nifti1Image), returns nifti values as samples by electrodes
+        array.
 
     locs : numpy.ndarray or pandas.DataFrame
         Electrode by MNI coordinate (x,y,z) array containing electrode locations
@@ -44,8 +45,7 @@ class Brain(object):
         If str or int, the value will be copied for each time sample.
 
     sample_rates : float, int or list
-        Sample rate (Hz) of the data. If different over multiple sessions, this is a
-        list.
+        Sample rate (Hz) of the data. If different over multiple sessions, this is a list.
 
     meta : dict
         Optional dict containing whatever you want.
@@ -54,25 +54,23 @@ class Brain(object):
         Time created (optional)
 
     label : list
-        List delineating if location was reconstructed or observed. This is
-        computed in reconstruction.
+        List delineating if location was reconstructed or observed. This is computed in reconstruction.
 
     Attributes
     ----------
 
-    data : Pandas DataFrame
+    data : pandas.DataFrame
         Samples x electrodes dataframe containing the EEG data.
 
-    locs : Pandas DataFrame
+    locs : pandas.DataFrame
         Electrode by MNI coordinate (x,y,z) df containing electrode locations.
 
-    sessions : Pandas Series
-        Samples x 1 array containing session identifiers.  If a singleton is passed,
-         a single session will be created.
+    sessions : pandas.Series
+        Samples x 1 array containing session identifiers.  If a single value is passed, a single session will be
+        created.
 
     sample_rates : list
-        Sample rate of the data. If different over multiple sessions, this is a
-        list.
+        Sample rate of the data. If different over multiple sessions, this is a list.
 
     meta : dict
         Optional dict containing whatever you want.
@@ -93,27 +91,27 @@ class Brain(object):
         Kurtosis threshold
 
     filter : 'kurtosis' or None
-        If 'kurtosis', electrodes that exceed the kurtosis threshold will be
-        removed.  If None, no thresholding is applied.
+        If 'kurtosis', electrodes that exceed the kurtosis threshold will be removed.  If None, no thresholding is
+        applied.
 
     minimum_voxel_size : positive scalar or 3D numpy array
-        used to construct Nifti objects; default: 3 (mm)
+        Used to construct Nifti objects; default: 3 (mm)
 
     maximum_voxel_size : positive scalar or 3D numpy array
-        used to construct Nifti objects; default: 20 (mm)
+        Used to construct Nifti objects; default: 20 (mm)
 
 
     Returns
     ----------
 
     bo : supereeg.Brain
-        Instance of Brain data object containing subject data
+        Instance of Brain data object.
 
     """
 
     def __init__(self, data=None, locs=None, sessions=None, sample_rate=None,
-                 meta=None, date_created=None, label=None, kurtosis=10,
-                 minimum_voxel_size=3, maximum_voxel_size=20,
+                 meta=None, date_created=None, label=None, kurtosis=None,
+                 kurtosis_threshold=10, minimum_voxel_size=3, maximum_voxel_size=20,
                  filter='kurtosis'):
 
         from .load import load, datadict
@@ -141,16 +139,17 @@ class Brain(object):
             else:
                 self.data = pd.DataFrame(data)
 
-            if isinstance(locs, pd.DataFrame): #FIXME: ensure column names are correct
+            if isinstance(locs, pd.DataFrame):
+                assert all(locs.columns == ['x', 'y', 'z'])
                 self.locs = locs
             else:
                 self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
             if isinstance(sessions, str) or isinstance(sessions, int):
-                self.sessions = pd.Series([sessions for i in range(self.data.shape[0])]) #FIXME: don't reference self.data directly
+                self.sessions = pd.Series([sessions for i in range(self.get_data().shape[0])])
 
             elif sessions is None:
-                self.sessions = pd.Series([1 for i in range(self.data.shape[0])]) #FIXME: don't reference self.data directly
+                self.sessions = pd.Series([1 for i in range(self.get_data().shape[0])])
             else:
                 self.sessions = pd.Series(sessions.ravel())
 
@@ -177,7 +176,7 @@ class Brain(object):
             else:
                 self.sample_rate = None
 
-                if self.data.shape[0] == 1: #FIXME: don't reference self.data directly
+                if self.data.shape[0] == 1:
                     self.n_secs = 0
                 else:
                     self.n_secs = None
@@ -197,18 +196,19 @@ class Brain(object):
             else:
                 self.date_created = date_created
 
-            self.n_elecs = self.data.shape[1] # needs to be calculated by sessions #FIXME: don't reference self.data directly
+            self.n_elecs = self.data.shape[1] # needs to be calculated by sessions
             self.n_sessions = len(self.sessions.unique())
-
-            if self.filter=='kurtosis':
-                self.filter = _kurt_vals(self)
-                self.threshold = kurtosis
+            if np.iterable(kurtosis):
+                self.kurtosis = kurtosis
             else:
-                self.filter = np.zeros(1, bo.locs.shape[0])
-                self.threshold = None
+                self.kurtosis = _kurt_vals(self)
+            self.kurtosis_threshold = kurtosis_threshold
+
+            self.filter=filter
+            self.filter_inds = self.update_filter_inds()
 
             if not label:
-                self.label = len(self.locs) * ['observed'] #FIXME: don't reference self.locs directly
+                self.label = len(self.locs) * ['observed']
             else:
                 self.label = label
 
@@ -228,7 +228,7 @@ class Brain(object):
         return self
 
     def __next__(self):
-        if self.counter >= self.data.shape[0]: #FIXME: don't reference self.data directly
+        if self.counter >= self.data.shape[0]:
             raise StopIteration
         s = self[self.counter]
         self.counter+=1
@@ -236,6 +236,12 @@ class Brain(object):
 
     def next(self):
         return self.__next__()
+
+    def update_filter_inds():
+        if self.filter == 'kurtosis':
+            self.filter_inds = self.kurtosis <= self.kurtosis_threshold
+        else:
+            self.filter_inds = np.ones((1, self.locs.shape[0]), dtype=np.bool) #TODO: check this
 
     def info(self):
         """
@@ -251,25 +257,27 @@ class Brain(object):
         print('Date created: ' + str(self.date_created))
         print('Meta data: ' + str(self.meta))
 
-    def get_data(self): #TODO: all filtering, z-scoring, etc. should be done here (with expensive computations precomputed and saved to other fields)
+    def get_data(self):
         """
         Gets data from brain object
         """
-        return self.data.iloc[:, ~(self.filter > self.threshold)]
+        self.update_filter_inds()
+        return self.data.iloc[:, self.filter_inds]
 
     def get_zscore_data(self):
         """
         Gets zscored data from brain object
         """
-        return zscore(self.data.iloc[:, ~(self.filter > self.threshold)])
+        return zscore(self.get_data())
 
-    def get_locs(self): #TODO: all filtering, rounding, etc. should be done/managed here (with expensive computations precomputed and saved to other fields)
+    def get_locs(self):
         """
         Gets locations from brain object
         """
-        return self.locs.iloc[~(self.filter > self.threshold), :]
+        self.update_filter_inds()
+        return self.locs.iloc[self.filter_inds, :]
 
-    def get_slice(self, sample_inds=None, loc_inds=None, inplace=False): #TODO: does this need to be done as a copy?
+    def get_slice(self, sample_inds=None, loc_inds=None, inplace=False):
         """
         Indexes brain object data
 
@@ -286,24 +294,23 @@ class Brain(object):
 
         """
         if sample_inds is None:
-            sample_inds = list(range(self.data.shape[0])) #FIXME: don't reference self.data directly
+            sample_inds = list(range(self.get_data().shape[0]))
         if loc_inds is None:
-            loc_inds = list(range(self.locs.shape[0])) #FIXME: don't reference self.locs directly
+            loc_inds = list(range(self.get_locs().shape[0]))
         if isinstance(sample_inds, int):
             sample_inds = [sample_inds]
         if isinstance(loc_inds, int):
             loc_inds = [loc_inds]
 
-        data = self.data.iloc[sample_inds, loc_inds].copy() #FIXME: don't reference self.data directly
-        sessions = self.sessions.iloc[sample_inds].copy()
-        ## check this:
+        data = self.get_data().iloc[sample_inds, loc_inds]
+        sessions = self.sessions.iloc[sample_inds]
         if self.sample_rate:
             sample_rate = [self.sample_rate[int(s-1)] for s in
                            sessions.unique()]
         else:
             sample_rate = self.sample_rate
         meta = copy.copy(self.meta)
-        locs = self.locs.iloc[loc_inds].copy() #FIXME: don't reference self.locs directly
+        locs = self.get_locs().iloc[loc_inds]
         date_created = self.date_created
 
         if inplace:
@@ -313,10 +320,12 @@ class Brain(object):
             self.sample_rate = sample_rate
             self.meta = meta
             self.date_created = date_created
+            self.filter=None
         else:
             return Brain(data=data, locs=locs, sessions=sessions,
                          sample_rate=sample_rate, meta=meta,
-                         date_created=date_created)
+                         date_created=date_created, kurtosis=self.kurtosis,
+                         filter=None) #TODO: make sure we preserve all other parameters/properties
 
     def resample(self, resample_rate=None):
         """
@@ -338,7 +347,7 @@ class Brain(object):
             self.sample_rate = sample_rate
 
     def plot_data(self, filepath=None, time_min=None, time_max=None, title=None,
-                  electrode=None, threshold=10, filtered=True):
+                  electrode=None):
         """
         Normalizes and plots data from brain object
 
@@ -360,13 +369,6 @@ class Brain(object):
 
         electrode : int
             Location in MNI coordinate (x,y,z) by electrode df containing electrode locations
-
-        threshold : int
-            Value of kurtosis threshold
-
-        filtered : True
-            Default to filter by kurtosis threshold.  If False, will show all original data.
-
         """
 
         # normalizes the samples x electrodes array containing the EEG data and
@@ -374,18 +376,12 @@ class Brain(object):
         # location in the MNI coordinate (x,y,z) by electrode df containing
         # electrode locations
 
-        if self.data.shape[0] == 1: #FIXME: don't reference self.data directly
+        if self.get_data().shape[0] == 1:
             nii = self.to_nii()
             nii.plot_glass_brain()
 
         else:
-            Y = _normalize_Y(self.data) #FIXME: don't reference self.data directly
-
-            # if filtered in passed, filter by electrodes that do not pass kurtosis
-            # thresholding
-            if filtered:
-                thresh_bool = self.kurtosis > threshold
-                Y = Y.iloc[:, ~thresh_bool]
+            Y = _normalize_Y(self.get_data())
 
             if electrode is not None:
                 Y = Y.columns[int(electrode)]
@@ -420,7 +416,6 @@ class Brain(object):
         """
         Plots electrode locations from brain object
 
-
         Parameters
         ----------
         pdfpath : str
@@ -428,9 +423,9 @@ class Brain(object):
 
         """
 
-        locs = self.locs #FIXME: don't reference self.locs directly...plus, why do we need a separate copy of locs?
-        label = self.label
-        if self.locs .shape[0] <= 10000: #FIXME: don't reference self.locs directly
+        locs = self.get_locs()
+        label = self.label[self.filter_inds] #TODO: check this
+        if locs.shape[0] <= 10000:
             _plot_locs_connectome(locs, label, pdfpath)
         else:
             _plot_locs_hyp(locs, pdfpath)
@@ -562,15 +557,18 @@ class Brain(object):
         """
 
         bo = {
-            'data': self.data.as_matrix(), #FIXME: don't reference self.data directly
-            'locs': self.locs, #FIXME: don't reference self.locs directly
+            'data': self.data.as_matrix(),
+            'locs': self.locs,
             'sessions': self.sessions,
             'sample_rate': self.sample_rate,
             'kurtosis': self.kurtosis,
+            'kurtosis_threshold' : self.kurtosis_threshold,
             'meta': self.meta,
             'date_created': self.date_created,
             'minimum_voxel_size': self.minimum_voxel_size,
-            'maximum_voxel_size': self.maximum_voxel_size
+            'maximum_voxel_size': self.maximum_voxel_size,
+            'label' : self.label,
+            'filter' : self.kurtosis,
         }
 
         if fname[-3:] != '.bo':
