@@ -1,8 +1,5 @@
 from __future__ import division
 from __future__ import print_function
-from builtins import str
-from builtins import range
-from builtins import object
 import time
 import os
 import copy
@@ -16,6 +13,7 @@ import matplotlib.pyplot as plt
 from .helpers import filter_elecs, _get_corrmat, _r2z, _z2r, _rbf, _expand_corrmat_fit, _expand_corrmat_predict,\
     _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp, _gray, _nifti_to_brain
 from .brain import Brain
+from scipy.spatial.distance import cdist
 
 
 class Model(object):
@@ -181,25 +179,33 @@ class Model(object):
                 model_corrmat_x = np.divide(self.numerator, self.denominator)
 
         bool_mask = _count_overlapping(self, bo)
-        assert not all(bool_mask), "model is a complete subset of patient locations" #FIXME: should return that subset (sample out the appropriate locations and data) and not throw an error-- so in this case the returned brain object will be *smaller* than the original
-
-        # indices of the mask (where there is overlap
-        joint_model_inds = np.where(bool_mask)[0]
-
-        # compute model for 3 possible scenarios
         case = _which_case(bo, bool_mask)
-        if case is 'no_overlap':
-            model_corrmat_x, loc_label, perm_locs = _no_overlap(self, bo, model_corrmat_x)
-        elif case is 'some_overlap':
-            model_corrmat_x, loc_label, perm_locs = _some_overlap(self, bo, model_corrmat_x, joint_model_inds)
-        elif case is 'subset':
-            model_corrmat_x, loc_label, perm_locs = _subset(self, bo, model_corrmat_x, joint_model_inds)
+        if case is 'all_overlap':
+            d = cdist(bo.get_locs(), self.locs)
+            joint_bo_inds = np.where(np.isclose(d, 0))[0]
+            bo.locs = bo.locs.iloc[joint_bo_inds]
+            bo.data = bo.data[joint_bo_inds]
+            bo.kurtosis = bo.kurtosis[joint_bo_inds]
+            bo.label = np.array(bo.label)[joint_bo_inds].tolist()
 
-        model_corrmat_x = _z2r(model_corrmat_x)
-        np.fill_diagonal(model_corrmat_x, 0)
-        activations = _timeseries_recon(bo, model_corrmat_x)
-        return Brain(data=activations, locs=perm_locs, sessions=bo.sessions,
-                    sample_rate=bo.sample_rate, label=loc_label)
+            return Brain(data=bo.data, locs=bo.locs, sessions=bo.sessions,
+                         sample_rate=bo.sample_rate, label=bo.label)
+        else:
+            # indices of the mask (where there is overlap
+            joint_model_inds = np.where(bool_mask)[0]
+            if case is 'no_overlap':
+                model_corrmat_x, loc_label, perm_locs = _no_overlap(self, bo, model_corrmat_x)
+            elif case is 'some_overlap':
+                model_corrmat_x, loc_label, perm_locs = _some_overlap(self, bo, model_corrmat_x, joint_model_inds)
+            elif case is 'subset':
+                model_corrmat_x, loc_label, perm_locs = _subset(self, bo, model_corrmat_x, joint_model_inds)
+
+            model_corrmat_x = _z2r(model_corrmat_x)
+            np.fill_diagonal(model_corrmat_x, 0)
+            activations = _timeseries_recon(bo, model_corrmat_x)
+
+            return Brain(data=activations, locs=perm_locs, sessions=bo.sessions,
+                        sample_rate=bo.sample_rate, kurtosis=bo.kurtosis, label=loc_label)
 
     def update(self, data, measure='kurtosis', threshold=10, inplace=True,
                locs=None, n=1):
@@ -450,12 +456,15 @@ def _force_update(mo, bo):
 
 def _which_case(bo, bool_mask):
     """Determine which predict scenario we are in"""
+    if all(bool_mask):
+        return 'all_overlap'
     if not any(bool_mask):
         return 'no_overlap'
     elif sum(bool_mask) == bo.get_locs().shape[0]:
         return 'subset'
     elif sum(bool_mask) != bo.get_locs().shape[0]:
         return 'some_overlap'
+
 
 def _no_overlap(self, bo, model_corrmat_x):
     """ Compute model when there is no overlap """
