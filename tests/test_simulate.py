@@ -1,4 +1,3 @@
-from builtins import range
 import supereeg as se
 import numpy as np
 import pandas as pd

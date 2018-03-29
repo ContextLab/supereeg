@@ -511,7 +511,7 @@ def _some_overlap(self, bo, model_corrmat_x, joint_model_inds):
 
     #TODO: would be safer to implement this using bo.get_locs(), bo.get_data()
     bo.locs = bo.locs.iloc[bo_perm_inds]
-    bo.data = bo.data[:, bo_perm_inds]
+    bo.data = bo.data[bo_perm_inds]
     bo.kurtosis = bo.kurtosis[bo_perm_inds]
 
     # permuted indices for unknown model locations
