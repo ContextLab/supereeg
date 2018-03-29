@@ -13,6 +13,7 @@ import pandas as pd
 import nibabel as nib
 import deepdish as dd
 import matplotlib.pyplot as plt
+from scipy.stats import zscore
 from .helpers import _kurt_vals, _z_score, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, \
     _plot_locs_hyp, _std, _gray, _nifti_to_brain, _brain_to_nifti
 
@@ -122,29 +123,16 @@ class Brain(object):
                 data = load(data)
 
         if isinstance(data, Brain):
-            self = copy.copy(data) #TODO: do we *need* to copy the brain object, or can we just set self to data?
+            self = data
         else:
-            if isinstance(data, Nifti):
-               data, locs, meta = _nifti_to_brain(data)
-
-            if isinstance(data, nib.nifti1.Nifti1Image):
+            if isinstance(data, (Nifti, nib.nifti1.Nifti1Image)):
                data, locs, meta = _nifti_to_brain(data)
 
             if isinstance(data, Model):
-                if all(v is not None for v in [data.numerator, data.denominator, data.locs]):
-
-                    model = copy.copy(data)
-
-                    numerator= model.numerator
-                    denominator = model.denominator
-                    with np.errstate(invalid='ignore'):
-                        data = np.divide(numerator, denominator)
-                    np.fill_diagonal(data, 1)
-
-                    locs = model.locs
-
-                else:
-                    warnings.warn('Model object incomplete')
+                locs = data.locs
+                with np.errstate(invalid='ignore'):
+                    data = np.divide(data.numerator, data.denominator)
+                np.fill_diagonal(data, 1)
 
             if isinstance(data, pd.DataFrame):
                 self.data = data
@@ -234,6 +222,7 @@ class Brain(object):
             self.n_elecs = self.data.shape[1] # needs to be calculated by sessions #FIXME: don't reference self.data directly
             self.n_sessions = len(self.sessions.unique())
             self.kurtosis = _kurt_vals(self)
+            self.threshold = 10
 
             if not label:
                 self.label = len(self.locs) * ['observed'] #FIXME: don't reference self.locs directly
@@ -283,19 +272,19 @@ class Brain(object):
         """
         Gets data from brain object
         """
-        return self.data.as_matrix()
+        return self.data.iloc[:, ~(self.kurtosis > self.threshold)]
 
     def get_zscore_data(self):
         """
         Gets zscored data from brain object
         """
-        return _z_score(self)
+        return zscore(self.data.iloc[:, ~(self.kurtosis > self.threshold)])
 
     def get_locs(self): #TODO: all filtering, rounding, etc. should be done/managed here (with expensive computations precomputed and saved to other fields)
         """
         Gets locations from brain object
         """
-        return self.locs.as_matrix()
+        return self.locs.iloc[~(self.kurtosis > self.threshold), :]
 
     def get_slice(self, sample_inds=None, loc_inds=None, inplace=False): #TODO: does this need to be done as a copy?
         """
@@ -349,7 +338,6 @@ class Brain(object):
     def resample(self, resample_rate=None):
         """
         Resamples data
-
 
 
         Parameters

@@ -208,11 +208,11 @@ def test_filter_elecs():
     bo_f = filter_elecs(bo)
     assert isinstance(bo_f, se.Brain)
 
-def test_filter_subj():
-    bo_s = filter_subj(bo)
-    bo_f = filter_subj(bo_full)
-    assert isinstance(bo_s, (str, dict, type(None)))
-    assert isinstance(bo_f, (str, dict, type(None)))
+# def test_filter_subj():
+#     bo_s = filter_subj(bo)
+#     bo_f = filter_subj(bo_full)
+#     assert isinstance(bo_s, (str, dict, type(None)))
+#     assert isinstance(bo_f, (str, dict, type(None)))
 
 def test_corr_column():
     X = np.matrix([[1, 2, 3], [1, 2, 3]])
@@ -237,12 +237,12 @@ def test_model_compile(tmpdir):
     assert np.allclose(mo.numerator, test_model.numerator)
     assert np.allclose(mo.denominator, test_model.denominator)
 
-def test_chunk_bo():
-    chunk = tuple([1,2,3])
-    chunked_bo = _chunk_bo(bo_full, chunk)
-    print(type(_chunk_bo))
-    assert isinstance(chunked_bo, se.Brain)
-    assert np.shape(chunked_bo.data)[0]==np.shape(chunk)[0]
+# def test_chunk_bo():
+#     chunk = tuple([1,2,3])
+#     chunked_bo = _chunk_bo(bo_full, chunk)
+#     print(type(_chunk_bo))
+#     assert isinstance(chunked_bo, se.Brain)
+#     assert np.shape(chunked_bo.data)[0]==np.shape(chunk)[0]
 
 def test_timeseries_recon():
     mo = np.divide(test_model.numerator, test_model.denominator)

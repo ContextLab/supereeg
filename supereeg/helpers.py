@@ -44,10 +44,9 @@ def _std(res=None):
 
     """
     from .nifti import Nifti
+    from .load import load
 
-    std_fname = os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/std.nii'
-    #std_img = nib.load(std_fname)
-    std_img = Nifti(std_fname)
+    std_img = load('std')
     if res:
         return _resample_nii(std_img, res)
     else:
@@ -72,11 +71,9 @@ def _gray(res=None):
 
     """
     from .nifti import Nifti
+    from .load import load
 
-    gray_fname = os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray.nii'
-    #gray_img = nib.load(gray_fname)
-    gray_img = Nifti(gray_fname)
-
+    gray_img = load('gray')
     threshold = 100
     gray_data = gray_img.get_data()
     gray_data[np.isnan(gray_data) | (gray_data < threshold)] = 0
@@ -165,9 +162,9 @@ def _apply_by_file_index(bo, xform, aggregator):
 
     for idx, session in enumerate(bo.sessions.unique()):
         if idx is 0:
-            results = xform(bo.get_data()[bo.sessions == session, :])
+            results = xform(bo.get_data().as_matrix()[bo.sessions == session, :])
         else:
-            results = aggregator(results, xform(bo.get_data()[bo.sessions == session, :]))
+            results = aggregator(results, xform(bo.get_data().as_matrix()[bo.sessions == session, :]))
 
     return results
 
@@ -187,11 +184,14 @@ def _kurt_vals(bo):
         Maximum kurtosis across sessions for each channel
 
     """
+    sessions = bo.sessions.unique()
+    results = list(map(lambda s: kurtosis(bo.data[(s==bo.sessions).values]), sessions))
+    return np.max(np.vstack(results), axis=0)
 
-    def aggregate(prev, next):
-        return np.max(np.vstack((prev, next)), axis=0)
-
-    return _apply_by_file_index(bo, kurtosis, aggregate)
+    # def aggregate(prev, next):
+    #     return np.max(np.vstack((prev, next)), axis=0)
+    #
+    # return _apply_by_file_index(bo, kurtosis, aggregate)
 
 
 def _get_corrmat(bo):
@@ -492,10 +492,10 @@ def _timeseries_recon(bo, K, chunk_size=1000):
 
         Parameters
     ----------
-    bo : brain object
-        Copied brain object with zscored data
+    bo : Brain object
+        Data to be reconstructed
 
-    K : correlation matrix
+    K : Numpy.ndarray
         Correlation matix including observed and predicted locations
 
     chunk_size : int
@@ -507,39 +507,18 @@ def _timeseries_recon(bo, K, chunk_size=1000):
         Compiled reconstructed timeseries
 
     """
-    zbo = copy.copy(bo) #FIXME: something strange here...why copy the full brain object?  We could just get the z-scored data and use that...
-    zbo.data = pd.DataFrame(bo.get_zscore_data())
-
-    s = K.shape[0] - bo.locs.shape[0]
+    data = bo.get_zscore_data()
+    s = K.shape[0] - data.shape[1]
     Kba = K[:s, s:]
     Kaa = K[s:, s:]
     Kaa_inv = np.linalg.pinv(Kaa)
-
-    #TODO: this needs refactoring...
-    results = []
-    for idx, session in enumerate(bo.sessions.unique()):
-        block_results = []
-        if idx is 0:
-            for each in _chunker(zbo.sessions[bo.sessions == session].index.tolist(), chunk_size): #FIXME: the chunking could happen on the DataFrame level, not the brain object level to make this more efficient
-                z_bo = _chunk_bo(zbo, each)
-                block = np.hstack((_reconstruct_activity(z_bo, Kba, Kaa_inv), z_bo.get_data()))
-                if block_results == []:
-                    block_results = block
-                else:
-                    block_results = np.vstack((block_results, block))
-            results = zscore(block_results)
-        else:
-
-            for each in _chunker(zbo.sessions[bo.sessions == session].index.tolist(), chunk_size):
-                z_bo = _chunk_bo(zbo, each)
-                block = np.hstack((_reconstruct_activity(z_bo, Kba, Kaa_inv), z_bo.get_data()))
-                if block_results == []:
-                    block_results = block
-                else:
-                    block_results = np.vstack((block_results, block))
-            results = np.vstack((results, zscore(block_results)))
-    return results
-
+    sessions = bo.sessions.unique()
+    chunks = [np.array(i) for session in sessions for i in _chunker(bo.sessions[bo.sessions == session].index.tolist(), chunk_size)]
+    chunks = list(map(lambda x: np.array(x[x != np.array(None)], dtype=np.int8), chunks))
+    results = np.vstack(Parallel(n_jobs=multiprocessing.cpu_count())(
+        delayed(_reconstruct_activity)(data[chunk, :], Kba, Kaa_inv) for chunk in chunks))
+    zresults = list(map(lambda s: zscore(results[bo.sessions==s, :]), sessions))
+    return np.hstack([np.vstack(zresults), data])
 
 def _chunker(iterable, chunksize, fillvalue=None):
     """
@@ -568,13 +547,13 @@ def _chunker(iterable, chunksize, fillvalue=None):
     return list(zip_longest(*args, fillvalue=fillvalue))
 
 
-def _reconstruct_activity(bo, Kba, Kaa_inv):
+def _reconstruct_activity(Y, Kba, Kaa_inv):
     """
     Reconstruct activity
 
     Parameters
     ----------
-    bo : brain object
+    Y : numpy array
         brain object with zscored data
 
     Kba : correlation matrix (unknown to known)
@@ -589,8 +568,6 @@ def _reconstruct_activity(bo, Kba, Kaa_inv):
         Reconstructed timeseries
 
     """
-    Y = bo.get_data()
-
     return np.atleast_2d(np.squeeze(np.dot(np.dot(Kba, Kaa_inv), Y.T).T))
 
 def _round_it(locs, places): #TODO: do we need a separate function for this?  doesn't seem much more convenient than the np.round function...
