@@ -122,11 +122,7 @@ class Brain(object):
                 data = load(data)
 
         if isinstance(data, Brain):
-<<<<<<< HEAD
-            self = copy.copy(data) #TODO: do we *need* to copy the brain object, or can we just set self to data?
-=======
             self = data
->>>>>>> removed copies from brain object code
         else:
             if isinstance(data, (Nifti, nib.nifti1.Nifti1Image)):
                data, locs, meta = _nifti_to_brain(data)
@@ -274,7 +270,7 @@ class Brain(object):
         """
         Gets data from brain object
         """
-        return self.data.as_matrix()
+        return self.data.copy()
 
     def get_zscore_data(self):
         """
@@ -286,7 +282,7 @@ class Brain(object):
         """
         Gets locations from brain object
         """
-        return self.locs.as_matrix()
+        return self.locs.copy()
 
     def get_slice(self, sample_inds=None, loc_inds=None, inplace=False): #TODO: does this need to be done as a copy?
         """
