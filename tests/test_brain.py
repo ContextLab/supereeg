@@ -48,13 +48,13 @@ def test_samplerate_array():
     assert (bo.sample_rate is None) or (type(bo.sample_rate) is list)
 
 def test_bo_getdata_nparray():
-    assert isinstance(bo.get_data(), np.ndarray)
+    assert isinstance(bo.get_data().as_matrix(), np.ndarray)
 
 def test_bo_zscoredata_nparray():
     assert isinstance(bo.get_zscore_data(), np.ndarray)
 
 def test_bo_get_locs_nparray():
-    assert isinstance(bo.get_locs(), np.ndarray)
+    assert isinstance(bo.get_locs().as_matrix(), np.ndarray)
 
 def test_bo_get_slice():
     bo_d = bo.get_slice(sample_inds=[1, 2], loc_inds=[1])
@@ -100,6 +100,13 @@ def test_brain_getrowcols():
     bo = se.simulate_bo(n_samples=10, sample_rate=100)
     bo = bo[:5, 3]
     assert bo.data.shape==(5, 1)
+
+def test_brain_filter():
+    data = np.random.rand(10, 2)
+    locs = np.random.rand(2, 3)
+    bo = Brain(data=data, locs=locs, filter=None, sample_rate=1000)
+    assert bo.get_data().shape==(10,2)
+    assert bo.get_locs().shape==(2,3)
 
 ## can't get tests for plots to work
 
