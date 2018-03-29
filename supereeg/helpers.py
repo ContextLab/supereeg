@@ -515,8 +515,9 @@ def _timeseries_recon(bo, K, chunk_size=1000):
     sessions = bo.sessions.unique()
     chunks = [np.array(i) for session in sessions for i in _chunker(bo.sessions[bo.sessions == session].index.tolist(), chunk_size)]
     chunks = list(map(lambda x: np.array(x[x != np.array(None)], dtype=np.int8), chunks))
-    results = np.vstack(Parallel(n_jobs=multiprocessing.cpu_count())(
-        delayed(_reconstruct_activity)(data[chunk, :], Kba, Kaa_inv) for chunk in chunks))
+    # results = np.vstack(Parallel(n_jobs=multiprocessing.cpu_count())(
+    #     delayed(_reconstruct_activity)(data[chunk, :], Kba, Kaa_inv) for chunk in chunks))
+    results = np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv), chunks)))
     zresults = list(map(lambda s: zscore(results[bo.sessions==s, :]), sessions))
     return np.hstack([np.vstack(zresults), data])
 

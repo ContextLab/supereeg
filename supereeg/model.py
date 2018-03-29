@@ -205,7 +205,7 @@ class Model(object):
             activations = _timeseries_recon(bo, model_corrmat_x)
 
             return Brain(data=activations, locs=perm_locs, sessions=bo.sessions,
-                        sample_rate=bo.sample_rate, kurtosis=bo.kurtosis, label=loc_label)
+                        sample_rate=bo.sample_rate, kurtosis=None, label=loc_label)
 
     def update(self, data, measure='kurtosis', threshold=10, inplace=True,
                locs=None, n=1):
