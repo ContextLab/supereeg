@@ -1,8 +1,5 @@
 from __future__ import division
 from __future__ import print_function
-# from builtins import str
-# from builtins import range
-# from builtins import object
 import time
 import os
 import warnings
@@ -92,8 +89,12 @@ class Brain(object):
     label : list
         Label for each session
 
-    kurtosis : list of floats
-        1 by number of electrode list containing kurtosis for each electrode
+    kurtosis : int
+        Kurtosis threshold
+
+    filter : 'kurtosis' or None
+        If 'kurtosis', electrodes that exceed the kurtosis threshold will be
+        removed.  If None, no thresholding is applied.
 
     minimum_voxel_size : positive scalar or 3D numpy array
         used to construct Nifti objects; default: 3 (mm)
@@ -111,8 +112,9 @@ class Brain(object):
     """
 
     def __init__(self, data=None, locs=None, sessions=None, sample_rate=None,
-                 meta=None, date_created=None, label=None, kurtosis=None,
-                 minimum_voxel_size=3, maximum_voxel_size=20):
+                 meta=None, date_created=None, label=None, kurtosis=10,
+                 minimum_voxel_size=3, maximum_voxel_size=20,
+                 filter='kurtosis'):
 
         from .load import load, datadict
         from .model import Model
@@ -151,30 +153,6 @@ class Brain(object):
                 self.sessions = pd.Series([1 for i in range(self.data.shape[0])]) #FIXME: don't reference self.data directly
             else:
                 self.sessions = pd.Series(sessions.ravel())
-
-            # if isinstance(sample_rate, np.ndarray):
-            #     if sample_rate.ndim == 1:
-            #         sample_rate = np.atleast_2d(sample_rate)
-            #     if np.shape(sample_rate)[1]>1:
-            #         self.sample_rate = list(sample_rate[0])
-            #     elif np.shape(sample_rate)[1] == 1:
-            #         self.sample_rate = [sample_rate[0]]
-            #     assert len(self.sample_rate) ==  len(self.sessions.unique()), \
-            #         'Should be one sample rate for each session.'
-            #
-            # elif isinstance(sample_rate, list):
-            #     if isinstance(sample_rate[0], np.ndarray):
-            #         if sample_rate[0].ndim == 1:
-            #             sample_rate = np.atleast_2d(sample_rate)
-            #             self.sample_rate = [sample_rate[0]]
-            #         else:
-            #             self.sample_rate = list(sample_rate[0][0])
-            #     else:
-            #         self.sample_rate = sample_rate
-            #     print(self.sample_rate)
-            #     print(self.sessions.unique())
-            #     assert len(self.sample_rate) ==  len(self.sessions.unique()), \
-            #     'Should be one sample rate for each session.'
 
             if type(sample_rate) in [int, float]:
                 self.sample_rate = [sample_rate]*len(self.sessions.unique())
@@ -221,8 +199,13 @@ class Brain(object):
 
             self.n_elecs = self.data.shape[1] # needs to be calculated by sessions #FIXME: don't reference self.data directly
             self.n_sessions = len(self.sessions.unique())
-            self.kurtosis = _kurt_vals(self)
-            self.threshold = 10
+
+            if self.filter=='kurtosis':
+                self.filter = _kurt_vals(self)
+                self.threshold = kurtosis
+            else:
+                self.filter = np.zeros(1, bo.locs.shape[0])
+                self.threshold = None
 
             if not label:
                 self.label = len(self.locs) * ['observed'] #FIXME: don't reference self.locs directly
@@ -272,19 +255,19 @@ class Brain(object):
         """
         Gets data from brain object
         """
-        return self.data.iloc[:, ~(self.kurtosis > self.threshold)]
+        return self.data.iloc[:, ~(self.filter > self.threshold)]
 
     def get_zscore_data(self):
         """
         Gets zscored data from brain object
         """
-        return zscore(self.data.iloc[:, ~(self.kurtosis > self.threshold)])
+        return zscore(self.data.iloc[:, ~(self.filter > self.threshold)])
 
     def get_locs(self): #TODO: all filtering, rounding, etc. should be done/managed here (with expensive computations precomputed and saved to other fields)
         """
         Gets locations from brain object
         """
-        return self.locs.iloc[~(self.kurtosis > self.threshold), :]
+        return self.locs.iloc[~(self.filter > self.threshold), :]
 
     def get_slice(self, sample_inds=None, loc_inds=None, inplace=False): #TODO: does this need to be done as a copy?
         """
@@ -349,12 +332,10 @@ class Brain(object):
         if resample_rate is None:
             return self
         else:
-
             data, sessions, sample_rate = _resample(self, resample_rate)
             self.data = data
             self.sessions = sessions
             self.sample_rate = sample_rate
-
 
     def plot_data(self, filepath=None, time_min=None, time_max=None, title=None,
                   electrode=None, threshold=10, filtered=True):
@@ -485,7 +466,6 @@ class Brain(object):
                 If template is Nifti1Image :
                     - Uses specified Nifti image
 
-
         Returns
         ----------
 
@@ -521,9 +501,6 @@ class Brain(object):
 
         elif type(template) is nib.nifti1.Nifti1Image:
             img = template
-
-        # elif type(template) is Nifti:
-        #     img = template
 
         elif isinstance(template, str) or isinstance(template, basestring):
 
