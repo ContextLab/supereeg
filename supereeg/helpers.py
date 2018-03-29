@@ -521,7 +521,7 @@ def _timeseries_recon(bo, K, chunk_size=1000):
     results = np.vstack(Parallel(n_jobs=multiprocessing.cpu_count())(
         delayed(_reconstruct_activity)(data[chunk, :], Kba, Kaa_inv) for chunk in chunks))
     zresults = list(map(lambda s: zscore(results[bo.sessions==s, :]), sessions))
-    return np.hstack([data, np.vstack(zresults)])
+    return np.hstack([np.vstack(zresults), data])
 
 def _chunker(iterable, chunksize, fillvalue=None):
     """
