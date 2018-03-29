@@ -44,10 +44,9 @@ def _std(res=None):
 
     """
     from .nifti import Nifti
+    from .load import load
 
-    std_fname = os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/std.nii'
-    #std_img = nib.load(std_fname)
-    std_img = Nifti(std_fname)
+    std_img = load('std')
     if res:
         return _resample_nii(std_img, res)
     else:
@@ -72,11 +71,9 @@ def _gray(res=None):
 
     """
     from .nifti import Nifti
+    from .load import load
 
-    gray_fname = os.path.dirname(os.path.abspath(__file__)) + '/../supereeg/data/gray.nii'
-    #gray_img = nib.load(gray_fname)
-    gray_img = Nifti(gray_fname)
-
+    gray_img = load('gray')
     threshold = 100
     gray_data = gray_img.get_data()
     gray_data[np.isnan(gray_data) | (gray_data < threshold)] = 0

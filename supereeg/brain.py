@@ -13,8 +13,9 @@ import pandas as pd
 import nibabel as nib
 import deepdish as dd
 import matplotlib.pyplot as plt
+from scipy.stats import zscore
 from .helpers import _kurt_vals, _z_score, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, \
-    _plot_locs_hyp, _std, _gray, _nifti_to_brain, _brain_to_nifti, filter_elecs
+    _plot_locs_hyp, _std, _gray, _nifti_to_brain, _brain_to_nifti
 
 class Brain(object):
     """
@@ -271,13 +272,13 @@ class Brain(object):
         """
         Gets data from brain object
         """
-        return filter_elecs(self).data.copy()
+        return self.data.iloc[:, ~(self.kurtosis > self.threshold)]
 
     def get_zscore_data(self):
         """
         Gets zscored data from brain object
         """
-        return _z_score(filter_elecs(self))
+        return zscore(self.data.iloc[:, ~(self.kurtosis > self.threshold)])
 
     def get_locs(self): #TODO: all filtering, rounding, etc. should be done/managed here (with expensive computations precomputed and saved to other fields)
         """
