@@ -35,10 +35,10 @@ a nifti and plot the reconstruction.
  Out::
 
     Number of electrodes: 210
-    Recording time in seconds: [ 5.3984375 14.1328125]
+    Recording time in seconds: None
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
-    Date created: Thu Mar 29 23:35:30 2018
+    Date created: Fri Mar 30 13:59:40 2018
     Meta data: {}
 
 
@@ -75,7 +75,7 @@ a nifti and plot the reconstruction.
 
     # plot nifti reconstruction
     reconstructed_nii.plot_glass_brain()
-**Total running time of the script:** ( 0 minutes  1.606 seconds)
+**Total running time of the script:** ( 0 minutes  1.846 seconds)
 
 
 

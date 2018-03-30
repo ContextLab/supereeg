@@ -42,13 +42,13 @@ This example filters electrodes based on kurtosis thresholding (default=10).
  Out::
 
     Number of electrodes: 40
-    Recording time in seconds: [10.00186035]
+    Recording time in seconds: None
     Sample Rate in Hz: [499.907]
     Number of sessions: 1
     Date created: Mon Jan 15 14:39:35 2018
     Meta data: BW013
     Number of electrodes: 40
-    Recording time in seconds: [10.00186035]
+    Recording time in seconds: None
     Sample Rate in Hz: [499.907]
     Number of sessions: 1
     Date created: Mon Jan 15 14:39:35 2018
@@ -93,7 +93,7 @@ This example filters electrodes based on kurtosis thresholding (default=10).
     # 40 locations
     bo.info()
 
-**Total running time of the script:** ( 0 minutes  1.277 seconds)
+**Total running time of the script:** ( 0 minutes  1.299 seconds)
 
 
 
