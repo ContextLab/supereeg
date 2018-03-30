@@ -46,7 +46,6 @@ This example converts a brain object into a nifti and saves it.
     # convert to nifti two ways:
 
     # if no parameters are passed default uses gray matter masked brain downsampled to 6 mm resolution
-
     # 1: convert with to_nii() method
     nii_bo1 = bo.to_nii(template='gray', vox_size=20)
 
@@ -59,7 +58,7 @@ This example converts a brain object into a nifti and saves it.
 
     # save nifti
     #nii_bo.save('/path/to/save/nifti')
-**Total running time of the script:** ( 0 minutes  1.709 seconds)
+**Total running time of the script:** ( 0 minutes  1.889 seconds)
 
 
 

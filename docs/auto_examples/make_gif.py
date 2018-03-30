@@ -16,7 +16,6 @@ first with the plot_glass_brain and then create .png files and compile as a gif.
 
 # load
 import supereeg as se
-import numpy as np
 
 # load example data
 bo = se.load('example_data')

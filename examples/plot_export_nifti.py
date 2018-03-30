@@ -21,7 +21,6 @@ bo = se.load('example_data')
 # convert to nifti two ways:
 
 # if no parameters are passed default uses gray matter masked brain downsampled to 6 mm resolution
-
 # 1: convert with to_nii() method
 nii_bo1 = bo.to_nii(template='gray', vox_size=20)
 
