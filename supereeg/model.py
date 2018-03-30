@@ -382,7 +382,7 @@ def _bo2model(bo, locs, measure, threshold):
     sub_corrmat = _get_corrmat(bo)
     np.fill_diagonal(sub_corrmat, 0)
     sub_corrmat_z = _r2z(sub_corrmat)
-    sub_rbf_weights = _rbf(locs, bo.locs)
+    sub_rbf_weights = _rbf(locs, bo.get_locs())
     n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
     return n, d, 1
 
