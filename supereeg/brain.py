@@ -581,7 +581,7 @@ class Brain(object):
             'minimum_voxel_size': self.minimum_voxel_size,
             'maximum_voxel_size': self.maximum_voxel_size,
             'label' : self.label,
-            'filter' : self.kurtosis,
+            'filter' : self.filter,
         }
 
         if fname[-3:] != '.bo':
