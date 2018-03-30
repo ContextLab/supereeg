@@ -31,7 +31,6 @@ setup(
         'imageio',
         'future',
         'hypertools',
-        'scikit-image',
         'six'
     ],
     packages=find_packages(exclude=('tests', 'docs')),
