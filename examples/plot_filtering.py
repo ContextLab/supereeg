@@ -15,7 +15,14 @@ This example filters electrodes based on kurtosis thresholding (default=10).
 import supereeg as se
 
 # load example data
-bo = se.load('example_filter')
+bo = se.Brain('example_filter', filter=None)
+
+bo.plot_data()
+
+# load example data
+bo_f = se.Brain('example_filter', filter='kurtosis')
+
+bo_f.plot_data()
 
 # to get kurtosis values
 kurtosis_vals = bo.kurtosis
