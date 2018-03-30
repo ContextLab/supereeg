@@ -50,6 +50,14 @@ original brain object.
     bo = se.simulate_bo(n_samples=1000, sample_rate=1000, cov='toeplitz', locs=locs, noise =.3)
 
     # sample 10 locations, and get indices
+    sub_locs = locs.sample(10, replace=False).sort_values(['x', 'y', 'z'])
+
+    R = se.create_cov(cov='random', n_elecs=len(sub_locs))
+    toe_model = se.Model(data=R, locs=sub_locs)
+
+    bo_s = toe_model.predict(bo, nearest_neighbor=False)
+
+    # sample 10 locations, and get indices
     sub_locs = locs.sample(10).sort_values(['x', 'y', 'z']).index.values.tolist()
 
     # index brain object to get sample patient
@@ -61,7 +69,7 @@ original brain object.
     # plot sample patient data
     bo_sample.plot_data()
 
-**Total running time of the script:** ( 0 minutes  0.381 seconds)
+**Total running time of the script:** ( 0 minutes  0.580 seconds)
 
 
 

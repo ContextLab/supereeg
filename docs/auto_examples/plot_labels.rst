@@ -54,7 +54,7 @@ model locations. We then plot locations, which are colored labels 'observed' and
     # plot the all reconstructed locations
     reconstructed_bo.plot_locs()
 
-**Total running time of the script:** ( 0 minutes  3.640 seconds)
+**Total running time of the script:** ( 0 minutes  4.587 seconds)
 
 
 

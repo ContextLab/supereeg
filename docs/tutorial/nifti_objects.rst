@@ -33,13 +33,20 @@ Nifti objects can be initialized by passing a nifti object (ending in
 ``.nii``), but can also be initialized with a model object or brain
 object by specifying ``return_type`` as ``nii``, your desired
 ``template`` (``gray`` or ``std``) and voxel size as ``vox_size`` in the
-load function.
+load function. You can also initialize a nifti object by passing a brain
+object or model object to ``se.Nifti()``.
 
 For example, you can load a brain object as a nifti object:
 
 .. code:: ipython2
 
     bo_nii = se.load('example_data', return_type='nii')
+
+Or you can:
+
+.. code:: ipython2
+
+    bo_nii = se.Nifti('example_data', vox_size=6)
 
 Nifti object methods
 ====================
@@ -129,7 +136,7 @@ by ``nifti.plot_glass_brain``.
 
 
 
-.. image:: nifti_objects_files/nifti_objects_13_0.png
+.. image:: nifti_objects_files/nifti_objects_15_0.png
 
 
 ``nifti.plot_anat()``
@@ -147,7 +154,7 @@ arguments that ``nilearn.plot_anat`` accepts are supported by
 
 
 
-.. image:: nifti_objects_files/nifti_objects_15_0.png
+.. image:: nifti_objects_files/nifti_objects_17_0.png
 
 
 ``nifti.make_gif()``

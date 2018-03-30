@@ -15,11 +15,11 @@ Load in the required libraries
 
 .. code:: ipython2
 
+    import supereeg as se
+    import numpy as np
     import warnings 
     warnings.simplefilter("ignore")
     %matplotlib inline
-    import supereeg as se
-    import numpy as np
 
 Simulate some data
 ==================
@@ -58,16 +58,16 @@ We’ll also simulate some electrode locations
 .. parsed-literal::
 
         x   y   z
-    0 -32  44  18
-    1 -24   4  -8
-    2 -18  22  20
-    3 -16  18   2
-    4  -4  38  40
-    5   5  -1 -36
-    6   9 -12 -17
-    7  18  45  47
-    8  22  19 -37
-    9  34 -11 -40
+    0 -38  35 -32
+    1 -34  28 -38
+    2 -30  22 -15
+    3 -24 -48  26
+    4 -23  47  -3
+    5 -19 -47 -41
+    6 -17 -23  41
+    7  -1  49  39
+    8  31  26   1
+    9  48  46  39
 
 
 Creating a brain object
@@ -94,7 +94,7 @@ To view a summary of the contents of the brain object, you can call the
     Recording time in seconds: [10.]
     Sample Rate in Hz: [100]
     Number of sessions: 1
-    Date created: Mon Mar 26 14:20:49 2018
+    Date created: Thu Mar 29 22:49:57 2018
     Meta data: {}
 
 
@@ -115,7 +115,7 @@ each session. For example:
     Recording time in seconds: [0.5 0.5]
     Sample Rate in Hz: [1000, 1000]
     Number of sessions: 2
-    Date created: Mon Mar 26 14:20:49 2018
+    Date created: Thu Mar 29 22:49:57 2018
     Meta data: {}
 
 
@@ -140,7 +140,7 @@ want:
     Recording time in seconds: [0.5 0.5]
     Sample Rate in Hz: [1000, 1000]
     Number of sessions: 2
-    Date created: Mon Mar 26 14:20:49 2018
+    Date created: Thu Mar 29 22:49:57 2018
     Meta data: {'Hospital': 'DHMC', 'subjectID': '123', 'Investigator': 'Andy'}
 
 
@@ -149,13 +149,20 @@ Initialize brain objects
 
 Brain objects can be initialized by passing a brain object (ending in
 ``.bo``), but can also be initialized with a model object or nifti
-object by specifying ``return_type`` as ``bo`` in the load function.
+object by specifying ``return_type`` as ``bo`` in the load function or
+passing the model object or nifti object to ``se.Brain()``.
 
 For example, you can load a nifti object as a brain object:
 
 .. code:: ipython2
 
-    bo_nii = se.load('example_nifti', return_type='bo')
+    nii_bo = se.load('example_nifti', return_type='bo')
+
+Or you can:
+
+.. code:: ipython2
+
+    nii_bo = se.Brain('example_nifti')
 
 Another feature, which can be particularly useful when working with lots
 of data, is loading only a subfield by specifiying ``field``. For
@@ -169,11 +176,11 @@ The structure of a brain object
 ===============================
 
 Inside the brain object, the iEEG data is stored as a Pandas DataFrame
-that can be accessed directly:
+that can be accessed with the ``get_data`` function:
 
 .. code:: ipython2
 
-    bo.data.head()
+    bo.get_data().head()
 
 
 
@@ -213,68 +220,68 @@ that can be accessed directly:
       <tbody>
         <tr>
           <th>0</th>
-          <td>-0.166721</td>
-          <td>-0.735446</td>
-          <td>0.136337</td>
-          <td>-0.493442</td>
-          <td>-0.669883</td>
-          <td>-0.067817</td>
-          <td>0.703807</td>
-          <td>-0.375587</td>
-          <td>-0.045724</td>
-          <td>0.447436</td>
+          <td>-0.558500</td>
+          <td>-0.343205</td>
+          <td>-0.655767</td>
+          <td>-1.091866</td>
+          <td>-0.193612</td>
+          <td>-0.216070</td>
+          <td>-0.974157</td>
+          <td>-0.863779</td>
+          <td>0.002354</td>
+          <td>-0.203267</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>0.977057</td>
-          <td>0.367045</td>
-          <td>1.213232</td>
-          <td>0.883331</td>
-          <td>0.421231</td>
-          <td>0.224865</td>
-          <td>0.494422</td>
-          <td>0.438879</td>
-          <td>0.768239</td>
-          <td>0.532497</td>
+          <td>1.051535</td>
+          <td>1.247053</td>
+          <td>1.438746</td>
+          <td>2.084906</td>
+          <td>2.406251</td>
+          <td>1.156110</td>
+          <td>2.385147</td>
+          <td>1.799107</td>
+          <td>1.417344</td>
+          <td>1.251292</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>-0.032824</td>
-          <td>0.059303</td>
-          <td>-0.260883</td>
-          <td>-0.095137</td>
-          <td>-0.127646</td>
-          <td>-0.314333</td>
-          <td>-0.416271</td>
-          <td>-0.401835</td>
-          <td>-0.277715</td>
-          <td>-0.278955</td>
+          <td>1.119984</td>
+          <td>1.375932</td>
+          <td>0.910111</td>
+          <td>-0.308578</td>
+          <td>0.579535</td>
+          <td>0.858444</td>
+          <td>-0.267532</td>
+          <td>-0.124669</td>
+          <td>-0.175800</td>
+          <td>0.147065</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>-0.330126</td>
-          <td>-0.042770</td>
-          <td>0.404674</td>
-          <td>-0.291244</td>
-          <td>0.451615</td>
-          <td>-0.038787</td>
-          <td>0.660893</td>
-          <td>0.073266</td>
-          <td>-0.413868</td>
-          <td>-0.499040</td>
+          <td>-0.970159</td>
+          <td>-0.805279</td>
+          <td>-1.243079</td>
+          <td>-2.597558</td>
+          <td>-1.734775</td>
+          <td>-1.131715</td>
+          <td>-2.515840</td>
+          <td>-1.804130</td>
+          <td>-1.317635</td>
+          <td>-1.198163</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>0.210748</td>
-          <td>0.458880</td>
-          <td>-0.198907</td>
-          <td>-0.767037</td>
-          <td>-0.400930</td>
-          <td>0.280938</td>
-          <td>-0.128577</td>
-          <td>-0.333963</td>
-          <td>0.128189</td>
-          <td>0.181897</td>
+          <td>0.440381</td>
+          <td>-0.578236</td>
+          <td>0.199678</td>
+          <td>-0.766194</td>
+          <td>-0.491068</td>
+          <td>0.184369</td>
+          <td>-0.231148</td>
+          <td>-0.148330</td>
+          <td>0.002644</td>
+          <td>0.454412</td>
         </tr>
       </tbody>
     </table>
@@ -282,39 +289,12 @@ that can be accessed directly:
 
 
 
-or returned as a numpy array using the ``get_data`` method:
-
-.. code:: ipython2
-
-    bo.get_data()
-
-
-
-
-.. parsed-literal::
-
-    array([[-0.16672125, -0.73544645,  0.13633688, ..., -0.37558716,
-            -0.045724  ,  0.44743646],
-           [ 0.97705674,  0.36704511,  1.21323242, ...,  0.43887919,
-             0.76823864,  0.53249679],
-           [-0.03282407,  0.05930328, -0.2608827 , ..., -0.40183459,
-            -0.27771469, -0.27895509],
-           ...,
-           [-0.15861685, -0.35000387, -0.53935005, ...,  0.3175927 ,
-            -0.25171538, -0.77606798],
-           [-0.18379987,  0.51628732,  0.0855524 , ..., -0.42966452,
-             0.45730719,  0.40093573],
-           [-0.8515807 , -0.74671065, -0.67795756, ..., -1.03631457,
-            -1.60744174, -0.81321251]])
-
-
-
 Similarly, the electrode locations are stored as a Pandas DataFrame, and
-can be retrieved as a numpy array using the ``get_locs`` method:
+can be retrieved using the ``get_locs`` method:
 
 .. code:: ipython2
 
-    bo.locs.head()
+    bo.get_locs().head()
 
 
 
@@ -347,59 +327,37 @@ can be retrieved as a numpy array using the ``get_locs`` method:
       <tbody>
         <tr>
           <th>0</th>
+          <td>-38</td>
+          <td>35</td>
           <td>-32</td>
-          <td>44</td>
-          <td>18</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>-24</td>
-          <td>4</td>
-          <td>-8</td>
+          <td>-34</td>
+          <td>28</td>
+          <td>-38</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>-18</td>
+          <td>-30</td>
           <td>22</td>
-          <td>20</td>
+          <td>-15</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>-16</td>
-          <td>18</td>
-          <td>2</td>
+          <td>-24</td>
+          <td>-48</td>
+          <td>26</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>-4</td>
-          <td>38</td>
-          <td>40</td>
+          <td>-23</td>
+          <td>47</td>
+          <td>-3</td>
         </tr>
       </tbody>
     </table>
     </div>
-
-
-
-.. code:: ipython2
-
-    bo.get_locs()
-
-
-
-
-.. parsed-literal::
-
-    array([[-32,  44,  18],
-           [-24,   4,  -8],
-           [-18,  22,  20],
-           [-16,  18,   2],
-           [ -4,  38,  40],
-           [  5,  -1, -36],
-           [  9, -12, -17],
-           [ 18,  45,  47],
-           [ 22,  19, -37],
-           [ 34, -11, -40]])
 
 
 
@@ -420,11 +378,53 @@ Brain objects are iterable, so you index a brain object like this:
 
 
 
-.. parsed-literal::
+.. raw:: html
 
-    array([[-0.16672125, -0.73544645,  0.13633688],
-           [ 0.97705674,  0.36704511,  1.21323242],
-           [-0.03282407,  0.05930328, -0.2608827 ]])
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>0</th>
+          <th>1</th>
+          <th>2</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>-0.558500</td>
+          <td>-0.343205</td>
+          <td>-0.655767</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>1.051535</td>
+          <td>1.247053</td>
+          <td>1.438746</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>1.119984</td>
+          <td>1.375932</td>
+          <td>0.910111</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
 
 
 
@@ -439,11 +439,53 @@ the ``get_slice`` method and return a subset of the brain object
 
 
 
-.. parsed-literal::
+.. raw:: html
 
-    array([[-0.16672125, -0.73544645,  0.13633688],
-           [ 0.97705674,  0.36704511,  1.21323242],
-           [-0.03282407,  0.05930328, -0.2608827 ]])
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>0</th>
+          <th>1</th>
+          <th>2</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>-0.558500</td>
+          <td>-0.343205</td>
+          <td>-0.655767</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>1.051535</td>
+          <td>1.247053</td>
+          <td>1.438746</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>1.119984</td>
+          <td>1.375932</td>
+          <td>0.910111</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
 
 
 
@@ -461,7 +503,7 @@ You can resample your data by specifying a new resample rate
     Recording time in seconds: [0.5 0.5]
     Sample Rate in Hz: [64, 64]
     Number of sessions: 2
-    Date created: Mon Mar 26 14:20:49 2018
+    Date created: Thu Mar 29 22:49:57 2018
     Meta data: {'Hospital': 'DHMC', 'subjectID': '123', 'Investigator': 'Andy'}
 
 
@@ -473,7 +515,7 @@ You can also plot both the data and the electrode locations:
 
 
 
-.. image:: brain_objects_files/brain_objects_33_0.png
+.. image:: brain_objects_files/brain_objects_32_0.png
 
 
 .. code:: ipython2
@@ -482,7 +524,7 @@ You can also plot both the data and the electrode locations:
 
 
 
-.. image:: brain_objects_files/brain_objects_34_0.png
+.. image:: brain_objects_files/brain_objects_33_0.png
 
 
 The other pieces of the brain object are listed below:
@@ -537,7 +579,7 @@ This method will give you a summary of the brain object:
     Recording time in seconds: [0.5 0.5]
     Sample Rate in Hz: [64, 64]
     Number of sessions: 2
-    Date created: Mon Mar 26 14:20:49 2018
+    Date created: Thu Mar 29 22:49:57 2018
     Meta data: {'Hospital': 'DHMC', 'subjectID': '123', 'Investigator': 'Andy'}
 
 
@@ -591,7 +633,7 @@ This method allows you resample a brain object in place.
 
 .. parsed-literal::
 
-    <supereeg.brain.Brain at 0x112c4c250>
+    <supereeg.brain.Brain at 0x111d74390>
 
 
 
@@ -606,7 +648,7 @@ This method normalizes and plots data from brain object:
 
 
 
-.. image:: brain_objects_files/brain_objects_51_0.png
+.. image:: brain_objects_files/brain_objects_50_0.png
 
 
 ``bo.plot_locs()``
@@ -620,7 +662,7 @@ This method plots electrode locations from brain object:
 
 
 
-.. image:: brain_objects_files/brain_objects_53_0.png
+.. image:: brain_objects_files/brain_objects_52_0.png
 
 
 ``bo.to_nii()``
@@ -635,7 +677,7 @@ gray matter masked MNI 152 brain downsampled to 6mm.
 .. code:: ipython2
 
     # convert to nifti
-    nii = bo.to_nii()
+    nii = bo.to_nii(template='gray', vox_size=6)
     
     # plot first timepoint
     nii.plot_glass_brain()
@@ -648,7 +690,7 @@ gray matter masked MNI 152 brain downsampled to 6mm.
 
 
 
-.. image:: brain_objects_files/brain_objects_55_0.png
+.. image:: brain_objects_files/brain_objects_54_0.png
 
 
 ``bo.save(fname='something')``

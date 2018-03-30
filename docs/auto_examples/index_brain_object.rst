@@ -42,8 +42,8 @@ samples.
     #returns first 5 timesamples/elecs
     bo4 = bo[:5, :5]
 
-    # or index by both locations and times in place using get_slice method
-    bo.get_slice(sample_inds=[1,2,3,4,5], loc_inds=[10,11,12], inplace=True)
+    # or index by both locations and times in place using get_slice method and specify inplace=True
+    bo.get_slice(sample_inds=[0,1,2,3,4], loc_inds=[0,1,2,3,4], inplace=True)
 
 **Total running time of the script:** ( 0 minutes  0.000 seconds)
 

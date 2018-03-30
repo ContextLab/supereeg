@@ -515,8 +515,9 @@ def _timeseries_recon(bo, K, chunk_size=1000):
     sessions = bo.sessions.unique()
     chunks = [np.array(i) for session in sessions for i in _chunker(bo.sessions[bo.sessions == session].index.tolist(), chunk_size)]
     chunks = list(map(lambda x: np.array(x[x != np.array(None)], dtype=np.int8), chunks))
-    results = np.vstack(Parallel(n_jobs=multiprocessing.cpu_count())(
-        delayed(_reconstruct_activity)(data[chunk, :], Kba, Kaa_inv) for chunk in chunks))
+    # results = np.vstack(Parallel(n_jobs=multiprocessing.cpu_count())(
+    #     delayed(_reconstruct_activity)(data[chunk, :], Kba, Kaa_inv) for chunk in chunks))
+    results = np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv), chunks)))
     zresults = list(map(lambda s: zscore(results[bo.sessions==s, :]), sessions))
     return np.hstack([np.vstack(zresults), data])
 
@@ -802,7 +803,7 @@ def _near_neighbor(bo, mo, match_threshold='auto'): #TODO: should this be part o
             thresh_bool = thresh_bool.any(1).ravel()
             assert match_threshold > 0, 'Negative Euclidean distances are not allowed'
         nbo.data = nbo.data.loc[:, ~thresh_bool]
-        nbo.orig_locs = nbo.locs
+        nbo.locs = nbo.locs.loc[~thresh_bool, :]
         nbo.n_elecs = nbo.data.shape[1]
         nbo.kurtosis = nbo.kurtosis[~thresh_bool]
         return nbo
@@ -825,14 +826,19 @@ def _vox_size(locs):
         1 x n_dims of voxel size
 
     """
+    from .brain import Brain
+    bo_n = Brain(data=np.array([0]))
     n_dims = locs.shape[1]
     v_size = np.zeros([1, n_dims])
     # make voxel function
     for i in np.arange(n_dims):
         a = np.unique(locs.iloc[:, i])
         dists = pdist(np.atleast_2d(a).T, 'euclidean')
-        v_size[0][i] = np.min(dists[dists > 0])
-
+        #v_size[0][i] = np.min(dists[dists > 0])
+        if np.sum(dists > 0) > 0:
+            v_size[0][i] = np.min(dists[dists > 0])
+        else:
+            v_size[0][i] = bo_n.minimum_voxel_size
     return v_size
 
 
@@ -1025,19 +1031,12 @@ def _plot_locs_connectome(locs, label=None, pdfpath=None):
 
 
     """
-    if label:
-        for (i, item) in enumerate(label):
-            if item == 'observed':
-                label[i] = [0, 0, 0]
-            elif item == 'reconstructed':
-                label[i] = [1, 0, 0]
-
+    if label is not None:
+        label = list(map(lambda x: [0,0,0] if x=='observed' else [1,0,0], label))
         colors = np.asarray(label)
         colors = list(map(lambda x: x[0], np.array_split(colors, colors.shape[0], axis=0)))
-
     else:
         colors = 'k'
-
     ni_plt.plot_connectome(np.eye(locs.shape[0]), locs, output_file=pdfpath,
                            node_kwargs={'alpha': 0.5, 'edgecolors': None},
                            node_size=10, node_color=colors)

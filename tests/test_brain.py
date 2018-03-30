@@ -104,7 +104,7 @@ def test_brain_getrowcols():
 def test_brain_filter():
     data = np.random.rand(10, 2)
     locs = np.random.rand(2, 3)
-    bo = Brain(data=data, locs=locs, filter=None, sample_rate=1000)
+    bo = se.Brain(data=data, locs=locs, filter=None, sample_rate=1000)
     assert bo.get_data().shape==(10,2)
     assert bo.get_locs().shape==(2,3)
 

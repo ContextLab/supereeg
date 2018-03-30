@@ -41,7 +41,7 @@ Here, we load an example nifti image and plot it two ways.
 
     # load nifti objects by passing directly to Nifti class
     # if no parameters are passed default uses gray matter masked brain downsampled to 6 mm resolution
-    bo_nii = se.Nifti('example_data')
+    bo_nii = se.Nifti('example_data', vox_size=6)
 
     # plot first 2 timepoints as plot_glass_brain
     # default will plot first timepoint
@@ -50,7 +50,7 @@ Here, we load an example nifti image and plot it two ways.
 
 
 
-**Total running time of the script:** ( 0 minutes  5.459 seconds)
+**Total running time of the script:** ( 0 minutes  1.791 seconds)
 
 
 

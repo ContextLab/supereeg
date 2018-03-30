@@ -25,7 +25,7 @@ bo = se.load('example_data')
 model = se.load('example_model')
 
 # the default will replace the electrode location with the nearest voxel and reconstruct at all other locations
-reconstructed_bo = model.predict(bo)
+reconstructed_bo = model.predict(bo, nearest_neighbor=False)
 
 # print out info on new brain object
 reconstructed_bo.info()

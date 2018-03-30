@@ -17,20 +17,23 @@ import supereeg as se
 # load example data
 bo = se.load('example_filter')
 
-# to get kurtosis values
-kurtosis_vals = bo.kurtosis
-
-# 40 locations before filtering
-bo.get_locs()
-
-# but filtered=False will show all electrodes
-bo.plot_data(filtered=False)
-
-# filter elecs, default measure='kurtosis' and threshold=10
-f_bo = se.filter_elecs(bo)
-
-# 37 locations after filtering
-f_bo.get_locs()
-
-# plot data will filter in place
+# plot filtered data as default
 bo.plot_data()
+
+# plot filtered locations as default
+bo.plot_locs()
+
+# 37 locations
+bo.info()
+
+# or you can set filter to None if you want to plot original data
+bo.filter = None
+
+# plot unfiltered data
+bo.plot_data()
+
+# plot unfiltered locations
+bo.plot_locs()
+
+# 40 locations
+bo.info()
