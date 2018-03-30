@@ -2,16 +2,17 @@
 
 <h2>Overview</h2>
 
-[supereeg](https://github.com/ContextLab/supereeg>) (name inspired by Robert Sawyer's [The Terminal Experiment]( <)https://en.wikipedia.org/wiki/The_Terminal_Experiment)) is a (fictional) tool for recording the electrical activities of every neuron in the living human brain.  Our approach is somewhat less ambitious, but (we think) still "super" cool: obtain high spatiotemporal estimates of activity patterns throughout the brain using data from a small(ish) number of  [implanted electrodes](https://en.wikipedia.org/wiki/Electrocorticography).  The toolbox is designed to analyze ECoG (electrocorticographic) data, e.g. from epilepsy patients undergoing pre-surgical evaluation.
+[supereeg](https://github.com/ContextLab/supereeg>) (name inspired by Robert Sawyer's [The Terminal Experiment](https://en.wikipedia.org/wiki/The_Terminal_Experiment) is a (fictional) tool for recording the electrical activities of every neuron in the living human brain.  Our approach is somewhat less ambitious, but (we think) still "super" cool: obtain high spatiotemporal estimates of activity patterns throughout the brain using data from a small(ish) number of  [implanted electrodes](https://en.wikipedia.org/wiki/Electrocorticography).  The toolbox is designed to analyze ECoG (electrocorticographic) data, e.g. from epilepsy patients undergoing pre-surgical evaluation.
 
 The way the technique works is to leverage data from different patients' brains (who had electrodes implanted in different locations) to learn a "correlation model" that describes how activity patterns at different locations throughout the brain relate.  Given this model, along with data from a sparse set of locations, we use Gaussian process regression to "fill in" what the patients' brains were "most probably" doing when those recordings were taken.  Details on our approach may be found in [this preprint](http://biorxiv.org/content/early/2017/03/27/121020).  You may also be interested in watching [this talk](https://youtu.be/DvzfPsOMvOw?t=2s) or reading this [blog post](https://community.sfn.org/t/supereeg-ecog-data-breaks-free-from-electrodes/8344) from a recent conference.
 
 Although our toolbox is designed with ECoG data in mind, in theory this tool could be applied to a very general set of applications.  The general problem we solve is: given known (correlational) structure of a large number of "features," and given that (at any one time) you only observe some of those features, how much can you infer about what the remaining features are doing?
 
-Toolbox documentation, including a full API specification, tutorials, and gallery of examples may be found [here](http://supereeg.readthedocs.io/)
+Toolbox documentation, including a full API specification, tutorials, and gallery of examples may be found [here](http://supereeg.readthedocs.io/) on our readthedocs page.
 
 <h2>Installation</h2>
 
+<h3>Recommended way of installing the toolbox</h3>
 You may install the latest stable version of our toolbox using [pip](https://pypi.python.org/pypi/pip):
 
 `pip install supereeg`
@@ -20,7 +21,8 @@ or if you have a previous version already installed:
 
 `pip install --upgrade supereeg`
 
-To install the latest (bleeding edge) version directly from this repo use:
+<h3>Dangerous/hacker/developer way of installing the toolbox (use caution!)</h3>
+To install the latest (bleeding edge) version directly from this repository use:
 
 `pip install --upgrade git+https://github.com/ContextLab/supereeg.git`
 
@@ -74,7 +76,7 @@ Here is a bibtex formatted reference:
 
 <h2>Contributing</h2>
 
-(Some text borrowed from Matplotlib contributing [guide](http://matplotlib.org/devdocs/devel/contributing.html).)
+Thanks for considering adding to our toolbox!  Some text below hoas been borrowed from the [Matplotlib contributing guide](http://matplotlib.org/devdocs/devel/contributing.html).
 
 <h3>Submitting a bug report</h3>
 
