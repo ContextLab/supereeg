@@ -826,14 +826,19 @@ def _vox_size(locs):
         1 x n_dims of voxel size
 
     """
+    from .brain import Brain
+    bo_n = Brain(data=np.array([0]))
     n_dims = locs.shape[1]
     v_size = np.zeros([1, n_dims])
     # make voxel function
     for i in np.arange(n_dims):
         a = np.unique(locs.iloc[:, i])
         dists = pdist(np.atleast_2d(a).T, 'euclidean')
-        v_size[0][i] = np.min(dists[dists > 0])
-
+        #v_size[0][i] = np.min(dists[dists > 0])
+        if np.sum(dists > 0) > 0:
+            v_size[0][i] = np.min(dists[dists > 0])
+        else:
+            v_size[0][i] = bo_n.minimum_voxel_size
     return v_size
 
 

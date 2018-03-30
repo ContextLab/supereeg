@@ -129,26 +129,6 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we load in a single subject example, load a model, and predict activity at all...">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_labels_thumb.png
-
-        :ref:`sphx_glr_auto_examples_plot_labels.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/plot_labels
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="This example filters electrodes based on kurtosis thresholding (default=10).">
 
 .. only:: html
@@ -169,13 +149,13 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Here, we load an example dataset, and then slice out some electrodes and time samples.">
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we load in a single subject example, load a model, and predict activity at all...">
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_index_brain_object_thumb.png
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_labels_thumb.png
 
-        :ref:`sphx_glr_auto_examples_index_brain_object.py`
+        :ref:`sphx_glr_auto_examples_plot_labels.py`
 
 .. raw:: html
 
@@ -185,7 +165,7 @@ Gallery of Examples
 .. toctree::
    :hidden:
 
-   /auto_examples/index_brain_object
+   /auto_examples/plot_labels
 
 .. raw:: html
 
@@ -209,6 +189,26 @@ Gallery of Examples
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Here, we load an example dataset, and then slice out some electrodes and time samples.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_index_brain_object_thumb.png
+
+        :ref:`sphx_glr_auto_examples_index_brain_object.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/index_brain_object
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="In this example, we simulate 3 brain objects using a subset of 10 locations. We will impose a c...">
 
 .. only:: html
@@ -226,26 +226,6 @@ Gallery of Examples
    :hidden:
 
    /auto_examples/plot_simulate_mo
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we demonstrate the simulate_bo function. First, we&#x27;ll load in some example loc...">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_simulate_bo_thumb.png
-
-        :ref:`sphx_glr_auto_examples_plot_simulate_bo.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/plot_simulate_bo
 
 .. raw:: html
 
@@ -306,6 +286,26 @@ Gallery of Examples
    :hidden:
 
    /auto_examples/make_gif
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we demonstrate the simulate_bo function. First, we&#x27;ll load in some example loc...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_simulate_bo_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_simulate_bo.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_simulate_bo
 
 .. raw:: html
 

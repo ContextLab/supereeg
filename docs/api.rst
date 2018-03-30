@@ -58,8 +58,6 @@ Helpers
 .. autosummary::
   :toctree:
 
-  filter_elecs
-  filter_subj
   model_compile
   sort_unique_locs
   tal2mni

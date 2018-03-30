@@ -61,33 +61,33 @@ To begin, we can either simulate locations:
       <tbody>
         <tr>
           <th>0</th>
-          <td>-46</td>
-          <td>31</td>
-          <td>14</td>
+          <td>-39</td>
+          <td>-43</td>
+          <td>44</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>-25</td>
-          <td>4</td>
-          <td>-30</td>
+          <td>-35</td>
+          <td>7</td>
+          <td>-11</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>-18</td>
-          <td>28</td>
-          <td>-14</td>
+          <td>-17</td>
+          <td>-16</td>
+          <td>-47</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>-5</td>
-          <td>44</td>
-          <td>-1</td>
+          <td>-17</td>
+          <td>-36</td>
+          <td>27</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>2</td>
-          <td>39</td>
-          <td>-31</td>
+          <td>-8</td>
+          <td>26</td>
+          <td>-13</td>
         </tr>
       </tbody>
     </table>
@@ -468,7 +468,7 @@ recovery of the true model.
 
 .. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:195: UserWarning: No sample rate given.  Number of seconds cant be computed
+    /Users/lucyowen/repos/superEEG/supereeg/brain.py:186: UserWarning: No sample rate given.  Number of seconds cant be computed
       warnings.warn('No sample rate given.  Number of seconds cant be computed')
 
 

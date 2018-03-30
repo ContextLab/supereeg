@@ -44,22 +44,20 @@ Initialize model objects
 
 Model objects can be initialized by passing a model object (ending in
 ``.mo``), but can also be initialized with a brain object or nifti
-object by specifying ``return_type`` as ``mo`` in the load function.
+object by specifying ``return_type`` as ``mo`` in the load function or
+passing the brain object or nifti object to ``se.Model()``.
 
 For example, you can load a nifti object as a model object:
 
 .. code:: ipython2
 
-    se.load('example_nifti', return_type='mo')
+    nii_mo = se.load('example_nifti', return_type='mo')
 
+Or you can:
 
+.. code:: ipython2
 
-
-.. parsed-literal::
-
-    <supereeg.model.Model at 0x113e7ae90>
-
-
+    nii_mo = se.Model('example_nifti')
 
 Model object methods
 ====================
@@ -104,14 +102,14 @@ accepts are supported by ``model.plot``.
 
 
 
-.. image:: model_objects_files/model_objects_12_0.png
+.. image:: model_objects_files/model_objects_14_0.png
 
 
 
 
 .. parsed-literal::
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x113e8f910>
+    <matplotlib.axes._subplots.AxesSubplot at 0x10a74af90>
 
 
 
@@ -126,7 +124,7 @@ This method will plot the locations in your model.
 
 
 
-.. image:: model_objects_files/model_objects_14_0.png
+.. image:: model_objects_files/model_objects_16_0.png
 
 
 ``mo.update()``
@@ -251,7 +249,7 @@ For the purpose of demonstration, we will simulate 100 locations across
     Recording time in seconds: [1.]
     Sample Rate in Hz: [1000]
     Number of sessions: 1
-    Date created: Mon Mar 26 14:21:11 2018
+    Date created: Thu Mar 29 22:50:30 2018
     Meta data: {}
 
 
@@ -270,7 +268,7 @@ new model will be generated:
 
     Number of locations: 100
     Number of subjects: 10
-    Date created: Mon Mar 26 14:21:13 2018
+    Date created: Thu Mar 29 22:50:32 2018
     Meta data: None
 
 
@@ -307,14 +305,14 @@ of locations to ``cov`` and the number of location to ``n_elecs``.
 
 
 
-.. image:: model_objects_files/model_objects_29_0.png
+.. image:: model_objects_files/model_objects_31_0.png
 
 
 
 
 .. parsed-literal::
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x11566bb90>
+    <matplotlib.axes._subplots.AxesSubplot at 0x10bf6d410>
 
 
 
@@ -386,7 +384,7 @@ model with the subject’s correlation matrix.
 
 
 
-.. image:: model_objects_files/model_objects_35_1.png
+.. image:: model_objects_files/model_objects_37_1.png
 
 
 .. parsed-literal::
@@ -397,12 +395,12 @@ model with the subject’s correlation matrix.
     Recording time in seconds: [ 5.3984375 14.1328125]
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
-    Date created: Mon Mar 26 14:21:19 2018
+    Date created: Thu Mar 29 22:50:38 2018
     Meta data: {}
 
 
 
-.. image:: model_objects_files/model_objects_35_3.png
+.. image:: model_objects_files/model_objects_37_3.png
 
 
 Using the ``supereeg`` algorithm, we’ve ‘reconstructed’ whole brain
@@ -417,5 +415,5 @@ Observed locations are in black and predicted locations are in red.
 
 
 
-.. image:: model_objects_files/model_objects_38_0.png
+.. image:: model_objects_files/model_objects_40_0.png
 
