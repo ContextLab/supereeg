@@ -125,7 +125,7 @@ class Model(object):
             return _z2r(np.divide(self.numerator, self.denominator))
 
     def predict(self, bo, nearest_neighbor=True, match_threshold='auto',
-                force_update=False, kthreshold=10):
+                force_update=False, kthreshold=10, preprocess='zscore'):
         """
         Takes a brain object and a 'full' covariance model, fills in all
         electrode timeseries for all missing locations and returns the new brain
@@ -155,12 +155,19 @@ class Model(object):
         kthreshold : 10 or int
             Kurtosis threshold
 
+        preprocess : 'zscore' or None
+            The predict algorithm requires the data to be zscored.  However, if
+            your data are already zscored you can bypass this by setting to None.
+
         Returns
         ----------
         bo_p : supereeg.Brain
             New brain data object with missing electrode locations filled in
 
         """
+        if preprocess not in ('zscore', None,):
+            raise ValueError('Please set preprocess to either zscore or None.')
+
         bo = bo.get_filtered_bo() #TODO: IMPLEMENT THIS in Brain.py -- should return a copy of the brain object with only the electrodes that pass the filtering, and with filter=None
 
         # if match_threshold auto, ignore all electrodes whose distance from the
@@ -202,7 +209,7 @@ class Model(object):
 
             model_corrmat_x = _z2r(model_corrmat_x)
             np.fill_diagonal(model_corrmat_x, 0)
-            activations = _timeseries_recon(bo, model_corrmat_x)
+            activations = _timeseries_recon(bo, model_corrmat_x, preprocess=preprocess)
 
             return Brain(data=activations, locs=perm_locs, sessions=bo.sessions,
                         sample_rate=bo.sample_rate, kurtosis=None, label=loc_label)

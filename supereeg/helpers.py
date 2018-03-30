@@ -486,7 +486,7 @@ def _chunk_bo(bo, chunk):
     return bo.get_slice(sample_inds=[i for i in chunk if i is not None])
 
 
-def _timeseries_recon(bo, K, chunk_size=1000):
+def _timeseries_recon(bo, K, chunk_size=1000, preprocess='zscore'):
     """
     Reconstruction done by chunking by session
 
@@ -507,7 +507,17 @@ def _timeseries_recon(bo, K, chunk_size=1000):
         Compiled reconstructed timeseries
 
     """
-    data = bo.get_zscore_data()
+    if preprocess==None:
+        data = bo.get_data().as_matrix()
+    elif preprocess=='zscore':
+        if bo.data.shape[0]<3:
+            warnings.warn('Not enough samples to zscore so it will be skipped.'
+            ' Note that this will cause problems if your data are not already '
+            'zscored.')
+            data = bo.get_data().as_matrix()
+        else:
+            data = bo.get_zscore_data()
+
     s = K.shape[0] - data.shape[1]
     Kba = K[:s, s:]
     Kaa = K[s:, s:]
