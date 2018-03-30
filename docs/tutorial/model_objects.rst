@@ -2,15 +2,13 @@
 Model objects and predicting whole brain activity
 =================================================
 
-Model objects are supereeg’s class that contains the model that
-reconstructs full brain activity timeseries from a smaller sample of
-electrodes. The supereeg package offers a few premade models that you
-can use to reconstruct brain activity, but also a way to create your own
-model if you have a dataset of intracranial patient data converted into
-the brain object format or just even a correlation matrix and
-corresponding locations. This tutorial will go over how to use the
-premade models included in this package, as well as make a new model
-from scratch.
+Model objects are supereeg’s class that contains the correlation model
+that we use to reconstruct full-brain activity from recordings at an
+impoverished set of locations. The supereeg package offers a several
+pre-compiled models that you can use to reconstruct brain activity. We
+also provide several ways of creating or specifying your own model. This
+tutorial will review how to use the pre-made models included in this
+package and make a new model from scratch.
 
 Load in the required libraries
 ==============================
@@ -24,40 +22,45 @@ Load in the required libraries
     import numpy as np
 
 First, let’s load in our default model, ``example_model``, that we made
-from the pyFR dataset sampled at 20mm resolution. Electrodes with a
-threshold exceeding 10 were removed from the dataset, and the radial
-basis function of with a width of 20 mm was used to ‘fill in’ nearby
-electrode sites during the model creation.
+from the `pyFR
+dataset <http://memory.psych.upenn.edu/Request_EEG_access?paper=SedeEtal03>`__
+resampled to 20mm cubic voxels.
 
 .. code:: ipython2
 
     model = se.load('example_model')
 
-other model options:
+other model options: - ``pyFR_k10r20_6mm``: correlation model trained on
+the pyFR dataset and resampled to 6mm cubic voxels
 
-``pyFR_k10r20_6mm``
-
-``pyFR_k10r20_20mm``
+-  ``pyFR_k10r20_20mm``: full name of ``example_model`` (either string
+   will load the same model)
 
 Initialize model objects
 ========================
 
-Model objects can be initialized by passing a model object (ending in
-``.mo``), but can also be initialized with a brain object or nifti
-object by specifying ``return_type`` as ``mo`` in the load function or
-passing the brain object or nifti object to ``se.Model()``.
+Model objects can be initialized by passing any of the following to the
+``Model`` class instance initializer: - a path to an existing saved
+model object (ending in ``.mo``) - an existing model object (this makes
+a copy of the existing model object) - a ``Brain`` object or ``Nifti``
+object [or paths to saved ``Brain`` objects (.bo) or ``Nifti`` objects
+(.nii)] - a string corresponding to any of the `built-in example
+files <http://supereeg.readthedocs.io/en/latest/supereeg.load.html#supereeg.load>`__,
+of any format (any datatype may be converted to a ``Model`` object)
 
-For example, you can load a nifti object as a model object:
-
-.. code:: ipython2
-
-    nii_mo = se.load('example_nifti', return_type='mo')
-
-Or you can:
+In addition, new model objects may be created via the ``load`` function
+(which loads any of the toolbox-supported data types) and specifying
+``return_type='mo'``
 
 .. code:: ipython2
 
     nii_mo = se.Model('example_nifti')
+
+Or:
+
+.. code:: ipython2
+
+    nii_mo = se.load('example_nifti', return_type='mo')
 
 Model object methods
 ====================
@@ -109,7 +112,7 @@ accepts are supported by ``model.plot``.
 
 .. parsed-literal::
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x10a74af90>
+    <matplotlib.axes._subplots.AxesSubplot at 0x10cdbcc50>
 
 
 
@@ -144,7 +147,7 @@ data as a brain object. First, let’s load in an example subjects data:
 .. parsed-literal::
 
     Number of electrodes: 64
-    Recording time in seconds: [ 5.3984375 14.1328125]
+    Recording time in seconds: None
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
     Date created: Fri Mar  9 17:09:35 2018
@@ -152,7 +155,7 @@ data as a brain object. First, let’s load in an example subjects data:
 
 
 Now you can update the model with that brain object. This can be done
-either inplace using ``inplace = True``, or you can save a new updated
+either in place using ``inplace = True``, or you can save a new updated
 model:
 
 .. code:: ipython2
@@ -217,18 +220,20 @@ the elements of a brain object saved in the hd5 format using
 Creating a new model
 --------------------
 
-In addition to including a few premade models in the ``supereeg``
+In addition to including a few pre-made models in the ``supereeg``
 package, we also provide a way to construct a model from scratch.
 
 Created from a list of brain objects:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For example, if you have a dataset of iEEG patients, we provide a way to
-construct a model that will predict whole brain activity. The more
-subjects you include in the model, the better it will be! To create a
-model, first you’ll need to format your subject data into brain objects.
-For the purpose of demonstration, we will simulate 100 locations across
-10 subjects and construct the model from that data:
+For example, if you have an ECoG dataset, we provide a way to construct
+a model that will predict whole brain activity. The more subjects you
+include in the model, the better it will be! To create a model, first
+you’ll need to format your subject data into brain objects. For the
+purpose of demonstration, and to highlight the “simulation” features of
+the toolbox, we will generate a synthetic ECoG dataset. Specifically,
+we’ll simulate data from 100 locations from each of 10 subjects and
+construct the model from that data:
 
 .. code:: ipython2
 
@@ -246,15 +251,15 @@ For the purpose of demonstration, we will simulate 100 locations across
 .. parsed-literal::
 
     Number of electrodes: 20
-    Recording time in seconds: [1.]
+    Recording time in seconds: None
     Sample Rate in Hz: [1000]
     Number of sessions: 1
-    Date created: Thu Mar 29 22:50:30 2018
+    Date created: Fri Mar 30 13:10:39 2018
     Meta data: {}
 
 
 As you can see above, each simulated subject has 10 (randomly placed)
-‘electrodes’, with 1 second of data each. To construct a model from
+‘electrodes,’ with 1 second of data each. To construct a model from
 these brain objects, simply pass them to the ``se.Model`` class, and a
 new model will be generated:
 
@@ -268,7 +273,7 @@ new model will be generated:
 
     Number of locations: 100
     Number of subjects: 10
-    Date created: Thu Mar 29 22:50:32 2018
+    Date created: Fri Mar 30 13:10:41 2018
     Meta data: None
 
 
@@ -281,7 +286,7 @@ You can add your model to ``model.data`` and add the corresponding
 locations for the model in the field ``locs``.
 
 Another option, allows you to add your model to ``model.numerator``,
-which comprises the sum of the zscored correlation matrices over
+which comprises the sum of the z-scored correlation matrices over
 subjects. The ``model.denominator`` field comprises the sum of the
 number of subjects contributing to each matrix cell in the
 ``model.numerator`` field. You can add the locations for the model in
@@ -312,7 +317,7 @@ of locations to ``cov`` and the number of location to ``n_elecs``.
 
 .. parsed-literal::
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x10bf6d410>
+    <matplotlib.axes._subplots.AxesSubplot at 0x10dd10ed0>
 
 
 
@@ -376,7 +381,7 @@ model with the subject’s correlation matrix.
     BEFORE
     ------
     Number of electrodes: 64
-    Recording time in seconds: [ 5.3984375 14.1328125]
+    Recording time in seconds: None
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
     Date created: Fri Mar  9 17:09:35 2018
@@ -392,10 +397,10 @@ model with the subject’s correlation matrix.
     AFTER
     ------
     Number of electrodes: 274
-    Recording time in seconds: [ 5.3984375 14.1328125]
+    Recording time in seconds: None
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
-    Date created: Thu Mar 29 22:50:38 2018
+    Date created: Fri Mar 30 13:10:47 2018
     Meta data: {}
 
 

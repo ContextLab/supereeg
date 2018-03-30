@@ -4,7 +4,6 @@ from __future__ import print_function
 import numpy as np
 import six # Python 2 and 3 compatibility
 from nibabel import Nifti1Image
-from nilearn import image
 from nilearn.image import concat_imgs, index_img
 from nilearn import plotting as ni_plt
 from .helpers import make_gif_pngs

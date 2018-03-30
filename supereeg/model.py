@@ -1,7 +1,6 @@
 from __future__ import division
 from __future__ import print_function
 import time
-import os
 import copy
 import warnings
 import six
@@ -10,7 +9,7 @@ import numpy as np
 import seaborn as sns
 import deepdish as dd
 import matplotlib.pyplot as plt
-from .helpers import filter_elecs, _get_corrmat, _r2z, _z2r, _rbf, _expand_corrmat_fit, _expand_corrmat_predict,\
+from .helpers import _get_corrmat, _r2z, _z2r, _rbf, _expand_corrmat_fit, _expand_corrmat_predict,\
     _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp, _gray, _nifti_to_brain
 from .brain import Brain
 from scipy.spatial.distance import cdist

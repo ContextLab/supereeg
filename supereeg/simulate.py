@@ -1,5 +1,4 @@
 from __future__ import division
-from builtins import range
 import warnings
 import scipy
 import numpy as np

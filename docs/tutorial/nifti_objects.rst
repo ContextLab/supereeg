@@ -19,8 +19,7 @@ Load in the required libraries
     %matplotlib inline
     import supereeg as se
 
-First, let’s load in our default nifti, ``example_nifti``, that we made
-from gray matter masked MNI 152 brain sampled at 6mm resolution.
+First, let’s load in an example nifti file, ``example_nifti``:
 
 .. code:: ipython2
 
@@ -29,20 +28,35 @@ from gray matter masked MNI 152 brain sampled at 6mm resolution.
 Initialize nifti objects
 ========================
 
-Nifti objects can be initialized by passing a nifti object (ending in
-``.nii``), but can also be initialized with a model object or brain
-object by specifying ``return_type`` as ``nii``, your desired
-``template`` (``gray`` or ``std``) and voxel size as ``vox_size`` in the
-load function. You can also initialize a nifti object by passing a brain
-object or model object to ``se.Nifti()``.
+``Nifti`` objects can be initialized by passing any of the following to
+the ``Nifti`` class instance initialization function: - A path to a
+nifti file (ending in .nii or .nii.gz) - An existing Nifti object (this
+makes a copy of the object) - A path to any other toolbox-supported
+datatype, or an instance of another supported datatype (``Brain`` or
+``Model`` objects)
 
-For example, you can load a brain object as a nifti object:
+You may also initialize a ``Nifti`` object using the ``load`` function
+by specifying ``return_type='nii'``.
+
+For example:
+
+.. code:: ipython2
+
+    bo_nii = se.Nifti('example_data')
+
+Or:
 
 .. code:: ipython2
 
     bo_nii = se.load('example_data', return_type='nii')
 
-Or you can:
+Spatial resampling
+------------------
+
+Any ``Nifti`` object may be quickly resampled to an arbitrary voxel size
+using the ``vox_size`` argument. The voxel sizes may be specified either
+as a scalar (for cubic voxels) or as a 3D tuple (for rectangular prism
+or parallelopiped voxels):
 
 .. code:: ipython2
 
@@ -73,7 +87,7 @@ This method will give you a summary of the nifti object:
     session_error   : 0
     regular         : 
     dim_info        : 0
-    dim             : [ 3  9 11  9  1  1  1  1]
+    dim             : [  4  30  36  30 500   1   1   1]
     intent_p1       : 0.0
     intent_p2       : 0.0
     intent_p3       : 0.0
@@ -81,7 +95,7 @@ This method will give you a summary of the nifti object:
     datatype        : float64
     bitpix          : 64
     slice_start     : 0
-    pixdim          : [ 1. 20. 20. 20.  1.  1.  1.  1.]
+    pixdim          : [1. 6. 6. 6. 1. 1. 1. 1.]
     vox_offset      : 0.0
     scl_slope       : nan
     scl_inter       : nan
@@ -101,12 +115,12 @@ This method will give you a summary of the nifti object:
     quatern_b       : 0.0
     quatern_c       : 0.0
     quatern_d       : 0.0
-    qoffset_x       : -81.0
-    qoffset_y       : -117.0
-    qoffset_z       : -63.0
-    srow_x          : [ 20.   0.   0. -81.]
-    srow_y          : [   0.   20.    0. -117.]
-    srow_z          : [  0.   0.  20. -63.]
+    qoffset_x       : -88.0
+    qoffset_y       : -124.0
+    qoffset_z       : -70.0
+    srow_x          : [  6.   0.   0. -88.]
+    srow_y          : [   0.    6.    0. -124.]
+    srow_z          : [  0.   0.   6. -70.]
     intent_name     : 
     magic           : n+1
 
@@ -136,7 +150,7 @@ by ``nifti.plot_glass_brain``.
 
 
 
-.. image:: nifti_objects_files/nifti_objects_15_0.png
+.. image:: nifti_objects_files/nifti_objects_17_0.png
 
 
 ``nifti.plot_anat()``
@@ -154,7 +168,7 @@ arguments that ``nilearn.plot_anat`` accepts are supported by
 
 
 
-.. image:: nifti_objects_files/nifti_objects_17_0.png
+.. image:: nifti_objects_files/nifti_objects_19_0.png
 
 
 ``nifti.make_gif()``

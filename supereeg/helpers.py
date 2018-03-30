@@ -1,8 +1,6 @@
 from __future__ import division
 from __future__ import print_function
 
-from builtins import map
-from builtins import range
 import multiprocessing
 import copy
 import os

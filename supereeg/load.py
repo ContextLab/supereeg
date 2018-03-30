@@ -4,7 +4,6 @@ import warnings
 import requests
 import numpy as np
 import deepdish as dd
-import pandas as pd
 from .brain import Brain
 from .model import Model
 from .nifti import Nifti
