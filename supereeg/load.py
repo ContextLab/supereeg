@@ -17,7 +17,7 @@ datadir = os.path.join(homedir, 'supereeg_data')
 datadict = { #TODO: do the data types need to be specified or could they be inferred from the downloaded objects?
     'example_data' : ['1kijSKt-QLEZ1O3J5Pk-8aByn33bPCAFl', 'bo'],
     'example_model' : ['1l4s7mE0KbPMmIcIA9JQzSZHCA8LWFq1I', 'mo'],
-    'example_nifti' : ['1cG68j4-8R6LQrp4QISN_1Y0WPsXBdCDx', 'nii'],
+    'example_nifti' : ['1w7Mg-Czw12sJjF1_w9qtsd-xCaEiS0eU', 'nii'],
     'example_filter' : ['1eHcYg1idIK8y2LMLK_tqSxB7jI_l7OsL', 'bo'],
     'std' : ['1P-WcEBVYnoMQAYhvSCf1BBMIDMe9VZIM', 'nii'],
     'gray' : ['1a8wptBaMIFEl4j8TFhlTQVUAbyC0sN4p', 'nii'],

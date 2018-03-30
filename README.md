@@ -2,44 +2,36 @@
 
 <h2>Overview</h2>
 
-supereeg is a Python package used for estimating neural activity throughout the brain from a small number of intracranial recordings by leveraging across patients and Gaussian process regression.
+[supereeg](https://github.com/ContextLab/supereeg>) (name inspired by Robert Sawyer's [The Terminal Experiment](https://en.wikipedia.org/wiki/The_Terminal_Experiment) is a (fictional) tool for recording the electrical activities of every neuron in the living human brain.  Our approach is somewhat less ambitious, but (we think) still "super" cool: obtain high spatiotemporal estimates of activity patterns throughout the brain using data from a small(ish) number of  [implanted electrodes](https://en.wikipedia.org/wiki/Electrocorticography).  The toolbox is designed to analyze ECoG (electrocorticographic) data, e.g. from epilepsy patients undergoing pre-surgical evaluation.
 
-<h2>Details</h2>
+The way the technique works is to leverage data from different patients' brains (who had electrodes implanted in different locations) to learn a "correlation model" that describes how activity patterns at different locations throughout the brain relate.  Given this model, along with data from a sparse set of locations, we use Gaussian process regression to "fill in" what the patients' brains were "most probably" doing when those recordings were taken.  Details on our approach may be found in [this preprint](http://biorxiv.org/content/early/2017/03/27/121020).  You may also be interested in watching [this talk](https://youtu.be/DvzfPsOMvOw?t=2s) or reading this [blog post](https://community.sfn.org/t/supereeg-ecog-data-breaks-free-from-electrodes/8344) from a recent conference.
 
-A fundamental trade-off in human neuroimaging pertains to balancing spatial versus temporal resolution.  For example, techniques like fMRI yield high spatial resolution brain recordings (but at poor temporal resolutions), whereas EEG yields high temporal resolution brain recordings (but at poor spatial resolutions).  Other recording methods, such as from implanted electrodes, yield good spatial and temporal resolutions, but have poor coverage.
-supereeg , which is inspired by Gaussian process regression, uses ongoing recordings from implanted electrodes to ‘fill in’ high spatiotemporal resolution activity patterns throughout the brain even at unrecorded locations.
-By using a large dataset comprised of hundreds of hours of data collected from 67 neurosurgical patients, we have fit a detailed covariance model describing relations between the activity patterns at different locations throughout the brain.  Collectively the dataset contains recordings from a broad range of locations throughout the brain, but each individual patient contributes only a limited set of locations.  Given this covariance model, and given the recordings at a limited set of locations from an individual patient, supereeg estimates what the recordings would have looked like for that patient if the electrodes had instead been implanted elsewhere throughout their brain.  The result is a detailed high spatiotemporal resolution estimate of evolving activity patterns throughout the brain, at fMRI-like spatial resolutions and EEG-like temporal resolutions.
+Although our toolbox is designed with ECoG data in mind, in theory this tool could be applied to a very general set of applications.  The general problem we solve is: given known (correlational) structure of a large number of "features," and given that (at any one time) you only observe some of those features, how much can you infer about what the remaining features are doing?
 
-<!-- <h2>Try it!</h2>
-
-Click the badge to launch a binder instance with example uses:
-
-[![Binder](http://mybinder.org/badge.svg)](http://mybinder.org:/repo/contextlab/quail-example-notebooks)
-
-or
-
-Check the [repo](https://github.com/ContextLab/quail-example-notebooks) of Jupyter notebooks. -->
+Toolbox documentation, including a full API specification, tutorials, and gallery of examples may be found [here](http://supereeg.readthedocs.io/) on our readthedocs page.
 
 <h2>Installation</h2>
 
+<h3>Recommended way of installing the toolbox</h3>
+You may install the latest stable version of our toolbox using [pip](https://pypi.python.org/pypi/pip):
+
 `pip install supereeg`
 
-or
+or if you have a previous version already installed:
 
-To install from this repo:
+`pip install --upgrade supereeg`
 
-`git clone https://github.com/ContextLab/supereeg.git`
+<h3>Dangerous/hacker/developer way of installing the toolbox (use caution!)</h3>
+To install the latest (bleeding edge) version directly from this repository use:
 
-Then, navigate to the folder and type:
+`pip install --upgrade git+https://github.com/ContextLab/supereeg.git`
 
-`pip install -e .`
-
-(this assumes you have [pip](https://pip.pypa.io/en/stable/installing/) installed on your system)
 
 <h2>Requirements</h2>
 
-The toolbox is currently supported on Mac/Linux (but not Windows).
+The toolbox is currently supported on Mac and Linux.  It has not been tested on Windows (and we expect key functionality not to work properly on Windows systems).
 
+Dependencies:
 + python 2.7, 3.5+
 + pandas>=0.21.1
 + seaborn>=0.7.1
@@ -59,17 +51,10 @@ The toolbox is currently supported on Mac/Linux (but not Windows).
 + pytest (for development)
 
 
-If installing from github (instead of pip), you must also install the requirements:
-`pip install -r requirements.txt`
-
-<h2>Documentation</h2>
-
-Check out our readthedocs: [here](http://supereeg.readthedocs.io/en/latest/).
 
 <h2>Citing</h2>
 
-We wrote a paper about supereeg, which you can read [here](http://biorxiv.org/content/early/2017/03/27/121020).
-Please cite as:
+We wrote a paper about supereeg, which you can read [here](http://biorxiv.org/content/early/2017/03/27/121020).  The paper provides full details about the approach along with some performance tests an a large ECoG dataset.  If you use this toolbox or wish to cite us, please use the following citation:
 
 `Owen LLW and Manning JR (2017) Towards Human Super EEG.  bioRxiv: 121020`
 
@@ -81,8 +66,7 @@ Here is a bibtex formatted reference:
 	title = {Towards Human Super EEG},
 	year = {2017},
 	doi = {10.1101/121020},
-	publisher = {Cold Spring Harbor Labs Journals},
-	abstract = {Human Super EEG entails measuring ongoing activity from every cell in a living human brain at millisecond-scale temporal resolutions. Although direct cell-by-cell Super EEG recordings are impossible using existing methods, here we present a technique for inferring neural activity at arbitrarily high spatial resolutions using human intracranial electrophysiological recordings. Our approach, based on Gaussian process regression, relies on two assumptions. First, we assume that some of the correlational structure of people{\textquoteright}s brain activity is similar across individuals. Second, we resolve ambiguities in the data by assuming that neural activity from nearby sources will tend to be similar, all else being equal. One can then ask, for an arbitrary individual{\textquoteright}s brain: given what we know about the correlational structure of other people{\textquoteright}s brains, and given the recordings we made from electrodes implanted in this person{\textquoteright}s brain, how would those recordings most likely have looked at other locations throughout this person{\textquoteright}s brain?},
+	publisher = {Cold Spring Harbor Labs Journals}
 	URL = {http://biorxiv.org/content/early/2017/03/27/121020},
 	eprint = {http://biorxiv.org/content/early/2017/03/27/121020.full.pdf},
 	journal = {bioRxiv}
@@ -92,7 +76,7 @@ Here is a bibtex formatted reference:
 
 <h2>Contributing</h2>
 
-(Some text borrowed from Matplotlib contributing [guide](http://matplotlib.org/devdocs/devel/contributing.html).)
+Thanks for considering adding to our toolbox!  Some text below hoas been borrowed from the [Matplotlib contributing guide](http://matplotlib.org/devdocs/devel/contributing.html).
 
 <h3>Submitting a bug report</h3>
 
@@ -105,7 +89,7 @@ If you are reporting a bug, please do your best to include the following:
 
 <h3>Contributing code</h3>
 
-The preferred way to contribute to quail is to fork the main repository on GitHub, then submit a pull request.
+The preferred way to contribute to supereeg is to fork the main repository on GitHub, then submit a pull request.
 
 + If your pull request addresses an issue, please use the title to describe the issue and mention the issue number in the pull request description to ensure a link is created to the original issue.
 

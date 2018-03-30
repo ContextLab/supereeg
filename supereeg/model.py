@@ -125,7 +125,7 @@ class Model(object):
             return _z2r(np.divide(self.numerator, self.denominator))
 
     def predict(self, bo, nearest_neighbor=True, match_threshold='auto',
-                force_update=False, kthreshold=10):
+                force_update=False, kthreshold=10, preprocess='zscore'):
         """
         Takes a brain object and a 'full' covariance model, fills in all
         electrode timeseries for all missing locations and returns the new brain
@@ -155,12 +155,19 @@ class Model(object):
         kthreshold : 10 or int
             Kurtosis threshold
 
+        preprocess : 'zscore' or None
+            The predict algorithm requires the data to be zscored.  However, if
+            your data are already zscored you can bypass this by setting to None.
+
         Returns
         ----------
         bo_p : supereeg.Brain
             New brain data object with missing electrode locations filled in
 
         """
+        if preprocess not in ('zscore', None,):
+            raise ValueError('Please set preprocess to either zscore or None.')
+
         bo = bo.get_filtered_bo() #TODO: IMPLEMENT THIS in Brain.py -- should return a copy of the brain object with only the electrodes that pass the filtering, and with filter=None
 
         # if match_threshold auto, ignore all electrodes whose distance from the
@@ -202,7 +209,7 @@ class Model(object):
 
             model_corrmat_x = _z2r(model_corrmat_x)
             np.fill_diagonal(model_corrmat_x, 0)
-            activations = _timeseries_recon(bo, model_corrmat_x)
+            activations = _timeseries_recon(bo, model_corrmat_x, preprocess=preprocess)
 
             return Brain(data=activations, locs=perm_locs, sessions=bo.sessions,
                         sample_rate=bo.sample_rate, kurtosis=None, label=loc_label)
@@ -244,7 +251,7 @@ class Model(object):
         for d in data:
             d = _format_data(d, m.locs, locs, n)
             if isinstance(d, Brain):
-                num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d, m.locs, measure, threshold)
+                num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d.get_filtered_bo(), m.locs, measure, threshold)
             elif isinstance(d, Model):
                 num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, m.locs)
             m.numerator += num_corrmat_x
@@ -379,11 +386,10 @@ def _create_locs(self, locs, template):
 
 def _bo2model(bo, locs, measure, threshold):
     """Returns numerator and denominator given a brain object"""
-    bo = filter_elecs(bo, measure=measure, threshold=threshold)
     sub_corrmat = _get_corrmat(bo)
     np.fill_diagonal(sub_corrmat, 0)
     sub_corrmat_z = _r2z(sub_corrmat)
-    sub_rbf_weights = _rbf(locs, bo.locs)
+    sub_rbf_weights = _rbf(locs, bo.get_locs())
     n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
     return n, d, 1
 
