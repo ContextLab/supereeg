@@ -125,6 +125,7 @@ class Brain(object):
         if isinstance(data, Brain):
             self.__dict__.update(data.__dict__)
             self.update_filter_inds()
+            self.update_info()
             self = data
 
         else:
@@ -245,6 +246,14 @@ class Brain(object):
         else:
             self.filter_inds = np.ones((1, self.locs.shape[0]), dtype=np.bool) #TODO: check this
 
+    def update_info(self):
+        self.n_elecs = self.data.shape[1] # needs to be calculated by sessions
+        self.n_sessions = len(self.sessions.unique())
+        try:
+            self.n_secs = np.true_divide(counts, np.array(sample_rate))
+        except:
+            self.n_secs = None
+
     def info(self):
         """
         Print info about the brain object
@@ -252,6 +261,7 @@ class Brain(object):
         Prints the number of electrodes, recording time, number of recording
         sessions, date created, and any optional meta data.
         """
+        self.update_info()
         print('Number of electrodes: ' + str(self.n_elecs))
         print('Recording time in seconds: ' + str(self.n_secs))
         print('Sample Rate in Hz: '+ str(self.sample_rate))
@@ -268,7 +278,9 @@ class Brain(object):
         for key in ['n_subs', 'n_elecs', 'n_sessions', 'filter_inds', 'n_secs']:
             if key in x.keys():
                 x.pop(key)
-        return Brain(**x)
+        bo = Brain(**x)
+        bo.update_info()
+        return bo
 
     def get_data(self):
         """
