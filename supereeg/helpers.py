@@ -803,7 +803,7 @@ def _near_neighbor(bo, mo, match_threshold='auto'): #TODO: should this be part o
             thresh_bool = thresh_bool.any(1).ravel()
             assert match_threshold > 0, 'Negative Euclidean distances are not allowed'
         nbo.data = nbo.data.loc[:, ~thresh_bool]
-        nbo.orig_locs = nbo.locs
+        nbo.locs = nbo.locs.loc[~thresh_bool, :]
         nbo.n_elecs = nbo.data.shape[1]
         nbo.kurtosis = nbo.kurtosis[~thresh_bool]
         return nbo

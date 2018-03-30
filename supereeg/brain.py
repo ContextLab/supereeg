@@ -439,7 +439,6 @@ class Brain(object):
 
         locs = self.get_locs()
         label = np.array(self.label)[self.filter_inds.flatten()]
-        #label = np.array(self.label)[np.where(self.filter_inds)[1]].tolist()
         if locs.shape[0] <= 10000:
             _plot_locs_connectome(locs, label, pdfpath)
         else:

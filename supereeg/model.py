@@ -504,8 +504,11 @@ def _some_overlap(self, bo, model_corrmat_x, joint_model_inds):
     """ Compute model when there is some overlap """
 
     # get subject indices where subject locs do not overlap with model locs
+
     bool_bo_mask= np.sum([(bo.get_locs() == y).all(1) for idy, y in self.locs.iterrows()], 0).astype(bool)
     disjoint_bo_inds = np.where(~bool_bo_mask)[0]
+    # d = cdist(bo.get_locs(), self.locs)
+    # disjoint_bo_inds = np.where(np.isclose(d, 0))[0]
 
     # permute the correlation matrix so that the inds to reconstruct are on the right edge of the matrix
     perm_inds = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds)) + sorted(set(joint_model_inds))
