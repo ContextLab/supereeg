@@ -244,7 +244,7 @@ class Model(object):
         for d in data:
             d = _format_data(d, m.locs, locs, n)
             if isinstance(d, Brain):
-                num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d, m.locs, measure, threshold)
+                num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d.get_filtered_bo(), m.locs, measure, threshold)
             elif isinstance(d, Model):
                 num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, m.locs)
             m.numerator += num_corrmat_x
@@ -379,7 +379,6 @@ def _create_locs(self, locs, template):
 
 def _bo2model(bo, locs, measure, threshold):
     """Returns numerator and denominator given a brain object"""
-    bo = filter_elecs(bo, measure=measure, threshold=threshold)
     sub_corrmat = _get_corrmat(bo)
     np.fill_diagonal(sub_corrmat, 0)
     sub_corrmat_z = _r2z(sub_corrmat)
