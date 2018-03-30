@@ -3,7 +3,7 @@ Building a brain object
 =======================
 
 Brain objects are supereeg’s fundamental data structure for a single
-subject’s iEEG data. To create one at minimum you’ll need a matrix of
+subject’s ECoG data. To create one at minimum you’ll need a matrix of
 neural recordings (time samples by electrodes), electrode locations, and
 a sample rate. Additionally, you can include information about separate
 recording sessions and store custom meta data. In this tutorial, we’ll
@@ -58,16 +58,16 @@ We’ll also simulate some electrode locations
 .. parsed-literal::
 
         x   y   z
-    0 -38  35 -32
-    1 -34  28 -38
-    2 -30  22 -15
-    3 -24 -48  26
-    4 -23  47  -3
-    5 -19 -47 -41
-    6 -17 -23  41
-    7  -1  49  39
-    8  31  26   1
-    9  48  46  39
+    0 -48  34  47
+    1 -46 -40  14
+    2 -40 -13  15
+    3 -39 -25 -47
+    4 -35  44 -33
+    5 -28  48 -12
+    6 -20 -16 -12
+    7 -14   5  44
+    8  -4  40 -40
+    9  43  31 -14
 
 
 Creating a brain object
@@ -94,7 +94,7 @@ To view a summary of the contents of the brain object, you can call the
     Recording time in seconds: [10.]
     Sample Rate in Hz: [100]
     Number of sessions: 1
-    Date created: Thu Mar 29 22:49:57 2018
+    Date created: Fri Mar 30 12:38:17 2018
     Meta data: {}
 
 
@@ -115,7 +115,7 @@ each session. For example:
     Recording time in seconds: [0.5 0.5]
     Sample Rate in Hz: [1000, 1000]
     Number of sessions: 2
-    Date created: Thu Mar 29 22:49:57 2018
+    Date created: Fri Mar 30 12:38:17 2018
     Meta data: {}
 
 
@@ -140,32 +140,37 @@ want:
     Recording time in seconds: [0.5 0.5]
     Sample Rate in Hz: [1000, 1000]
     Number of sessions: 2
-    Date created: Thu Mar 29 22:49:57 2018
+    Date created: Fri Mar 30 12:38:17 2018
     Meta data: {'Hospital': 'DHMC', 'subjectID': '123', 'Investigator': 'Andy'}
 
 
 Initialize brain objects
 ========================
 
-Brain objects can be initialized by passing a brain object (ending in
-``.bo``), but can also be initialized with a model object or nifti
-object by specifying ``return_type`` as ``bo`` in the load function or
-passing the model object or nifti object to ``se.Brain()``.
+``Brain`` objects can be initialized by passing a any of the following
+to the ``Brain`` class instance initialization function: - A path to a
+saved ``Brain`` object (ending in ``.bo``) - An existing ``Brain``
+object (this creates a copy of the object) - A path to or instance of
+any other supported toolbox type (``Model`` objects or .mo files, or
+``Nifti`` objects or .nii files)
 
-For example, you can load a nifti object as a brain object:
+In addition, ``Brain`` objects may be created via ``load`` by specifying
+``return_type='bo'``.
 
-.. code:: ipython2
-
-    nii_bo = se.load('example_nifti', return_type='bo')
-
-Or you can:
+For example:
 
 .. code:: ipython2
 
     nii_bo = se.Brain('example_nifti')
 
-Another feature, which can be particularly useful when working with lots
-of data, is loading only a subfield by specifiying ``field``. For
+Or:
+
+.. code:: ipython2
+
+    nii_bo = se.load('example_nifti', return_type='bo')
+
+Another feature, which can be particularly useful when working with
+large files, is loading only a subfield by specifiying ``field``. For
 example, if you only want to load locations:
 
 .. code:: ipython2
@@ -175,7 +180,7 @@ example, if you only want to load locations:
 The structure of a brain object
 ===============================
 
-Inside the brain object, the iEEG data is stored as a Pandas DataFrame
+Inside the brain object, the ECoG data are stored in a Pandas DataFrame
 that can be accessed with the ``get_data`` function:
 
 .. code:: ipython2
@@ -220,68 +225,68 @@ that can be accessed with the ``get_data`` function:
       <tbody>
         <tr>
           <th>0</th>
-          <td>-0.558500</td>
-          <td>-0.343205</td>
-          <td>-0.655767</td>
-          <td>-1.091866</td>
-          <td>-0.193612</td>
-          <td>-0.216070</td>
-          <td>-0.974157</td>
-          <td>-0.863779</td>
-          <td>0.002354</td>
-          <td>-0.203267</td>
+          <td>-0.000073</td>
+          <td>0.770118</td>
+          <td>-0.233968</td>
+          <td>-0.539440</td>
+          <td>-0.335974</td>
+          <td>0.268329</td>
+          <td>-0.881029</td>
+          <td>-0.206124</td>
+          <td>-0.019027</td>
+          <td>0.352148</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>1.051535</td>
-          <td>1.247053</td>
-          <td>1.438746</td>
-          <td>2.084906</td>
-          <td>2.406251</td>
-          <td>1.156110</td>
-          <td>2.385147</td>
-          <td>1.799107</td>
-          <td>1.417344</td>
-          <td>1.251292</td>
+          <td>-0.066861</td>
+          <td>0.444841</td>
+          <td>-0.619084</td>
+          <td>-0.204162</td>
+          <td>-0.159330</td>
+          <td>-0.090531</td>
+          <td>-0.331272</td>
+          <td>-0.262746</td>
+          <td>-0.547429</td>
+          <td>-0.473962</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>1.119984</td>
-          <td>1.375932</td>
-          <td>0.910111</td>
-          <td>-0.308578</td>
-          <td>0.579535</td>
-          <td>0.858444</td>
-          <td>-0.267532</td>
-          <td>-0.124669</td>
-          <td>-0.175800</td>
-          <td>0.147065</td>
+          <td>0.659899</td>
+          <td>0.257654</td>
+          <td>0.258308</td>
+          <td>-1.178289</td>
+          <td>-0.472423</td>
+          <td>0.640021</td>
+          <td>-0.103026</td>
+          <td>-0.480447</td>
+          <td>0.168825</td>
+          <td>0.113520</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>-0.970159</td>
-          <td>-0.805279</td>
-          <td>-1.243079</td>
-          <td>-2.597558</td>
-          <td>-1.734775</td>
-          <td>-1.131715</td>
-          <td>-2.515840</td>
-          <td>-1.804130</td>
-          <td>-1.317635</td>
-          <td>-1.198163</td>
+          <td>-0.135169</td>
+          <td>0.375644</td>
+          <td>-0.133176</td>
+          <td>0.024631</td>
+          <td>1.038184</td>
+          <td>0.740246</td>
+          <td>0.980357</td>
+          <td>0.559667</td>
+          <td>0.603036</td>
+          <td>0.069320</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>0.440381</td>
-          <td>-0.578236</td>
-          <td>0.199678</td>
-          <td>-0.766194</td>
-          <td>-0.491068</td>
-          <td>0.184369</td>
-          <td>-0.231148</td>
-          <td>-0.148330</td>
-          <td>0.002644</td>
-          <td>0.454412</td>
+          <td>-1.050729</td>
+          <td>-0.858045</td>
+          <td>-1.028985</td>
+          <td>-0.269303</td>
+          <td>0.004863</td>
+          <td>-0.900663</td>
+          <td>-0.445993</td>
+          <td>-0.360290</td>
+          <td>-0.353106</td>
+          <td>-0.911859</td>
         </tr>
       </tbody>
     </table>
@@ -327,33 +332,33 @@ can be retrieved using the ``get_locs`` method:
       <tbody>
         <tr>
           <th>0</th>
-          <td>-38</td>
-          <td>35</td>
-          <td>-32</td>
+          <td>-48</td>
+          <td>34</td>
+          <td>47</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>-34</td>
-          <td>28</td>
-          <td>-38</td>
+          <td>-46</td>
+          <td>-40</td>
+          <td>14</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>-30</td>
-          <td>22</td>
-          <td>-15</td>
+          <td>-40</td>
+          <td>-13</td>
+          <td>15</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>-24</td>
-          <td>-48</td>
-          <td>26</td>
+          <td>-39</td>
+          <td>-25</td>
+          <td>-47</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>-23</td>
-          <td>47</td>
-          <td>-3</td>
+          <td>-35</td>
+          <td>44</td>
+          <td>-33</td>
         </tr>
       </tbody>
     </table>
@@ -406,21 +411,21 @@ Brain objects are iterable, so you index a brain object like this:
       <tbody>
         <tr>
           <th>0</th>
-          <td>-0.558500</td>
-          <td>-0.343205</td>
-          <td>-0.655767</td>
+          <td>-0.000073</td>
+          <td>0.770118</td>
+          <td>-0.233968</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>1.051535</td>
-          <td>1.247053</td>
-          <td>1.438746</td>
+          <td>-0.066861</td>
+          <td>0.444841</td>
+          <td>-0.619084</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>1.119984</td>
-          <td>1.375932</td>
-          <td>0.910111</td>
+          <td>0.659899</td>
+          <td>0.257654</td>
+          <td>0.258308</td>
         </tr>
       </tbody>
     </table>
@@ -428,8 +433,9 @@ Brain objects are iterable, so you index a brain object like this:
 
 
 
-You can also pass a list of indices for either ``times`` or ``locs`` to
-the ``get_slice`` method and return a subset of the brain object
+You can also pass a list of indices for either ``times`` (sample
+numbers) or ``locs`` to the ``get_slice`` method and return a subset of
+the brain object.
 
 .. code:: ipython2
 
@@ -467,21 +473,21 @@ the ``get_slice`` method and return a subset of the brain object
       <tbody>
         <tr>
           <th>0</th>
-          <td>-0.558500</td>
-          <td>-0.343205</td>
-          <td>-0.655767</td>
+          <td>-0.000073</td>
+          <td>0.770118</td>
+          <td>-0.233968</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>1.051535</td>
-          <td>1.247053</td>
-          <td>1.438746</td>
+          <td>-0.066861</td>
+          <td>0.444841</td>
+          <td>-0.619084</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>1.119984</td>
-          <td>1.375932</td>
-          <td>0.910111</td>
+          <td>0.659899</td>
+          <td>0.257654</td>
+          <td>0.258308</td>
         </tr>
       </tbody>
     </table>
@@ -489,7 +495,7 @@ the ``get_slice`` method and return a subset of the brain object
 
 
 
-You can resample your data by specifying a new resample rate
+You can resample your data by specifying a new sample rate
 
 .. code:: ipython2
 
@@ -503,7 +509,7 @@ You can resample your data by specifying a new resample rate
     Recording time in seconds: [0.5 0.5]
     Sample Rate in Hz: [64, 64]
     Number of sessions: 2
-    Date created: Thu Mar 29 22:49:57 2018
+    Date created: Fri Mar 30 12:38:17 2018
     Meta data: {'Hospital': 'DHMC', 'subjectID': '123', 'Investigator': 'Andy'}
 
 
@@ -579,7 +585,7 @@ This method will give you a summary of the brain object:
     Recording time in seconds: [0.5 0.5]
     Sample Rate in Hz: [64, 64]
     Number of sessions: 2
-    Date created: Thu Mar 29 22:49:57 2018
+    Date created: Fri Mar 30 12:38:17 2018
     Meta data: {'Hospital': 'DHMC', 'subjectID': '123', 'Investigator': 'Andy'}
 
 
@@ -633,7 +639,7 @@ This method allows you resample a brain object in place.
 
 .. parsed-literal::
 
-    <supereeg.brain.Brain at 0x111d74390>
+    <supereeg.brain.Brain at 0x10c887390>
 
 
 
