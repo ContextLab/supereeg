@@ -123,7 +123,10 @@ class Brain(object):
                 data = load(data)
 
         if isinstance(data, Brain):
+            self.__dict__.update(data.__dict__)
+            self.update_filter_inds()
             self = data
+
         else:
             if isinstance(data, (Nifti, nib.nifti1.Nifti1Image)):
                data, locs, meta = _nifti_to_brain(data)
@@ -435,7 +438,8 @@ class Brain(object):
         """
 
         locs = self.get_locs()
-        label = np.array(self.label)[self.filter_inds] #TODO: check this
+        label = np.array(self.label)[self.filter_inds.flatten()]
+        #label = np.array(self.label)[np.where(self.filter_inds)[1]].tolist()
         if locs.shape[0] <= 10000:
             _plot_locs_connectome(locs, label, pdfpath)
         else:
