@@ -9,7 +9,7 @@ import numpy as np
 import seaborn as sns
 import deepdish as dd
 import matplotlib.pyplot as plt
-from .helpers import _get_corrmat, _r2z, _z2r, _rbf, _expand_corrmat_fit, _expand_corrmat_predict,\
+from .helpers import _get_corrmat, _r2z, _z2r, _rbf, _expand_corrmat_fit, _expand_corrmat_predict, _plot_borderless,\
     _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp, _gray, _nifti_to_brain
 from .brain import Brain
 from scipy.spatial.distance import cdist
@@ -272,12 +272,12 @@ class Model(object):
         print('Date created: ' + str(self.date_created))
         print('Meta data: ' + str(self.meta))
 
-    def plot_data(self, show=True, **kwargs):
+    def plot_data(self, savefile=None, show=True, **kwargs):
         """
         Plot the supereeg model as a correlation matrix
 
         This function wraps seaborn's heatmap and accepts any inputs that seaborn
-        supports.
+        supports for models less that 2000x2000.  If the model is larger,
 
         Parameters
         ----------
@@ -295,8 +295,11 @@ class Model(object):
             corr_mat = _z2r(np.divide(self.numerator, self.denominator))
         np.fill_diagonal(corr_mat, 1)
 
-        ax = sns.heatmap(corr_mat, cbar_kws = {'label': 'correlation'}, **kwargs)
+        if np.shape(corr_mat)[0] < 2000:
+            ax = sns.heatmap(corr_mat, cbar_kws = {'label': 'correlation'}, **kwargs)
 
+        else:
+            ax = _plot_borderless(corr_mat, savefile=savefile, vmin=-1, vmax=1, cmap='Spectral')
         if show:
             plt.show()
 

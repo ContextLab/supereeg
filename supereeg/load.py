@@ -7,7 +7,7 @@ import deepdish as dd
 from .brain import Brain
 from .model import Model
 from .nifti import Nifti
-from .helpers import tal2mni, _gray, _std, _resample_nii
+from .helpers import _resample_nii
 
 BASE_URL = 'https://docs.google.com/uc?export=download'
 homedir = os.path.expanduser('~/') #FIXME: use os.path.join rather than using slashes
@@ -20,6 +20,8 @@ datadict = { #TODO: do the data types need to be specified or could they be infe
     'example_filter' : ['1eHcYg1idIK8y2LMLK_tqSxB7jI_l7OsL', 'bo'],
     'std' : ['1P-WcEBVYnoMQAYhvSCf1BBMIDMe9VZIM', 'nii'],
     'gray' : ['1a8wptBaMIFEl4j8TFhlTQVUAbyC0sN4p', 'nii'],
+    'pyFR_k10r20_20mm' : ['1l4s7mE0KbPMmIcIA9JQzSZHCA8LWFq1I', 'mo'],
+    'pyFR_k10r20_6mm' : ['1yH47fldoeuK0AQtOhMM-P2P0Dv_zH5G6', 'mo']
 }
 
 def load(fname, vox_size=None, return_type=None, sample_inds=None,

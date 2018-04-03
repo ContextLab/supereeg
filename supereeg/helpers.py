@@ -6,11 +6,13 @@ import copy
 import os
 import warnings
 import numpy.matlib as mat
+import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import imageio
 import nibabel as nib
 import hypertools as hyp
+import shutil
 
 from nilearn import plotting as ni_plt
 from nilearn import image
@@ -1189,3 +1191,114 @@ def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; c
             data[locs[i, 0], locs[i, 1], locs[i, 2], :] = np.divide(data[locs[i, 0], locs[i, 1], locs[i, 2], :], counts[locs[i, 0], locs[i, 1], locs[i, 2], :])
 
     return Nifti(data, affine=nii_template.affine)
+
+
+
+
+def _plot_borderless(x, savefile=None, vmin=-1, vmax=1, width=1000, dpi=100, cmap='Spectral'):
+    _close_all()
+    width *= (1000.0 / 775.0)  # account for border
+    height = (775.0 / 755.0) * float(width) * float(x.shape[0]) / float(x.shape[1])  # correct height/width distortion
+
+    fig = plt.figure(figsize=(width / float(dpi), height / float(dpi)), dpi=dpi)
+
+    if len(x.shape) == 2:
+        plt.pcolormesh(x, vmin=float(vmin), vmax=float(vmax), cmap=cmap)
+    else:
+        plt.imshow(x)
+    ax = plt.gca()
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_frame_on(False)
+
+    fig.set_frameon(False)
+
+    if not savefile == None:
+        fig.savefig(savefile, figsize=(width / float(dpi), height / float(dpi)), bbox_inches='tight', pad_inches=0,
+                    dpi=dpi)
+    return fig
+
+
+def _plot_big_matrix(X, outfile, max_blocksize=1000, width=1000, vmin=-1, vmax=1):
+    if os.path.isfile(outfile):
+        img = plt.imread(outfile)
+        _plot_borderless(img)
+        return img
+
+    tmpdir1, fname = os.path.split(outfile)
+    tmpdir2, tmp = os.path.splitext(fname)
+    tmpdir = os.path.join(tmpdir1, tmpdir2)
+    tmp_fname = os.path.join(tmpdir, 'tmp.png')
+    if not os.path.isdir(tmpdir):
+        delete_tmpdir = True
+        os.makedirs(tmpdir)
+    else:
+        delete_tmpdir = False
+
+    def carve_bign(n):
+        starts = range(1, n, max_blocksize)
+        ends = starts[1:]
+        ends.append(n)
+        ends = np.unique(ends)
+        starts = np.array(starts) - 1
+        return starts, ends
+
+    row_starts, row_ends = carve_bign(X.shape[0])
+    col_starts, col_ends = carve_bign(X.shape[1])
+    n = np.max(X.shape)
+
+    for row in np.arange(len(row_starts)):
+        for col in np.arange(len(col_starts)):
+            next_block = X[row_starts[row]:row_ends[row], col_starts[col]:col_ends[col]]
+            next_width = float(width) * float(col_ends[col] - col_starts[col]) / float(X.shape[1])
+            _plot_borderless(next_block, tmp_fname, vmin=vmin, vmax=vmax, width=next_width, dpi=10)
+
+            next_img = plt.imread(tmp_fname)
+            next_img = np.flipud(next_img)
+
+            if col == 0:
+                row_img = next_img
+            else:
+                row_img = _safe_cat(row_img, next_img, 1)
+            if n > 1e4:
+                print('.', end='')
+        if row == 0:
+            full_img = row_img
+        else:
+            full_img = _safe_cat(full_img, row_img, 0)
+        if n > 1e4:
+            print('', end='\n')
+
+    if delete_tmpdir:
+        shutil.rmtree(tmpdir)
+    else:
+        os.remove(tmp_fname)
+
+    _plot_borderless(full_img, outfile);
+    return full_img
+
+def _safe_cat(a, b, axis):
+    dims = list(set(np.arange(a.ndim)) - set([axis]))
+    for d in dims:
+        if a.shape[d] > b.shape[d]:
+            b = _padder(b, a, d)
+        elif a.shape[d] < b.shape[d]:
+            a = _padder(a, b, d)
+    return np.concatenate((a, b), axis=axis)
+
+
+def _padder(a, b, dims):
+    if not np.iterable(dims):
+        dims = [dims]
+    dims = np.array(dims)
+    dims[dims < 0] = 0
+    dims = dims.tolist()
+
+    padding = np.array(map(lambda x: int(x in dims), np.arange(a.ndim))) * (np.array(b.shape) - np.array(a.shape))
+    padding = padding * (padding > 0)
+    return np.pad(a, zip(np.zeros([1, a.ndim], dtype=int).tolist()[0], padding.tolist()), 'mean')
+
+def _close_all():
+    figs = plt.get_fignums()
+    for f in figs:
+        plt.close(f)
