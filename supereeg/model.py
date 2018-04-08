@@ -356,7 +356,7 @@ class Model(object):
 
         Parameters
         ----------
-        inds : int or list
+        inds : scalar, list, or numpy array
             locations you wish to index (relative to model.get_locs())
 
         inplace : bool
@@ -364,12 +364,12 @@ class Model(object):
             (default: False)
 
         """
-        numerator = self.numerator[inds, inds]
-        denominator = self.denominator[inds, inds]
-        locs = self.locs[inds, :]
+        numerator = self.numerator[inds][:, inds]
+        denominator = self.denominator[inds][:, inds]
+        locs = self.locs.iloc[inds]
         n_subs = self.n_subs
         meta = self.meta
-        data_created = time.strftime("%c")
+        date_created = time.strftime("%c")
 
         if inplace:
             self.numerator = numerator
