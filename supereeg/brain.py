@@ -371,6 +371,8 @@ class Brain(object):
             self.data = data
             self.sessions = sessions
             self.sample_rate = sample_rate
+            if not sample_rate == resample_rate:
+                self.kurtosis = _kurt_vals(self)
 
     def plot_data(self, filepath=None, time_min=None, time_max=None, title=None,
                   electrode=None):
@@ -405,7 +407,16 @@ class Brain(object):
         if self.get_data().shape[0] == 1:
             nii = self.to_nii()
             nii.plot_glass_brain()
-
+        elif self.get_data().empty:
+            fig = plt.figure()
+            ax = fig.add_subplot(111, aspect='equal')
+            ax.set_facecolor('w')
+            ax.set_xlabel("time")
+            ax.set_ylabel("electrode")
+            if filepath:
+                plt.savefig(filename=filepath)
+            else:
+                plt.show()
         else:
             Y = _normalize_Y(self.get_data())
 
@@ -449,8 +460,15 @@ class Brain(object):
 
         """
 
-        locs = self.get_locs()
-        label = np.array(self.label)[self.filter_inds.flatten()]
+
+        locs = self.locs
+
+        if self.filter_inds is None:
+            label = np.array(self.label)
+        elif self.filter_inds.all():
+            label = np.array(self.label)
+        else:
+            label = np.array(list(map(lambda x: 'observed' if x else 'removed', self.filter_inds)))
         if locs.shape[0] <= 10000:
             _plot_locs_connectome(locs, label, pdfpath)
         else:
