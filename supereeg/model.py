@@ -85,7 +85,7 @@ class Model(object):
     """
     #TODO: __init__ should support data as a brain object, model object, nifti object, or string; if model object, just return data without copying it
     def __init__(self, data=None, locs=None, template=None,
-                 measure='kurtosis', threshold=10, numerator=None, denominator=None,
+                 numerator=None, denominator=None,
                  n_subs=None, meta=None, date_created=None):
 
         if all(v is not None for v in [numerator, denominator, locs, n_subs]):
@@ -104,7 +104,7 @@ class Model(object):
             for d in data:
                 d = _format_data(d, self.locs)
                 if isinstance(d, Brain):
-                    num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d, self.locs, measure, threshold)
+                    num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d, self.locs)
                 elif isinstance(d, Model):
                     num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, self.locs)
                 self.numerator += num_corrmat_x
@@ -213,7 +213,7 @@ class Model(object):
             return Brain(data=activations, locs=perm_locs, sessions=bo.sessions,
                         sample_rate=bo.sample_rate, kurtosis=None, label=loc_label)
 
-    def update(self, data, measure='kurtosis', threshold=10, inplace=True,
+    def update(self, data, inplace=True,
                locs=None, n=1):
         """
         Update a model with new data.
@@ -222,13 +222,6 @@ class Model(object):
         ----------
         data : supereeg.Brain, supereeg.Model (or list of either)
             New subject data
-
-        measure : kurtosis
-            Measure for filtering electrodes.  Only option currently supported
-            is kurtosis.
-
-        threshold : 10 or int
-            Kurtosis threshold
 
         inplace : bool
             Whether to run update in place or return a new model (default True).
@@ -250,7 +243,7 @@ class Model(object):
         for d in data:
             d = _format_data(d, m.locs, locs, n)
             if isinstance(d, Brain):
-                num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d.get_filtered_bo(), m.locs, measure, threshold)
+                num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d.get_filtered_bo(), m.locs)
             elif isinstance(d, Model):
                 num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, m.locs)
             m.numerator += num_corrmat_x
@@ -357,6 +350,38 @@ class Model(object):
 
         dd.io.save(fname, mo, compression=compression)
 
+    def get_slice(self, inds, inplace=False):
+        """
+        Indexes model object data
+
+        Parameters
+        ----------
+        inds : scalar, list, or numpy array
+            locations you wish to index (relative to model.get_locs())
+
+        inplace : bool
+            If True, indexes in place; otherwise a new Model object is returned
+            (default: False)
+
+        """
+        numerator = self.numerator[inds][:, inds]
+        denominator = self.denominator[inds][:, inds]
+        locs = self.locs.iloc[inds]
+        n_subs = self.n_subs
+        meta = self.meta
+        date_created = time.strftime("%c")
+
+        if inplace:
+            self.numerator = numerator
+            self.denominator = denominator
+            self.locs = locs
+            self.n_subs = n_subs
+            self.meta = meta
+            self.date_created = date_created
+        else:
+            return Model(numerator=numerator, denominator=denominator, locs=locs,
+                         n_subs=n_subs, meta=meta, date_created=date_created)
+
 ###################################
 # helper functions for init
 ###################################
@@ -386,7 +411,7 @@ def _create_locs(self, locs, template):
     if self.locs.shape[0]>1000:
         warnings.warn('Model locations exceed 1000, this may take a while. Go get a cup of coffee or brew some tea!')
 
-def _bo2model(bo, locs, measure, threshold):
+def _bo2model(bo, locs):
     """Returns numerator and denominator given a brain object"""
     sub_corrmat = _get_corrmat(bo)
     np.fill_diagonal(sub_corrmat, 0)
