@@ -371,7 +371,8 @@ class Brain(object):
             self.data = data
             self.sessions = sessions
             self.sample_rate = sample_rate
-            self.kurtosis = _kurt_vals(self)
+            if not sample_rate == resample_rate:
+                self.kurtosis = _kurt_vals(self)
 
     def plot_data(self, filepath=None, time_min=None, time_max=None, title=None,
                   electrode=None):
@@ -459,11 +460,15 @@ class Brain(object):
 
         """
 
-        locs = self.get_locs()
-        if not self.filter_inds.all():
-            label = np.array(list(map(lambda x: 'observed' if x else 'removed', self.filter_inds)))
-        else:
+
+        locs = self.locs
+
+        if self.filter_inds is None:
             label = np.array(self.label)
+        elif self.filter_inds.all():
+            label = np.array(self.label)
+        else:
+            label = np.array(list(map(lambda x: 'observed' if x else 'removed', self.filter_inds)))
         if locs.shape[0] <= 10000:
             _plot_locs_connectome(locs, label, pdfpath)
         else:

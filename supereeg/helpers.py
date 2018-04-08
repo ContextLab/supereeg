@@ -1050,11 +1050,11 @@ def _plot_locs_connectome(locs, label=None, pdfpath=None):
             label = list(label)
             for i, v in enumerate(label):
                 if v == 'observed':
-                    label[i] = [0, 0, 0]
-                elif v == 'removed':
-                    label[i] = [0.75, 0.75, 0.75]
-                else:
                     label[i] = [0, 0, 1]
+                elif v == 'removed':
+                    label[i] = [0.0, 0.75, 0.75]
+                else:
+                    label[i] = [1, 0, 1]
             colors = np.asarray(label)
             colors = list(map(lambda x: x[0], np.array_split(colors, colors.shape[0], axis=0)))
         else:
