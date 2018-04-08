@@ -366,7 +366,7 @@ class Model(object):
         """
         numerator = self.numerator[inds, inds]
         denominator = self.denominator[inds, inds]
-        locs = locs[inds, :]
+        locs = self.locs[inds, :]
         n_subs = self.n_subs
         meta = self.meta
         data_created = time.strftime("%c")
