@@ -1052,7 +1052,7 @@ def _plot_locs_connectome(locs, label=None, pdfpath=None):
                 if v == 'observed':
                     label[i] = [0, 0, 0]
                 elif v == 'removed':
-                    label[i] = [0, 1, 0]
+                    label[i] = [0.75, 0.75, 0.75]
                 else:
                     label[i] = [0, 0, 1]
             colors = np.asarray(label)
