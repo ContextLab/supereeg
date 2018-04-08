@@ -1041,15 +1041,27 @@ def _plot_locs_connectome(locs, label=None, pdfpath=None):
 
 
     """
-    if label is not None:
-        label = list(map(lambda x: [0,0,0] if x=='observed' else [1,0,0], label))
-        colors = np.asarray(label)
-        colors = list(map(lambda x: x[0], np.array_split(colors, colors.shape[0], axis=0)))
+    if locs.empty:
+        ni_plt.plot_connectome(np.eye(locs.shape[0]), locs)
     else:
-        colors = 'k'
-    ni_plt.plot_connectome(np.eye(locs.shape[0]), locs, output_file=pdfpath,
-                           node_kwargs={'alpha': 0.5, 'edgecolors': None},
-                           node_size=10, node_color=colors)
+
+        if label is not None:
+
+            label = list(label)
+            for i, v in enumerate(label):
+                if v == 'observed':
+                    label[i] = [0, 0, 0]
+                elif v == 'removed':
+                    label[i] = [0, 1, 0]
+                else:
+                    label[i] = [0, 0, 1]
+            colors = np.asarray(label)
+            colors = list(map(lambda x: x[0], np.array_split(colors, colors.shape[0], axis=0)))
+        else:
+            colors = 'k'
+        ni_plt.plot_connectome(np.eye(locs.shape[0]), locs, output_file=pdfpath,
+                               node_kwargs={'alpha': 0.5, 'edgecolors': None},
+                               node_size=10, node_color=colors)
     if not pdfpath:
         ni_plt.show()
 
