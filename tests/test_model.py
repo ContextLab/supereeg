@@ -131,3 +131,16 @@ def test_model_get_model():
     mo = se.Model(data=data[1:3], locs=locs)
     m = mo.get_model()
     assert isinstance(m, np.ndarray)
+
+def test_model_get_slice():
+    mo = se.Model(data=data[1:3], locs=locs)
+    inds = [0, 1]
+    s = mo.get_slice(inds) #inplace = False
+    assert s.get_model().shape[0] == s.get_model().shape[1]
+    assert s.get_model().shape[0] == len(inds)
+    assert s.get_locs().shape[0] == len(inds)
+
+    mo.get_slice(inds, inplace=True)
+    assert mo.get_model().shape[0] == mo.get_model().shape[1]
+    assert mo.get_model().shape[0] == len(inds)
+    assert mo.get_locs().shape[0] == len(inds)

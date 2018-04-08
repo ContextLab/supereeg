@@ -351,11 +351,36 @@ class Model(object):
         dd.io.save(fname, mo, compression=compression)
 
     def get_slice(self, inds, inplace=False):
-        #self, data=None, locs=None, template=None,
-        #            measure='kurtosis', threshold=10, numerator=None, denominator=None,
-        #             n_subs=None, meta=None, date_created=None
-        if isempty(inds):
-            #####
+        """
+        Indexes model object data
+
+        Parameters
+        ----------
+        inds : int or list
+            locations you wish to index (relative to model.get_locs())
+
+        inplace : bool
+            If True, indexes in place; otherwise a new Model object is returned
+            (default: False)
+        
+        """
+        numerator = self.numerator[inds, inds]
+        denominator = self.denominator[inds, inds]
+        locs = locs[inds, :]
+        n_subs = self.n_subs
+        meta = self.meta
+        data_created = time.strftime("%c")
+
+        if inplace:
+            self.numerator = numerator
+            self.denominator = denominator
+            self.locs = locs
+            self.n_subs = n_subs
+            self.meta = meta
+            self.date_created = date_created
+        else:
+            return Model(numerator=numerator, denominator=denominator, locs=locs,
+                         n_subs=n_subs, meta=meta, date_created=date_created)
 
 ###################################
 # helper functions for init
