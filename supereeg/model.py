@@ -362,7 +362,7 @@ class Model(object):
         inplace : bool
             If True, indexes in place; otherwise a new Model object is returned
             (default: False)
-        
+
         """
         numerator = self.numerator[inds, inds]
         denominator = self.denominator[inds, inds]
@@ -392,7 +392,7 @@ def _handle_superuser(self, numerator, denominator, locs, n_subs):
     self.denominator = denominator
 
     # if locs arent already a df, turn them into df
-    if isinstance(locs, pd.Frame):
+    if isinstance(locs, pd.DataFrame):
         self.locs = locs
     else:
         self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
