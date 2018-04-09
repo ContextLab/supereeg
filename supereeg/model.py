@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 from .helpers import _get_corrmat, _r2z, _z2r, _rbf, _expand_corrmat_fit, _expand_corrmat_predict, _plot_borderless,\
     _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp, _gray, _nifti_to_brain
 from .brain import Brain
+from .nifti import Nifti
 from scipy.spatial.distance import cdist
 
 
@@ -246,8 +247,8 @@ class Model(object):
                 num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d.get_filtered_bo(), m.locs)
             elif isinstance(d, Model):
                 num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, m.locs)
-                if type(d.meta) == dict:
-                    m.update(d.meta)
+                if (type(d.meta) == dict) and (type(m.meta) == dict):
+                    m.meta = m.meta.update(d.meta)
             m.numerator += num_corrmat_x
             m.denominator += denom_corrmat_x
             m.n_subs += n_subs
@@ -408,15 +409,22 @@ class Model(object):
         other: Model object to be subtracted from the current object
         """
 
-        other.numerator = -other.numerator
-        other.denominator = -other.denominator
-        result = self.__add__(other)
+        if type(other) == Brain:
+            d = Model(other, locs=other.get_locs())
+        elif type(other) == Nifti:
+            d = Model(other)
+        elif type(other) == Model:
+            d = Model(other, locs=other.locs) #make a copy
+        else:
+            raise Exception('Unsupported data type for subtraction from Model object: ' + str(type(other)))
+
+        d.numerator = -d.numerator
+        d.denominator = -d.denominator
+
+        result = self.__add__(d)
 
         #account for n_subs being updated during add operation
-        if type(other) == Model:
-            result.n_subs -= 2*other.n_subs
-        else:
-            result.n_subs -= 2
+        result.n_subs -= 2*d.n_subs
 
         return result
 
