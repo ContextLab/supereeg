@@ -394,17 +394,17 @@ class Model(object):
         """
         assert np.allclose(self.locs, other.locs), 'location mismatch, cannot combine models'
 
-        if self.n_subjs == 0:
+        if self.n_subs == 0:
             return Model(other)
-        elif: other.n_subjs == 0:
+        elif other.n_subs == 0:
             return Model(self)
 
         def weighted_add(a, b, wa, wb):
             return np.divide(np.multiply(wa, a) + np.multiply(wb, b), wa + wb)
 
-        numerator = weighted_add(self.numerator, other.numerator, self.n_subjs, other.n_subjs)
-        denominator = weighted_add(self.denominator, other.denominator, self.n_subjs, other.n_subjs)
-        n_subjs = self.n_subjs + other.n_subjs
+        numerator = weighted_add(self.numerator, other.numerator, self.n_subs, other.n_subs)
+        denominator = weighted_add(self.denominator, other.denominator, self.n_subs, other.n_subs)
+        n_subs = self.n_subs + other.n_subs
         locs = self.locs
 
         if self.meta is None:
@@ -429,7 +429,7 @@ class Model(object):
         other: Model object to be subtracted from the current object
         """
 
-        other.n_subjs = -other.n_subjs
+        other.n_subs = -other.n_subs
         return self.__add__(other)
 
 

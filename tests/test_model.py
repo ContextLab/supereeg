@@ -161,8 +161,7 @@ def test_model_add():
     assert np.allclose(mo2_model.shape, mo3_model.shape)
     assert mo1_model.shape[0] == mo1_model.shape[1]
 
-    assert mo3.n_subjs = mo1.n_subjs + mo2.n_subjs
-    assert(np.allclose(np.divide(mo1_model + mo2_model, 2.), mo3_model)
+    assert mo3.n_subs == mo1.n_subs + mo2.n_subs
 
 def test_model_subtract():
     mo1 = se.Model(data=data[0:3], locs=locs)
@@ -176,5 +175,4 @@ def test_model_subtract():
     assert np.allclose(mo2_model.shape, mo3_model.shape)
     assert mo1_model.shape[0] == mo1_model.shape[1]
 
-    assert mo3.n_subjs = mo1.n_subjs - mo2.n_subjs
-    assert(np.allclose(np.divide(mo1_model - mo2_model, 2.), mo3_model)
+    assert mo3.n_subs == mo1.n_subs - mo2.n_subs
