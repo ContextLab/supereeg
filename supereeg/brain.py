@@ -251,6 +251,7 @@ class Brain(object):
     def update_info(self):
         self.n_elecs = self.data.shape[1] # needs to be calculated by sessions
         self.n_sessions = len(self.sessions.unique())
+        ## not entirely sure if try/except necessary and not if/else
         try:
             index, counts = np.unique(self.sessions, return_counts=True)
             self.n_secs = np.true_divide(counts, np.array(self.sample_rate))

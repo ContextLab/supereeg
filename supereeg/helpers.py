@@ -528,6 +528,10 @@ def _timeseries_recon(bo, K, chunk_size=1000, preprocess='zscore'):
     # results = np.vstack(Parallel(n_jobs=multiprocessing.cpu_count())(
     #     delayed(_reconstruct_activity)(data[chunk, :], Kba, Kaa_inv) for chunk in chunks))
 
+
+    ## issue when stacking one dimensional reconstrutions
+    ## transposing the reconstructions allows you to predict when s==1
+
     if s == 1:
         results = np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv).T, chunks)))
     else:
