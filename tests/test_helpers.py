@@ -1,11 +1,10 @@
 from __future__ import print_function
 from __future__ import division
 from past.utils import old_div
-from builtins import bytes
 import supereeg as se
 import glob
 from supereeg.helpers import *
-from scipy.stats import kurtosis, zscore
+from scipy.stats import kurtosis
 import os
 
 ## don't understand why i have to do this:
@@ -46,6 +45,7 @@ data = [se.simulate_model_bos(n_samples=10, locs=locs, sample_locs=n_elecs) for 
 test_model = se.Model(data=data, locs=locs)
 bo_nii = se.Brain(_gray(20))
 nii = _brain_to_nifti(bo_nii, _gray(20))
+
 
 
 def test_std():
@@ -196,6 +196,24 @@ def test_reconstruct():
     assert isinstance(recon_data, np.ndarray)
     assert np.allclose(recon_data, recon_test.data, equal_nan=True)
     assert 1 >= corr_vals.mean() >= -1
+
+def test_recon_carved():
+    elec_ind = 1
+    other_inds = [i for i in range(sub_locs.shape[0]) if i != elec_ind]
+    bo_t = bo.get_slice(loc_inds=other_inds, inplace=False)
+    bo_r = test_model.predict(bo_t, nearest_neighbor=False)
+    bo_l = bo.get_slice(loc_inds=elec_ind , inplace=False)
+    mo_inds = _count_overlapping(test_model, bo_l)
+    bo_inds = _count_overlapping(bo_r, bo_l)
+    bo_p = bo_r.get_slice(loc_inds=bo_inds, inplace=False)
+    mo_carve_inds = _count_overlapping(test_model, bo)
+    carved_mat = test_model.get_slice(inds=mo_carve_inds)
+    bo_c = carved_mat.predict(bo_t, nearest_neighbor=False)
+    bo_carve_inds = _count_overlapping(bo_c, bo_l)
+    bo_p_2 = bo_c.get_slice(loc_inds=bo_carve_inds, inplace=False)
+    recon_corr_carve = pd.concat([bo_p.get_data(), bo_p_2.get_data()], axis=1)
+    assert recon_corr_carve.corr()[0][0] == 1.0
+
 
 def test_round_it():
     rounded_array = _round_it(np.array([1.0001, 1.99999]), 3)

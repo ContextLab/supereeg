@@ -18,6 +18,9 @@ import supereeg as se
 # load example data to convert to nifti
 bo = se.load('example_data')
 
+nii = se.Nifti(se.load('gray'))
+
+se.Brain(nii)
 # convert to nifti two ways:
 
 # if no parameters are passed default uses gray matter masked brain downsampled to 6 mm resolution

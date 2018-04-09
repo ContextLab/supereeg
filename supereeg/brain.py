@@ -130,7 +130,9 @@ class Brain(object):
 
         else:
             if isinstance(data, (Nifti, nib.nifti1.Nifti1Image)):
-               data, locs, meta = _nifti_to_brain(data)
+                warnings.simplefilter('ignore')
+                data, locs, meta = _nifti_to_brain(data)
+
 
             if isinstance(data, Model):
                 locs = data.locs
@@ -250,7 +252,8 @@ class Brain(object):
         self.n_elecs = self.data.shape[1] # needs to be calculated by sessions
         self.n_sessions = len(self.sessions.unique())
         try:
-            self.n_secs = np.true_divide(counts, np.array(sample_rate))
+            index, counts = np.unique(self.sessions, return_counts=True)
+            self.n_secs = np.true_divide(counts, np.array(self.sample_rate))
         except:
             self.n_secs = None
 
@@ -449,9 +452,15 @@ class Brain(object):
             else:
                 plt.show()
 
+
     def plot_locs(self, pdfpath=None):
         """
         Plots electrode locations from brain object
+
+        Colors:
+            - Observed : Blue
+            - Removed : Cyan
+            - Reconstructed : Red
 
         Parameters
         ----------
