@@ -413,7 +413,7 @@ class Model(object):
         result = self.__add__(other)
 
         #account for n_subs being updated during add operation
-        if type(other) == se.Model:
+        if type(other) == Model:
             result.n_subs -= 2*other.n_subs
         else:
             result.n_subs -= 2
