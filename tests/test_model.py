@@ -26,7 +26,7 @@ locs = np.array([[-61., -77.,  -3.],
 # number of timeseries samples
 n_samples = 10
 # number of subjects
-n_subs = 3
+n_subs = 6
 # number of electrodes
 n_elecs = 5
 # simulate correlation matrix
@@ -148,3 +148,33 @@ def test_model_get_slice():
     assert mo_model.shape[0] == mo_model.shape[1]
     assert mo_model.shape[0] == len(inds)
     assert mo_model.shape[0] == len(inds)
+
+def test_model_add():
+    mo1 = se.Model(data=data[0:3], locs=locs)
+    mo2 = se.Model(data=data[3:6], locs=locs)
+    mo3 = mo1 + mo2
+
+    mo1_model = mo1.get_model()
+    mo2_model = mo2.get_model()
+    mo3_model = mo3.get_model()
+    assert np.allclose(mo1_model.shape, mo2_model.shape)
+    assert np.allclose(mo2_model.shape, mo3_model.shape)
+    assert mo1_model.shape[0] == mo1_model.shape[1]
+
+    assert mo3.n_subjs = mo1.n_subjs + mo2.n_subjs
+    assert(np.allclose(np.divide(mo1_model + mo2_model, 2.), mo3_model)
+
+def test_model_subtract():
+    mo1 = se.Model(data=data[0:3], locs=locs)
+    mo2 = se.Model(data=data[3:6], locs=locs)
+    mo3 = mo1 - mo2
+
+    mo1_model = mo1.get_model()
+    mo2_model = mo2.get_model()
+    mo3_model = mo3.get_model()
+    assert np.allclose(mo1_model.shape, mo2_model.shape)
+    assert np.allclose(mo2_model.shape, mo3_model.shape)
+    assert mo1_model.shape[0] == mo1_model.shape[1]
+
+    assert mo3.n_subjs = mo1.n_subjs - mo2.n_subjs
+    assert(np.allclose(np.divide(mo1_model - mo2_model, 2.), mo3_model)

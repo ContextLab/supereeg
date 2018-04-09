@@ -382,6 +382,57 @@ class Model(object):
             return Model(numerator=numerator, denominator=denominator, locs=locs,
                          n_subs=n_subs, meta=meta, date_created=date_created)
 
+    def __add__(self, other):
+        """
+        Add two model objects together. The models must have matching
+        locations.  Meta properties are combined across objects, or if properties
+        conflict then the values from the first object are preferred.
+
+        Parameters
+        ----------
+        other: Model object to be added to the current object
+        """
+        assert np.allclose(self.locs, other.locs), 'location mismatch, cannot combine models'
+
+        if self.n_subjs == 0:
+            return Model(other)
+        elif: other.n_subjs == 0:
+            return Model(self)
+
+        def weighted_add(a, b, wa, wb):
+            return np.divide(np.multiply(wa, a) + np.multiply(wb, b), wa + wb)
+
+        numerator = weighted_add(self.numerator, other.numerator, self.n_subjs, other.n_subjs)
+        denominator = weighted_add(self.denominator, other.denominator, self.n_subjs, other.n_subjs)
+        n_subjs = self.n_subjs + other.n_subjs
+        locs = self.locs
+
+        if self.meta is None:
+            meta = other.meta
+        elif other.meta is None:
+            meta = self.meta
+        elif (type(self.meta) == dict) and (type(other.meta) == dict):
+            meta = other.meta.update(self.meta)
+        date_created = time.strftime("%c")
+
+        return Model(numerator=numerator, denominator=denominator, locs=locs,
+                     n_subs=n_subs, meta=meta, date_created=date_created)
+
+    def __sub__(self, other):
+        """
+        Subtract one model object from another. The models must have matching
+        locations.  Meta properties are combined across objects, or if properties
+        conflict then the values from the first object are preferred.
+
+        Parameters
+        ----------
+        other: Model object to be subtracted from the current object
+        """
+
+        other.n_subjs = -other.n_subjs
+        return self.__add__(other)
+
+
 ###################################
 # helper functions for init
 ###################################
