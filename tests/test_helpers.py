@@ -211,8 +211,7 @@ def test_recon_carved():
     bo_c = carved_mat.predict(bo_t, nearest_neighbor=False)
     bo_carve_inds = _count_overlapping(bo_c, bo_l)
     bo_p_2 = bo_c.get_slice(loc_inds=bo_carve_inds, inplace=False)
-    recon_corr_carve = pd.concat([bo_p.get_data(), bo_p_2.get_data()], axis=1)
-    assert recon_corr_carve.corr()[0][0] == 1.0
+    assert np.allclose(bo_p.get_data(), bo_p_2.get_data())
 
 
 def test_round_it():

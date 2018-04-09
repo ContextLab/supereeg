@@ -528,13 +528,13 @@ def _timeseries_recon(bo, K, chunk_size=1000, preprocess='zscore'):
     # results = np.vstack(Parallel(n_jobs=multiprocessing.cpu_count())(
     #     delayed(_reconstruct_activity)(data[chunk, :], Kba, Kaa_inv) for chunk in chunks))
 
-    if s ==1:
+    if s == 1:
         results = np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv).T, chunks)))
-        zresults = list(map(lambda s: zscore(results[bo.sessions == s, :]), sessions))
     else:
         results = np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv), chunks)))
-        zresults = list(map(lambda s: zscore(results[bo.sessions==s, :]), sessions))
+    zresults = list(map(lambda s: zscore(results[bo.sessions == s, :]), sessions))
     return np.hstack([np.vstack(zresults), data])
+
 
 def _chunker(iterable, chunksize, fillvalue=None):
     """
