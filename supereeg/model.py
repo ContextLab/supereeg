@@ -246,6 +246,8 @@ class Model(object):
                 num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d.get_filtered_bo(), m.locs)
             elif isinstance(d, Model):
                 num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, m.locs)
+                if type(d.meta) == dict:
+                    m.update(d.meta)
             m.numerator += num_corrmat_x
             m.denominator += denom_corrmat_x
             m.n_subs += n_subs
@@ -381,6 +383,43 @@ class Model(object):
         else:
             return Model(numerator=numerator, denominator=denominator, locs=locs,
                          n_subs=n_subs, meta=meta, date_created=date_created)
+
+    def __add__(self, other):
+        """
+        Add two model objects together. The models must have matching
+        locations.  Meta properties are combined across objects, or if properties
+        conflict then the values from the first object are preferred.
+
+        Parameters
+        ----------
+        other: Model object to be added to the current object
+        """
+
+        return self.update(other, inplace=False)
+
+    def __sub__(self, other):
+        """
+        Subtract one model object from another. The models must have matching
+        locations.  Meta properties are combined across objects, or if properties
+        conflict then the values from the first object are preferred.
+
+        Parameters
+        ----------
+        other: Model object to be subtracted from the current object
+        """
+
+        other.numerator = -other.numerator
+        other.denominator = -other.denominator
+        result = self.__add__(other)
+
+        #account for n_subs being updated during add operation
+        if type(other) == Model:
+            result.n_subs -= 2*other.n_subs
+        else:
+            result.n_subs -= 2
+
+        return result
+
 
 ###################################
 # helper functions for init
