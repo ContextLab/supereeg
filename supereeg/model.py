@@ -246,6 +246,8 @@ class Model(object):
                 num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d.get_filtered_bo(), m.locs)
             elif isinstance(d, Model):
                 num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, m.locs)
+                if type(d.meta) == dict:
+                    m.update(d.meta)
             m.numerator += num_corrmat_x
             m.denominator += denom_corrmat_x
             m.n_subs += n_subs
@@ -392,31 +394,8 @@ class Model(object):
         ----------
         other: Model object to be added to the current object
         """
-        assert np.allclose(self.locs, other.locs), 'location mismatch, cannot combine models'
 
-        if self.n_subs == 0:
-            return Model(other)
-        elif other.n_subs == 0:
-            return Model(self)
-
-        def weighted_add(a, b, wa, wb):
-            return np.divide(np.multiply(wa, a) + np.multiply(wb, b), wa + wb)
-
-        numerator = weighted_add(self.numerator, other.numerator, self.n_subs, other.n_subs)
-        denominator = weighted_add(self.denominator, other.denominator, self.n_subs, other.n_subs)
-        n_subs = self.n_subs + other.n_subs
-        locs = self.locs
-
-        if self.meta is None:
-            meta = other.meta
-        elif other.meta is None:
-            meta = self.meta
-        elif (type(self.meta) == dict) and (type(other.meta) == dict):
-            meta = other.meta.update(self.meta)
-        date_created = time.strftime("%c")
-
-        return Model(numerator=numerator, denominator=denominator, locs=locs,
-                     n_subs=n_subs, meta=meta, date_created=date_created)
+        return self.update(other, inplace=False)
 
     def __sub__(self, other):
         """
@@ -429,8 +408,14 @@ class Model(object):
         other: Model object to be subtracted from the current object
         """
 
-        other.n_subs = -other.n_subs
-        return self.__add__(other)
+        other.numerator = -other.numerator
+        other.denominator = -other.denominator
+        result = self.__add__(other)
+        
+        #account for n_subs being updated during add operation
+        result.n_subs -= 2*other.n_subs
+
+        return result
 
 
 ###################################
