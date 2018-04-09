@@ -411,9 +411,12 @@ class Model(object):
         other.numerator = -other.numerator
         other.denominator = -other.denominator
         result = self.__add__(other)
-        
+
         #account for n_subs being updated during add operation
-        result.n_subs -= 2*other.n_subs
+        if type(other) == se.Model:
+            result.n_subs -= 2*other.n_subs
+        else:
+            result.n_subs -= 2
 
         return result
 
