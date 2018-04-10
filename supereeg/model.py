@@ -108,10 +108,11 @@ class Model(object):
         self.meta = meta
 
     def get_model(self):
-        """ Returns a copy the model in the form of a correlation matrix"""
+        """ Returns a copy of the model in the form of a correlation matrix"""
 
-        #with np.errstate(invalid='ignore'):
-        return _recover_model(self.numerator, self.denominator, zscore=True)
+        m = _recover_model(self.numerator, self.denominator, zscore=True)
+        m[np.isnan(m)] = 0
+        return m
 
     def predict(self, bo, nearest_neighbor=True, match_threshold='auto',
                 force_update=False, kthreshold=10, preprocess='zscore'):
@@ -157,7 +158,7 @@ class Model(object):
         if preprocess not in ('zscore', None,):
             raise ValueError('Please set preprocess to either zscore or None.')
 
-        bo = bo.get_filtered_bo() #TODO: IMPLEMENT THIS in Brain.py -- should return a copy of the brain object with only the electrodes that pass the filtering, and with filter=None
+        bo = bo.get_filtered_bo()
 
         # if match_threshold auto, ignore all electrodes whose distance from the
         # nearest matching voxel is greater than the maximum voxel dimension
