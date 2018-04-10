@@ -121,8 +121,9 @@ class Model(object):
 
     def get_model(self):
         """ Returns a copy the model in the form of a correlation matrix"""
-        with np.errstate(invalid='ignore'):
-            return _z2r(np.divide(self.numerator, self.denominator))
+        warnings.simplefilter('ignore')
+        #with np.errstate(invalid='ignore'):
+        return _z2r(np.divide(self.numerator, self.denominator))
 
     def predict(self, bo, nearest_neighbor=True, match_threshold='auto',
                 force_update=False, kthreshold=10, preprocess='zscore'):
@@ -165,6 +166,7 @@ class Model(object):
             New brain data object with missing electrode locations filled in
 
         """
+        warnings.simplefilter('ignore')
         if preprocess not in ('zscore', None,):
             raise ValueError('Please set preprocess to either zscore or None.')
 
@@ -182,8 +184,7 @@ class Model(object):
         if force_update:
             model_corrmat_x = _force_update(self, bo)
         else:
-            with np.errstate(invalid='ignore'):
-                model_corrmat_x = np.divide(self.numerator, self.denominator)
+            model_corrmat_x = np.divide(self.numerator, self.denominator)
 
         bool_mask = _count_overlapping(self, bo)
         case = _which_case(bo, bool_mask)
@@ -273,7 +274,8 @@ class Model(object):
         Plot the supereeg model as a correlation matrix
 
         This function wraps seaborn's heatmap and accepts any inputs that seaborn
-        supports for models less that 2000x2000.  If the model is larger,
+        supports for models less than 2000x2000.  If the model is larger, the plot cannot be
+        generated without specifying a savefile.
 
         Parameters
         ----------
@@ -287,15 +289,16 @@ class Model(object):
 
         """
 
-        with np.errstate(invalid='ignore'):
-            corr_mat = _z2r(np.divide(self.numerator, self.denominator))
+        corr_mat = self.get_model()
         np.fill_diagonal(corr_mat, 1)
 
         if np.shape(corr_mat)[0] < 2000:
             ax = sns.heatmap(corr_mat, cbar_kws = {'label': 'correlation'}, **kwargs)
-
         else:
-            ax = _plot_borderless(corr_mat, savefile=savefile, vmin=-1, vmax=1, cmap='Spectral')
+            if savefile == None:
+                raise NotImplementedError('Cannot plot large models when savefile is None')
+            else:
+                ax = _plot_borderless(corr_mat, savefile=savefile, vmin=-1, vmax=1, cmap='Spectral')
         if show:
             plt.show()
 
@@ -469,6 +472,8 @@ def _bo2model(bo, locs):
 
 def _mo2model(mo, locs):
     """Returns numerator and denominator for model object"""
+    warnings.simplefilter('ignore')
+
     if not isinstance(locs, pd.DataFrame):
         locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
     if locs.equals(mo.locs):
@@ -508,7 +513,7 @@ def _format_data(d, model_locs, new_locs=None, n_subs=1):
         raise TypeError("Did not recognize the type of one of your inputs to the model")
 
 def _force_update(mo, bo):
-
+    warnings.simplefilter('ignore')
     # get subject-specific correlation matrix
     sub_corrmat = _get_corrmat(bo)
 
@@ -525,8 +530,8 @@ def _force_update(mo, bo):
     num_corrmat_x, denom_corrmat_x = _expand_corrmat_fit(sub_corrmat_z, sub__rbf_weights)
 
     # add in new subj data
-    with np.errstate(invalid='ignore'):
-        model_corrmat_x = np.divide(np.add(mo.numerator, num_corrmat_x), np.add(mo.denominator, denom_corrmat_x))
+    #with np.errstate(invalid='ignore'):
+    model_corrmat_x = np.divide(np.add(mo.numerator, num_corrmat_x), np.add(mo.denominator, denom_corrmat_x))
 
     return model_corrmat_x
 
@@ -548,6 +553,7 @@ def _which_case(bo, bool_mask):
 
 def _no_overlap(self, bo, model_corrmat_x):
     """ Compute model when there is no overlap """
+    warnings.simplefilter('ignore')
     # expanded _rbf weights
     model__rbf_weights = _rbf(pd.concat([self.locs, bo.get_locs()]), self.locs)
 
@@ -555,8 +561,8 @@ def _no_overlap(self, bo, model_corrmat_x):
     num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(model_corrmat_x, model__rbf_weights)
 
     # divide the numerator and denominator
-    with np.errstate(invalid='ignore'):
-        model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
+    #with np.errstate(invalid='ignore'):
+    model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
 
     # label locations as reconstructed or observed
     loc_label = ['reconstructed'] * len(self.locs) + ['observed'] * len(bo.get_locs())
@@ -582,6 +588,7 @@ def _subset(self, bo, model_corrmat_x, joint_model_inds):
 
 def _some_overlap(self, bo, model_corrmat_x, joint_model_inds):
     """ Compute model when there is some overlap """
+    warnings.simplefilter('ignore')
 
     # get subject indices where subject locs do not overlap with model locs
 
@@ -616,8 +623,8 @@ def _some_overlap(self, bo, model_corrmat_x, joint_model_inds):
     num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(model_permuted, model__rbf_weights)
 
     # divide the numerator and denominator
-    with np.errstate(invalid='ignore'):
-        model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
+    #with np.errstate(invalid='ignore'):
+    model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
 
     # add back the permuted correlation matrix for complete subject prediction
     model_corrmat_x[:model_permuted.shape[0], :model_permuted.shape[0]] = model_permuted

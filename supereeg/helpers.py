@@ -265,8 +265,8 @@ def _z2r(z):
         Correlation value
 
     """
-    with np.errstate(invalid='ignore', divide='ignore'):
-        return (np.exp(2 * z) - 1) / (np.exp(2 * z) + 1)
+    warnings.simplefilter('ignore')
+    return (np.exp(2 * z) - 1) / (np.exp(2 * z) + 1)
 
 
 def _r2z(r):
