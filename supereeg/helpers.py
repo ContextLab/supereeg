@@ -284,11 +284,11 @@ def _r2z(r):
         Fishers z transformed correlation value
 
     """
-    with np.errstate(invalid='ignore', divide='ignore'):
-        return 0.5 * (np.log(1 + r) - np.log(1 - r))
+    warnings.simplefilter('ignore')
+    return 0.5 * (np.log(1 + r) - np.log(1 - r))
 
 
-def _rbf(x, center, width=20):
+def _rbf(x, center, width=20, tol=1e-15):
     """
     Radial basis function
 
@@ -309,7 +309,9 @@ def _rbf(x, center, width=20):
         Matrix of _rbf weights for each subject coordinate for all coordinates
 
     """
-    return np.exp(-cdist(x, center, metric='euclidean') ** 2 / float(width))
+    weights = np.exp(-cdist(x, center, metric='euclidean') ** 2 / float(width))
+    weights[np.abs(weights) <= tol] = 0.
+    return weights
 
 
 def tal2mni(r):
@@ -748,25 +750,10 @@ def model_compile(data):
 
     """
     from .load import load
-    from .model import Model
 
     m = load(data[0])
-    numerator = m.numerator
-    denominator = m.denominator
-    n_subs = 1
-
-    for mo in data[1:]:
-        m = load(mo)
-        # numerator = np.nansum(np.dstack((numerator, m.numerator)), 2)
-        numerator += m.numerator
-        denominator += m.denominator
-        n_subs += 1
-
-    return Model(numerator=numerator, denominator=denominator,
-                 locs=m.locs, n_subs=n_subs)
-    ### this concatenation of locations doesn't work when updating an existing model (but would be necessary for a build)
-    # return Model(numerator=numerator, denominator=denominator,
-    #              locs=pd.concat([m.locs, bo.locs]), n_subs=n_subs)
+    m.update(data[1:])
+    return m
 
 
 def _near_neighbor(bo, mo, match_threshold='auto'): #TODO: should this be part of bo.get_locs() or Brain.__init__, or possibly model.__init__?

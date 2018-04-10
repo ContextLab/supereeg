@@ -84,7 +84,6 @@ class Model(object):
         A model that can be used to infer timeseries from unknown locations
 
     """
-    #TODO: __init__ should support data as a brain object, model object, nifti object, or string; if model object, just return data without copying it
     def __init__(self, data=None, locs=None, template=None,
                  numerator=None, denominator=None,
                  n_subs=None, meta=None, date_created=None):
@@ -99,18 +98,7 @@ class Model(object):
             self.denominator = np.zeros((s, s))
             self.n_subs = 0
 
-            if type(data) is not list:
-                data = [data]
-
-            for d in data:
-                d = _format_data(d, self.locs)
-                if isinstance(d, Brain):
-                    num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d, self.locs)
-                elif isinstance(d, Model):
-                    num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, self.locs)
-                self.numerator += num_corrmat_x
-                self.denominator += denom_corrmat_x
-                self.n_subs += n_subs
+            self.update(data)
 
         if not date_created:
             self.date_created = time.strftime("%c")
@@ -121,9 +109,9 @@ class Model(object):
 
     def get_model(self):
         """ Returns a copy the model in the form of a correlation matrix"""
-        warnings.simplefilter('ignore')
+
         #with np.errstate(invalid='ignore'):
-        return _z2r(np.divide(self.numerator, self.denominator))
+        return _recover_model(self.numerator, self.denominator, zscore=True)
 
     def predict(self, bo, nearest_neighbor=True, match_threshold='auto',
                 force_update=False, kthreshold=10, preprocess='zscore'):
@@ -166,7 +154,6 @@ class Model(object):
             New brain data object with missing electrode locations filled in
 
         """
-        warnings.simplefilter('ignore')
         if preprocess not in ('zscore', None,):
             raise ValueError('Please set preprocess to either zscore or None.')
 
@@ -184,7 +171,7 @@ class Model(object):
         if force_update:
             model_corrmat_x = _force_update(self, bo)
         else:
-            model_corrmat_x = np.divide(self.numerator, self.denominator)
+            model_corrmat_x = _recover_model(self.numerator, self.denominator)
 
         bool_mask = _count_overlapping(self, bo)
         case = _which_case(bo, bool_mask)
@@ -472,7 +459,6 @@ def _bo2model(bo, locs):
 
 def _mo2model(mo, locs):
     """Returns numerator and denominator for model object"""
-    warnings.simplefilter('ignore')
 
     if not isinstance(locs, pd.DataFrame):
         locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
@@ -481,7 +467,7 @@ def _mo2model(mo, locs):
     else:
         # if the locations are not equivalent, map input model into locs space
         with np.errstate(invalid='ignore'):
-            sub_corrmat_z = np.divide(mo.numerator, mo.denominator)
+            sub_corrmat_z = _recover_model(mo.numerator, mo.denominator)
         np.fill_diagonal(sub_corrmat_z, 0)
         sub_rbf_weights = _rbf(locs, mo.locs)
         n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
@@ -513,7 +499,6 @@ def _format_data(d, model_locs, new_locs=None, n_subs=1):
         raise TypeError("Did not recognize the type of one of your inputs to the model")
 
 def _force_update(mo, bo):
-    warnings.simplefilter('ignore')
     # get subject-specific correlation matrix
     sub_corrmat = _get_corrmat(bo)
 
@@ -531,7 +516,7 @@ def _force_update(mo, bo):
 
     # add in new subj data
     #with np.errstate(invalid='ignore'):
-    model_corrmat_x = np.divide(np.add(mo.numerator, num_corrmat_x), np.add(mo.denominator, denom_corrmat_x))
+    model_corrmat_x = _recover_model(np.add(mo.numerator, num_corrmat_x), np.add(mo.denominator, denom_corrmat_x))
 
     return model_corrmat_x
 
@@ -553,7 +538,7 @@ def _which_case(bo, bool_mask):
 
 def _no_overlap(self, bo, model_corrmat_x):
     """ Compute model when there is no overlap """
-    warnings.simplefilter('ignore')
+
     # expanded _rbf weights
     model__rbf_weights = _rbf(pd.concat([self.locs, bo.get_locs()]), self.locs)
 
@@ -562,7 +547,7 @@ def _no_overlap(self, bo, model_corrmat_x):
 
     # divide the numerator and denominator
     #with np.errstate(invalid='ignore'):
-    model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
+    model_corrmat_x = _recover_model(num_corrmat_x, denom_corrmat_x)
 
     # label locations as reconstructed or observed
     loc_label = ['reconstructed'] * len(self.locs) + ['observed'] * len(bo.get_locs())
@@ -588,7 +573,6 @@ def _subset(self, bo, model_corrmat_x, joint_model_inds):
 
 def _some_overlap(self, bo, model_corrmat_x, joint_model_inds):
     """ Compute model when there is some overlap """
-    warnings.simplefilter('ignore')
 
     # get subject indices where subject locs do not overlap with model locs
 
@@ -624,7 +608,7 @@ def _some_overlap(self, bo, model_corrmat_x, joint_model_inds):
 
     # divide the numerator and denominator
     #with np.errstate(invalid='ignore'):
-    model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
+    model_corrmat_x = _recover_model(num_corrmat_x, denom_corrmat_x)
 
     # add back the permuted correlation matrix for complete subject prediction
     model_corrmat_x[:model_permuted.shape[0], :model_permuted.shape[0]] = model_permuted
@@ -636,3 +620,11 @@ def _some_overlap(self, bo, model_corrmat_x, joint_model_inds):
     perm_locs = self.locs.iloc[perm_inds_unknown].append(bo.get_locs())
 
     return model_corrmat_x, loc_label, perm_locs
+
+def _recover_model(num, denom, zscore=False):
+    warnings.simplefilter('ignore')
+
+    if zscore:
+        return _z2r(np.divide(num, denom))
+    else:
+        return np.divide(num, denom)
