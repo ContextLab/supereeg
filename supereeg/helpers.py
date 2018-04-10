@@ -300,7 +300,7 @@ def _rbf(x, center, width=20, tol=1e-15):
     c : ndarray
         Series of subject's coordinates (one per row) - R_subj
 
-    width : int
+    width : positive scalar
         Radius
 
     Returns
@@ -309,6 +309,8 @@ def _rbf(x, center, width=20, tol=1e-15):
         Matrix of _rbf weights for each subject coordinate for all coordinates
 
     """
+    assert np.isscalar(width), 'RBF width must be a scalar'
+    assert width > 0, 'RBF width must be positive'
     weights = np.exp(-cdist(x, center, metric='euclidean') ** 2 / float(width))
     weights[np.abs(weights) <= tol] = 0.
     return weights

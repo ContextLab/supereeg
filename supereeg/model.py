@@ -57,6 +57,10 @@ class Model(object):
         The number of subjects used to create the model.  Required if you pass
         numerator/denominator.  Otherwise computed automatically from the data.
 
+    rbf_width : positive scalar
+        The width of of the radial basis function (RBF) used as a spatial prior for
+        smoothing estimates at nearby locations.  (Default: 20)
+
     meta : dict
         Optional dict containing whatever you want
 
@@ -86,7 +90,7 @@ class Model(object):
     """
     def __init__(self, data=None, locs=None, template=None,
                  numerator=None, denominator=None,
-                 n_subs=None, meta=None, date_created=None):
+                 n_subs=None, meta=None, date_created=None, rbf_width=20):
 
         if all(v is not None for v in [numerator, denominator, locs, n_subs]):
             _handle_superuser(self, numerator, denominator, locs, n_subs)
@@ -97,7 +101,7 @@ class Model(object):
             self.numerator = np.zeros((s, s))
             self.denominator = np.zeros((s, s))
             self.n_subs = 0
-
+            self.rbf_width = float(rbf_width) #not sure why this is needed (since it's also specified below)
             self.update(data)
 
         if not date_created:
@@ -106,6 +110,7 @@ class Model(object):
             self.date_created = date_created
         self.n_locs = self.locs.shape[0]
         self.meta = meta
+        self.rbf_width = float(rbf_width)
 
     def get_model(self):
         """ Returns a copy of the model in the form of a correlation matrix"""
@@ -190,9 +195,9 @@ class Model(object):
             # indices of the mask (where there is overlap
             joint_model_inds = np.where(bool_mask)[0]
             if case is 'no_overlap':
-                model_corrmat_x, loc_label, perm_locs = _no_overlap(self, bo, model_corrmat_x)
+                model_corrmat_x, loc_label, perm_locs = _no_overlap(self, bo, model_corrmat_x, width=self.rbf_width)
             elif case is 'some_overlap':
-                model_corrmat_x, loc_label, perm_locs = _some_overlap(self, bo, model_corrmat_x, joint_model_inds)
+                model_corrmat_x, loc_label, perm_locs = _some_overlap(self, bo, model_corrmat_x, joint_model_inds, width=self.rbf_width)
             elif case is 'subset':
                 model_corrmat_x, loc_label, perm_locs = _subset(self, bo, model_corrmat_x, joint_model_inds)
 
@@ -233,9 +238,9 @@ class Model(object):
         for d in data:
             d = _format_data(d, m.locs, locs, n)
             if isinstance(d, Brain):
-                num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d.get_filtered_bo(), m.locs)
+                num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d.get_filtered_bo(), m.locs, width=m.rbf_width)
             elif isinstance(d, Model):
-                num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, m.locs)
+                num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, m.locs, width=m.rbf_width)
                 if (type(d.meta) == dict) and (type(m.meta) == dict):
                     m.meta = m.meta.update(d.meta)
             m.numerator += num_corrmat_x
@@ -254,6 +259,7 @@ class Model(object):
         """
         print('Number of locations: ' + str(self.n_locs))
         print('Number of subjects: ' + str(self.n_subs))
+        print('RBF width: ' + str(self.rbf_width))
         print('Date created: ' + str(self.date_created))
         print('Meta data: ' + str(self.meta))
 
@@ -374,7 +380,7 @@ class Model(object):
             self.date_created = date_created
         else:
             return Model(numerator=numerator, denominator=denominator, locs=locs,
-                         n_subs=n_subs, meta=meta, date_created=date_created)
+                         n_subs=n_subs, meta=meta, date_created=date_created, rbf_width=self.rbf_width)
 
     def __add__(self, other):
         """
@@ -449,16 +455,16 @@ def _create_locs(self, locs, template):
     if self.locs.shape[0]>1000:
         warnings.warn('Model locations exceed 1000, this may take a while. Go get a cup of coffee or brew some tea!')
 
-def _bo2model(bo, locs):
+def _bo2model(bo, locs, width=20):
     """Returns numerator and denominator given a brain object"""
     sub_corrmat = _get_corrmat(bo)
     np.fill_diagonal(sub_corrmat, 0)
     sub_corrmat_z = _r2z(sub_corrmat)
-    sub_rbf_weights = _rbf(locs, bo.get_locs())
+    sub_rbf_weights = _rbf(locs, bo.get_locs(), width=width)
     n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
     return n, d, 1
 
-def _mo2model(mo, locs):
+def _mo2model(mo, locs, width=20):
     """Returns numerator and denominator for model object"""
 
     if not isinstance(locs, pd.DataFrame):
@@ -470,7 +476,7 @@ def _mo2model(mo, locs):
         with np.errstate(invalid='ignore'):
             sub_corrmat_z = _recover_model(mo.numerator, mo.denominator)
         np.fill_diagonal(sub_corrmat_z, 0)
-        sub_rbf_weights = _rbf(locs, mo.locs)
+        sub_rbf_weights = _rbf(locs, mo.locs, width=width)
         n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
         return n, d, mo.n_subs
 
@@ -499,7 +505,7 @@ def _format_data(d, model_locs, new_locs=None, n_subs=1):
     else:
         raise TypeError("Did not recognize the type of one of your inputs to the model")
 
-def _force_update(mo, bo):
+def _force_update(mo, bo, width=20):
     # get subject-specific correlation matrix
     sub_corrmat = _get_corrmat(bo)
 
@@ -510,7 +516,7 @@ def _force_update(mo, bo):
     sub_corrmat_z = _r2z(sub_corrmat)
 
     # get _rbf weights
-    sub__rbf_weights = _rbf(mo.locs, bo.get_locs())
+    sub__rbf_weights = _rbf(mo.locs, bo.get_locs(), width=width)
 
     #  get subject expanded correlation matrix
     num_corrmat_x, denom_corrmat_x = _expand_corrmat_fit(sub_corrmat_z, sub__rbf_weights)
@@ -537,11 +543,11 @@ def _which_case(bo, bool_mask):
         return 'some_overlap'
 
 
-def _no_overlap(self, bo, model_corrmat_x):
+def _no_overlap(self, bo, model_corrmat_x, width=20):
     """ Compute model when there is no overlap """
 
     # expanded _rbf weights
-    model__rbf_weights = _rbf(pd.concat([self.locs, bo.get_locs()]), self.locs)
+    model__rbf_weights = _rbf(pd.concat([self.locs, bo.get_locs()]), self.locs, width=width)
 
     # get model expanded correlation matrix
     num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(model_corrmat_x, model__rbf_weights)
@@ -572,7 +578,7 @@ def _subset(self, bo, model_corrmat_x, joint_model_inds):
 
     return model_corrmat_x, loc_label, perm_locs
 
-def _some_overlap(self, bo, model_corrmat_x, joint_model_inds):
+def _some_overlap(self, bo, model_corrmat_x, joint_model_inds, width=20):
     """ Compute model when there is some overlap """
 
     # get subject indices where subject locs do not overlap with model locs
@@ -602,7 +608,7 @@ def _some_overlap(self, bo, model_corrmat_x, joint_model_inds):
     perm_inds_unknown = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds))
     # expanded _rbf weights
     #model__rbf_weights = _rbf(pd.concat([model_locs_permuted, bo.locs]), model_locs_permuted)
-    model__rbf_weights = _rbf(pd.concat([model_locs_permuted, sub_bo]), model_locs_permuted)
+    model__rbf_weights = _rbf(pd.concat([model_locs_permuted, sub_bo]), model_locs_permuted, width=width)
 
     # get model expanded correlation matrix
     num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(model_permuted, model__rbf_weights)
