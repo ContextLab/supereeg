@@ -10,7 +10,8 @@ import seaborn as sns
 import deepdish as dd
 import matplotlib.pyplot as plt
 from .helpers import _get_corrmat, _r2z, _z2r, _log_rbf, _expand_corrmat_fit, _expand_corrmat_predict, _plot_borderless,\
-    _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp, _gray, _nifti_to_brain
+    _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp, _gray, _nifti_to_brain,\
+    _flatten
 from .brain import Brain
 from .nifti import Nifti
 from scipy.spatial.distance import cdist
@@ -93,23 +94,30 @@ class Model(object):
 
         if all(v is not None for v in [numerator, denominator, locs, n_subs]):
             _handle_superuser(self, numerator, denominator, locs, n_subs)
+        elif type(data) == list:
+            #TODO: figure out if the user has indirectly specified other parameters by providing:
+            # - one of the first class data types (Brain, Model, or Nifti)
+            # - a filename pointing to any of those types of data
+            # - a (potentially mixed) list of the above
+            # if so, create models from each of those objects and merge them using update
         else:
-            _create_locs(self, locs, template)
-
+            _create_locs(self, locs, template) #FIXME: this is not the time to specify locations-- the user may have specified locations via data
             s = self.locs.shape[0]
             self.numerator = np.log(np.zeros((s, s)))
             self.denominator = np.log(np.zeros((s, s)))
             self.n_subs = 0
-            self.rbf_width = float(rbf_width) #not sure why this is needed (since it's also specified below)
-            self.update(data)
+
+        self.n_locs = self.locs.shape[0]
+        self.rbf_width = float(rbf_width)
+        self.meta = meta
 
         if not date_created:
             self.date_created = time.strftime("%c")
         else:
             self.date_created = date_created
-        self.n_locs = self.locs.shape[0]
-        self.meta = meta
-        self.rbf_width = float(rbf_width)
+
+        if data is not None:
+            self.update(data, inplace=True)
 
     def get_model(self):
         """ Returns a copy of the model in the form of a correlation matrix"""
@@ -500,6 +508,8 @@ def _format_data(d, model_locs, new_locs=None, n_subs=1):
         return Brain(d)
     elif isinstance(d, Model):
         return d
+    elif isinstance(d, list):
+        return _flatten(list(map(_format_data, d)))
     else:
         raise TypeError("Did not recognize the type of one of your inputs to the model")
 

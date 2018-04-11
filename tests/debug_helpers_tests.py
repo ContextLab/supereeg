@@ -236,8 +236,8 @@ def test_model_compile(tmpdir):
     for m in range(len(data)):
         model = se.Model(data=data[m], locs=locs)
         model.save(fname=os.path.join(tmpdir, str(m)))
-    model_data = glob.glob(os.path.join(tmpdir, '*.mo'))
-    mo = se.model_compile(model_data)
+    model_fnames = glob.glob(os.path.join(tmpdir, '*.mo'))
+    mo = se.Model(model_fnames)
     assert isinstance(mo, se.Model)
     assert np.allclose(mo.numerator, test_model.numerator)
     assert np.allclose(mo.denominator, test_model.denominator)

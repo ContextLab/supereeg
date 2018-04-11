@@ -13,6 +13,7 @@ import imageio
 import nibabel as nib
 import hypertools as hyp
 import shutil
+import collections
 
 from nilearn import plotting as ni_plt
 from nilearn import image
@@ -1272,3 +1273,12 @@ def _close_all():
     figs = plt.get_fignums()
     for f in figs:
         plt.close(f)
+
+def _flatten(L):
+    '''
+    flatten a list recursively
+    '''
+    #from https://stackoverflow.com/questions/2158395/flatten-an-irregular-list-of-lists
+    x = lambda *n: (e for a in n
+                    for e in (_flatten(*a) if isinstance(a, (tuple, list)) else (a,)))
+    return list(x)
