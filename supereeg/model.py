@@ -15,8 +15,6 @@ from .brain import Brain
 from .nifti import Nifti
 from scipy.spatial.distance import cdist
 
-#CONVERT NUMERATORS AND DENOMINATORS TO LOGS
-
 class Model(object):
     """
     supereeg model and associated locations
@@ -244,8 +242,8 @@ class Model(object):
                 num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, m.locs, width=m.rbf_width)
                 if (type(d.meta) == dict) and (type(m.meta) == dict):
                     m.meta = m.meta.update(d.meta)
-            m.numerator += num_corrmat_x
-            m.denominator += denom_corrmat_x
+            m.numerator = np.logaddexp(m.numerator, num_corrmat_x)
+            m.denominator = np.logaddexp(m.denominator, denom_corrmat_x)
             m.n_subs += n_subs
 
         if not inplace:
@@ -474,8 +472,7 @@ def _mo2model(mo, locs, width=20):
         return mo.numerator.copy(), mo.denominator.copy(), mo.n_subs
     else:
         # if the locations are not equivalent, map input model into locs space
-        with np.errstate(invalid='ignore'):
-            sub_corrmat_z = _recover_model(mo.numerator, mo.denominator)
+        sub_corrmat_z = _recover_model(mo.numerator, mo.denominator)
         np.fill_diagonal(sub_corrmat_z, 0)
         sub_rbf_weights = _log_rbf(locs, mo.locs, width=width)
         n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
@@ -495,7 +492,7 @@ def _format_data(d, model_locs, new_locs=None, n_subs=1):
                 raise ValueError("Array must have same dimensions as model or"
                                  " you must passed custom locations")
         np.fill_diagonal(d, 0)
-        return Model(numerator=_r2z(d), denominator=np.ones_like(d)*n_subs,
+        return Model(numerator=np.log(_r2z(d)), denominator=np.zeros_like(d),
                      n_subs=n_subs, locs=new_locs)
     elif isinstance(d, Brain):
         return d
@@ -524,7 +521,7 @@ def _force_update(mo, bo, width=20):
 
     # add in new subj data
     #with np.errstate(invalid='ignore'):
-    model_corrmat_x = _recover_model(np.add(mo.numerator, num_corrmat_x), np.add(mo.denominator, denom_corrmat_x))
+    model_corrmat_x = _recover_model(np.logaddexp(mo.numerator, num_corrmat_x), np.logaddexp(mo.denominator, denom_corrmat_x))
 
     return model_corrmat_x
 
@@ -600,7 +597,8 @@ def _some_overlap(self, bo, model_corrmat_x, joint_model_inds, width=20):
     bo_perm_inds = sorted(set(range(bo.get_locs().shape[0])) - set(disjoint_bo_inds)) + sorted(set(disjoint_bo_inds))
     sub_bo = bo.get_locs().iloc[disjoint_bo_inds]
 
-    #TODO: would be safer to implement this using bo.get_locs(), bo.get_data()
+    #FIXME: won't this change the brain object that the user passes in?  seems problematic...do we need to copy it first?
+    bo = copy.deepcopy(bo) #added this line re: FIXME statement...
     bo.locs = bo.locs.iloc[bo_perm_inds]
     bo.data = bo.data[bo_perm_inds]
     bo.kurtosis = bo.kurtosis[bo_perm_inds]
@@ -632,7 +630,8 @@ def _some_overlap(self, bo, model_corrmat_x, joint_model_inds, width=20):
 def _recover_model(num, denom, zscore=False):
     warnings.simplefilter('ignore')
 
+    m = np.exp(np.subtract(num, denom)) #numerator and denominator are in log units
     if zscore:
-        return _z2r(np.divide(num, denom))
+        return m
     else:
-        return np.divide(num, denom)
+        return _z2r(m)
