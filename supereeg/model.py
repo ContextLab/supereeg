@@ -91,15 +91,18 @@ class Model(object):
     def __init__(self, data=None, locs=None, template=None,
                  numerator=None, denominator=None,
                  n_subs=None, meta=None, date_created=None, rbf_width=20):
+        #TODO: rewrite this according to ideas here: https://github.com/jeremymanning/supereeg/issues/7
+        #TODO: also need to update Model.update
 
         if all(v is not None for v in [numerator, denominator, locs, n_subs]):
             _handle_superuser(self, numerator, denominator, locs, n_subs)
         elif type(data) == list:
             #TODO: figure out if the user has indirectly specified other parameters by providing:
             # - one of the first class data types (Brain, Model, or Nifti)
-            # - a filename pointing to any of those types of data
+            # - a filename pointing to any of those types of data (in which case, load it using se.load)
             # - a (potentially mixed) list of the above
             # if so, create models from each of those objects and merge them using update
+            # General
         else:
             _create_locs(self, locs, template) #FIXME: this is not the time to specify locations-- the user may have specified locations via data
             s = self.locs.shape[0]
