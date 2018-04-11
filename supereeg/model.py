@@ -9,12 +9,13 @@ import numpy as np
 import seaborn as sns
 import deepdish as dd
 import matplotlib.pyplot as plt
-from .helpers import _get_corrmat, _r2z, _z2r, _rbf, _expand_corrmat_fit, _expand_corrmat_predict, _plot_borderless,\
+from .helpers import _get_corrmat, _r2z, _z2r, _log_rbf, _expand_corrmat_fit, _expand_corrmat_predict, _plot_borderless,\
     _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp, _gray, _nifti_to_brain
 from .brain import Brain
 from .nifti import Nifti
 from scipy.spatial.distance import cdist
 
+#CONVERT NUMERATORS AND DENOMINATORS TO LOGS
 
 class Model(object):
     """
@@ -42,13 +43,13 @@ class Model(object):
         Path to a template nifti file used to set model locations
 
     numerator : Numpy.ndarray
-        (Optional) A locations x locations matrix comprising the sum of the zscored
+        (Optional) A locations x locations matrix comprising the sum of the log z-transformed
         correlation matrices over subjects.  If used, must also pass denominator,
         locs and n_subs. Otherwise, numerator will be computed from the brain
         object data.
 
     denominator : Numpy.ndarray
-        (Optional) A locations x locations matrix comprising the sum of the number of
+        (Optional) A locations x locations matrix comprising the sum of the log (weighted) number of
         subjects contributing to each matrix cell. If used, must also pass numerator,
         locs and n_subs. Otherwise, denominator will be computed from the brain
         object data.
@@ -71,11 +72,11 @@ class Model(object):
     Attributes
     ----------
     numerator : Numpy.ndarray
-        A locations x locations matrix comprising the sum of the zscored
+        A locations x locations matrix comprising the sum of the log z-transformed
         correlation matrices over subjects
 
     denominator : Numpy.ndarray
-        A locations x locations matrix comprising the sum of the number of
+        A locations x locations matrix comprising the log sum of the (weighted) number of
         subjects contributing to each matrix cell
 
     n_subs : int
@@ -460,7 +461,7 @@ def _bo2model(bo, locs, width=20):
     sub_corrmat = _get_corrmat(bo)
     np.fill_diagonal(sub_corrmat, 0)
     sub_corrmat_z = _r2z(sub_corrmat)
-    sub_rbf_weights = _rbf(locs, bo.get_locs(), width=width)
+    sub_rbf_weights = _log_rbf(locs, bo.get_locs(), width=width)
     n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
     return n, d, 1
 
@@ -476,7 +477,7 @@ def _mo2model(mo, locs, width=20):
         with np.errstate(invalid='ignore'):
             sub_corrmat_z = _recover_model(mo.numerator, mo.denominator)
         np.fill_diagonal(sub_corrmat_z, 0)
-        sub_rbf_weights = _rbf(locs, mo.locs, width=width)
+        sub_rbf_weights = _log_rbf(locs, mo.locs, width=width)
         n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
         return n, d, mo.n_subs
 
@@ -516,7 +517,7 @@ def _force_update(mo, bo, width=20):
     sub_corrmat_z = _r2z(sub_corrmat)
 
     # get _rbf weights
-    sub__rbf_weights = _rbf(mo.locs, bo.get_locs(), width=width)
+    sub__rbf_weights = _log_rbf(mo.locs, bo.get_locs(), width=width)
 
     #  get subject expanded correlation matrix
     num_corrmat_x, denom_corrmat_x = _expand_corrmat_fit(sub_corrmat_z, sub__rbf_weights)
@@ -547,7 +548,7 @@ def _no_overlap(self, bo, model_corrmat_x, width=20):
     """ Compute model when there is no overlap """
 
     # expanded _rbf weights
-    model__rbf_weights = _rbf(pd.concat([self.locs, bo.get_locs()]), self.locs, width=width)
+    model__rbf_weights = _log_rbf(pd.concat([self.locs, bo.get_locs()]), self.locs, width=width)
 
     # get model expanded correlation matrix
     num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(model_corrmat_x, model__rbf_weights)
@@ -608,7 +609,7 @@ def _some_overlap(self, bo, model_corrmat_x, joint_model_inds, width=20):
     perm_inds_unknown = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds))
     # expanded _rbf weights
     #model__rbf_weights = _rbf(pd.concat([model_locs_permuted, bo.locs]), model_locs_permuted)
-    model__rbf_weights = _rbf(pd.concat([model_locs_permuted, sub_bo]), model_locs_permuted, width=width)
+    model__rbf_weights = _log_rbf(pd.concat([model_locs_permuted, sub_bo]), model_locs_permuted, width=width)
 
     # get model expanded correlation matrix
     num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(model_permuted, model__rbf_weights)

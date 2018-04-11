@@ -6,11 +6,13 @@ import glob
 from supereeg.helpers import *
 from scipy.stats import kurtosis
 import os
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 ## don't understand why i have to do this:
-from supereeg.helpers import _std, _gray, _resample_nii, _apply_by_file_index, _kurt_vals, _get_corrmat, _z2r, _r2z, _rbf, \
+from supereeg.helpers import _std, _gray, _resample_nii, _apply_by_file_index, _kurt_vals, _get_corrmat, _z2r, _r2z, _log_rbf, \
     _uniquerows, _expand_corrmat_fit, _expand_corrmat_predict, _chunk_bo, _timeseries_recon, _chunker, \
-    _round_it, _corr_column, _normalize_Y, _near_neighbor, _vox_size, _count_overlapping, _resample, \
+    _corr_column, _normalize_Y, _near_neighbor, _vox_size, _count_overlapping, _resample, \
     _nifti_to_brain, _brain_to_nifti
 
 locs = np.array([[-61., -77.,  -3.],
@@ -117,9 +119,9 @@ def test_array_r2z():
     assert isinstance(test_fun, np.ndarray)
     assert np.allclose(test_val, test_fun)
 
-def test_rbf():
-    weights = _rbf(locs, locs[:10])
-    weights_same = _rbf(locs[:10], locs[:10], 1)
+def test_log_rbf():
+    weights = _log_rbf(locs, locs[:10])
+    weights_same = _log_rbf(locs[:10], locs[:10], 1)
     assert isinstance(weights, np.ndarray)
     assert np.allclose(weights_same, np.eye(np.shape(weights_same)[0]))
 
@@ -137,7 +139,7 @@ def test_expand_corrmat_fit():
     sub_corrmat = _get_corrmat(bo)
     np.fill_diagonal(sub_corrmat, 0)
     sub_corrmat = _r2z(sub_corrmat)
-    weights = _rbf(test_model.locs, bo.locs)
+    weights = _log_rbf(test_model.locs, bo.locs)
     expanded_num_f, expanded_denom_f = _expand_corrmat_fit(sub_corrmat, weights)
 
     assert isinstance(expanded_num_f, np.ndarray)
@@ -149,7 +151,7 @@ def test_expand_corrmat_predict():
     sub_corrmat = _get_corrmat(bo)
     np.fill_diagonal(sub_corrmat, 0)
     sub_corrmat = _r2z(sub_corrmat)
-    weights = _rbf(test_model.locs, bo.locs)
+    weights = _log_rbf(test_model.locs, bo.locs)
     expanded_num_p, expanded_denom_p = _expand_corrmat_predict(sub_corrmat, weights)
 
     assert isinstance(expanded_num_p, np.ndarray)
@@ -160,7 +162,7 @@ def test_expand_corrmats_same():
     sub_corrmat = _get_corrmat(bo)
     np.fill_diagonal(sub_corrmat, 0)  # <- possible failpoint
     sub_corrmat_z = _r2z(sub_corrmat)
-    weights = _rbf(test_model.locs, bo.locs)
+    weights = _log_rbf(test_model.locs, bo.locs)
 
     expanded_num_p, expanded_denom_p = _expand_corrmat_predict(sub_corrmat_z, weights)
     model_corrmat_p = np.divide(expanded_num_p, expanded_denom_p)
@@ -185,17 +187,11 @@ def test_expand_corrmats_same():
 def test_reconstruct():
     recon_test = test_model.predict(bo, nearest_neighbor=False, force_update=True)
     actual_test = bo_full.data.iloc[:, recon_test.locs.index]
-    zbo = copy.copy(bo)
-    zbo.data = pd.DataFrame(bo.get_zscore_data())
-    mo = test_model.update(zbo, inplace=False)
-    model_corrmat_x = np.divide(mo.numerator, mo.denominator)
-    model_corrmat_x = _z2r(model_corrmat_x)
-    np.fill_diagonal(model_corrmat_x, 0)
-    recon_data = _timeseries_recon(zbo, model_corrmat_x)
+
+    #actual_test: the true data
+    #recon_test: the reconstructed data (using Model.predict)
     corr_vals = _corr_column(actual_test.as_matrix(), recon_test.data.as_matrix())
-    assert isinstance(recon_data, np.ndarray)
-    assert np.allclose(recon_data, recon_test.data, equal_nan=True)
-    assert 1 >= corr_vals.mean() >= -1
+    assert np.all(corr_vals[~np.isnan(corr_vals)] <= 1) and np.all(corr_vals[~np.isnan(corr_vals)] >= -1)
 
 def test_recon_carved():
     elec_ind = 1
@@ -213,13 +209,6 @@ def test_recon_carved():
     bo_p_2 = bo_c.get_slice(loc_inds=bo_carve_inds, inplace=False)
     assert np.allclose(bo_p.get_data(), bo_p_2.get_data())
 
-
-def test_round_it():
-    rounded_array = _round_it(np.array([1.0001, 1.99999]), 3)
-    rounded_float = _round_it(1.0009, 3)
-    assert isinstance(rounded_array, (int, float, np.ndarray))
-    assert np.allclose(rounded_array, np.array([1, 2]))
-    assert rounded_float == 1.001
 
 def test_filter_elecs():
     bo_f = filter_elecs(bo)
@@ -244,11 +233,10 @@ def test_normalize_Y():
     assert normed_y.iloc[1][1] == 2.0
 
 def test_model_compile(tmpdir):
-    p = tmpdir.mkdir("sub")
     for m in range(len(data)):
         model = se.Model(data=data[m], locs=locs)
-        model.save(fname=os.path.join(p.strpath, str(m)))
-    model_data = glob.glob(os.path.join(p.strpath, '*.mo'))
+        model.save(fname=os.path.join(tmpdir, str(m)))
+    model_data = glob.glob(os.path.join(tmpdir, '*.mo'))
     mo = se.model_compile(model_data)
     assert isinstance(mo, se.Model)
     assert np.allclose(mo.numerator, test_model.numerator)
@@ -262,9 +250,9 @@ def test_model_compile(tmpdir):
 #     assert np.shape(chunked_bo.data)[0]==np.shape(chunk)[0]
 
 def test_timeseries_recon():
-    mo = np.divide(test_model.numerator, test_model.denominator)
-    np.fill_diagonal(mo, 0)
+    mo = test_model.get_model()
     recon = _timeseries_recon(bo, mo, 2)
+
     assert isinstance(recon, np.ndarray)
     assert np.shape(recon)[1] == np.shape(mo)[1]
 
@@ -329,6 +317,4 @@ def test_nii_bo_nii():
     nii_0[np.isnan(nii_0)] = 0
     assert np.allclose(nii_0, nii.get_data().flatten())
 
-
-test_reconstruct()
-test_timeseries_recon()
+test_model_compile(os.path.join(os.path.expanduser('~'), 'Desktop', 'supereeg_pytest'))

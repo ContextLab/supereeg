@@ -21,6 +21,7 @@ from scipy.stats import kurtosis, zscore, pearsonr
 from scipy.spatial.distance import pdist
 from scipy.spatial.distance import cdist
 from scipy.spatial.distance import squareform
+from scipy.misc import logsumexp
 from scipy import linalg
 from scipy.ndimage.interpolation import zoom
 from joblib import Parallel, delayed
@@ -288,7 +289,7 @@ def _r2z(r):
     return 0.5 * (np.log(1 + r) - np.log(1 - r))
 
 
-def _rbf(x, center, width=20, tol=1e-15):
+def _log_rbf(x, center, width=20, tol=1e-200):
     """
     Radial basis function
 
@@ -342,7 +343,7 @@ def tal2mni(r):
     inpoints[:, tmp] = linalg.solve(np.dot(rotmat, down), inpoints[:, tmp])
     inpoints[:, ~tmp] = linalg.solve(np.dot(rotmat, up), inpoints[:, ~tmp])
 
-    return _round_it(inpoints[0:3, :].T, 2)
+    return np.round(inpoints[0:3, :].T, decimals=2)
 
 
 def _uniquerows(x):
@@ -367,17 +368,17 @@ def _uniquerows(x):
     return x[idx]
 
 
-def _expand_corrmat_fit(C, weights):
+def _expand_corrmat_fit(Z, weights):
     """
     Gets full correlation matrix
 
     Parameters
     ----------
-    C : Numpy array
-        Subject's correlation matrix
+    Z : Numpy array
+        Subject's Fisher z-transformed correlation matrix
 
     weights : Numpy array
-        Weights matrix calculated using _rbf function matrix
+        Weights matrix calculated using _log_rbf function matrix
 
     mode : str
         Specifies whether to compute over all elecs (fit mode) or just new elecs
@@ -390,44 +391,43 @@ def _expand_corrmat_fit(C, weights):
     denominator : Numpy array
         Denominator for the expanded correlation matrix
     """
-
-    C[np.eye(C.shape[0]) == 1] = 0
-    C[np.where(np.isnan(C))] = 0
+    logZ = np.multiply(np.sign(Z), np.log(np.abs(Z)))
+    #logZ.fill_diagonal(0)
+    logZ = logZ[np.triu_indices(logZ)] #take only the upper triangle
+    logZ[np.isnan(logZ) | np.isinf(logZ)] = 0
 
     n = weights.shape[0]
     K = np.zeros([n, n])
     W = np.zeros([n, n])
-    Z = C
 
     s = 0
 
     vals = list(range(s, n))
     for x in vals:
         xweights = weights[x, :]
-
         vals = list(range(x))
         for y in vals:
             yweights = weights[y, :]
 
-            next_weights = np.outer(xweights, yweights)
-            next_weights = next_weights - np.triu(next_weights)
+            next_weights = np.add.outer(xweights, yweights)
+            next_weights = next_weights[np.triu_indices(next_weights)]
 
-            W[x, y] = np.sum(next_weights)
-            K[x, y] = np.sum(Z * next_weights)
-    return (K + K.T), (W + W.T)
+            W[x, y] = logsumexp(next_weights)
+            K[x, y] = logsumexp(logZ + next_weights)
+    return np.logaddexp(K, K.T), np.logaddexp(W, W.T)
 
 
-def _expand_corrmat_predict(C, weights):
+def _expand_corrmat_predict(Z, weights):
     """
     Gets full correlation matrix
 
     Parameters
     ----------
-    C : Numpy array
-        Subject's correlation matrix
+    Z : Numpy array
+        Subject's Fisher z-transformed correlation matrix
 
     weights : Numpy array
-        Weights matrix calculated using _rbf function matrix
+        Weights matrix calculated using _log_rbf function matrix
 
     mode : str
         Specifies whether to compute over all elecs (fit mode) or just new elecs
@@ -441,53 +441,33 @@ def _expand_corrmat_predict(C, weights):
         Denominator for the expanded correlation matrix
 
     """
-
-    C[np.eye(C.shape[0]) == 1] = 0
-    C[np.where(np.isnan(C))] = 0
+    logZ = np.multiply(np.sign(Z), np.log(np.abs(Z)))
+    logZ.fill_diagonal(0)
+    logZ[np.isnan(logZ) | np.isinf(logZ)] = 0
 
     n = weights.shape[0]
     K = np.zeros([n, n])
     W = np.zeros([n, n])
-    Z = C
 
-    s = C.shape[0]
+    s = Z.shape[0]
     sliced_up = [(x, y) for x in range(s, n) for y in range(x)]
 
     results = Parallel(n_jobs=multiprocessing.cpu_count())(
-        delayed(_compute_coord)(coord, weights, Z) for coord in sliced_up)
+        delayed(_compute_coord)(coord, weights, logZ) for coord in sliced_up)
 
     W[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[0] for x in results]
     K[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[1] for x in results]
 
-    return (K + K.T), (W + W.T)
+    return np.logaddexp(K, K.T), np.logaddexp(W, W.T)
 
 
 def _compute_coord(coord, weights, Z):
-    next_weights = np.outer(weights[coord[0], :], weights[coord[1], :])
-    next_weights = next_weights - np.triu(next_weights)
-    return np.sum(next_weights), np.sum(Z * next_weights)
+    next_weights = np.sum.outer(weights[coord[0], :], weights[coord[1], :])
 
+    next_weights = next_weights[np.triu_indices(next_weights)]
+    Z = Z[np.triu_indices(Z)]
 
-def _chunk_bo(bo, chunk):
-    """
-    Chunk brain object by session for reconstruction. Returns chunked indices
-
-        Parameters
-    ----------
-    bo : brain object
-        Brain object used to reconstruct and data to chunk
-
-    chunk : list
-        Chunked indices
-
-
-    Returns
-    ----------
-    nbo : brain object
-        Chunked brain object with chunked zscored data in the data field
-
-    """
-    return bo.get_slice(sample_inds=[i for i in chunk if i is not None])
+    return logsumexp(next_weights), logsumexp(Z + next_weights)
 
 
 def _timeseries_recon(bo, K, chunk_size=1000, preprocess='zscore'):
@@ -593,26 +573,6 @@ def _reconstruct_activity(Y, Kba, Kaa_inv):
 
     """
     return np.atleast_2d(np.squeeze(np.dot(np.dot(Kba, Kaa_inv), Y.T).T))
-
-def _round_it(locs, places): #TODO: do we need a separate function for this?  doesn't seem much more convenient than the np.round function...
-    """
-    Rounding function
-
-    Parameters
-    ----------
-    locs : array or float
-        Number be rounded
-
-    places : int
-        Number of places to round
-
-    Returns
-    ----------
-    result : array or float
-        Rounded number
-
-    """
-    return np.round(locs, decimals=places)
 
 
 def filter_elecs(bo, measure='kurtosis', threshold=10):
