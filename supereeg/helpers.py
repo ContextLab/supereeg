@@ -415,7 +415,7 @@ def _expand_corrmat_fit(Z, weights):
 
             W[x, y] = logsumexp(next_weights)
             K[x, y] = logsumexp(logZ + next_weights)
-    return np.logaddexp(K, K.T), np.logaddexp(W, W.T)
+    return K + K.T, W + W.T
 
 
 def _expand_corrmat_predict(Z, weights):
@@ -459,7 +459,7 @@ def _expand_corrmat_predict(Z, weights):
     W[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[0] for x in results]
     K[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[1] for x in results]
 
-    return np.logaddexp(K, K.T), np.logaddexp(W, W.T)
+    return K + K.T, W + W.T
 
 
 def _compute_coord(coord, weights, Z):

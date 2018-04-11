@@ -14,6 +14,7 @@ from .helpers import _get_corrmat, _r2z, _z2r, _log_rbf, _expand_corrmat_fit, _e
     _flatten
 from .brain import Brain
 from .nifti import Nifti
+from .load import load
 from scipy.spatial.distance import cdist
 
 class Model(object):
@@ -93,6 +94,49 @@ class Model(object):
                  n_subs=None, meta=None, date_created=None, rbf_width=20):
         #TODO: rewrite this according to ideas here: https://github.com/jeremymanning/supereeg/issues/7
         #TODO: also need to update Model.update
+
+        self.locs = None
+        if data is not None:
+            if type(data) == list:
+                if len(data) == 0:
+                    data = None
+                else:
+                    self = Model(data=data[0], locs=locs, template=template, meta=meta, rbf_width=rbf_width)
+                    for i in range(len(data)-1):
+                        self.update(Model(data=data[i], locs=locs, template=template, meta=meta, rbf_width=rbf_width))
+
+            if isinstance(data, six.string_types):
+                data = load(data)
+
+            if isinstance(data, Brain):
+                corrmat = _get_corrmat(data)
+                self = Model(data=corrmat, locs=data.get_locs(), n_subs=1)
+            elif isinstance(data, Nifti):
+                corrmat = _get_corrmat(Brain(data))
+                self = Model(data=corrmat, locs=data.get_locs(), n_subs=1)
+            elif isinstance(data, Model):
+                self = copy.deepcopy(data)
+
+        if not ((self.locs is None) or (locs is None)): #expand corrmat
+            #change expand corrmat to deal with different cases (same, subset, superset, different) and it should also compute rbf widths internally
+            #...or can this be handled within Model.update?
+
+
+
+
+                n, d = _bo2model(data)
+                data = Model(numerator=)
+                bo2model(bo, locs, width=20):
+
+                def _bo2model(bo, locs, width=20):
+                    """Returns numerator and denominator given a brain object"""
+                    sub_corrmat = _get_corrmat(bo)
+                    np.fill_diagonal(sub_corrmat, 0)
+                    sub_corrmat_z = _r2z(sub_corrmat)
+                    sub_rbf_weights = _log_rbf(locs, bo.get_locs(), width=width)
+                    n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
+                    return n, d, 1
+
 
         if all(v is not None for v in [numerator, denominator, locs, n_subs]):
             _handle_superuser(self, numerator, denominator, locs, n_subs)
@@ -489,7 +533,7 @@ def _mo2model(mo, locs, width=20):
         n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
         return n, d, mo.n_subs
 
-def _format_data(d, model_locs, new_locs=None, n_subs=1):
+def _format_data(d):
     """Formats data to generate model object"""
     from .load import load
     from .brain import Brain
@@ -497,6 +541,7 @@ def _format_data(d, model_locs, new_locs=None, n_subs=1):
     if isinstance(d, six.string_types):
         d = load(d)
     if isinstance(d, np.ndarray):
+
         if new_locs is None:
             new_locs = model_locs
             if d.shape[0]!=new_locs.shape[0]:
