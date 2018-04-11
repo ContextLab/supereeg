@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 ## don't understand why i have to do this:
 from supereeg.helpers import _std, _gray, _resample_nii, _apply_by_file_index, _kurt_vals, _get_corrmat, _z2r, _r2z, _log_rbf, \
-    _uniquerows, _expand_corrmat_fit, _expand_corrmat_predict, _chunk_bo, _timeseries_recon, _chunker, \
+    _uniquerows, _expand_corrmat_fit, _expand_corrmat_predict, _timeseries_recon, _chunker, \
     _corr_column, _normalize_Y, _near_neighbor, _vox_size, _count_overlapping, _resample, \
     _nifti_to_brain, _brain_to_nifti
 

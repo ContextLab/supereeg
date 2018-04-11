@@ -21,7 +21,7 @@ from scipy.stats import kurtosis, zscore, pearsonr
 from scipy.spatial.distance import pdist
 from scipy.spatial.distance import cdist
 from scipy.spatial.distance import squareform
-from scipy.misc import logsumexp
+from scipy.special import logsumexp
 from scipy import linalg
 from scipy.ndimage.interpolation import zoom
 from joblib import Parallel, delayed
@@ -289,7 +289,7 @@ def _r2z(r):
     return 0.5 * (np.log(1 + r) - np.log(1 - r))
 
 
-def _log_rbf(x, center, width=20, tol=1e-200):
+def _log_rbf(x, center, width=20):
     """
     Radial basis function
 
@@ -307,13 +307,12 @@ def _log_rbf(x, center, width=20, tol=1e-200):
     Returns
     ----------
     results : ndarray
-        Matrix of _rbf weights for each subject coordinate for all coordinates
+        Matrix of log rbf weights for each subject coordinate for all coordinates
 
     """
     assert np.isscalar(width), 'RBF width must be a scalar'
     assert width > 0, 'RBF width must be positive'
-    weights = np.exp(-cdist(x, center, metric='euclidean') ** 2 / float(width))
-    weights[np.abs(weights) <= tol] = 0.
+    weights = -cdist(x, center, metric='euclidean') ** 2 / float(width)
     return weights
 
 
@@ -393,7 +392,8 @@ def _expand_corrmat_fit(Z, weights):
     """
     logZ = np.multiply(np.sign(Z), np.log(np.abs(Z)))
     #logZ.fill_diagonal(0)
-    logZ = logZ[np.triu_indices(logZ)] #take only the upper triangle
+    triu_inds = np.triu_indices(logZ.shape[0])
+    logZ = logZ[triu_inds] #take only the upper triangle
     logZ[np.isnan(logZ) | np.isinf(logZ)] = 0
 
     n = weights.shape[0]
@@ -410,11 +410,11 @@ def _expand_corrmat_fit(Z, weights):
             yweights = weights[y, :]
 
             next_weights = np.add.outer(xweights, yweights)
-            next_weights = next_weights[np.triu_indices(next_weights)]
+            next_weights = next_weights[triu_inds]
 
             W[x, y] = logsumexp(next_weights)
             K[x, y] = logsumexp(logZ + next_weights)
-    return np.logaddexp(K, K.T), np.logaddexp(W, W.T)
+    return K + K.T, W + W.T
 
 
 def _expand_corrmat_predict(Z, weights):
@@ -458,7 +458,7 @@ def _expand_corrmat_predict(Z, weights):
     W[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[0] for x in results]
     K[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[1] for x in results]
 
-    return np.logaddexp(K, K.T), np.logaddexp(W, W.T)
+    return K + K.T, W + W.T
 
 
 def _compute_coord(coord, weights, Z):

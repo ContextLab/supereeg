@@ -97,8 +97,8 @@ class Model(object):
             _create_locs(self, locs, template)
 
             s = self.locs.shape[0]
-            self.numerator = np.zeros((s, s))
-            self.denominator = np.zeros((s, s))
+            self.numerator = np.log(np.zeros((s, s)))
+            self.denominator = np.log(np.zeros((s, s)))
             self.n_subs = 0
             self.rbf_width = float(rbf_width) #not sure why this is needed (since it's also specified below)
             self.update(data)
@@ -114,7 +114,7 @@ class Model(object):
     def get_model(self):
         """ Returns a copy of the model in the form of a correlation matrix"""
 
-        m = _recover_model(self.numerator, self.denominator, zscore=True)
+        m = _recover_model(self.numerator, self.denominator)
         m[np.isnan(m)] = 0
         return m
 
@@ -176,7 +176,7 @@ class Model(object):
         if force_update:
             model_corrmat_x = _force_update(self, bo)
         else:
-            model_corrmat_x = _recover_model(self.numerator, self.denominator)
+            model_corrmat_x = _recover_model(self.numerator, self.denominator, z_transform=True)
 
         bool_mask = _count_overlapping(self, bo)
         case = _which_case(bo, bool_mask)
@@ -472,7 +472,7 @@ def _mo2model(mo, locs, width=20):
         return mo.numerator.copy(), mo.denominator.copy(), mo.n_subs
     else:
         # if the locations are not equivalent, map input model into locs space
-        sub_corrmat_z = _recover_model(mo.numerator, mo.denominator)
+        sub_corrmat_z = _recover_model(mo.numerator, mo.denominator, z_transform=True)
         np.fill_diagonal(sub_corrmat_z, 0)
         sub_rbf_weights = _log_rbf(locs, mo.locs, width=width)
         n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
@@ -521,7 +521,7 @@ def _force_update(mo, bo, width=20):
 
     # add in new subj data
     #with np.errstate(invalid='ignore'):
-    model_corrmat_x = _recover_model(np.logaddexp(mo.numerator, num_corrmat_x), np.logaddexp(mo.denominator, denom_corrmat_x))
+    model_corrmat_x = _recover_model(np.logaddexp(mo.numerator, num_corrmat_x), np.logaddexp(mo.denominator, denom_corrmat_x), z_transform=True)
 
     return model_corrmat_x
 
@@ -552,7 +552,7 @@ def _no_overlap(self, bo, model_corrmat_x, width=20):
 
     # divide the numerator and denominator
     #with np.errstate(invalid='ignore'):
-    model_corrmat_x = _recover_model(num_corrmat_x, denom_corrmat_x)
+    model_corrmat_x = _recover_model(num_corrmat_x, denom_corrmat_x, z_transform=True)
 
     # label locations as reconstructed or observed
     loc_label = ['reconstructed'] * len(self.locs) + ['observed'] * len(bo.get_locs())
@@ -614,7 +614,7 @@ def _some_overlap(self, bo, model_corrmat_x, joint_model_inds, width=20):
 
     # divide the numerator and denominator
     #with np.errstate(invalid='ignore'):
-    model_corrmat_x = _recover_model(num_corrmat_x, denom_corrmat_x)
+    model_corrmat_x = _recover_model(num_corrmat_x, denom_corrmat_x, z_transform=True)
 
     # add back the permuted correlation matrix for complete subject prediction
     model_corrmat_x[:model_permuted.shape[0], :model_permuted.shape[0]] = model_permuted
@@ -627,11 +627,11 @@ def _some_overlap(self, bo, model_corrmat_x, joint_model_inds, width=20):
 
     return model_corrmat_x, loc_label, perm_locs
 
-def _recover_model(num, denom, zscore=False):
+def _recover_model(num, denom, z_transform=False):
     warnings.simplefilter('ignore')
 
     m = np.exp(np.subtract(num, denom)) #numerator and denominator are in log units
-    if zscore:
+    if z_transform:
         return m
     else:
         return _z2r(m)
