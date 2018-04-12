@@ -11,7 +11,7 @@ import deepdish as dd
 import matplotlib.pyplot as plt
 from .helpers import _get_corrmat, _r2z, _z2r, _log_rbf, _expand_corrmat_fit, _expand_corrmat_predict, _plot_borderless,\
     _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp, _gray, _nifti_to_brain,\
-    _unique
+    _unique, _to_log_complex
 from .brain import Brain
 from .nifti import Nifti
 from scipy.spatial.distance import cdist
@@ -108,8 +108,7 @@ class Model(object):
                 if len(data) == 0:
                     data = None
                 else:
-                    #FIXME: for some reason this results in self.numerator and self.denominator being None
-                    self = Model(data=data[0], locs=self.locs, template=template, meta=self.meta, rbf_width=self.rbf_width, n_subs=1)
+                    self.__init__(data=data[0], locs=self.locs, template=template, meta=self.meta, rbf_width=self.rbf_width, n_subs=1)
                     for i in range(len(data)-1):
                         self.update(Model(data=data[i], locs=self.locs, template=template, meta=self.meta, rbf_width=self.rbf_width, n_subs=1))
 
@@ -123,10 +122,10 @@ class Model(object):
                 self = copy.deepcopy(data)
             elif isinstance(data, Brain):
                 corrmat = _get_corrmat(data)
-                self = Model(data=corrmat, locs=data.get_locs(), n_subs=1)
+                self.__init__(data=corrmat, locs=data.get_locs(), n_subs=1)
             elif isinstance(data, np.ndarray):
-                self.numerator = np.multiply(np.sign(data), np.log(np.abs(_r2z(data))))
-                self.denominator = np.zeros_like(self.numerator)
+                self.numerator = _to_log_complex(_r2z(data))
+                self.denominator = np.zeros_like(self.numerator, dtype=np.float32)
 
             #if locs is not None: #expand corrmat
             #    rbf_weights = _log_rbf(locs, self.locs, width=rbf_width)
@@ -146,7 +145,8 @@ class Model(object):
                 self.numerator = numerator
                 self.denominator = denominator
             else: #numerator and denominator may have already been inferred data; effectively the user has now passed in *two* sets of data
-                self.numerator = np.logaddexp(self.numerator, numerator)
+                self.numerator.real = np.logaddexp(self.numerator.real, numerator.real)
+                self.numerator.imag = np.logaddexp(self.numerator.imag, numerator.imag)
                 self.denominator = np.logaddexp(self.denominator, denominator)
             self.n_subs += n_subs
 
@@ -156,7 +156,7 @@ class Model(object):
             assert type(template) == Nifti, 'template must be a Nifti object or a path to a Nifti object'
             bo = Brain(template)
             rbf_weights = _log_rbf(bo.get_locs(), self.locs, width=self.rbf_width)
-            self.numerator, self.denominator = _expand_corrmat_fit(_r2z(self.get_model()), rbf_weights)
+            self.numerator, self.denominator = _expand_corrmat_fit(self.get_model(z_transform=True), rbf_weights)
             self.locs = bo.get_locs()
 
         #sort locations and force them to be unique
@@ -171,12 +171,14 @@ class Model(object):
         if not self.date_created:
             self.date_created = time.strftime("%c")
 
-    def get_model(self):
+        self.n_subs = n_subs
+
+    def get_model(self, z_transform=False):
         """ Returns a copy of the model in the form of a correlation matrix"""
         if (self.numerator is None) or (self.denominator is None):
             m = np.eye(self.n_locs)
         else:
-            m = _recover_model(self.numerator, self.denominator)
+            m = _recover_model(self.numerator, self.denominator, z_transform=z_transform)
             m[np.isnan(m)] = 0
         return m
 
@@ -300,22 +302,31 @@ class Model(object):
         elif type(data) == Model:
             # determine whether we need to expand out the locations
             if not np.allclose(self.locs, data.locs): #different locations. note: locations are always sorted and unique
-                combined_locs = pd.DataFrame(_unique(np.vstack((m.locs.as_matrix(),
-                                                                data.locs.as_matrix()))), columns=self.locs.columns)
+                combined_locs, inds = _unique(np.vstack((m.locs.as_matrix(), data.locs.as_matrix())))
+                combined_locs = pd.DataFrame(combined_locs, columns=self.locs.columns)
 
-                data_rbf_weights = _log_rbf(data.locs, combined_locs, width=data.rbf_width)
-                data.numerator, data.denominator = _expand_corrmat_fit(_r2z(data.get_model()), data_rbf_weights)
+                data_rbf_weights = _log_rbf(combined_locs, data.locs, width=data.rbf_width)
+                data.numerator, data.denominator = _expand_corrmat_fit(data.get_model(z_transform=True), data_rbf_weights)
 
-                m_rbf_weights = _log_rbf(m.locs, combined_locs, width=m.rbf_width)
-                n, d = _expand_corrmat_fit(_r2z(m.get_model()), m_rbf_weights)
-                m.numerator = np.logaddexp(n, data.numerator)
+                m_rbf_weights = _log_rbf(combined_locs, m.locs, width=m.rbf_width)
+                n, d = _expand_corrmat_fit(m.get_model(z_transform=True), m_rbf_weights)
+                m.numerator.real = np.logaddexp(n.real, data.numerator.real)
+                m.numerator.imag = np.logaddexp(n.imag, data.numerator.imag)
                 m.denominator = np.logaddexp(d, data.denominator)
                 m.locs = combined_locs
                 m.n_locs = m.locs.shape[0]
             else: #same locations
-                m.numerator = np.logaddexp(m.numerator, data.numerator)
+                m.numerator.real = np.logaddexp(m.numerator.real, data.numerator.real)
+                m.numerator.imag = np.logaddexp(m.numerator.imag, data.numerator.imag)
                 m.denominator = np.logaddexp(m.denominator, data.denominator)
             m.n_subs += data.n_subs
+
+        #combine meta info
+        if (m.meta is not None) or (data.meta is not None):
+            if m.meta is None:
+                m.meta = data.meta
+            elif (type(m.meta) == dict) and (type(data.meta) == dict):
+                m.meta.update(data.meta)
 
         if not inplace:
             return m
@@ -595,7 +606,10 @@ def _force_update(mo, bo, width=20):
 
     # add in new subj data
     #with np.errstate(invalid='ignore'):
-    model_corrmat_x = _recover_model(np.logaddexp(mo.numerator, num_corrmat_x), np.logaddexp(mo.denominator, denom_corrmat_x), z_transform=True)
+    n = mo.numerator.copy()
+    n.real = np.logaddexp(n.real, num_corrmat_x.real)
+    n.imag = np.logaddexp(n.imag, num_corrmat_x.imag)
+    model_corrmat_x = _recover_model(n, np.logaddexp(mo.denominator, denom_corrmat_x), z_transform=True)
 
     return model_corrmat_x
 
@@ -702,10 +716,15 @@ def _some_overlap(self, bo, model_corrmat_x, joint_model_inds, width=20):
     return model_corrmat_x, loc_label, perm_locs
 
 def _recover_model(num, denom, z_transform=False):
-    warnings.simplefilter('ignore')
+    #warnings.simplefilter('ignore')
 
-    m = np.exp(np.subtract(num, denom)) #numerator and denominator are in log units
+    num_pos = np.real(num)
+    num_neg = np.imag(num)
+
+    m = np.exp(np.subtract(num_pos, denom)) - np.exp(np.subtract(num_neg, denom)) #numerator and denominator are in log units
     if z_transform:
+        np.fill_diagonal(m, np.inf)
         return m
     else:
+        np.fill_diagonal(m, 1)
         return _z2r(m)

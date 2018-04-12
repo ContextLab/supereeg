@@ -368,32 +368,72 @@ def _expand_corrmat_fit(Z, weights):
     denominator : Numpy array
         Denominator for the expanded correlation matrix
     """
-    logZ = np.multiply(np.sign(Z), np.log(np.abs(Z)))
-    #logZ.fill_diagonal(0)
-    triu_inds = np.triu_indices(logZ.shape[0])
-    logZ = logZ[triu_inds] #take only the upper triangle
-    logZ[np.isnan(logZ) | np.isinf(logZ)] = 0
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+
+    triu_inds = np.triu_indices(Z.shape[0])
+
+    def get_triu_inds_denan(x):
+        y = x[triu_inds]
+        y[np.isnan(y)] = -np.inf
+        return y
+
+    #need to do computations seperately for positive and negative values
+    sign_Z = np.sign(Z)
+    logZ_pos = get_triu_inds_denan(np.log(np.multiply(sign_Z > 0, Z)))
+    logZ_neg = get_triu_inds_denan(np.log(np.multiply(sign_Z < 0, Z)))
 
     n = weights.shape[0]
-    K = np.zeros([n, n])
+    K_pos = np.zeros([n, n])
+    K_neg = np.zeros([n, n])
     W = np.zeros([n, n])
 
     s = 0
 
-    vals = list(range(s, n))
-    for x in vals:
+    x_vals = list(range(s, n))
+    for x in x_vals:
         xweights = weights[x, :]
-        vals = list(range(x))
-        for y in vals:
+        y_vals = list(range(x))
+        for y in y_vals:
             yweights = weights[y, :]
 
             next_weights = np.add.outer(xweights, yweights)
             next_weights = next_weights[triu_inds]
 
             W[x, y] = logsumexp(next_weights)
-            K[x, y] = logsumexp(logZ + next_weights)
+            K_pos[x, y] = logsumexp(logZ_pos + next_weights)
+            K_neg[x, y] = logsumexp(logZ_neg + next_weights)
+
+    #turn K_neg into complex numbers.  Where K_neg is infinite, this results in nans for the real number parts, so we'll
+    #set any nans in K_neg.real to 0
+    #TODO: the next lines are redundant with code in _to_log_complex; consolidate
+    K_neg = np.multiply(0+1j, K_neg)
+    K_neg.real[np.isnan(K_neg)] = 0
+    K = K_pos + K_neg
+
     return K + K.T, W + W.T
 
+def _to_log_complex(X):
+    """
+    Compute the log of the given numpy array.  Store all positive members of the original array in the real component of
+    the result and all negative members of the original array in the complex component of the result.
+
+    Parameters
+    ----------
+    X : numpy array to take the log of
+
+    Returns
+    ----------
+    log_X_complex : The log of X, stored as complex numbers to keep track of the positive and negative parts
+    """
+    signX = np.sign(X)
+    posX = np.multiply(signX > 0, X)
+    negX = np.multiply(signX < 0, X)
+
+    negX = np.multiply(0+1j, negX)
+    negX.real[np.isnan(negX)] = 0
+
+    return posX + negX
 
 def _expand_corrmat_predict(Z, weights):
     """
@@ -804,14 +844,13 @@ def _unique(X):
     dataframe = type(X) is pd.DataFrame
     if dataframe:
         columns = X.columns
-        index = X.index
         X = X.as_matrix()
 
     assert type(X) is np.ndarray, 'must pass in a numpy ndarray or dataframe'
     uX, inds = np.unique(X, axis=0, return_index=True)
 
     if dataframe:
-        uX = pd.DataFrame(data=uX, columns=columns, index=index[inds])
+        uX = pd.DataFrame(data=uX, columns=columns, index=np.arange(len(inds)))
 
 
     return uX, inds
