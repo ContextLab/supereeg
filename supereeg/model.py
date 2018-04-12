@@ -145,8 +145,8 @@ class Model(object):
                 self.numerator = numerator
                 self.denominator = denominator
             else: #numerator and denominator may have already been inferred data; effectively the user has now passed in *two* sets of data
-                self.numerator.real = np.logaddexp(self.numerator.real, numerator.real)
-                self.numerator.imag = np.logaddexp(self.numerator.imag, numerator.imag)
+                self._set_numerator(np.logaddexp(self.numerator.real, numerator.real),
+                                    np.logaddexp(self.numerator.imag, numerator.imag))
                 self.denominator = np.logaddexp(self.denominator, denominator)
             self.n_subs += n_subs
 
@@ -310,14 +310,15 @@ class Model(object):
 
                 m_rbf_weights = _log_rbf(combined_locs, m.locs, width=m.rbf_width)
                 n, d = _expand_corrmat_fit(m.get_model(z_transform=True), m_rbf_weights)
-                m.numerator.real = np.logaddexp(n.real, data.numerator.real)
-                m.numerator.imag = np.logaddexp(n.imag, data.numerator.imag)
+
+                m._set_numerator(np.logaddexp(n.real, data.numerator.real),
+                                 np.logaddexp(n.imag, data.numerator.imag))
                 m.denominator = np.logaddexp(d, data.denominator)
                 m.locs = combined_locs
                 m.n_locs = m.locs.shape[0]
             else: #same locations
-                m.numerator.real = np.logaddexp(m.numerator.real, data.numerator.real)
-                m.numerator.imag = np.logaddexp(m.numerator.imag, data.numerator.imag)
+                m._set_numerator(np.logaddexp(m.numerator.real, data.numerator.real),
+                                 np.logaddexp(m.numerator.imag, data.numerator.imag))
                 m.denominator = np.logaddexp(m.denominator, data.denominator)
             m.n_subs += data.n_subs
 
@@ -330,6 +331,14 @@ class Model(object):
 
         if not inplace:
             return m
+    def _set_numerator(self, n_real, n_imag):
+        """
+        Internal function for setting the numerator (deals with size mismatches)
+        """
+        self.numerator = np.zeros_like(n_real, dtype=np.complex128)
+        self.numerator.real = n_real
+        self.numerator.imag = n_imag
+
 
     def info(self):
         """

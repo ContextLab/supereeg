@@ -289,13 +289,13 @@ def _r2z(r):
     return 0.5 * (np.log(1 + r) - np.log(1 - r))
 
 
-def _log_rbf(x, center, width=20):
+def _log_rbf(to_coords, from_coords, width=20):
     """
     Radial basis function
 
     Parameters
     ----------
-    x : ndarray
+    to_coords : ndarray
         Series of all coordinates (one per row) - R_full
 
     c : ndarray
@@ -312,7 +312,7 @@ def _log_rbf(x, center, width=20):
     """
     assert np.isscalar(width), 'RBF width must be a scalar'
     assert width > 0, 'RBF width must be positive'
-    weights = -cdist(x, center, metric='euclidean') ** 2 / float(width)
+    weights = -cdist(to_coords, from_coords, metric='euclidean') ** 2 / float(width)
     return weights
 
 
