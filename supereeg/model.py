@@ -95,15 +95,23 @@ class Model(object):
         #TODO: rewrite this according to ideas here: https://github.com/jeremymanning/supereeg/issues/7
         #TODO: also need to update Model.update
 
-        self.locs = None
+        self.locs = locs
+        self.numerator = numerator
+        self.denominator = denominator
+        self.n_subs = 0
+        self.meta = meta
+        self.date_created = date_created
+        self.rbf_width = rbf_width
+
+        #expanded_to_locs = False
         if data is not None:
             if type(data) == list:
                 if len(data) == 0:
                     data = None
                 else:
-                    self = Model(data=data[0], locs=locs, template=template, meta=meta, rbf_width=rbf_width)
+                    self.update(Model(data=data[0], locs=self.locs, template=template, meta=self.meta, rbf_width=self.rbf_width, n_subs=1))
                     for i in range(len(data)-1):
-                        self.update(Model(data=data[i], locs=locs, template=template, meta=meta, rbf_width=rbf_width))
+                        self.update(Model(data=data[i], locs=self.locs, template=template, meta=self.meta, rbf_width=self.rbf_width, n_subs=1))
 
             if isinstance(data, six.string_types):
                 data = load(data)
@@ -116,11 +124,45 @@ class Model(object):
                 self = Model(data=corrmat, locs=data.get_locs(), n_subs=1)
             elif isinstance(data, Model):
                 self = copy.deepcopy(data)
+            elif isinstance(data, np.ndarray):
+                n = np.multiply(np.sign(data), np.log(np.abs(_r2z(data))))
+                d = np.zeros_like(n)
+                self.update(Model(numerator=n, denominator=d, locs=self.locs, meta=self.meta, rbf_width=self.rbf_width, n_subs=n_subs))
+
+            #if locs is not None: #expand corrmat
+            #    rbf_weights = _log_rbf(locs, self.locs, width=rbf_width)
+            #    self.numerator, self.denominator = _expand_corrmat_fit(_r2z(self.get_model()), rbf_weights)
+            #    self.locs = locs
+            #    locs = None
+            #    expanded_to_locs = True
+
+        if (numerator is not None) and (denominator is not None):
+            assert numerator.shape[0] == numerator.shape[1], 'numerator must be a square matrix'
+            assert denominator.shape[0] == denominator.shape[1], 'denominator must be a square matrix'
+            assert numerator.shape[0] == denominator.shape[0], 'numerator and denominator must be the same shape'
+            assert self.locs is not None, 'must specify model locations'
+            assert self.locs.shape[0] == numerator.shape[0], 'number of locations must match the size of the numerator and denominator matrices'
+
+            self.numerator = np.logaddexp(self.numerator, numerator)
+            self.denominator = np.logaddexp(self.denominator, denominator)
+            self.n_subs += n_subs
+
+        if template is not None: #blur correlation matrix out to template locations
+            if isinstance(template, six.string_types):
+                template = load(template)
+            assert type(template) == Nifti, 'template must be a Nifti object or a path to a Nifti object'
+            bo = Brain(template)
+            rbf_weights = _log_rbf(bo.get_locs(), self.locs, width=self.rbf_width)
+            self.numerator, self.denominator = _expand_corrmat_fit(_r2z(self.get_model()), rbf_weights)
+
+        #STOPPED HERE
+
+
+
 
         if not ((self.locs is None) or (locs is None)): #expand corrmat
-            #change expand corrmat to deal with different cases (same, subset, superset, different) and it should also compute rbf widths internally
-            #...or can this be handled within Model.update?
-
+            sub_rbf_weights = _log_rbf(self.locs, locs)
+            n, d = _expand_corrmat_fit(self.get_model()
 
 
 
