@@ -14,7 +14,6 @@ from .helpers import _get_corrmat, _r2z, _z2r, _log_rbf, _expand_corrmat_fit, _e
     _unique
 from .brain import Brain
 from .nifti import Nifti
-from .load import load
 from scipy.spatial.distance import cdist
 
 class Model(object):
@@ -92,17 +91,16 @@ class Model(object):
     def __init__(self, data=None, locs=None, template=None,
                  numerator=None, denominator=None,
                  n_subs=None, meta=None, date_created=None, rbf_width=20):
+        from .load import load
 
         self.locs = locs
-        self.numerator = numerator
-        self.denominator = denominator
+        self.n_locs = self.locs.shape[0]
+        self.numerator = None
+        self.denominator = None
         self.n_subs = 0
         self.meta = meta
         self.date_created = date_created
         self.rbf_width = float(rbf_width)
-
-        if self.locs is not None:
-            self.locs, loc_inds = _unique(self.locs)
 
         #expanded_to_locs = False
         if data is not None:
@@ -110,25 +108,25 @@ class Model(object):
                 if len(data) == 0:
                     data = None
                 else:
-                    self.update(Model(data=data[0], locs=self.locs, template=template, meta=self.meta, rbf_width=self.rbf_width, n_subs=1))
+                    #FIXME: for some reason this results in self.numerator and self.denominator being None
+                    self = Model(data=data[0], locs=self.locs, template=template, meta=self.meta, rbf_width=self.rbf_width, n_subs=1)
                     for i in range(len(data)-1):
                         self.update(Model(data=data[i], locs=self.locs, template=template, meta=self.meta, rbf_width=self.rbf_width, n_subs=1))
 
             if isinstance(data, six.string_types):
                 data = load(data)
 
-            if isinstance(data, Brain):
+            if isinstance(data, Nifti):
+                data = Brain(data)
+
+            if isinstance(data, Model):
+                self = copy.deepcopy(data)
+            elif isinstance(data, Brain):
                 corrmat = _get_corrmat(data)
                 self = Model(data=corrmat, locs=data.get_locs(), n_subs=1)
-            elif isinstance(data, Nifti):
-                corrmat = _get_corrmat(Brain(data))
-                self = Model(data=corrmat, locs=data.get_locs(), n_subs=1)
-            elif isinstance(data, Model):
-                self = copy.deepcopy(data)
             elif isinstance(data, np.ndarray):
-                n = np.multiply(np.sign(data), np.log(np.abs(_r2z(data))))
-                d = np.zeros_like(n)
-                self.update(Model(numerator=n, denominator=d, locs=self.locs, meta=self.meta, rbf_width=self.rbf_width, n_subs=n_subs))
+                self.numerator = np.multiply(np.sign(data), np.log(np.abs(_r2z(data))))
+                self.denominator = np.zeros_like(self.numerator)
 
             #if locs is not None: #expand corrmat
             #    rbf_weights = _log_rbf(locs, self.locs, width=rbf_width)
@@ -144,8 +142,12 @@ class Model(object):
             assert self.locs is not None, 'must specify model locations'
             assert self.locs.shape[0] == numerator.shape[0], 'number of locations must match the size of the numerator and denominator matrices'
 
-            self.numerator = np.logaddexp(self.numerator, numerator)
-            self.denominator = np.logaddexp(self.denominator, denominator)
+            if (self.numerator is None) or (self.denominator is None):
+                self.numerator = numerator
+                self.denominator = denominator
+            else: #numerator and denominator may have already been inferred data; effectively the user has now passed in *two* sets of data
+                self.numerator = np.logaddexp(self.numerator, numerator)
+                self.denominator = np.logaddexp(self.denominator, denominator)
             self.n_subs += n_subs
 
         if template is not None: #blur correlation matrix out to template locations
@@ -159,19 +161,23 @@ class Model(object):
 
         #sort locations and force them to be unique
         self.locs, loc_inds = _unique(self.locs)
-        self.numerator = self.numerator[loc_inds, loc_inds]
-        self.denominator = self.denominator[loc_inds, loc_inds]
-
+        self.numerator = self.numerator[loc_inds,][loc_inds]
+        self.denominator = self.denominator[loc_inds,][loc_inds]
         self.n_locs = self.locs.shape[0]
+
+        if not type(self.locs) == pd.DataFrame:
+            self.locs = pd.DataFrame(data=self.locs, columns=['x', 'y', 'z'])
 
         if not self.date_created:
             self.date_created = time.strftime("%c")
 
     def get_model(self):
         """ Returns a copy of the model in the form of a correlation matrix"""
-
-        m = _recover_model(self.numerator, self.denominator)
-        m[np.isnan(m)] = 0
+        if (self.numerator is None) or (self.denominator is None):
+            m = np.eye(self.n_locs)
+        else:
+            m = _recover_model(self.numerator, self.denominator)
+            m[np.isnan(m)] = 0
         return m
 
     def predict(self, bo, nearest_neighbor=True, match_threshold='auto',
