@@ -4,12 +4,12 @@ from past.utils import old_div
 import supereeg as se
 import glob
 from supereeg.helpers import *
-from scipy.stats import kurtosis
+from scipy.stats import kurtosis, zscore
 import os
 
 ## don't understand why i have to do this:
 from supereeg.helpers import _std, _gray, _resample_nii, _apply_by_file_index, _kurt_vals, _get_corrmat, _z2r, _r2z, _rbf, \
-    _uniquerows, _expand_corrmat_fit, _expand_corrmat_predict, _chunk_bo, _timeseries_recon, _chunker, \
+    _z_score, _uniquerows, _expand_corrmat_fit, _expand_corrmat_predict, _chunk_bo, _timeseries_recon, _chunker, \
     _round_it, _corr_column, _normalize_Y, _near_neighbor, _vox_size, _count_overlapping, _resample, \
     _nifti_to_brain, _brain_to_nifti
 
@@ -47,7 +47,6 @@ bo_nii = se.Brain(_gray(20))
 nii = _brain_to_nifti(bo_nii, _gray(20))
 
 
-
 def test_std():
     nii = _std(20)
     assert isinstance(nii, se.Nifti)
@@ -82,6 +81,13 @@ def test__kurt_vals_compare():
 def test_get_corrmat():
     corrmat = _get_corrmat(data[0])
     assert isinstance(corrmat, np.ndarray)
+
+
+def test_z_score():
+    z_help = bo_full.get_zscore_data()
+    z = np.vstack(
+        (zscore(bo_full.get_data()[bo_full.sessions == 1]), zscore(bo_full.get_data()[bo_full.sessions == 2])))
+    assert np.allclose(z, z_help)
 
 def test_int_z2r():
     z = 1
@@ -225,11 +231,6 @@ def test_filter_elecs():
     bo_f = filter_elecs(bo)
     assert isinstance(bo_f, se.Brain)
 
-# def test_filter_subj():
-#     bo_s = filter_subj(bo)
-#     bo_f = filter_subj(bo_full)
-#     assert isinstance(bo_s, (str, dict, type(None)))
-#     assert isinstance(bo_f, (str, dict, type(None)))
 
 def test_corr_column():
     X = np.matrix([[1, 2, 3], [1, 2, 3]])
