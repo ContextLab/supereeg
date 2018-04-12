@@ -11,7 +11,7 @@ import deepdish as dd
 import matplotlib.pyplot as plt
 from .helpers import _get_corrmat, _r2z, _z2r, _log_rbf, _expand_corrmat_fit, _expand_corrmat_predict, _plot_borderless,\
     _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp, _gray, _nifti_to_brain,\
-    _flatten
+    _unique
 from .brain import Brain
 from .nifti import Nifti
 from .load import load
@@ -92,8 +92,6 @@ class Model(object):
     def __init__(self, data=None, locs=None, template=None,
                  numerator=None, denominator=None,
                  n_subs=None, meta=None, date_created=None, rbf_width=20):
-        #TODO: rewrite this according to ideas here: https://github.com/jeremymanning/supereeg/issues/7
-        #TODO: also need to update Model.update
 
         self.locs = locs
         self.numerator = numerator
@@ -101,7 +99,10 @@ class Model(object):
         self.n_subs = 0
         self.meta = meta
         self.date_created = date_created
-        self.rbf_width = rbf_width
+        self.rbf_width = float(rbf_width)
+
+        if self.locs is not None:
+            self.locs, loc_inds = _unique(self.locs)
 
         #expanded_to_locs = False
         if data is not None:
@@ -154,59 +155,17 @@ class Model(object):
             bo = Brain(template)
             rbf_weights = _log_rbf(bo.get_locs(), self.locs, width=self.rbf_width)
             self.numerator, self.denominator = _expand_corrmat_fit(_r2z(self.get_model()), rbf_weights)
+            self.locs = bo.get_locs()
 
-        #STOPPED HERE
-
-
-
-
-        if not ((self.locs is None) or (locs is None)): #expand corrmat
-            sub_rbf_weights = _log_rbf(self.locs, locs)
-            n, d = _expand_corrmat_fit(self.get_model()
-
-
-
-                n, d = _bo2model(data)
-                data = Model(numerator=)
-                bo2model(bo, locs, width=20):
-
-                def _bo2model(bo, locs, width=20):
-                    """Returns numerator and denominator given a brain object"""
-                    sub_corrmat = _get_corrmat(bo)
-                    np.fill_diagonal(sub_corrmat, 0)
-                    sub_corrmat_z = _r2z(sub_corrmat)
-                    sub_rbf_weights = _log_rbf(locs, bo.get_locs(), width=width)
-                    n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
-                    return n, d, 1
-
-
-        if all(v is not None for v in [numerator, denominator, locs, n_subs]):
-            _handle_superuser(self, numerator, denominator, locs, n_subs)
-        elif type(data) == list:
-            #TODO: figure out if the user has indirectly specified other parameters by providing:
-            # - one of the first class data types (Brain, Model, or Nifti)
-            # - a filename pointing to any of those types of data (in which case, load it using se.load)
-            # - a (potentially mixed) list of the above
-            # if so, create models from each of those objects and merge them using update
-            # General
-        else:
-            _create_locs(self, locs, template) #FIXME: this is not the time to specify locations-- the user may have specified locations via data
-            s = self.locs.shape[0]
-            self.numerator = np.log(np.zeros((s, s)))
-            self.denominator = np.log(np.zeros((s, s)))
-            self.n_subs = 0
+        #sort locations and force them to be unique
+        self.locs, loc_inds = _unique(self.locs)
+        self.numerator = self.numerator[loc_inds, loc_inds]
+        self.denominator = self.denominator[loc_inds, loc_inds]
 
         self.n_locs = self.locs.shape[0]
-        self.rbf_width = float(rbf_width)
-        self.meta = meta
 
-        if not date_created:
+        if not self.date_created:
             self.date_created = time.strftime("%c")
-        else:
-            self.date_created = date_created
-
-        if data is not None:
-            self.update(data, inplace=True)
 
     def get_model(self):
         """ Returns a copy of the model in the form of a correlation matrix"""
@@ -304,15 +263,14 @@ class Model(object):
             return Brain(data=activations, locs=perm_locs, sessions=bo.sessions,
                         sample_rate=bo.sample_rate, kurtosis=None, label=loc_label)
 
-    def update(self, data, inplace=True,
-               locs=None, n=1):
+    def update(self, data, inplace=True):
         """
         Update a model with new data.
 
         Parameters
         ----------
-        data : supereeg.Brain, supereeg.Model (or list of either)
-            New subject data
+        data : supereeg.Brain, supereeg.Nifti, supereeg.Model (or a mixed list of these)
+            New data
 
         inplace : bool
             Whether to run update in place or return a new model (default True).
@@ -323,25 +281,35 @@ class Model(object):
             A new updated model object
 
         """
-
-        if type(data) is not list:
-            data = [data]
-
         if inplace:
             m = self
         else:
-            m = copy.deepcopy(self)
-        for d in data:
-            d = _format_data(d, m.locs, locs, n)
-            if isinstance(d, Brain):
-                num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d.get_filtered_bo(), m.locs, width=m.rbf_width)
-            elif isinstance(d, Model):
-                num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, m.locs, width=m.rbf_width)
-                if (type(d.meta) == dict) and (type(m.meta) == dict):
-                    m.meta = m.meta.update(d.meta)
-            m.numerator = np.logaddexp(m.numerator, num_corrmat_x)
-            m.denominator = np.logaddexp(m.denominator, denom_corrmat_x)
-            m.n_subs += n_subs
+            m = Model(self)
+
+        if type(data) == list:
+            for d in data:
+                m.update(d)
+        elif (type(data) == Nifti) or (type(data) == Brain):
+            m.update(Model(data))
+        elif type(data) == Model:
+            # determine whether we need to expand out the locations
+            if not np.allclose(self.locs, data.locs): #different locations. note: locations are always sorted and unique
+                combined_locs = pd.DataFrame(_unique(np.vstack((m.locs.as_matrix(),
+                                                                data.locs.as_matrix()))), columns=self.locs.columns)
+
+                data_rbf_weights = _log_rbf(data.locs, combined_locs, width=data.rbf_width)
+                data.numerator, data.denominator = _expand_corrmat_fit(_r2z(data.get_model()), data_rbf_weights)
+
+                m_rbf_weights = _log_rbf(m.locs, combined_locs, width=m.rbf_width)
+                n, d = _expand_corrmat_fit(_r2z(m.get_model()), m_rbf_weights)
+                m.numerator = np.logaddexp(n, data.numerator)
+                m.denominator = np.logaddexp(d, data.denominator)
+                m.locs = combined_locs
+                m.n_locs = m.locs.shape[0]
+            else: #same locations
+                m.numerator = np.logaddexp(m.numerator, data.numerator)
+                m.denominator = np.logaddexp(m.denominator, data.denominator)
+            m.n_subs += data.n_subs
 
         if not inplace:
             return m
@@ -575,33 +543,33 @@ def _mo2model(mo, locs, width=20):
         n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
         return n, d, mo.n_subs
 
-def _format_data(d):
-    """Formats data to generate model object"""
-    from .load import load
-    from .brain import Brain
-    from .nifti import Nifti
-    if isinstance(d, six.string_types):
-        d = load(d)
-    if isinstance(d, np.ndarray):
-
-        if new_locs is None:
-            new_locs = model_locs
-            if d.shape[0]!=new_locs.shape[0]:
-                raise ValueError("Array must have same dimensions as model or"
-                                 " you must passed custom locations")
-        np.fill_diagonal(d, 0)
-        return Model(numerator=np.log(_r2z(d)), denominator=np.zeros_like(d),
-                     n_subs=n_subs, locs=new_locs)
-    elif isinstance(d, Brain):
-        return d
-    elif isinstance(d, Nifti):
-        return Brain(d)
-    elif isinstance(d, Model):
-        return d
-    elif isinstance(d, list):
-        return _flatten(list(map(_format_data, d)))
-    else:
-        raise TypeError("Did not recognize the type of one of your inputs to the model")
+# def _format_data(d):
+#     """Formats data to generate model object"""
+#     from .load import load
+#     from .brain import Brain
+#     from .nifti import Nifti
+#     if isinstance(d, six.string_types):
+#         d = load(d)
+#     if isinstance(d, np.ndarray):
+#
+#         if new_locs is None:
+#             new_locs = model_locs
+#             if d.shape[0]!=new_locs.shape[0]:
+#                 raise ValueError("Array must have same dimensions as model or"
+#                                  " you must passed custom locations")
+#         np.fill_diagonal(d, 0)
+#         return Model(numerator=np.log(_r2z(d)), denominator=np.zeros_like(d),
+#                      n_subs=n_subs, locs=new_locs)
+#     elif isinstance(d, Brain):
+#         return d
+#     elif isinstance(d, Nifti):
+#         return Brain(d)
+#     elif isinstance(d, Model):
+#         return d
+#     elif isinstance(d, list):
+#         return _flatten(list(map(_format_data, d)))
+#     else:
+#         raise TypeError("Did not recognize the type of one of your inputs to the model")
 
 def _force_update(mo, bo, width=20):
     # get subject-specific correlation matrix

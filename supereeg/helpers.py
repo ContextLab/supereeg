@@ -13,7 +13,6 @@ import imageio
 import nibabel as nib
 import hypertools as hyp
 import shutil
-import collections
 
 from nilearn import plotting as ni_plt
 from nilearn import image
@@ -344,28 +343,6 @@ def tal2mni(r):
     inpoints[:, ~tmp] = linalg.solve(np.dot(rotmat, up), inpoints[:, ~tmp])
 
     return np.round(inpoints[0:3, :].T, decimals=2)
-
-
-def _uniquerows(x):
-    """
-    Finds unique rows
-
-    Parameters
-    ----------
-    x : ndarray
-        Coordinates
-
-
-    Returns
-    ----------
-    results : ndarray
-        unique rows
-
-    """
-    y = np.ascontiguousarray(x).view(np.dtype((np.void, x.dtype.itemsize * x.shape[1])))
-    _, idx = np.unique(y, return_index=True)
-
-    return x[idx]
 
 
 def _expand_corrmat_fit(Z, weights):
@@ -810,30 +787,37 @@ def _vox_size(locs):
             v_size[0][i] = bo_n.minimum_voxel_size
     return v_size
 
-
-def sort_unique_locs(locs):
+def _unique(X):
     """
-    Sorts unique locations
+    Wrapper for np.unique and pd.unique that also returns matching indices
 
     Parameters
     ----------
-    locs : pandas DataFrame or ndarray
-        Electrode locations
+    X : numpy array or pandas dataframe with eletrode locations
 
     Returns
     ----------
-    results : ndarray
-        Array of unique locations
+    unique_X : the sorted unique rows of X
 
+    unique_inds : the indices of X such that X[unique_inds, :] == X (or X.iloc[unique_inds] == X)
     """
-    if isinstance(locs, pd.DataFrame):
-        unique_full_locs = np.vstack(set(map(tuple, locs.as_matrix())))
-    elif isinstance(locs, np.ndarray):
-        unique_full_locs = np.vstack(set(map(tuple, locs)))
-    else:
-        print('unknown location type')
+    dataframe = type(X) is pd.DataFrame
+    if dataframe:
+        columns = X.columns
+        index = X.index
+        X = X.as_matrix()
 
-    return unique_full_locs[unique_full_locs[:, 0].argsort(),]
+    assert type(X) is np.ndarray, 'must pass in a numpy ndarray or dataframe'
+    uX, inds = np.unique(X, axis=0, return_index=True)
+
+    if dataframe:
+        uX = pd.DataFrame(data=uX, columns=columns, index=index[inds])
+
+
+    return uX, inds
+
+
+
 
 
 def _count_overlapping(X, Y):

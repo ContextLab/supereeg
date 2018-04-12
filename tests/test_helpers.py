@@ -9,7 +9,7 @@ import os
 
 ## don't understand why i have to do this:
 from supereeg.helpers import _std, _gray, _resample_nii, _apply_by_file_index, _kurt_vals, _get_corrmat, _z2r, _r2z, _log_rbf, \
-    _uniquerows, _expand_corrmat_fit, _expand_corrmat_predict, _timeseries_recon, _chunker, \
+    _expand_corrmat_fit, _expand_corrmat_predict, _timeseries_recon, _chunker, \
     _corr_column, _normalize_Y, _near_neighbor, _vox_size, _count_overlapping, _resample, \
     _nifti_to_brain, _brain_to_nifti, _flatten
 
@@ -126,12 +126,6 @@ def test_log_rbf():
 def test_tal2mni():
     tal_vals = tal2mni(locs)
     assert isinstance(tal_vals, np.ndarray)
-
-def test_uniquerows():
-    full_locs = np.concatenate((locs, locs[:10]), axis=0)
-    test_fun = _uniquerows(full_locs)
-    assert isinstance(test_fun, np.ndarray)
-    assert np.shape(test_fun) == np.shape(locs)
 
 def test_expand_corrmat_fit():
     sub_corrmat = _get_corrmat(bo)
@@ -289,10 +283,6 @@ def test_near_neighbor_int():
 def test_vox_size():
     v_size = _vox_size(test_model.locs)
     assert isinstance(v_size, np.ndarray)
-
-def test_sort_unique_locs():
-    sorted = sort_unique_locs(locs)
-    assert isinstance(sorted, np.ndarray)
 
 def test_count_overlapping():
     bool_overlap = _count_overlapping(bo_full, bo)

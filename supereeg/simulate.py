@@ -5,7 +5,6 @@ import numpy as np
 import pandas as pd
 from sklearn import datasets
 from .brain import Brain
-from .helpers import sort_unique_locs
 
 def simulate_locations(n_elecs=10):
     """
@@ -26,7 +25,7 @@ def simulate_locations(n_elecs=10):
     sim_locs = np.array([[np.random.randint(-50, 50), np.random.randint(-50, 50),
                np.random.randint(-50, 50)] for i in range(n_elecs)])
 
-    locs = sort_unique_locs(sim_locs)
+    locs = np.unique(sim_locs, axis=0)
 
     return pd.DataFrame(locs, columns=['x', 'y', 'z'])
 

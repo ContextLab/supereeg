@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 ## don't understand why i have to do this:
 from supereeg.helpers import _std, _gray, _resample_nii, _apply_by_file_index, _kurt_vals, _get_corrmat, _z2r, _r2z, _log_rbf, \
-    _uniquerows, _expand_corrmat_fit, _expand_corrmat_predict, _timeseries_recon, _chunker, \
+    _expand_corrmat_fit, _expand_corrmat_predict, _timeseries_recon, _chunker, \
     _corr_column, _normalize_Y, _near_neighbor, _vox_size, _count_overlapping, _resample, \
     _nifti_to_brain, _brain_to_nifti
 
@@ -128,12 +128,6 @@ def test_log_rbf():
 def test_tal2mni():
     tal_vals = tal2mni(locs)
     assert isinstance(tal_vals, np.ndarray)
-
-def test_uniquerows():
-    full_locs = np.concatenate((locs, locs[:10]), axis=0)
-    test_fun = _uniquerows(full_locs)
-    assert isinstance(test_fun, np.ndarray)
-    assert np.shape(test_fun) == np.shape(locs)
 
 def test_expand_corrmat_fit():
     sub_corrmat = _get_corrmat(bo)
@@ -278,10 +272,6 @@ def test_vox_size():
     v_size = _vox_size(test_model.locs)
     assert isinstance(v_size, np.ndarray)
 
-def test_sort_unique_locs():
-    sorted = sort_unique_locs(locs)
-    assert isinstance(sorted, np.ndarray)
-
 def test_count_overlapping():
     bool_overlap = _count_overlapping(bo_full, bo)
     assert sum(bool_overlap)==bo.locs.shape[0]
@@ -316,5 +306,7 @@ def test_nii_bo_nii():
     nii_0 = _gray(20).get_data().flatten()
     nii_0[np.isnan(nii_0)] = 0
     assert np.allclose(nii_0, nii.get_data().flatten())
+
+
 
 test_model_compile(os.path.join(os.path.expanduser('~'), 'Desktop', 'supereeg_pytest'))
