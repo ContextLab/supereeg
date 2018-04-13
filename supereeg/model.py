@@ -314,7 +314,7 @@ class Model(object):
             m.update(Model(data))
         elif type(data) == Model:
             # determine whether we need to expand out the locations
-            if not np.allclose(self.locs, data.locs): #different locations. note: locations are always sorted and unique
+            if not ((self.locs.shape[0] == data.locs.shape[0]) and np.allclose(self.locs, data.locs)): #different locations. note: locations are always sorted and unique
                 combined_locs, inds = _unique(np.vstack((m.locs.as_matrix(), data.locs.as_matrix())))
                 combined_locs = pd.DataFrame(combined_locs, columns=self.locs.columns)
 
