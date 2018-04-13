@@ -297,4 +297,4 @@ def test_nii_bo_nii():
     nii_0[np.isnan(nii_0)] = 0
     assert np.allclose(nii_0, nii.get_data().flatten())
 
-test_reconstruct()
+nii = se.load('example_model', return_type='nii')
