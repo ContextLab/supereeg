@@ -166,9 +166,10 @@ class Model(object):
             self.numerator, self.denominator = _expand_corrmat_fit(self.get_model(z_transform=True), rbf_weights)
             self.locs = bo.get_locs()
         elif locs is not None: #blur correlation matrix out to locs
-            rbf_weights = _log_rbf(locs, self.locs, width=self.rbf_width)
-            self.numerator, self.denominator = _expand_corrmat_fit(self.get_model(z_transform=True), rbf_weights)
-            self.locs = locs
+            if not ((locs.shape[0] == self.locs.shape[0]) and np.allclose(locs, self.locs)):
+                rbf_weights = _log_rbf(locs, self.locs, width=self.rbf_width)
+                self.numerator, self.denominator = _expand_corrmat_fit(self.get_model(z_transform=True), rbf_weights)
+                self.locs = locs
 
         #sort locations and force them to be unique
         self.locs, loc_inds = _unique(self.locs)
@@ -443,7 +444,8 @@ class Model(object):
             'locs' : self.locs,
             'n_subs' : self.n_subs,
             'meta' : self.meta,
-            'date_created' : self.date_created
+            'date_created' : self.date_created,
+            'rbf_width' : self.rbf_width
         }
 
         if fname[-3:]!='.mo':

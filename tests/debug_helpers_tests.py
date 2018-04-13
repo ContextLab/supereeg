@@ -233,9 +233,10 @@ def test_model_compile(tmpdir):
         model = se.Model(data=data[m], locs=locs)
         model.save(fname=os.path.join(tmpdir, str(m)))
     model_fnames = glob.glob(os.path.join(tmpdir, '*.mo'))
-    mo = se.Model(model_fnames)
+    mo = se.Model(model_fnames, locs=locs)
     assert isinstance(mo, se.Model)
-    assert np.allclose(mo.numerator, test_model.numerator)
+    assert np.allclose(mo.numerator.real, test_model.numerator.real)
+    assert np.allclose(mo.numerator.imag, test_model.numerator.imag)
     assert np.allclose(mo.denominator, test_model.denominator)
 
 # def test_chunk_bo():
