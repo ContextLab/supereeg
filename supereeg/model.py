@@ -498,35 +498,38 @@ class Model(object):
 
         return self.update(other, inplace=False)
 
-    def __sub__(self, other):
-        """
-        Subtract one model object from another. The models must have matching
-        locations.  Meta properties are combined across objects, or if properties
-        conflict then the values from the first object are preferred.
-
-        Parameters
-        ----------
-        other: Model object to be subtracted from the current object
-        """
-
-        if type(other) == Brain:
-            d = Model(other, locs=other.get_locs())
-        elif type(other) == Nifti:
-            d = Model(other)
-        elif type(other) == Model:
-            d = Model(other, locs=other.locs) #make a copy
-        else:
-            raise Exception('Unsupported data type for subtraction from Model object: ' + str(type(other)))
-
-        d.numerator = -d.numerator
-        d.denominator = -d.denominator
-
-        result = self.__add__(d)
-
-        #account for n_subs being updated during add operation
-        result.n_subs -= 2*d.n_subs
-
-        return result
+    #subtraction is not working; removing functionality until fixed
+    # def __sub__(self, other):
+    #     """
+    #     Subtract one model object from another. The models must have matching
+    #     locations.  Meta properties are combined across objects, or if properties
+    #     conflict then the values from the first object are preferred.
+    #
+    #     Parameters
+    #     ----------
+    #     other: Model object to be subtracted from the current object
+    #     """
+    #
+    #     if type(other) == Brain:
+    #         d = Model(other, locs=other.get_locs())
+    #     elif type(other) == Nifti:
+    #         d = Model(other)
+    #     elif type(other) == Model:
+    #         d = Model(other, locs=other.locs) #make a copy
+    #     else:
+    #         raise Exception('Unsupported data type for subtraction from Model object: ' + str(type(other)))
+    #
+    #     n = copy.copy(d.numerator)
+    #     d.numerator.real -= 1.
+    #     d.numerator.imag -= 1.
+    #     d.denominator -= 1.
+    #
+    #     result = self.__add__(d)
+    #
+    #     #account for n_subs being updated during add operation
+    #     result.n_subs -= 2*d.n_subs
+    #
+    #     return result
 
 
 ###################################

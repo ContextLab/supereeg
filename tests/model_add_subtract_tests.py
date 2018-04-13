@@ -39,6 +39,8 @@ m2_recon = c1 - m1
 m1_recon = c1 - m2
 c1_recon = m1_recon + m2_recon
 
+zero_model = (m1 - m1)
+
 def compare_matrices(a, b, a_name, b_name, label):
     m_a = eval('a.' + label)
     m_b = eval('b.' + label)
@@ -63,7 +65,7 @@ def compare_models(a, b, a_name, b_name):
 
 
 models = ['m1', 'm2', 'c1']
-fields = ['numerator', 'denominator', 'get_model()']
+fields = ['numerator.real', 'numerator.imag', 'denominator', 'get_model()']
 
 for a_name in models:
     b_name = a_name + '_recon'
