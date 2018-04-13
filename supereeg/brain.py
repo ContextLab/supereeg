@@ -12,7 +12,7 @@ import deepdish as dd
 import matplotlib.pyplot as plt
 from scipy.stats import zscore
 from .helpers import _kurt_vals, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, \
-    _plot_locs_hyp, _std, _gray, _nifti_to_brain, _brain_to_nifti
+    _plot_locs_hyp, _std, _gray, _nifti_to_brain, _brain_to_nifti, _z_score
 
 class Brain(object):
     """
@@ -298,7 +298,7 @@ class Brain(object):
         Gets zscored data from brain object
         """
         self.update_filter_inds()
-        return zscore(self.get_data())
+        return _z_score(self)
 
     def get_locs(self):
         """

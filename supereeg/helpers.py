@@ -188,11 +188,6 @@ def _kurt_vals(bo):
     results = list(map(lambda s: kurtosis(bo.data[(s==bo.sessions).values]), sessions))
     return np.max(np.vstack(results), axis=0)
 
-    # def aggregate(prev, next):
-    #     return np.max(np.vstack((prev, next)), axis=0)
-    #
-    # return _apply_by_file_index(bo, kurtosis, aggregate)
-
 
 def _get_corrmat(bo):
     """
@@ -238,15 +233,9 @@ def _z_score(bo):
 
     """
 
-    def aggregate(p, n):
-        return np.vstack((p, n))
-
-    def z(x):
-        return zscore(x)
-
-    z_scored_data= _apply_by_file_index(bo, z, aggregate)
-
-    return z_scored_data
+    sessions = bo.sessions.unique()
+    results = list(map(lambda s: zscore(bo.get_data()[(s == bo.sessions).values]), sessions))
+    return np.vstack(results)
 
 
 
