@@ -111,7 +111,7 @@ class Model(object):
                     data = None
                 else:
                     self.__init__(data=data[0], locs=self.locs, template=template, meta=self.meta, rbf_width=self.rbf_width, n_subs=1)
-                    for i in range(len(data)-1):
+                    for i in range(1, len(data)):
                         self.update(Model(data=data[i], locs=self.locs, template=template, meta=self.meta, rbf_width=self.rbf_width, n_subs=1))
 
             if isinstance(data, six.string_types):
@@ -121,7 +121,15 @@ class Model(object):
                 data = Brain(data)
 
             if isinstance(data, Model):
-                self = copy.deepcopy(data)
+                self.date_created = data.date_created
+                self.denominator = data.denominator
+                self.locs = data.locs
+                self.meta = data.meta
+                self.n_subs = data.n_subs
+                self.numerator = data.numerator
+                self.rbf_width = data.rbf_width
+                #self = copy.deepcopy(data)
+                n_subs = self.n_subs
             elif isinstance(data, Brain):
                 corrmat = _get_corrmat(data)
                 self.__init__(data=corrmat, locs=data.get_locs(), n_subs=1)

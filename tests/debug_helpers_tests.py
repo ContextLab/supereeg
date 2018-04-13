@@ -15,6 +15,8 @@ from supereeg.helpers import _std, _gray, _resample_nii, _apply_by_file_index, _
     _corr_column, _normalize_Y, _near_neighbor, _vox_size, _count_overlapping, _resample, \
     _nifti_to_brain, _brain_to_nifti
 
+#x = se.load('/Users/jmanning/Desktop/supereeg_pytest/1.mo')
+
 locs = np.array([[-61., -77.,  -3.],
                  [-41., -77., -23.],
                  [-21., -97.,  17.],
