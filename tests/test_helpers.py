@@ -4,14 +4,14 @@ from past.utils import old_div
 import supereeg as se
 import glob
 from supereeg.helpers import *
-from scipy.stats import kurtosis
+from scipy.stats import kurtosis, zscore
 import os
 
 ## don't understand why i have to do this:
 from supereeg.helpers import _std, _gray, _resample_nii, _apply_by_file_index, _kurt_vals, _get_corrmat, _z2r, _r2z, _log_rbf, \
     _expand_corrmat_fit, _expand_corrmat_predict, _timeseries_recon, _chunker, \
     _corr_column, _normalize_Y, _near_neighbor, _vox_size, _count_overlapping, _resample, \
-    _nifti_to_brain, _brain_to_nifti, _flatten
+    _nifti_to_brain, _brain_to_nifti, _zscore
 
 locs = np.array([[-61., -77.,  -3.],
                  [-41., -77., -23.],
@@ -45,7 +45,6 @@ data = [se.simulate_model_bos(n_samples=10, locs=locs, sample_locs=n_elecs) for 
 test_model = se.Model(data=data, locs=locs, rbf_width=100)
 bo_nii = se.Brain(_gray(20))
 nii = _brain_to_nifti(bo_nii, _gray(20))
-
 
 
 def test_std():
@@ -82,6 +81,13 @@ def test__kurt_vals_compare():
 def test_get_corrmat():
     corrmat = _get_corrmat(data[0])
     assert isinstance(corrmat, np.ndarray)
+
+
+def test_z_score():
+    z_help = bo_full.get_zscore_data()
+    z = np.vstack(
+        (zscore(bo_full.get_data()[bo_full.sessions == 1]), zscore(bo_full.get_data()[bo_full.sessions == 2])))
+    assert np.allclose(z, z_help)
 
 def test_int_z2r():
     z = 1
@@ -179,25 +185,17 @@ def test_expand_corrmats_same():
 def test_reconstruct():
     recon_test = test_model.predict(bo, nearest_neighbor=False, force_update=True)
     actual_test = bo_full.data.iloc[:, recon_test.locs.index]
-
-    # actual_test: the true data
-    # recon_test: the reconstructed data (using Model.predict)
+    zbo = copy.copy(bo)
+    zbo.data = pd.DataFrame(bo.get_zscore_data())
+    mo = test_model.update(zbo, inplace=False)
+    model_corrmat_x = np.divide(mo.numerator, mo.denominator)
+    model_corrmat_x = _z2r(model_corrmat_x)
+    np.fill_diagonal(model_corrmat_x, 0)
+    recon_data = _timeseries_recon(zbo, model_corrmat_x)
     corr_vals = _corr_column(actual_test.as_matrix(), recon_test.data.as_matrix())
-    assert np.all(corr_vals[~np.isnan(corr_vals)] <= 1) and np.all(corr_vals[~np.isnan(corr_vals)] >= -1)
-
-    # recon_test = test_model.predict(bo, nearest_neighbor=False, force_update=True)
-    # actual_test = bo_full.data.iloc[:, recon_test.locs.index]
-    # zbo = copy.copy(bo)
-    # zbo.data = pd.DataFrame(bo.get_zscore_data())
-    # mo = test_model.update(zbo, inplace=False)
-    # model_corrmat_x = np.divide(mo.numerator, mo.denominator)
-    # model_corrmat_x = _z2r(model_corrmat_x)
-    # np.fill_diagonal(model_corrmat_x, 0)
-    # recon_data = _timeseries_recon(zbo, model_corrmat_x)
-    # corr_vals = _corr_column(actual_test.as_matrix(), recon_test.data.as_matrix())
-    # assert isinstance(recon_data, np.ndarray)
-    # assert np.allclose(recon_data, recon_test.data, equal_nan=True)
-    # assert 1 >= corr_vals.mean() >= -1
+    assert isinstance(recon_data, np.ndarray)
+    assert np.allclose(recon_data, recon_test.data, equal_nan=True)
+    assert 1 >= corr_vals.mean() >= -1
 
 def test_recon_carved():
     elec_ind = 1
@@ -219,11 +217,6 @@ def test_filter_elecs():
     bo_f = filter_elecs(bo)
     assert isinstance(bo_f, se.Brain)
 
-# def test_filter_subj():
-#     bo_s = filter_subj(bo)
-#     bo_f = filter_subj(bo_full)
-#     assert isinstance(bo_s, (str, dict, type(None)))
-#     assert isinstance(bo_f, (str, dict, type(None)))
 
 def test_corr_column():
     X = np.matrix([[1, 2, 3], [1, 2, 3]])
@@ -247,13 +240,6 @@ def test_model_compile(tmpdir):
     assert isinstance(mo, se.Model)
     assert np.allclose(mo.numerator, test_model.numerator)
     assert np.allclose(mo.denominator, test_model.denominator)
-
-# def test_chunk_bo():
-#     chunk = tuple([1,2,3])
-#     chunked_bo = _chunk_bo(bo_full, chunk)
-#     print(type(_chunk_bo))
-#     assert isinstance(chunked_bo, se.Brain)
-#     assert np.shape(chunked_bo.data)[0]==np.shape(chunk)[0]
 
 def test_timeseries_recon():
     mo = np.divide(test_model.numerator, test_model.denominator)
