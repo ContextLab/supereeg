@@ -373,7 +373,7 @@ class Model(object):
 
         """
 
-        corr_mat = self.get_model()
+        corr_mat = self.get_model(z_transform=False)
         np.fill_diagonal(corr_mat, 1)
 
         if np.shape(corr_mat)[0] < 2000:

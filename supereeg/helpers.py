@@ -371,17 +371,20 @@ def _expand_corrmat_fit(Z, weights):
     import seaborn as sns
     import matplotlib.pyplot as plt
 
-    triu_inds = np.triu_indices(Z.shape[0])
+    triu_inds = np.triu_indices(Z.shape[0], k=1)
 
-    def get_triu_inds_denan(x):
-        y = x[triu_inds]
-        y[np.isnan(y)] = -np.inf
-        return y
+    #def get_triu_inds_denan(x):
+    #    y = x[triu_inds]
+    #    y[np.isnan(y)] = -np.inf
+    #    return y
 
     #need to do computations seperately for positive and negative values
-    sign_Z = np.sign(Z)
-    logZ_pos = get_triu_inds_denan(np.log(np.multiply(sign_Z > 0, Z)))
-    logZ_neg = get_triu_inds_denan(np.log(np.multiply(sign_Z < 0, Z)))
+    sign_Z = np.sign(Z)[triu_inds]
+    Z = Z[triu_inds]
+    logZ_pos = np.log(np.multiply(sign_Z > 0, Z))
+    logZ_neg = np.log(np.multiply(sign_Z < 0, Z))
+    #logZ_pos = get_triu_inds_denan(np.log(np.multiply(sign_Z > 0, Z)))
+    #logZ_neg = get_triu_inds_denan(np.log(np.multiply(sign_Z < 0, Z)))
 
     n = weights.shape[0]
     K_pos = np.zeros([n, n])
