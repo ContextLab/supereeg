@@ -334,7 +334,7 @@ def tal2mni(r):
     return np.round(inpoints[0:3, :].T, decimals=2)
 
 
-def _expand_corrmat_fit(Z, weights):
+def _blur_corrmat(Z, weights):
     """
     Gets full correlation matrix
 
@@ -366,7 +366,7 @@ def _expand_corrmat_fit(Z, weights):
     sign_Z = np.sign(Z)[triu_inds]
     Z = Z[triu_inds]
     logZ_pos = np.log(np.multiply(sign_Z > 0, Z))
-    logZ_neg = np.log(np.multiply(sign_Z < 0, Z))
+    logZ_neg = np.log(np.multiply(sign_Z < 0, np.abs(Z)))
 
     n = weights.shape[0]
     K_pos = np.zeros([n, n])
@@ -420,49 +420,6 @@ def _to_log_complex(X):
     negX.real[np.isnan(negX)] = 0
 
     return posX + negX
-
-def _expand_corrmat_predict(Z, weights):
-    """
-    Gets full correlation matrix
-
-    Parameters
-    ----------
-    Z : Numpy array
-        Subject's Fisher z-transformed correlation matrix
-
-    weights : Numpy array
-        Weights matrix calculated using _log_rbf function matrix
-
-    mode : str
-        Specifies whether to compute over all elecs (fit mode) or just new elecs
-        (predict mode)
-
-    Returns
-    ----------
-    numerator : Numpy array
-        Numerator for the expanded correlation matrix
-    denominator : Numpy array
-        Denominator for the expanded correlation matrix
-
-    """
-    logZ = np.multiply(np.sign(Z), np.log(np.abs(Z)))
-    logZ.fill_diagonal(0)
-    logZ[np.isnan(logZ) | np.isinf(logZ)] = 0
-
-    n = weights.shape[0]
-    K = np.zeros([n, n])
-    W = np.zeros([n, n])
-
-    s = Z.shape[0]
-    sliced_up = [(x, y) for x in range(s, n) for y in range(x)]
-
-    results = Parallel(n_jobs=multiprocessing.cpu_count())(
-        delayed(_compute_coord)(coord, weights, logZ) for coord in sliced_up)
-
-    W[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[0] for x in results]
-    K[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[1] for x in results]
-
-    return K + K.T, W + W.T
 
 
 def _compute_coord(coord, weights, Z):
@@ -1282,12 +1239,3 @@ def _close_all():
     figs = plt.get_fignums()
     for f in figs:
         plt.close(f)
-
-def _flatten(L):
-    '''
-    flatten a list recursively
-    '''
-    #from https://stackoverflow.com/questions/2158395/flatten-an-irregular-list-of-lists
-    x = lambda *n: (e for a in n
-                    for e in (_flatten(*a) if isinstance(a, (tuple, list)) else (a,)))
-    return list(x)

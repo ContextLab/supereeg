@@ -9,7 +9,7 @@ import numpy as np
 import seaborn as sns
 import deepdish as dd
 import matplotlib.pyplot as plt
-from .helpers import _get_corrmat, _r2z, _z2r, _log_rbf, _expand_corrmat_fit, _expand_corrmat_predict, _plot_borderless,\
+from .helpers import _get_corrmat, _r2z, _z2r, _log_rbf, _blur_corrmat, _plot_borderless,\
     _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp, _gray, _nifti_to_brain,\
     _unique, _to_log_complex
 from .brain import Brain
@@ -163,12 +163,12 @@ class Model(object):
             assert type(template) == Nifti, 'template must be a Nifti object or a path to a Nifti object'
             bo = Brain(template)
             rbf_weights = _log_rbf(bo.get_locs(), self.locs, width=self.rbf_width)
-            self.numerator, self.denominator = _expand_corrmat_fit(self.get_model(z_transform=True), rbf_weights)
+            self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
             self.locs = bo.get_locs()
         elif locs is not None: #blur correlation matrix out to locs
             if not ((locs.shape[0] == self.locs.shape[0]) and np.allclose(locs, self.locs)):
                 rbf_weights = _log_rbf(locs, self.locs, width=self.rbf_width)
-                self.numerator, self.denominator = _expand_corrmat_fit(self.get_model(z_transform=True), rbf_weights)
+                self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
                 self.locs = locs
 
         #sort locations and force them to be unique
@@ -319,10 +319,10 @@ class Model(object):
                 combined_locs = pd.DataFrame(combined_locs, columns=self.locs.columns)
 
                 data_rbf_weights = _log_rbf(combined_locs, data.locs, width=data.rbf_width)
-                data.numerator, data.denominator = _expand_corrmat_fit(data.get_model(z_transform=True), data_rbf_weights)
+                data.numerator, data.denominator = _blur_corrmat(data.get_model(z_transform=True), data_rbf_weights)
 
                 m_rbf_weights = _log_rbf(combined_locs, m.locs, width=m.rbf_width)
-                n, d = _expand_corrmat_fit(m.get_model(z_transform=True), m_rbf_weights)
+                n, d = _blur_corrmat(m.get_model(z_transform=True), m_rbf_weights)
 
                 m._set_numerator(np.logaddexp(n.real, data.numerator.real),
                                  np.logaddexp(n.imag, data.numerator.imag))
@@ -564,7 +564,7 @@ def _bo2model(bo, locs, width=20):
     np.fill_diagonal(sub_corrmat, 0)
     sub_corrmat_z = _r2z(sub_corrmat)
     sub_rbf_weights = _log_rbf(locs, bo.get_locs(), width=width)
-    n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
+    n, d = _blur_corrmat(sub_corrmat_z, sub_rbf_weights)
     return n, d, 1
 
 def _mo2model(mo, locs, width=20):
@@ -579,7 +579,7 @@ def _mo2model(mo, locs, width=20):
         sub_corrmat_z = _recover_model(mo.numerator, mo.denominator, z_transform=True)
         np.fill_diagonal(sub_corrmat_z, 0)
         sub_rbf_weights = _log_rbf(locs, mo.locs, width=width)
-        n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
+        n, d = _blur_corrmat(sub_corrmat_z, sub_rbf_weights)
         return n, d, mo.n_subs
 
 def _force_update(mo, bo, width=20):
@@ -596,7 +596,7 @@ def _force_update(mo, bo, width=20):
     sub__rbf_weights = _log_rbf(mo.locs, bo.get_locs(), width=width)
 
     #  get subject expanded correlation matrix
-    num_corrmat_x, denom_corrmat_x = _expand_corrmat_fit(sub_corrmat_z, sub__rbf_weights)
+    num_corrmat_x, denom_corrmat_x = _blur_corrmat(sub_corrmat_z, sub__rbf_weights)
 
     # add in new subj data
     #with np.errstate(invalid='ignore'):
@@ -630,7 +630,7 @@ def _no_overlap(self, bo, model_corrmat_x, width=20):
     model__rbf_weights = _log_rbf(pd.concat([self.locs, bo.get_locs()]), self.locs, width=width)
 
     # get model expanded correlation matrix
-    num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(model_corrmat_x, model__rbf_weights)
+    num_corrmat_x, denom_corrmat_x = _blur_corrmat(model_corrmat_x, model__rbf_weights)
 
     # divide the numerator and denominator
     #with np.errstate(invalid='ignore'):
@@ -692,7 +692,7 @@ def _some_overlap(self, bo, model_corrmat_x, joint_model_inds, width=20):
     model__rbf_weights = _log_rbf(pd.concat([model_locs_permuted, sub_bo]), model_locs_permuted, width=width)
 
     # get model expanded correlation matrix
-    num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(model_permuted, model__rbf_weights)
+    num_corrmat_x, denom_corrmat_x = _blur_corrmat(model_permuted, model__rbf_weights)
 
     # divide the numerator and denominator
     #with np.errstate(invalid='ignore'):

@@ -9,9 +9,10 @@ import os
 
 ## don't understand why i have to do this:
 from supereeg.helpers import _std, _gray, _resample_nii, _apply_by_file_index, _kurt_vals, _get_corrmat, _z2r, _r2z, _log_rbf, \
-    _expand_corrmat_fit, _expand_corrmat_predict, _timeseries_recon, _chunker, \
+    _blur_corrmat, _timeseries_recon, _chunker, \
     _corr_column, _normalize_Y, _near_neighbor, _vox_size, _count_overlapping, _resample, \
     _nifti_to_brain, _brain_to_nifti
+from supereeg.model import _recover_model
 
 locs = np.array([[-61., -77.,  -3.],
                  [-41., -77., -23.],
@@ -125,36 +126,23 @@ def test_array_r2z():
 
 def test_log_rbf():
     weights = _log_rbf(locs, locs[:10])
-    weights_same = _log_rbf(locs[:10], locs[:10], 1)
     assert isinstance(weights, np.ndarray)
-    assert np.allclose(weights_same, np.eye(np.shape(weights_same)[0]))
+    assert np.allclose(np.diag(weights), 0)
 
 def test_tal2mni():
     tal_vals = tal2mni(locs)
     assert isinstance(tal_vals, np.ndarray)
 
-def test_expand_corrmat_fit():
+def test_blur_corrmat():
     sub_corrmat = _get_corrmat(bo)
     np.fill_diagonal(sub_corrmat, 0)
     sub_corrmat = _r2z(sub_corrmat)
     weights = _log_rbf(test_model.locs, bo.locs)
-    expanded_num_f, expanded_denom_f = _expand_corrmat_fit(sub_corrmat, weights)
+    expanded_num_f, expanded_denom_f = _blur_corrmat(sub_corrmat, weights)
 
     assert isinstance(expanded_num_f, np.ndarray)
     assert isinstance(expanded_denom_f, np.ndarray)
     assert np.shape(expanded_num_f)[0] == test_model.locs.shape[0]
-
-
-def test_expand_corrmat_predict():
-    sub_corrmat = _get_corrmat(bo)
-    np.fill_diagonal(sub_corrmat, 0)
-    sub_corrmat = _r2z(sub_corrmat)
-    weights = _log_rbf(test_model.locs, bo.locs)
-    expanded_num_p, expanded_denom_p = _expand_corrmat_predict(sub_corrmat, weights)
-
-    assert isinstance(expanded_num_p, np.ndarray)
-    assert isinstance(expanded_denom_p, np.ndarray)
-    assert np.shape(expanded_num_p)[0] == test_model.locs.shape[0]
 
 def test_expand_corrmats_same():
     sub_corrmat = _get_corrmat(bo)
@@ -162,10 +150,10 @@ def test_expand_corrmats_same():
     sub_corrmat_z = _r2z(sub_corrmat)
     weights = _log_rbf(test_model.locs, bo.locs)
 
-    expanded_num_p, expanded_denom_p = _expand_corrmat_predict(sub_corrmat_z, weights)
-    model_corrmat_p = np.divide(expanded_num_p, expanded_denom_p)
-    expanded_num_f, expanded_denom_f = _expand_corrmat_predict(sub_corrmat_z, weights)
-    model_corrmat_f = np.divide(expanded_num_f, expanded_denom_f)
+    expanded_num_p, expanded_denom_p = _blur_corrmat(sub_corrmat_z, weights)
+    model_corrmat_p = _recover_model(expanded_num_p, expanded_denom_p)
+    expanded_num_f, expanded_denom_f = _blur_corrmat(sub_corrmat_z, weights)
+    model_corrmat_f = _recover_model(expanded_num_f, expanded_denom_f)
 
     np.fill_diagonal(model_corrmat_f, 0)
     np.fill_diagonal(model_corrmat_p, 0)
@@ -185,17 +173,11 @@ def test_expand_corrmats_same():
 def test_reconstruct():
     recon_test = test_model.predict(bo, nearest_neighbor=False, force_update=True)
     actual_test = bo_full.data.iloc[:, recon_test.locs.index]
-    zbo = copy.copy(bo)
-    zbo.data = pd.DataFrame(bo.get_zscore_data())
-    mo = test_model.update(zbo, inplace=False)
-    model_corrmat_x = np.divide(mo.numerator, mo.denominator)
-    model_corrmat_x = _z2r(model_corrmat_x)
-    np.fill_diagonal(model_corrmat_x, 0)
-    recon_data = _timeseries_recon(zbo, model_corrmat_x)
+
+    # actual_test: the true data
+    # recon_test: the reconstructed data (using Model.predict)
     corr_vals = _corr_column(actual_test.as_matrix(), recon_test.data.as_matrix())
-    assert isinstance(recon_data, np.ndarray)
-    assert np.allclose(recon_data, recon_test.data, equal_nan=True)
-    assert 1 >= corr_vals.mean() >= -1
+    assert np.all(corr_vals[~np.isnan(corr_vals)] <= 1) and np.all(corr_vals[~np.isnan(corr_vals)] >= -1)
 
 def test_recon_carved():
     elec_ind = 1
@@ -236,14 +218,15 @@ def test_model_compile(tmpdir):
         model = se.Model(data=data[m], locs=locs)
         model.save(fname=os.path.join(p.strpath, str(m)))
     model_data = glob.glob(os.path.join(p.strpath, '*.mo'))
-    mo = se.model_compile(model_data)
+    mo = se.Model(model_data)
     assert isinstance(mo, se.Model)
-    assert np.allclose(mo.numerator, test_model.numerator)
+    assert np.allclose(mo.numerator.real, test_model.numerator.real)
+    assert np.allclose(mo.numerator.imag, test_model.numerator.imag)
     assert np.allclose(mo.denominator, test_model.denominator)
 
 def test_timeseries_recon():
-    mo = np.divide(test_model.numerator, test_model.denominator)
-    np.fill_diagonal(mo, 0)
+    mo = test_model.get_model()
+    np.fill_diagonal(mo, 0.)
     recon = _timeseries_recon(bo, mo, 2)
     assert isinstance(recon, np.ndarray)
     assert np.shape(recon)[1] == np.shape(mo)[1]
@@ -304,7 +287,3 @@ def test_nii_bo_nii():
     nii_0 = _gray(20).get_data().flatten()
     nii_0[np.isnan(nii_0)] = 0
     assert np.allclose(nii_0, nii.get_data().flatten())
-
-def test_flatten():
-    test = ['a', 'b', ['c', 'd', 'e', ['f', 'g'], 'h'], ['i', 'j']]
-    assert len(_flatten(test)) == 10

@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 ## don't understand why i have to do this:
 from supereeg.helpers import _std, _gray, _resample_nii, _apply_by_file_index, _kurt_vals, _get_corrmat, _z2r, _r2z, _log_rbf, \
-    _expand_corrmat_fit, _expand_corrmat_predict, _timeseries_recon, _chunker, \
+    _blur_corrmat, _timeseries_recon, _chunker, \
     _corr_column, _normalize_Y, _near_neighbor, _vox_size, _count_overlapping, _resample, \
     _nifti_to_brain, _brain_to_nifti
 
@@ -123,36 +123,23 @@ def test_array_r2z():
 
 def test_log_rbf():
     weights = _log_rbf(locs, locs[:10])
-    weights_same = _log_rbf(locs[:10], locs[:10], 1)
     assert isinstance(weights, np.ndarray)
-    assert np.allclose(weights_same, np.eye(np.shape(weights_same)[0]))
+    assert np.allclose(np.diag(weights), 0)
 
 def test_tal2mni():
     tal_vals = tal2mni(locs)
     assert isinstance(tal_vals, np.ndarray)
 
-def test_expand_corrmat_fit():
+def test_blur_corrmat():
     sub_corrmat = _get_corrmat(bo)
     np.fill_diagonal(sub_corrmat, 0)
     sub_corrmat = _r2z(sub_corrmat)
     weights = _log_rbf(test_model.locs, bo.locs)
-    expanded_num_f, expanded_denom_f = _expand_corrmat_fit(sub_corrmat, weights)
+    expanded_num_f, expanded_denom_f = _blur_corrmat(sub_corrmat, weights)
 
     assert isinstance(expanded_num_f, np.ndarray)
     assert isinstance(expanded_denom_f, np.ndarray)
     assert np.shape(expanded_num_f)[0] == test_model.locs.shape[0]
-
-
-def test_expand_corrmat_predict():
-    sub_corrmat = _get_corrmat(bo)
-    np.fill_diagonal(sub_corrmat, 0)
-    sub_corrmat = _r2z(sub_corrmat)
-    weights = _log_rbf(test_model.locs, bo.locs)
-    expanded_num_p, expanded_denom_p = _expand_corrmat_predict(sub_corrmat, weights)
-
-    assert isinstance(expanded_num_p, np.ndarray)
-    assert isinstance(expanded_denom_p, np.ndarray)
-    assert np.shape(expanded_num_p)[0] == test_model.locs.shape[0]
 
 def test_expand_corrmats_same():
     sub_corrmat = _get_corrmat(bo)
@@ -310,6 +297,4 @@ def test_nii_bo_nii():
     nii_0[np.isnan(nii_0)] = 0
     assert np.allclose(nii_0, nii.get_data().flatten())
 
-
-
-test_model_compile(os.path.join(os.path.expanduser('~'), 'Desktop', 'supereeg_pytest'))
+test_reconstruct()
