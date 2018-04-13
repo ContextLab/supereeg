@@ -498,7 +498,7 @@ class Model(object):
 
         return self.update(other, inplace=False)
 
-    #subtraction is not working; removing functionality until fixed
+    # #subtraction is not working; removing functionality until fixed
     # def __sub__(self, other):
     #     """
     #     Subtract one model object from another. The models must have matching
@@ -519,17 +519,23 @@ class Model(object):
     #     else:
     #         raise Exception('Unsupported data type for subtraction from Model object: ' + str(type(other)))
     #
-    #     n = copy.copy(d.numerator)
-    #     d.numerator.real -= 1.
-    #     d.numerator.imag -= 1.
-    #     d.denominator -= 1.
+    #     def logdiffexp(a, b):
+    #         return np.add(a, np.log(np.subtract(1, np.exp(np.subtract(b, a)))))
     #
-    #     result = self.__add__(d)
+    #     assert np.allclose(self.locs, other.locs), 'subtraction is only supported for models with matching locations'
     #
-    #     #account for n_subs being updated during add operation
-    #     result.n_subs -= 2*d.n_subs
+    #     m = copy.deepcopy(self)
+    #     m.numerator.real = logdiffexp(self.numerator.real, other.numerator.real)
+    #     m.numerator.imag = logdiffexp(self.numerator.imag, other.numerator.imag)
+    #     m.denominator = logdiffexp(self.denominator, other.denominator)
+    #     m.n_subs -= other.n_subs
     #
-    #     return result
+    #     if m.meta is None:
+    #         m.meta = other.meta
+    #     elif (type(m.meta) == dict) and (type(other.meta) == dict):
+    #         m.meta.update(other.meta)
+    #
+    #     return m
 
 
 ###################################
