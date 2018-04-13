@@ -363,10 +363,13 @@ def _blur_corrmat(Z, weights):
     triu_inds = np.triu_indices(Z.shape[0], k=1)
 
     #need to do computations seperately for positive and negative values
-    sign_Z = np.sign(Z)[triu_inds]
-    Z = Z[triu_inds]
-    logZ_pos = np.log(np.multiply(sign_Z > 0, Z))
-    logZ_neg = np.log(np.multiply(sign_Z < 0, np.abs(Z)))
+    sign_Z_full = np.sign(Z)
+    logZ_pos_full = np.log(np.multiply(sign_Z_full > 0, Z))
+    logZ_neg_full = np.log(np.multiply(sign_Z_full < 0, np.abs(Z)))
+
+    sign_Z = sign_Z_full[triu_inds]
+    logZ_pos = np.log(np.multiply(sign_Z > 0, Z[triu_inds]))
+    logZ_neg = np.log(np.multiply(sign_Z < 0, np.abs(Z[triu_inds])))
 
     n = weights.shape[0]
     K_pos = np.zeros([n, n])
@@ -375,20 +378,30 @@ def _blur_corrmat(Z, weights):
 
     for x in range(n-1):
         xweights = weights[x, :]
-        for y in range(x, n): #fill in upper triangle only
+        x_match = np.isclose(xweights, 0)
+        for y in range(x+1, n): #fill in upper triangle only
             yweights = weights[y, :]
+            y_match = np.isclose(yweights, 0)
+
+            if np.any(x_match) and np.any(y_match): #the pair of locations we're filling in already exists in the given data
+                x_ind = np.where(x_match)[0]
+                y_ind = np.where(y_match)[0]
+                Z_match_val = np.mean(Z[x_ind, y_ind])
+                W[x, y] = 0.
+                if Z_match_val > 0:
+                    K_pos[x, y] = np.log(Z_match_val)
+                    K_neg[x, y] = -np.inf
+                else:
+                    K_pos[x, y] = -np.inf
+                    K_neg[x, y] = np.log(np.abs(Z_match_val))
+                continue
+
             next_weights = np.add.outer(xweights, yweights)
             next_weights = next_weights[triu_inds]
 
-            matches = np.isclose(next_weights, 0) #to/from locations match; copy value(s) from original Z
-            if np.any(matches):
-                W[x, y] = 0.
-                K_pos[x, y] = logsumexp(logZ_pos[matches])
-                K_neg[x, y] = logsumexp(logZ_neg[matches])
-            else: #to/from locations do NOT match; compute a weighted sum over values from Z
-                W[x, y] = logsumexp(next_weights)
-                K_pos[x, y] = logsumexp(logZ_pos + next_weights)
-                K_neg[x, y] = logsumexp(logZ_neg + next_weights)
+            W[x, y] = logsumexp(next_weights)
+            K_pos[x, y] = logsumexp(logZ_pos + next_weights)
+            K_neg[x, y] = logsumexp(logZ_neg + next_weights)
 
     #turn K_neg into complex numbers.  Where K_neg is infinite, this results in nans for the real number parts, so we'll
     #set any nans in K_neg.real to 0

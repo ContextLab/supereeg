@@ -332,6 +332,7 @@ class Brain(object):
 
         data = self.get_data().iloc[sample_inds, loc_inds]
         sessions = self.sessions.iloc[sample_inds]
+        kurtosis = self.kurtosis[loc_inds]
         if self.sample_rate:
             sample_rate = [self.sample_rate[int(s-1)] for s in
                            sessions.unique()]
@@ -352,7 +353,7 @@ class Brain(object):
         else:
             return Brain(data=data, locs=locs, sessions=sessions,
                          sample_rate=sample_rate, meta=meta,
-                         date_created=date_created, kurtosis=self.kurtosis,
+                         date_created=date_created, kurtosis=kurtosis,
                          filter=None) #TODO: make sure we preserve all other parameters/properties
 
     def resample(self, resample_rate=None):
