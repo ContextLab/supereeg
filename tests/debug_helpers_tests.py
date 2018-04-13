@@ -44,7 +44,7 @@ bo = se.Brain(data=sub_data.as_matrix(), sessions=bo_full.sessions, locs=sub_loc
 # simulate correlation matrix
 data = [se.simulate_model_bos(n_samples=10, locs=locs, sample_locs=n_elecs) for x in range(n_subs)]
 # test model to compare
-test_model = se.Model(data=data, locs=locs, rbf_width=100)
+test_model = se.Model(data=data, locs=locs)
 bo_nii = se.Brain(_gray(20))
 nii = _brain_to_nifti(bo_nii, _gray(20))
 

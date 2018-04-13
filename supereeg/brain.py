@@ -136,8 +136,7 @@ class Brain(object):
 
             if isinstance(data, Model):
                 locs = data.locs
-                data = data.get_model()
-                np.fill_diagonal(data, 1)
+                data = data.get_model(z_transform=False)
 
             if isinstance(data, pd.DataFrame):
                 self.data = data

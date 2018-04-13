@@ -362,39 +362,33 @@ def _expand_corrmat_fit(Z, weights):
 
     triu_inds = np.triu_indices(Z.shape[0], k=1)
 
-    #def get_triu_inds_denan(x):
-    #    y = x[triu_inds]
-    #    y[np.isnan(y)] = -np.inf
-    #    return y
-
     #need to do computations seperately for positive and negative values
     sign_Z = np.sign(Z)[triu_inds]
     Z = Z[triu_inds]
     logZ_pos = np.log(np.multiply(sign_Z > 0, Z))
     logZ_neg = np.log(np.multiply(sign_Z < 0, Z))
-    #logZ_pos = get_triu_inds_denan(np.log(np.multiply(sign_Z > 0, Z)))
-    #logZ_neg = get_triu_inds_denan(np.log(np.multiply(sign_Z < 0, Z)))
 
     n = weights.shape[0]
     K_pos = np.zeros([n, n])
     K_neg = np.zeros([n, n])
     W = np.zeros([n, n])
 
-    s = 0
-
-    x_vals = list(range(s, n))
-    for x in x_vals:
+    for x in range(n-1):
         xweights = weights[x, :]
-        y_vals = list(range(x))
-        for y in y_vals:
+        for y in range(x, n): #fill in upper triangle only
             yweights = weights[y, :]
-
             next_weights = np.add.outer(xweights, yweights)
             next_weights = next_weights[triu_inds]
 
-            W[x, y] = logsumexp(next_weights)
-            K_pos[x, y] = logsumexp(logZ_pos + next_weights)
-            K_neg[x, y] = logsumexp(logZ_neg + next_weights)
+            matches = np.isclose(next_weights, 0) #to/from locations match; copy value(s) from original Z
+            if np.any(matches):
+                W[x, y] = 0.
+                K_pos[x, y] = logsumexp(logZ_pos[matches])
+                K_neg[x, y] = logsumexp(logZ_neg[matches])
+            else: #to/from locations do NOT match; compute a weighted sum over values from Z
+                W[x, y] = logsumexp(next_weights)
+                K_pos[x, y] = logsumexp(logZ_pos + next_weights)
+                K_neg[x, y] = logsumexp(logZ_neg + next_weights)
 
     #turn K_neg into complex numbers.  Where K_neg is infinite, this results in nans for the real number parts, so we'll
     #set any nans in K_neg.real to 0

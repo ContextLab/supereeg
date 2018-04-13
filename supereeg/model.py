@@ -94,13 +94,15 @@ class Model(object):
         from .load import load
 
         self.locs = locs
-        self.n_locs = self.locs.shape[0]
         self.numerator = None
         self.denominator = None
         self.n_subs = 0
         self.meta = meta
         self.date_created = date_created
         self.rbf_width = float(rbf_width)
+
+        if n_subs is None:
+            n_subs = 1
 
         #expanded_to_locs = False
         if data is not None:
@@ -127,13 +129,6 @@ class Model(object):
                 self.numerator = _to_log_complex(_r2z(data))
                 self.denominator = np.zeros_like(self.numerator, dtype=np.float32)
 
-            #if locs is not None: #expand corrmat
-            #    rbf_weights = _log_rbf(locs, self.locs, width=rbf_width)
-            #    self.numerator, self.denominator = _expand_corrmat_fit(_r2z(self.get_model()), rbf_weights)
-            #    self.locs = locs
-            #    locs = None
-            #    expanded_to_locs = True
-
         if (numerator is not None) and (denominator is not None):
             assert numerator.shape[0] == numerator.shape[1], 'numerator must be a square matrix'
             assert denominator.shape[0] == denominator.shape[1], 'denominator must be a square matrix'
@@ -148,9 +143,13 @@ class Model(object):
                 self._set_numerator(np.logaddexp(self.numerator.real, numerator.real),
                                     np.logaddexp(self.numerator.imag, numerator.imag))
                 self.denominator = np.logaddexp(self.denominator, denominator)
+
             self.n_subs += n_subs
 
+
         if template is not None: #blur correlation matrix out to template locations
+            if locs is not None:
+                warnings.warn('Argument ''locs'' will be ignored in favor of the provided Nifti template')
             if isinstance(template, six.string_types):
                 template = load(template)
             assert type(template) == Nifti, 'template must be a Nifti object or a path to a Nifti object'
@@ -158,6 +157,10 @@ class Model(object):
             rbf_weights = _log_rbf(bo.get_locs(), self.locs, width=self.rbf_width)
             self.numerator, self.denominator = _expand_corrmat_fit(self.get_model(z_transform=True), rbf_weights)
             self.locs = bo.get_locs()
+        elif locs is not None: #blur correlation matrix out to locs
+            rbf_weights = _log_rbf(locs, self.locs, width=self.rbf_width)
+            self.numerator, self.denominator = _expand_corrmat_fit(self.get_model(z_transform=True), rbf_weights)
+            self.locs = locs
 
         #sort locations and force them to be unique
         self.locs, loc_inds = _unique(self.locs)
@@ -171,6 +174,7 @@ class Model(object):
         if not self.date_created:
             self.date_created = time.strftime("%c")
 
+        self.n_locs = self.locs.shape[0]
         self.n_subs = n_subs
 
     def get_model(self, z_transform=False):
@@ -374,7 +378,6 @@ class Model(object):
         """
 
         corr_mat = self.get_model(z_transform=False)
-        np.fill_diagonal(corr_mat, 1)
 
         if np.shape(corr_mat)[0] < 2000:
             ax = sns.heatmap(corr_mat, cbar_kws = {'label': 'correlation'}, **kwargs)
@@ -568,34 +571,6 @@ def _mo2model(mo, locs, width=20):
         sub_rbf_weights = _log_rbf(locs, mo.locs, width=width)
         n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
         return n, d, mo.n_subs
-
-# def _format_data(d):
-#     """Formats data to generate model object"""
-#     from .load import load
-#     from .brain import Brain
-#     from .nifti import Nifti
-#     if isinstance(d, six.string_types):
-#         d = load(d)
-#     if isinstance(d, np.ndarray):
-#
-#         if new_locs is None:
-#             new_locs = model_locs
-#             if d.shape[0]!=new_locs.shape[0]:
-#                 raise ValueError("Array must have same dimensions as model or"
-#                                  " you must passed custom locations")
-#         np.fill_diagonal(d, 0)
-#         return Model(numerator=np.log(_r2z(d)), denominator=np.zeros_like(d),
-#                      n_subs=n_subs, locs=new_locs)
-#     elif isinstance(d, Brain):
-#         return d
-#     elif isinstance(d, Nifti):
-#         return Brain(d)
-#     elif isinstance(d, Model):
-#         return d
-#     elif isinstance(d, list):
-#         return _flatten(list(map(_format_data, d)))
-#     else:
-#         raise TypeError("Did not recognize the type of one of your inputs to the model")
 
 def _force_update(mo, bo, width=20):
     # get subject-specific correlation matrix
