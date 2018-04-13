@@ -21,6 +21,7 @@ from scipy.stats import kurtosis, zscore, pearsonr
 from scipy.spatial.distance import pdist
 from scipy.spatial.distance import cdist
 from scipy.spatial.distance import squareform
+from scipy.special import logsumexp
 from scipy import linalg
 from scipy.ndimage.interpolation import zoom
 from joblib import Parallel, delayed
@@ -254,8 +255,8 @@ def _z2r(z):
         Correlation value
 
     """
-    with np.errstate(invalid='ignore', divide='ignore'):
-        return (np.exp(2 * z) - 1) / (np.exp(2 * z) + 1)
+    warnings.simplefilter('ignore')
+    return (np.exp(2 * z) - 1) / (np.exp(2 * z) + 1)
 
 
 def _r2z(r):
@@ -273,32 +274,35 @@ def _r2z(r):
         Fishers z transformed correlation value
 
     """
-    with np.errstate(invalid='ignore', divide='ignore'):
-        return 0.5 * (np.log(1 + r) - np.log(1 - r))
+    warnings.simplefilter('ignore')
+    return 0.5 * (np.log(1 + r) - np.log(1 - r))
 
 
-def _rbf(x, center, width=20):
+def _log_rbf(to_coords, from_coords, width=20):
     """
     Radial basis function
 
     Parameters
     ----------
-    x : ndarray
+    to_coords : ndarray
         Series of all coordinates (one per row) - R_full
 
     c : ndarray
         Series of subject's coordinates (one per row) - R_subj
 
-    width : int
+    width : positive scalar
         Radius
 
     Returns
     ----------
     results : ndarray
-        Matrix of _rbf weights for each subject coordinate for all coordinates
+        Matrix of log rbf weights for each subject coordinate for all coordinates
 
     """
-    return np.exp(-cdist(x, center, metric='euclidean') ** 2 / float(width))
+    assert np.isscalar(width), 'RBF width must be a scalar'
+    assert width > 0, 'RBF width must be positive'
+    weights = -cdist(to_coords, from_coords, metric='euclidean') ** 2 / float(width)
+    return weights
 
 
 def tal2mni(r):
@@ -327,42 +331,20 @@ def tal2mni(r):
     inpoints[:, tmp] = linalg.solve(np.dot(rotmat, down), inpoints[:, tmp])
     inpoints[:, ~tmp] = linalg.solve(np.dot(rotmat, up), inpoints[:, ~tmp])
 
-    return _round_it(inpoints[0:3, :].T, 2)
+    return np.round(inpoints[0:3, :].T, decimals=2)
 
 
-def _uniquerows(x):
-    """
-    Finds unique rows
-
-    Parameters
-    ----------
-    x : ndarray
-        Coordinates
-
-
-    Returns
-    ----------
-    results : ndarray
-        unique rows
-
-    """
-    y = np.ascontiguousarray(x).view(np.dtype((np.void, x.dtype.itemsize * x.shape[1])))
-    _, idx = np.unique(y, return_index=True)
-
-    return x[idx]
-
-
-def _expand_corrmat_fit(C, weights):
+def _blur_corrmat(Z, weights):
     """
     Gets full correlation matrix
 
     Parameters
     ----------
-    C : Numpy array
-        Subject's correlation matrix
+    Z : Numpy array
+        Subject's Fisher z-transformed correlation matrix
 
     weights : Numpy array
-        Weights matrix calculated using _rbf function matrix
+        Weights matrix calculated using _log_rbf function matrix
 
     mode : str
         Specifies whether to compute over all elecs (fit mode) or just new elecs
@@ -375,104 +357,91 @@ def _expand_corrmat_fit(C, weights):
     denominator : Numpy array
         Denominator for the expanded correlation matrix
     """
+    import seaborn as sns
+    import matplotlib.pyplot as plt
 
-    C[np.eye(C.shape[0]) == 1] = 0
-    C[np.where(np.isnan(C))] = 0
+    triu_inds = np.triu_indices(Z.shape[0], k=1)
+
+    #need to do computations seperately for positive and negative values
+    sign_Z_full = np.sign(Z)
+    logZ_pos_full = np.log(np.multiply(sign_Z_full > 0, Z))
+    logZ_neg_full = np.log(np.multiply(sign_Z_full < 0, np.abs(Z)))
+
+    sign_Z = sign_Z_full[triu_inds]
+    logZ_pos = np.log(np.multiply(sign_Z > 0, Z[triu_inds]))
+    logZ_neg = np.log(np.multiply(sign_Z < 0, np.abs(Z[triu_inds])))
 
     n = weights.shape[0]
-    K = np.zeros([n, n])
+    K_pos = np.zeros([n, n])
+    K_neg = np.zeros([n, n])
     W = np.zeros([n, n])
-    Z = C
 
-    s = 0
-
-    vals = list(range(s, n))
-    for x in vals:
+    for x in range(n-1):
         xweights = weights[x, :]
-
-        vals = list(range(x))
-        for y in vals:
+        x_match = np.isclose(xweights, 0)
+        for y in range(x+1, n): #fill in upper triangle only
             yweights = weights[y, :]
+            y_match = np.isclose(yweights, 0)
 
-            next_weights = np.outer(xweights, yweights)
-            next_weights = next_weights - np.triu(next_weights)
+            if np.any(x_match) and np.any(y_match): #the pair of locations we're filling in already exists in the given data
+                x_ind = np.where(x_match)[0]
+                y_ind = np.where(y_match)[0]
+                Z_match_val = np.mean(Z[x_ind, y_ind])
+                W[x, y] = 0.
+                if Z_match_val > 0:
+                    K_pos[x, y] = np.log(Z_match_val)
+                    K_neg[x, y] = -np.inf
+                else:
+                    K_pos[x, y] = -np.inf
+                    K_neg[x, y] = np.log(np.abs(Z_match_val))
+                continue
 
-            W[x, y] = np.sum(next_weights)
-            K[x, y] = np.sum(Z * next_weights)
-    return (K + K.T), (W + W.T)
+            next_weights = np.add.outer(xweights, yweights)
+            next_weights = next_weights[triu_inds]
 
+            W[x, y] = logsumexp(next_weights)
+            K_pos[x, y] = logsumexp(logZ_pos + next_weights)
+            K_neg[x, y] = logsumexp(logZ_neg + next_weights)
 
-def _expand_corrmat_predict(C, weights):
+    #turn K_neg into complex numbers.  Where K_neg is infinite, this results in nans for the real number parts, so we'll
+    #set any nans in K_neg.real to 0
+    #TODO: the next lines are redundant with code in _to_log_complex; consolidate
+    K_neg = np.multiply(0+1j, K_neg)
+    K_neg.real[np.isnan(K_neg)] = 0
+    K = K_pos + K_neg
+
+    return K + K.T, W + W.T
+
+def _to_log_complex(X):
     """
-    Gets full correlation matrix
+    Compute the log of the given numpy array.  Store all positive members of the original array in the real component of
+    the result and all negative members of the original array in the complex component of the result.
 
     Parameters
     ----------
-    C : Numpy array
-        Subject's correlation matrix
-
-    weights : Numpy array
-        Weights matrix calculated using _rbf function matrix
-
-    mode : str
-        Specifies whether to compute over all elecs (fit mode) or just new elecs
-        (predict mode)
+    X : numpy array to take the log of
 
     Returns
     ----------
-    numerator : Numpy array
-        Numerator for the expanded correlation matrix
-    denominator : Numpy array
-        Denominator for the expanded correlation matrix
-
+    log_X_complex : The log of X, stored as complex numbers to keep track of the positive and negative parts
     """
+    signX = np.sign(X)
+    posX = np.multiply(signX > 0, X)
+    negX = np.multiply(signX < 0, X)
 
-    C[np.eye(C.shape[0]) == 1] = 0
-    C[np.where(np.isnan(C))] = 0
+    negX = np.multiply(0+1j, negX)
+    negX.real[np.isnan(negX)] = 0
 
-    n = weights.shape[0]
-    K = np.zeros([n, n])
-    W = np.zeros([n, n])
-    Z = C
-
-    s = C.shape[0]
-    sliced_up = [(x, y) for x in range(s, n) for y in range(x)]
-
-    results = Parallel(n_jobs=multiprocessing.cpu_count())(
-        delayed(_compute_coord)(coord, weights, Z) for coord in sliced_up)
-
-    W[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[0] for x in results]
-    K[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[1] for x in results]
-
-    return (K + K.T), (W + W.T)
+    return posX + negX
 
 
 def _compute_coord(coord, weights, Z):
-    next_weights = np.outer(weights[coord[0], :], weights[coord[1], :])
-    next_weights = next_weights - np.triu(next_weights)
-    return np.sum(next_weights), np.sum(Z * next_weights)
+    next_weights = np.sum.outer(weights[coord[0], :], weights[coord[1], :])
 
+    next_weights = next_weights[np.triu_indices(next_weights)]
+    Z = Z[np.triu_indices(Z)]
 
-def _chunk_bo(bo, chunk):
-    """
-    Chunk brain object by session for reconstruction. Returns chunked indices
-
-        Parameters
-    ----------
-    bo : brain object
-        Brain object used to reconstruct and data to chunk
-
-    chunk : list
-        Chunked indices
-
-
-    Returns
-    ----------
-    nbo : brain object
-        Chunked brain object with chunked zscored data in the data field
-
-    """
-    return bo.get_slice(sample_inds=[i for i in chunk if i is not None])
+    return logsumexp(next_weights), logsumexp(Z + next_weights)
 
 
 def _timeseries_recon(bo, K, chunk_size=1000, preprocess='zscore'):
@@ -578,26 +547,6 @@ def _reconstruct_activity(Y, Kba, Kaa_inv):
 
     """
     return np.atleast_2d(np.squeeze(np.dot(np.dot(Kba, Kaa_inv), Y.T).T))
-
-def _round_it(locs, places): #TODO: do we need a separate function for this?  doesn't seem much more convenient than the np.round function...
-    """
-    Rounding function
-
-    Parameters
-    ----------
-    locs : array or float
-        Number be rounded
-
-    places : int
-        Number of places to round
-
-    Returns
-    ----------
-    result : array or float
-        Rounded number
-
-    """
-    return np.round(locs, decimals=places)
 
 
 def filter_elecs(bo, measure='kurtosis', threshold=10):
@@ -737,25 +686,10 @@ def model_compile(data):
 
     """
     from .load import load
-    from .model import Model
 
     m = load(data[0])
-    numerator = m.numerator
-    denominator = m.denominator
-    n_subs = 1
-
-    for mo in data[1:]:
-        m = load(mo)
-        # numerator = np.nansum(np.dstack((numerator, m.numerator)), 2)
-        numerator += m.numerator
-        denominator += m.denominator
-        n_subs += 1
-
-    return Model(numerator=numerator, denominator=denominator,
-                 locs=m.locs, n_subs=n_subs)
-    ### this concatenation of locations doesn't work when updating an existing model (but would be necessary for a build)
-    # return Model(numerator=numerator, denominator=denominator,
-    #              locs=pd.concat([m.locs, bo.locs]), n_subs=n_subs)
+    m.update(data[1:])
+    return m
 
 
 def _near_neighbor(bo, mo, match_threshold='auto'): #TODO: should this be part of bo.get_locs() or Brain.__init__, or possibly model.__init__?
@@ -849,30 +783,36 @@ def _vox_size(locs):
             v_size[0][i] = bo_n.minimum_voxel_size
     return v_size
 
-
-def sort_unique_locs(locs):
+def _unique(X):
     """
-    Sorts unique locations
+    Wrapper for np.unique and pd.unique that also returns matching indices
 
     Parameters
     ----------
-    locs : pandas DataFrame or ndarray
-        Electrode locations
+    X : numpy array or pandas dataframe with eletrode locations
 
     Returns
     ----------
-    results : ndarray
-        Array of unique locations
+    unique_X : the sorted unique rows of X
 
+    unique_inds : the indices of X such that X[unique_inds, :] == X (or X.iloc[unique_inds] == X)
     """
-    if isinstance(locs, pd.DataFrame):
-        unique_full_locs = np.vstack(set(map(tuple, locs.as_matrix())))
-    elif isinstance(locs, np.ndarray):
-        unique_full_locs = np.vstack(set(map(tuple, locs)))
-    else:
-        print('unknown location type')
+    dataframe = type(X) is pd.DataFrame
+    if dataframe:
+        columns = X.columns
+        X = X.as_matrix()
 
-    return unique_full_locs[unique_full_locs[:, 0].argsort(),]
+    assert type(X) is np.ndarray, 'must pass in a numpy ndarray or dataframe'
+    uX, inds = np.unique(X, axis=0, return_index=True)
+
+    if dataframe:
+        uX = pd.DataFrame(data=uX, columns=columns, index=np.arange(len(inds)))
+
+
+    return uX, inds
+
+
+
 
 
 def _count_overlapping(X, Y):

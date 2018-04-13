@@ -10,7 +10,7 @@ import pandas as pd
 import nibabel as nib
 import deepdish as dd
 import matplotlib.pyplot as plt
-from scipy.stats import zscore
+
 from .helpers import _kurt_vals, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, \
     _plot_locs_hyp, _std, _gray, _nifti_to_brain, _brain_to_nifti, _z_score
 
@@ -136,9 +136,7 @@ class Brain(object):
 
             if isinstance(data, Model):
                 locs = data.locs
-                with np.errstate(invalid='ignore'):
-                    data = np.divide(data.numerator, data.denominator)
-                np.fill_diagonal(data, 1)
+                data = data.get_model(z_transform=False)
 
             if isinstance(data, pd.DataFrame):
                 self.data = data
@@ -334,6 +332,7 @@ class Brain(object):
 
         data = self.get_data().iloc[sample_inds, loc_inds]
         sessions = self.sessions.iloc[sample_inds]
+        kurtosis = self.kurtosis[loc_inds]
         if self.sample_rate:
             sample_rate = [self.sample_rate[int(s-1)] for s in
                            sessions.unique()]
@@ -354,7 +353,7 @@ class Brain(object):
         else:
             return Brain(data=data, locs=locs, sessions=sessions,
                          sample_rate=sample_rate, meta=meta,
-                         date_created=date_created, kurtosis=self.kurtosis,
+                         date_created=date_created, kurtosis=kurtosis,
                          filter=None) #TODO: make sure we preserve all other parameters/properties
 
     def resample(self, resample_rate=None):

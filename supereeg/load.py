@@ -10,7 +10,7 @@ from .nifti import Nifti
 from .helpers import _resample_nii
 
 BASE_URL = 'https://docs.google.com/uc?export=download'
-homedir = os.path.expanduser('~/') #FIXME: use os.path.join rather than using slashes
+homedir = os.path.expanduser('~')
 datadir = os.path.join(homedir, 'supereeg_data')
 
 datadict = { #TODO: do the data types need to be specified or could they be inferred from the downloaded objects?

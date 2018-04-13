@@ -9,11 +9,12 @@ import numpy as np
 import seaborn as sns
 import deepdish as dd
 import matplotlib.pyplot as plt
-from .helpers import _get_corrmat, _r2z, _z2r, _rbf, _expand_corrmat_fit, _expand_corrmat_predict, _plot_borderless,\
-    _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp, _gray, _nifti_to_brain
+from .helpers import _get_corrmat, _r2z, _z2r, _log_rbf, _blur_corrmat, _plot_borderless,\
+    _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp, _gray, _nifti_to_brain,\
+    _unique, _to_log_complex
 from .brain import Brain
+from .nifti import Nifti
 from scipy.spatial.distance import cdist
-
 
 class Model(object):
     """
@@ -41,13 +42,13 @@ class Model(object):
         Path to a template nifti file used to set model locations
 
     numerator : Numpy.ndarray
-        (Optional) A locations x locations matrix comprising the sum of the zscored
+        (Optional) A locations x locations matrix comprising the sum of the log z-transformed
         correlation matrices over subjects.  If used, must also pass denominator,
         locs and n_subs. Otherwise, numerator will be computed from the brain
         object data.
 
     denominator : Numpy.ndarray
-        (Optional) A locations x locations matrix comprising the sum of the number of
+        (Optional) A locations x locations matrix comprising the sum of the log (weighted) number of
         subjects contributing to each matrix cell. If used, must also pass numerator,
         locs and n_subs. Otherwise, denominator will be computed from the brain
         object data.
@@ -55,6 +56,10 @@ class Model(object):
     n_subs : int
         The number of subjects used to create the model.  Required if you pass
         numerator/denominator.  Otherwise computed automatically from the data.
+
+    rbf_width : positive scalar
+        The width of of the radial basis function (RBF) used as a spatial prior for
+        smoothing estimates at nearby locations.  (Default: 20)
 
     meta : dict
         Optional dict containing whatever you want
@@ -66,11 +71,11 @@ class Model(object):
     Attributes
     ----------
     numerator : Numpy.ndarray
-        A locations x locations matrix comprising the sum of the zscored
+        A locations x locations matrix comprising the sum of the log z-transformed
         correlation matrices over subjects
 
     denominator : Numpy.ndarray
-        A locations x locations matrix comprising the sum of the number of
+        A locations x locations matrix comprising the log sum of the (weighted) number of
         subjects contributing to each matrix cell
 
     n_subs : int
@@ -83,45 +88,112 @@ class Model(object):
         A model that can be used to infer timeseries from unknown locations
 
     """
-    #TODO: __init__ should support data as a brain object, model object, nifti object, or string; if model object, just return data without copying it
     def __init__(self, data=None, locs=None, template=None,
                  numerator=None, denominator=None,
-                 n_subs=None, meta=None, date_created=None):
+                 n_subs=None, meta=None, date_created=None, rbf_width=20):
+        from .load import load
 
-        if all(v is not None for v in [numerator, denominator, locs, n_subs]):
-            _handle_superuser(self, numerator, denominator, locs, n_subs)
-        else:
-            _create_locs(self, locs, template)
-
-            s = self.locs.shape[0]
-            self.numerator = np.zeros((s, s))
-            self.denominator = np.zeros((s, s))
-            self.n_subs = 0
-
-            if type(data) is not list:
-                data = [data]
-
-            for d in data:
-                d = _format_data(d, self.locs)
-                if isinstance(d, Brain):
-                    num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d, self.locs)
-                elif isinstance(d, Model):
-                    num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, self.locs)
-                self.numerator += num_corrmat_x
-                self.denominator += denom_corrmat_x
-                self.n_subs += n_subs
-
-        if not date_created:
-            self.date_created = time.strftime("%c")
-        else:
-            self.date_created = date_created
-        self.n_locs = self.locs.shape[0]
+        self.locs = locs
+        self.numerator = None
+        self.denominator = None
+        self.n_subs = 0
         self.meta = meta
+        self.date_created = date_created
+        self.rbf_width = float(rbf_width)
 
-    def get_model(self):
-        """ Returns a copy the model in the form of a correlation matrix"""
-        with np.errstate(invalid='ignore'):
-            return _z2r(np.divide(self.numerator, self.denominator))
+        if n_subs is None:
+            n_subs = 1
+
+        #expanded_to_locs = False
+        if data is not None:
+            if type(data) == list:
+                if len(data) == 0:
+                    data = None
+                else:
+                    self.__init__(data=data[0], locs=self.locs, template=template, meta=self.meta, rbf_width=self.rbf_width, n_subs=1)
+                    for i in range(1, len(data)):
+                        self.update(Model(data=data[i], locs=self.locs, template=template, meta=self.meta, rbf_width=self.rbf_width, n_subs=1))
+
+            if isinstance(data, six.string_types):
+                data = load(data)
+
+            if isinstance(data, Nifti):
+                data = Brain(data)
+
+            if isinstance(data, Model):
+                self.date_created = data.date_created
+                self.denominator = data.denominator
+                self.locs = data.locs
+                self.meta = data.meta
+                self.n_subs = data.n_subs
+                self.numerator = data.numerator
+                self.rbf_width = data.rbf_width
+                #self = copy.deepcopy(data)
+                n_subs = self.n_subs
+            elif isinstance(data, Brain):
+                corrmat = _get_corrmat(data)
+                self.__init__(data=corrmat, locs=data.get_locs(), n_subs=1)
+            elif isinstance(data, np.ndarray):
+                self.numerator = _to_log_complex(_r2z(data))
+                self.denominator = np.zeros_like(self.numerator, dtype=np.float32)
+
+        if (numerator is not None) and (denominator is not None):
+            assert numerator.shape[0] == numerator.shape[1], 'numerator must be a square matrix'
+            assert denominator.shape[0] == denominator.shape[1], 'denominator must be a square matrix'
+            assert numerator.shape[0] == denominator.shape[0], 'numerator and denominator must be the same shape'
+            assert self.locs is not None, 'must specify model locations'
+            assert self.locs.shape[0] == numerator.shape[0], 'number of locations must match the size of the numerator and denominator matrices'
+
+            if (self.numerator is None) or (self.denominator is None):
+                self.numerator = numerator
+                self.denominator = denominator
+            else: #numerator and denominator may have already been inferred data; effectively the user has now passed in *two* sets of data
+                self._set_numerator(np.logaddexp(self.numerator.real, numerator.real),
+                                    np.logaddexp(self.numerator.imag, numerator.imag))
+                self.denominator = np.logaddexp(self.denominator, denominator)
+
+            self.n_subs += n_subs
+
+
+        if template is not None: #blur correlation matrix out to template locations
+            if locs is not None:
+                warnings.warn('Argument ''locs'' will be ignored in favor of the provided Nifti template')
+            if isinstance(template, six.string_types):
+                template = load(template)
+            assert type(template) == Nifti, 'template must be a Nifti object or a path to a Nifti object'
+            bo = Brain(template)
+            rbf_weights = _log_rbf(bo.get_locs(), self.locs, width=self.rbf_width)
+            self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
+            self.locs = bo.get_locs()
+        elif locs is not None: #blur correlation matrix out to locs
+            if not ((locs.shape[0] == self.locs.shape[0]) and np.allclose(locs, self.locs)):
+                rbf_weights = _log_rbf(locs, self.locs, width=self.rbf_width)
+                self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
+                self.locs = locs
+
+        #sort locations and force them to be unique
+        self.locs, loc_inds = _unique(self.locs)
+        self.numerator = self.numerator[loc_inds,][loc_inds]
+        self.denominator = self.denominator[loc_inds,][loc_inds]
+        self.n_locs = self.locs.shape[0]
+
+        if not type(self.locs) == pd.DataFrame:
+            self.locs = pd.DataFrame(data=self.locs, columns=['x', 'y', 'z'])
+
+        if not self.date_created:
+            self.date_created = time.strftime("%c")
+
+        self.n_locs = self.locs.shape[0]
+        self.n_subs = n_subs
+
+    def get_model(self, z_transform=False):
+        """ Returns a copy of the model in the form of a correlation matrix"""
+        if (self.numerator is None) or (self.denominator is None):
+            m = np.eye(self.n_locs)
+        else:
+            m = _recover_model(self.numerator, self.denominator, z_transform=z_transform)
+            m[np.isnan(m)] = 0
+        return m
 
     def predict(self, bo, nearest_neighbor=True, match_threshold='auto',
                 force_update=False, kthreshold=10, preprocess='zscore'):
@@ -167,7 +239,7 @@ class Model(object):
         if preprocess not in ('zscore', None,):
             raise ValueError('Please set preprocess to either zscore or None.')
 
-        bo = bo.get_filtered_bo() #TODO: IMPLEMENT THIS in Brain.py -- should return a copy of the brain object with only the electrodes that pass the filtering, and with filter=None
+        bo = bo.get_filtered_bo()
 
         # if match_threshold auto, ignore all electrodes whose distance from the
         # nearest matching voxel is greater than the maximum voxel dimension
@@ -181,8 +253,7 @@ class Model(object):
         if force_update:
             model_corrmat_x = _force_update(self, bo)
         else:
-            with np.errstate(invalid='ignore'):
-                model_corrmat_x = np.divide(self.numerator, self.denominator)
+            model_corrmat_x = _recover_model(self.numerator, self.denominator, z_transform=True)
 
         bool_mask = _count_overlapping(self, bo)
         case = _which_case(bo, bool_mask)
@@ -200,9 +271,9 @@ class Model(object):
             # indices of the mask (where there is overlap
             joint_model_inds = np.where(bool_mask)[0]
             if case is 'no_overlap':
-                model_corrmat_x, loc_label, perm_locs = _no_overlap(self, bo, model_corrmat_x)
+                model_corrmat_x, loc_label, perm_locs = _no_overlap(self, bo, model_corrmat_x, width=self.rbf_width)
             elif case is 'some_overlap':
-                model_corrmat_x, loc_label, perm_locs = _some_overlap(self, bo, model_corrmat_x, joint_model_inds)
+                model_corrmat_x, loc_label, perm_locs = _some_overlap(self, bo, model_corrmat_x, joint_model_inds, width=self.rbf_width)
             elif case is 'subset':
                 model_corrmat_x, loc_label, perm_locs = _subset(self, bo, model_corrmat_x, joint_model_inds)
 
@@ -213,15 +284,14 @@ class Model(object):
             return Brain(data=activations, locs=perm_locs, sessions=bo.sessions,
                         sample_rate=bo.sample_rate, kurtosis=None, label=loc_label)
 
-    def update(self, data, inplace=True,
-               locs=None, n=1):
+    def update(self, data, inplace=True):
         """
         Update a model with new data.
 
         Parameters
         ----------
-        data : supereeg.Brain, supereeg.Model (or list of either)
-            New subject data
+        data : supereeg.Brain, supereeg.Nifti, supereeg.Model (or a mixed list of these)
+            New data
 
         inplace : bool
             Whether to run update in place or return a new model (default True).
@@ -232,28 +302,56 @@ class Model(object):
             A new updated model object
 
         """
-
-        if type(data) is not list:
-            data = [data]
-
         if inplace:
             m = self
         else:
-            m = copy.deepcopy(self)
-        for d in data:
-            d = _format_data(d, m.locs, locs, n)
-            if isinstance(d, Brain):
-                num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d.get_filtered_bo(), m.locs)
-            elif isinstance(d, Model):
-                num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, m.locs)
-                if type(d.meta) == dict:
-                    m.update(d.meta)
-            m.numerator += num_corrmat_x
-            m.denominator += denom_corrmat_x
-            m.n_subs += n_subs
+            m = Model(self)
+
+        if type(data) == list:
+            for d in data:
+                m.update(d)
+        elif (type(data) == Nifti) or (type(data) == Brain):
+            m.update(Model(data))
+        elif type(data) == Model:
+            # determine whether we need to expand out the locations
+            if not ((self.locs.shape[0] == data.locs.shape[0]) and np.allclose(self.locs, data.locs)): #different locations. note: locations are always sorted and unique
+                combined_locs, inds = _unique(np.vstack((m.locs.as_matrix(), data.locs.as_matrix())))
+                combined_locs = pd.DataFrame(combined_locs, columns=self.locs.columns)
+
+                data_rbf_weights = _log_rbf(combined_locs, data.locs, width=data.rbf_width)
+                data.numerator, data.denominator = _blur_corrmat(data.get_model(z_transform=True), data_rbf_weights)
+
+                m_rbf_weights = _log_rbf(combined_locs, m.locs, width=m.rbf_width)
+                n, d = _blur_corrmat(m.get_model(z_transform=True), m_rbf_weights)
+
+                m._set_numerator(np.logaddexp(n.real, data.numerator.real),
+                                 np.logaddexp(n.imag, data.numerator.imag))
+                m.denominator = np.logaddexp(d, data.denominator)
+                m.locs = combined_locs
+                m.n_locs = m.locs.shape[0]
+            else: #same locations
+                m._set_numerator(np.logaddexp(m.numerator.real, data.numerator.real),
+                                 np.logaddexp(m.numerator.imag, data.numerator.imag))
+                m.denominator = np.logaddexp(m.denominator, data.denominator)
+            m.n_subs += data.n_subs
+
+        #combine meta info
+        if (m.meta is not None) or (data.meta is not None):
+            if m.meta is None:
+                m.meta = data.meta
+            elif (type(m.meta) == dict) and (type(data.meta) == dict):
+                m.meta.update(data.meta)
 
         if not inplace:
             return m
+    def _set_numerator(self, n_real, n_imag):
+        """
+        Internal function for setting the numerator (deals with size mismatches)
+        """
+        self.numerator = np.zeros_like(n_real, dtype=np.complex128)
+        self.numerator.real = n_real
+        self.numerator.imag = n_imag
+
 
     def info(self):
         """
@@ -264,6 +362,7 @@ class Model(object):
         """
         print('Number of locations: ' + str(self.n_locs))
         print('Number of subjects: ' + str(self.n_subs))
+        print('RBF width: ' + str(self.rbf_width))
         print('Date created: ' + str(self.date_created))
         print('Meta data: ' + str(self.meta))
 
@@ -272,7 +371,8 @@ class Model(object):
         Plot the supereeg model as a correlation matrix
 
         This function wraps seaborn's heatmap and accepts any inputs that seaborn
-        supports for models less that 2000x2000.  If the model is larger,
+        supports for models less than 2000x2000.  If the model is larger, the plot cannot be
+        generated without specifying a savefile.
 
         Parameters
         ----------
@@ -286,15 +386,15 @@ class Model(object):
 
         """
 
-        with np.errstate(invalid='ignore'):
-            corr_mat = _z2r(np.divide(self.numerator, self.denominator))
-        np.fill_diagonal(corr_mat, 1)
+        corr_mat = self.get_model(z_transform=False)
 
         if np.shape(corr_mat)[0] < 2000:
             ax = sns.heatmap(corr_mat, cbar_kws = {'label': 'correlation'}, **kwargs)
-
         else:
-            ax = _plot_borderless(corr_mat, savefile=savefile, vmin=-1, vmax=1, cmap='Spectral')
+            if savefile == None:
+                raise NotImplementedError('Cannot plot large models when savefile is None')
+            else:
+                ax = _plot_borderless(corr_mat, savefile=savefile, vmin=-1, vmax=1, cmap='Spectral')
         if show:
             plt.show()
 
@@ -344,7 +444,8 @@ class Model(object):
             'locs' : self.locs,
             'n_subs' : self.n_subs,
             'meta' : self.meta,
-            'date_created' : self.date_created
+            'date_created' : self.date_created,
+            'rbf_width' : self.rbf_width
         }
 
         if fname[-3:]!='.mo':
@@ -382,7 +483,7 @@ class Model(object):
             self.date_created = date_created
         else:
             return Model(numerator=numerator, denominator=denominator, locs=locs,
-                         n_subs=n_subs, meta=meta, date_created=date_created)
+                         n_subs=n_subs, meta=meta, date_created=date_created, rbf_width=self.rbf_width)
 
     def __add__(self, other):
         """
@@ -397,28 +498,44 @@ class Model(object):
 
         return self.update(other, inplace=False)
 
-    def __sub__(self, other):
-        """
-        Subtract one model object from another. The models must have matching
-        locations.  Meta properties are combined across objects, or if properties
-        conflict then the values from the first object are preferred.
-
-        Parameters
-        ----------
-        other: Model object to be subtracted from the current object
-        """
-
-        other.numerator = -other.numerator
-        other.denominator = -other.denominator
-        result = self.__add__(other)
-
-        #account for n_subs being updated during add operation
-        if type(other) == Model:
-            result.n_subs -= 2*other.n_subs
-        else:
-            result.n_subs -= 2
-
-        return result
+    # #subtraction is not working; removing functionality until fixed
+    # def __sub__(self, other):
+    #     """
+    #     Subtract one model object from another. The models must have matching
+    #     locations.  Meta properties are combined across objects, or if properties
+    #     conflict then the values from the first object are preferred.
+    #
+    #     Parameters
+    #     ----------
+    #     other: Model object to be subtracted from the current object
+    #     """
+    #
+    #     if type(other) == Brain:
+    #         d = Model(other, locs=other.get_locs())
+    #     elif type(other) == Nifti:
+    #         d = Model(other)
+    #     elif type(other) == Model:
+    #         d = Model(other, locs=other.locs) #make a copy
+    #     else:
+    #         raise Exception('Unsupported data type for subtraction from Model object: ' + str(type(other)))
+    #
+    #     def logdiffexp(a, b):
+    #         return np.add(a, np.log(np.subtract(1, np.exp(np.subtract(b, a)))))
+    #
+    #     assert np.allclose(self.locs, other.locs), 'subtraction is only supported for models with matching locations'
+    #
+    #     m = copy.deepcopy(self)
+    #     m.numerator.real = logdiffexp(self.numerator.real, other.numerator.real)
+    #     m.numerator.imag = logdiffexp(self.numerator.imag, other.numerator.imag)
+    #     m.denominator = logdiffexp(self.denominator, other.denominator)
+    #     m.n_subs -= other.n_subs
+    #
+    #     if m.meta is None:
+    #         m.meta = other.meta
+    #     elif (type(m.meta) == dict) and (type(other.meta) == dict):
+    #         m.meta.update(other.meta)
+    #
+    #     return m
 
 
 ###################################
@@ -450,57 +567,31 @@ def _create_locs(self, locs, template):
     if self.locs.shape[0]>1000:
         warnings.warn('Model locations exceed 1000, this may take a while. Go get a cup of coffee or brew some tea!')
 
-def _bo2model(bo, locs):
+def _bo2model(bo, locs, width=20):
     """Returns numerator and denominator given a brain object"""
     sub_corrmat = _get_corrmat(bo)
     np.fill_diagonal(sub_corrmat, 0)
     sub_corrmat_z = _r2z(sub_corrmat)
-    sub_rbf_weights = _rbf(locs, bo.get_locs())
-    n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
+    sub_rbf_weights = _log_rbf(locs, bo.get_locs(), width=width)
+    n, d = _blur_corrmat(sub_corrmat_z, sub_rbf_weights)
     return n, d, 1
 
-def _mo2model(mo, locs):
+def _mo2model(mo, locs, width=20):
     """Returns numerator and denominator for model object"""
+
     if not isinstance(locs, pd.DataFrame):
         locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
     if locs.equals(mo.locs):
         return mo.numerator.copy(), mo.denominator.copy(), mo.n_subs
     else:
         # if the locations are not equivalent, map input model into locs space
-        with np.errstate(invalid='ignore'):
-            sub_corrmat_z = np.divide(mo.numerator, mo.denominator)
+        sub_corrmat_z = _recover_model(mo.numerator, mo.denominator, z_transform=True)
         np.fill_diagonal(sub_corrmat_z, 0)
-        sub_rbf_weights = _rbf(locs, mo.locs)
-        n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
+        sub_rbf_weights = _log_rbf(locs, mo.locs, width=width)
+        n, d = _blur_corrmat(sub_corrmat_z, sub_rbf_weights)
         return n, d, mo.n_subs
 
-def _format_data(d, model_locs, new_locs=None, n_subs=1):
-    """Formats data to generate model object"""
-    from .load import load
-    from .brain import Brain
-    from .nifti import Nifti
-    if isinstance(d, six.string_types):
-        d = load(d)
-    if isinstance(d, np.ndarray):
-        if new_locs is None:
-            new_locs = model_locs
-            if d.shape[0]!=new_locs.shape[0]:
-                raise ValueError("Array must have same dimensions as model or"
-                                 " you must passed custom locations")
-        np.fill_diagonal(d, 0)
-        return Model(numerator=_r2z(d), denominator=np.ones_like(d)*n_subs,
-                     n_subs=n_subs, locs=new_locs)
-    elif isinstance(d, Brain):
-        return d
-    elif isinstance(d, Nifti):
-        return Brain(d)
-    elif isinstance(d, Model):
-        return d
-    else:
-        raise TypeError("Did not recognize the type of one of your inputs to the model")
-
-def _force_update(mo, bo):
-
+def _force_update(mo, bo, width=20):
     # get subject-specific correlation matrix
     sub_corrmat = _get_corrmat(bo)
 
@@ -511,14 +602,17 @@ def _force_update(mo, bo):
     sub_corrmat_z = _r2z(sub_corrmat)
 
     # get _rbf weights
-    sub__rbf_weights = _rbf(mo.locs, bo.get_locs())
+    sub__rbf_weights = _log_rbf(mo.locs, bo.get_locs(), width=width)
 
     #  get subject expanded correlation matrix
-    num_corrmat_x, denom_corrmat_x = _expand_corrmat_fit(sub_corrmat_z, sub__rbf_weights)
+    num_corrmat_x, denom_corrmat_x = _blur_corrmat(sub_corrmat_z, sub__rbf_weights)
 
     # add in new subj data
-    with np.errstate(invalid='ignore'):
-        model_corrmat_x = np.divide(np.add(mo.numerator, num_corrmat_x), np.add(mo.denominator, denom_corrmat_x))
+    #with np.errstate(invalid='ignore'):
+    n = mo.numerator.copy()
+    n.real = np.logaddexp(n.real, num_corrmat_x.real)
+    n.imag = np.logaddexp(n.imag, num_corrmat_x.imag)
+    model_corrmat_x = _recover_model(n, np.logaddexp(mo.denominator, denom_corrmat_x), z_transform=True)
 
     return model_corrmat_x
 
@@ -538,17 +632,18 @@ def _which_case(bo, bool_mask):
         return 'some_overlap'
 
 
-def _no_overlap(self, bo, model_corrmat_x):
+def _no_overlap(self, bo, model_corrmat_x, width=20):
     """ Compute model when there is no overlap """
+
     # expanded _rbf weights
-    model__rbf_weights = _rbf(pd.concat([self.locs, bo.get_locs()]), self.locs)
+    model__rbf_weights = _log_rbf(pd.concat([self.locs, bo.get_locs()]), self.locs, width=width)
 
     # get model expanded correlation matrix
-    num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(model_corrmat_x, model__rbf_weights)
+    num_corrmat_x, denom_corrmat_x = _blur_corrmat(model_corrmat_x, model__rbf_weights)
 
     # divide the numerator and denominator
-    with np.errstate(invalid='ignore'):
-        model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
+    #with np.errstate(invalid='ignore'):
+    model_corrmat_x = _recover_model(num_corrmat_x, denom_corrmat_x, z_transform=True)
 
     # label locations as reconstructed or observed
     loc_label = ['reconstructed'] * len(self.locs) + ['observed'] * len(bo.get_locs())
@@ -572,7 +667,7 @@ def _subset(self, bo, model_corrmat_x, joint_model_inds):
 
     return model_corrmat_x, loc_label, perm_locs
 
-def _some_overlap(self, bo, model_corrmat_x, joint_model_inds):
+def _some_overlap(self, bo, model_corrmat_x, joint_model_inds, width=20):
     """ Compute model when there is some overlap """
 
     # get subject indices where subject locs do not overlap with model locs
@@ -593,7 +688,8 @@ def _some_overlap(self, bo, model_corrmat_x, joint_model_inds):
     bo_perm_inds = sorted(set(range(bo.get_locs().shape[0])) - set(disjoint_bo_inds)) + sorted(set(disjoint_bo_inds))
     sub_bo = bo.get_locs().iloc[disjoint_bo_inds]
 
-    #TODO: would be safer to implement this using bo.get_locs(), bo.get_data()
+    #FIXME: won't this change the brain object that the user passes in?  seems problematic...do we need to copy it first?
+    bo = copy.deepcopy(bo) #added this line re: FIXME statement...
     bo.locs = bo.locs.iloc[bo_perm_inds]
     bo.data = bo.data[bo_perm_inds]
     bo.kurtosis = bo.kurtosis[bo_perm_inds]
@@ -602,14 +698,14 @@ def _some_overlap(self, bo, model_corrmat_x, joint_model_inds):
     perm_inds_unknown = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds))
     # expanded _rbf weights
     #model__rbf_weights = _rbf(pd.concat([model_locs_permuted, bo.locs]), model_locs_permuted)
-    model__rbf_weights = _rbf(pd.concat([model_locs_permuted, sub_bo]), model_locs_permuted)
+    model__rbf_weights = _log_rbf(pd.concat([model_locs_permuted, sub_bo]), model_locs_permuted, width=width)
 
     # get model expanded correlation matrix
-    num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(model_permuted, model__rbf_weights)
+    num_corrmat_x, denom_corrmat_x = _blur_corrmat(model_permuted, model__rbf_weights)
 
     # divide the numerator and denominator
-    with np.errstate(invalid='ignore'):
-        model_corrmat_x = np.divide(num_corrmat_x, denom_corrmat_x)
+    #with np.errstate(invalid='ignore'):
+    model_corrmat_x = _recover_model(num_corrmat_x, denom_corrmat_x, z_transform=True)
 
     # add back the permuted correlation matrix for complete subject prediction
     model_corrmat_x[:model_permuted.shape[0], :model_permuted.shape[0]] = model_permuted
@@ -621,3 +717,17 @@ def _some_overlap(self, bo, model_corrmat_x, joint_model_inds):
     perm_locs = self.locs.iloc[perm_inds_unknown].append(bo.get_locs())
 
     return model_corrmat_x, loc_label, perm_locs
+
+def _recover_model(num, denom, z_transform=False):
+    #warnings.simplefilter('ignore')
+
+    num_pos = np.real(num)
+    num_neg = np.imag(num)
+
+    m = np.exp(np.subtract(num_pos, denom)) - np.exp(np.subtract(num_neg, denom)) #numerator and denominator are in log units
+    if z_transform:
+        np.fill_diagonal(m, np.inf)
+        return m
+    else:
+        np.fill_diagonal(m, 1)
+        return _z2r(m)
