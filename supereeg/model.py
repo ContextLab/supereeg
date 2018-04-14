@@ -11,7 +11,7 @@ import deepdish as dd
 import matplotlib.pyplot as plt
 from .helpers import _get_corrmat, _r2z, _z2r, _log_rbf, _blur_corrmat, _plot_borderless,\
     _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp, _gray, _nifti_to_brain,\
-    _unique, _to_log_complex
+    _unique, _to_log_complex, _to_exp_real
 from .brain import Brain
 from .nifti import Nifti
 from scipy.spatial.distance import cdist
@@ -195,7 +195,7 @@ class Model(object):
             m[np.isnan(m)] = 0
         return m
 
-    def predict(self, bo, nearest_neighbor=True, match_threshold='auto',
+    def predict(self, bo, nearest_neighbor=False, match_threshold='auto',
                 force_update=False, kthreshold=10, preprocess='zscore'):
         """
         Takes a brain object and a 'full' covariance model, fills in all
@@ -254,6 +254,8 @@ class Model(object):
             model_corrmat_x = _force_update(self, bo)
         else:
             model_corrmat_x = _recover_model(self.numerator, self.denominator, z_transform=True)
+
+        np.fill_diagonal(model_corrmat_x, 0)
 
         bool_mask = _count_overlapping(self, bo)
         case = _which_case(bo, bool_mask)
@@ -719,12 +721,9 @@ def _some_overlap(self, bo, model_corrmat_x, joint_model_inds, width=20):
     return model_corrmat_x, loc_label, perm_locs
 
 def _recover_model(num, denom, z_transform=False):
-    #warnings.simplefilter('ignore')
+    warnings.simplefilter('ignore')
 
-    num_pos = np.real(num)
-    num_neg = np.imag(num)
-
-    m = np.exp(np.subtract(num_pos, denom)) - np.exp(np.subtract(num_neg, denom)) #numerator and denominator are in log units
+    m = np.divide(_to_exp_real(num), np.exp(denom)) #numerator and denominator are in log units
     if z_transform:
         np.fill_diagonal(m, np.inf)
         return m

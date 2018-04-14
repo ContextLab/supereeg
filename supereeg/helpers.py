@@ -1,6 +1,13 @@
 from __future__ import division
 from __future__ import print_function
 
+#TODO: there are multiple implementations of functions like _apply_by_file_index.  these should be consolidated into one
+#common function that is used and called multiple times.  In addition, aggregator and transform functions that are used
+#across apply_by_file wrappers should be shared (rather than defined multiple times).  We could also call_apply_by_file_index
+#"groupby" to conform to the pandas style.  e.g. bo.groupby(session) returns a generator whose produces are brain objects
+#each of one session.  we could then use bo.groupby(session).aggregate(xform) to produce a list of objects, where each is
+#comprised of the xform applied to the brain object containing one session worth of data from the original object.
+
 import multiprocessing
 import copy
 import os
@@ -162,10 +169,11 @@ def _apply_by_file_index(bo, xform, aggregator):
     """
 
     for idx, session in enumerate(bo.sessions.unique()):
+        session_xform = xform(bo.get_slice(sample_inds=np.where(bo.sessions == session)[0], inplace=False))
         if idx is 0:
-            results = xform(bo.get_data().as_matrix()[bo.sessions == session, :])
+            results = session_xform
         else:
-            results = aggregator(results, xform(bo.get_data().as_matrix()[bo.sessions == session, :]))
+            results = aggregator(results, session_xform)
 
     return results
 
@@ -210,12 +218,13 @@ def _get_corrmat(bo):
     def aggregate(p, n):
         return p + n
 
-    def zcorr(x):
-        return _r2z(1 - squareform(pdist(x.T, 'correlation')))
+    def zcorr_xform(bo):
+        return np.multiply(bo.n_secs, _r2z(1 - squareform(pdist(bo.data.as_matrix().T, 'correlation'))))
 
-    summed_zcorrs = _apply_by_file_index(bo, zcorr, aggregate)
+    summed_zcorrs = _apply_by_file_index(bo, zcorr_xform, aggregate)
 
-    return _z2r(summed_zcorrs / len(bo.sessions.unique()))
+    #weight each session by recording time
+    return _z2r(summed_zcorrs / np.sum(bo.n_secs))
 
 
 def _z_score(bo):
@@ -233,10 +242,13 @@ def _z_score(bo):
         The average correlation matrix across sessions
 
     """
+    def z_score_xform(bo):
+        return zscore(bo.get_data())
 
-    sessions = bo.sessions.unique()
-    results = list(map(lambda s: zscore(bo.get_data()[(s == bo.sessions).values]), sessions))
-    return np.vstack(results)
+    def vstack_aggregrate(x1, x2):
+        return np.stack((x1, x2), axis=0)
+
+    return _apply_by_file_index(bo, z_score_xform, vstack_aggregrate)
 
 
 
@@ -426,13 +438,21 @@ def _to_log_complex(X):
     log_X_complex : The log of X, stored as complex numbers to keep track of the positive and negative parts
     """
     signX = np.sign(X)
-    posX = np.multiply(signX > 0, X)
-    negX = np.multiply(signX < 0, X)
+    posX = np.log(np.multiply(signX > 0, X))
+    negX = np.log(np.abs(np.multiply(signX < 0, X)))
 
     negX = np.multiply(0+1j, negX)
     negX.real[np.isnan(negX)] = 0
 
     return posX + negX
+
+def _to_exp_real(C):
+    """
+    Inverse of _to_log_complex
+    """
+    posX = C.real
+    negX = C.imag
+    return np.exp(posX) - np.exp(negX)
 
 
 def _compute_coord(coord, weights, Z):

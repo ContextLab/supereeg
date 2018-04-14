@@ -61,11 +61,14 @@ def test_resample_nii():
     assert isinstance(nii, se.Nifti)
 
 def test__apply_by_file_index():
-    def aggregate(prev, next):
+    def vstack_aggregate(prev, next):
         return np.max(np.vstack((prev, next)), axis=0)
 
-    kurts_1 = _apply_by_file_index(data[0], kurtosis, aggregate)
-    assert isinstance(kurts_1, np.ndarray)
+    def kurtosis_xform(bo):
+        return kurtosis(bo.data)
+
+    max_kurtosis_vals = _apply_by_file_index(data[0], kurtosis_xform, vstack_aggregate)
+    assert isinstance(max_kurtosis_vals, np.ndarray)
 
 def test__kurt_vals():
     kurts_2 = _kurt_vals(data[0])
