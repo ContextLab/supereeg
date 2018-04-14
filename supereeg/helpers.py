@@ -246,7 +246,7 @@ def _z_score(bo):
         return zscore(bo.get_data())
 
     def vstack_aggregrate(x1, x2):
-        return np.stack((x1, x2), axis=0)
+        return np.vstack((x1, x2))
 
     return _apply_by_file_index(bo, z_score_xform, vstack_aggregrate)
 
@@ -268,8 +268,10 @@ def _z2r(z):
 
     """
     warnings.simplefilter('ignore')
-    return (np.exp(2 * z) - 1) / (np.exp(2 * z) + 1)
-
+    r = (np.exp(2 * z) - 1) / (np.exp(2 * z) + 1)
+    r[np.isinf(z) & (z > 0)] = 1
+    r[np.isinf(z) & (z < 0)] = -1
+    return r
 
 def _r2z(r):
     """
@@ -464,7 +466,7 @@ def _compute_coord(coord, weights, Z):
     return logsumexp(next_weights), logsumexp(Z + next_weights)
 
 
-def _timeseries_recon(bo, K, chunk_size=1000, preprocess='zscore'):
+def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore'):
     """
     Reconstruction done by chunking by session
 
@@ -473,8 +475,8 @@ def _timeseries_recon(bo, K, chunk_size=1000, preprocess='zscore'):
     bo : Brain object
         Data to be reconstructed
 
-    K : Numpy.ndarray
-        Correlation matix including observed and predicted locations
+    mo : Model object
+        Model to base the reconstructions on
 
     chunk_size : int
         Size to break data into
@@ -495,27 +497,48 @@ def _timeseries_recon(bo, K, chunk_size=1000, preprocess='zscore'):
             data = bo.get_data().as_matrix()
         else:
             data = bo.get_zscore_data()
+    else:
+        raise('Unsupported preprocessing option: ' + preprocess)
 
-    s = K.shape[0] - data.shape[1]
-    Kba = K[:s, s:]
-    Kaa = K[s:, s:]
+    brain_locs_in_model = _count_overlapping(mo.get_locs(), bo.get_locs())
+    model_locs_in_brain = _count_overlapping(bo.get_locs(), mo.get_locs())
+
+    if np.all(model_locs_in_brain):
+        #if the model contains all of the locations (or fewer) than what are in the brain object, no reconstructions
+        #are needed
+        return data[:, brain_locs_in_model]
+
+    #otherwise, we'll need to do some work
+    Z = mo.get_model(z_transform=True)
+    if ~np.any(brain_locs_in_model):
+        #if none of the brain locations are in the model, we need to blur out the model to match up with the
+        # locations in the brain object
+        combined_locs = np.vstack((bo.get_locs(), mo.get_locs()))
+        model_locs_in_brain = [False]*bo.get_locs().shape[0]
+        model_locs_in_brain.extend([True]*mo.get_locs().shape[0])
+
+        rbf_weights = _log_rbf(combined_locs, mo.get_locs())
+        Z = _blur_corrmat(Z, rbf_weights)
+
+    K = _z2r(Z)
+    Kaa = K[model_locs_in_brain, :][:, model_locs_in_brain]
     Kaa_inv = np.linalg.pinv(Kaa)
+
+    Kba = K[~model_locs_in_brain, :][:, model_locs_in_brain]
+
     sessions = bo.sessions.unique()
     chunks = [np.array(i) for session in sessions for i in _chunker(bo.sessions[bo.sessions == session].index.tolist(), chunk_size)]
     chunks = list(map(lambda x: np.array(x[x != np.array(None)], dtype=np.int8), chunks))
-    # results = np.vstack(Parallel(n_jobs=multiprocessing.cpu_count())(
-    #     delayed(_reconstruct_activity)(data[chunk, :], Kba, Kaa_inv) for chunk in chunks))
 
+    #predict unobserved brain activitity
+    combined_data = np.zeros((data.shape[0], K.shape[0]), dtype=data.dtype)
+    combined_data[:, ~model_locs_in_brain] = np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv), chunks)))
+    combined_data[:, model_locs_in_brain] = data
 
-    ## issue when stacking one dimensional reconstrutions
-    ## transposing the reconstructions allows you to predict when s==1
+    for s in sessions:
+        combined_data[bo.sessions==s, :] = zscore(combined_data[bo.sessions==s, :])
 
-    if s == 1:
-        results = np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv).T, chunks)))
-    else:
-        results = np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv), chunks)))
-    zresults = list(map(lambda s: zscore(results[bo.sessions == s, :]), sessions))
-    return np.hstack([np.vstack(zresults), data])
+    return combined_data
 
 
 def _chunker(iterable, chunksize, fillvalue=None):
@@ -837,24 +860,21 @@ def _unique(X):
 
 def _count_overlapping(X, Y):
     """
-    Finds overlapping locations (Y in X)
+    Finds overlapping rows in two matrices
 
     Parameters
     ----------
-    X : brain object or model object
-        Electrode locations
+    X : Numpy array of reference data
 
-    Y : brain object or model object
-        Electrode locations
+    Y : Numpy array of to-be-tested data
 
     Returns
     ----------
     results : ndarray
-        Array of length(X.locs) with 0s and 1s, where 1s denote overlapping locations Y in X
-
+        Array of length Y.shape[0] with 0s and 1s, where 1s denote rows in Y that are also in X
     """
 
-    return np.sum([(X.locs == y).all(1) for idy, y in Y.locs.iterrows()], 0).astype(bool)
+    return np.sum([(Y == x).all(1) for idx, x in X.iterrows()], 0).astype(bool)
 
 
 def make_gif_pngs(nifti, gif_path, index=range(100, 200), name=None, **kwargs):
