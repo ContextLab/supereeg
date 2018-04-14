@@ -589,7 +589,7 @@ def _reconstruct_activity(Y, Kba, Kaa_inv):
         Reconstructed timeseries
 
     """
-    return np.atleast_2d(np.squeeze(np.dot(np.dot(Kba, Kaa_inv), Y.T).T))
+    return np.dot(np.dot(Kba, Kaa_inv), Y.T).T
 
 
 def filter_elecs(bo, measure='kurtosis', threshold=10):
