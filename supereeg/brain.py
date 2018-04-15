@@ -114,13 +114,12 @@ class Brain(object):
                  kurtosis_threshold=10, minimum_voxel_size=3, maximum_voxel_size=20,
                  filter='kurtosis'):
 
-        from .load import load, datadict
+        from .load import load
         from .model import Model
         from .nifti import Nifti
 
         if isinstance(data, six.string_types):
-            if data in datadict.keys():
-                data = load(data)
+            data = Brain(load(data))
 
         if isinstance(data, Brain):
             self.__dict__.update(data.__dict__)

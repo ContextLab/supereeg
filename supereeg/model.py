@@ -93,7 +93,7 @@ class Model(object):
                  n_subs=None, meta=None, date_created=None, rbf_width=20):
         from .load import load
 
-        self.locs = locs
+        self.locs = None
         self.numerator = None
         self.denominator = None
         self.n_subs = 0
@@ -105,7 +105,7 @@ class Model(object):
             n_subs = 1
 
         #expanded_to_locs = False
-        if data is not None:
+        if not (data is None):
             if type(data) == list:
                 if len(data) == 0:
                     data = None
@@ -134,15 +134,19 @@ class Model(object):
                 corrmat = _get_corrmat(data)
                 self.__init__(data=corrmat, locs=data.get_locs(), n_subs=1)
             elif isinstance(data, np.ndarray):
+                assert not (locs is None), 'must specify model locations'
+                assert locs.shape[0] == data.shape[0], 'number of locations must match the size of the given correlation matrix'
+
+                self.locs = locs
                 self.numerator = _to_log_complex(_r2z(data))
                 self.denominator = np.zeros_like(self.numerator, dtype=np.float32)
 
-        if (numerator is not None) and (denominator is not None):
+        if not ((numerator is None) or (denominator is None)):
             assert numerator.shape[0] == numerator.shape[1], 'numerator must be a square matrix'
             assert denominator.shape[0] == denominator.shape[1], 'denominator must be a square matrix'
             assert numerator.shape[0] == denominator.shape[0], 'numerator and denominator must be the same shape'
-            assert self.locs is not None, 'must specify model locations'
-            assert self.locs.shape[0] == numerator.shape[0], 'number of locations must match the size of the numerator and denominator matrices'
+            assert not (locs is None), 'must specify model locations'
+            assert locs.shape[0] == numerator.shape[0], 'number of locations must match the size of the numerator and denominator matrices'
 
             if (self.numerator is None) or (self.denominator is None):
                 self.numerator = numerator
@@ -152,11 +156,11 @@ class Model(object):
                                     np.logaddexp(self.numerator.imag, numerator.imag))
                 self.denominator = np.logaddexp(self.denominator, denominator)
 
+            self.locs = locs
             self.n_subs += n_subs
 
-
-        if template is not None: #blur correlation matrix out to template locations
-            if locs is not None:
+        if not (template is None): #blur correlation matrix out to template locations
+            if not (locs is None):
                 warnings.warn('Argument ''locs'' will be ignored in favor of the provided Nifti template')
             if isinstance(template, six.string_types):
                 template = load(template)
@@ -165,16 +169,21 @@ class Model(object):
             rbf_weights = _log_rbf(bo.get_locs(), self.locs, width=self.rbf_width)
             self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
             self.locs = bo.get_locs()
-        elif locs is not None: #blur correlation matrix out to locs
-            if not ((locs.shape[0] == self.locs.shape[0]) and np.allclose(locs, self.locs)):
-                rbf_weights = _log_rbf(locs, self.locs, width=self.rbf_width)
-                self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
-                self.locs = locs
+        elif not (locs is None): #blur correlation matrix out to locs
+            if (isinstance(data, Brain) or isinstance(data, Model)): #self.locs may now conflict with locs
+                if not ((locs.shape[0] == self.locs.shape[0]) and np.allclose(locs, self.locs)):
+                    rbf_weights = _log_rbf(locs, self.locs, width=self.rbf_width)
+                    self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
+                    self.locs = locs
+        elif self.locs is None:
+            self.locs = locs
+
+        assert not (self.locs is None), 'Must specify model locations directly via locs argument, or indirectly via a Model or Brain object (or both)'
 
         #sort locations and force them to be unique
         self.locs, loc_inds = _unique(self.locs)
-        self.numerator = self.numerator[loc_inds,][loc_inds]
-        self.denominator = self.denominator[loc_inds,][loc_inds]
+        self.numerator = self.numerator[loc_inds, :][:, loc_inds]
+        self.denominator = self.denominator[loc_inds, :][:, loc_inds]
         self.n_locs = self.locs.shape[0]
 
         if not type(self.locs) == pd.DataFrame:
@@ -341,7 +350,7 @@ class Model(object):
             m.n_subs += data.n_subs
 
         #combine meta info
-        if (m.meta is not None) or (data.meta is not None):
+        if not ((m.meta is None) and (data.meta is None)):
             if m.meta is None:
                 m.meta = data.meta
             elif (type(m.meta) == dict) and (type(data.meta) == dict):

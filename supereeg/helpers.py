@@ -8,7 +8,7 @@ from __future__ import print_function
 #each of one session.  we could then use bo.groupby(session).aggregate(xform) to produce a list of objects, where each is
 #comprised of the xform applied to the brain object containing one session worth of data from the original object.
 
-import multiprocessing
+#import multiprocessing
 import copy
 import os
 import warnings
@@ -31,7 +31,7 @@ from scipy.spatial.distance import squareform
 from scipy.special import logsumexp
 from scipy import linalg
 from scipy.ndimage.interpolation import zoom
-from joblib import Parallel, delayed
+#from joblib import Parallel, delayed
 
 
 def _std(res=None):
@@ -219,7 +219,7 @@ def _get_corrmat(bo):
         return p + n
 
     def zcorr_xform(bo):
-        return np.multiply(bo.n_secs, _r2z(1 - squareform(pdist(bo.data.as_matrix().T, 'correlation'))))
+        return np.multiply(bo.n_secs, _r2z(1 - squareform(pdist(bo.get_data().T, 'correlation'))))
 
     summed_zcorrs = _apply_by_file_index(bo, zcorr_xform, aggregate)
 
@@ -371,15 +371,15 @@ def _blur_corrmat(Z, weights):
     denominator : Numpy array
         Denominator for the expanded correlation matrix
     """
-    import seaborn as sns
-    import matplotlib.pyplot as plt
+    #import seaborn as sns
+    #import matplotlib.pyplot as plt
 
     triu_inds = np.triu_indices(Z.shape[0], k=1)
 
     #need to do computations seperately for positive and negative values
     sign_Z_full = np.sign(Z)
-    logZ_pos_full = np.log(np.multiply(sign_Z_full > 0, Z))
-    logZ_neg_full = np.log(np.multiply(sign_Z_full < 0, np.abs(Z)))
+    #logZ_pos_full = np.log(np.multiply(sign_Z_full > 0, Z))
+    #logZ_neg_full = np.log(np.multiply(sign_Z_full < 0, np.abs(Z)))
 
     sign_Z = sign_Z_full[triu_inds]
     logZ_pos = np.log(np.multiply(sign_Z > 0, Z[triu_inds]))
