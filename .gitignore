@@ -101,3 +101,4 @@ ENV/
 tests/debug_helpers.py
 tests/model_algebra.py
 /tests/model_algebra.py
+/tests/model_tests.py
