@@ -331,7 +331,7 @@ class Brain(object):
 
         data = self.get_data().iloc[sample_inds, loc_inds]
         sessions = self.sessions.iloc[sample_inds]
-        kurtosis = self.kurtosis[loc_inds]
+        kurtosis = self.kurtosis[self.get_locs().index[loc_inds]]
         if self.sample_rate:
             sample_rate = [self.sample_rate[int(s-1)] for s in
                            sessions.unique()]
@@ -339,21 +339,14 @@ class Brain(object):
             sample_rate = self.sample_rate
         meta = copy.copy(self.meta)
         locs = self.get_locs().iloc[loc_inds]
-        date_created = self.date_created
+        date_created = time.strftime("%c")
 
+        b = Brain(data=data, locs=locs, sessions=sessions, sample_rate=sample_rate, meta=meta, date_created=date_created,
+                  filter=copy.copy(self.filter), kurtosis=kurtosis)
         if inplace:
-            self.data = data
-            self.locs = locs
-            self.sessions = sessions
-            self.sample_rate = sample_rate
-            self.meta = meta
-            self.date_created = date_created
-            self.filter=None
+            self = b
         else:
-            return Brain(data=data, locs=locs, sessions=sessions,
-                         sample_rate=sample_rate, meta=meta,
-                         date_created=date_created, kurtosis=kurtosis,
-                         filter=None) #TODO: make sure we preserve all other parameters/properties
+            return b
 
     def resample(self, resample_rate=None):
         """
