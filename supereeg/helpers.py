@@ -832,7 +832,7 @@ def _unique(X):
 
     Parameters
     ----------
-    X : numpy array or pandas dataframe with eletrode locations
+    X : numpy array or pandas dataframe with electrode locations
 
     Returns
     ----------
@@ -840,6 +840,9 @@ def _unique(X):
 
     unique_inds : the indices of X such that X[unique_inds, :] == X (or X.iloc[unique_inds] == X)
     """
+    if X is None:
+        return None, []
+
     dataframe = type(X) is pd.DataFrame
     if dataframe:
         columns = X.columns
@@ -853,6 +856,65 @@ def _unique(X):
 
 
     return uX, inds
+
+def _union(X, Y): #TODO: add test for _union
+    """
+    Wrapper for np.vstack and pd.vstack that returns unique locations
+
+    Parameters
+    ----------
+    X : numpy array or pandas dataframe with electrode locations
+
+    Y : numpy array or pandas dataframe with electrode locations
+
+    Returns
+    ----------
+    XY: the unique values of X and Y stacked together in the same format.  If either X or Y is a dataframe, then XY
+        is a dataframe with the same columsn.  Otherwise XY is a numpy array.
+    """
+
+    if X is None:
+        return Y
+    elif Y is None:
+        return X
+
+    dataframeX = type(X) is pd.DataFrame
+    if dataframeX:
+        columnsX = X.columns
+        X = X.as_matrix()
+
+    dataframeY = type(Y) is pd.DataFrame
+    if dataframeY:
+        columnsY = Y.columns
+        Y = Y.as_matrix()
+
+    if dataframeX and dataframeY:
+        assert columnsX == columnsY, 'Input dataframes have mismatched columns'
+
+    assert X.shape[1] == Y.shape[1], 'Input data must have the same number of columns'
+
+    XY = np.vstack((X, Y))
+    XY_unique, tmp = _unique(XY)
+
+    if dataframeX or dataframeY:
+        if dataframeX:
+            columns = columnsX
+        else:
+            columns = columnsY
+        return pd.DataFrame(data=XY_unique, columns=columns, index=np.arange(XY.shape[0]))
+    else:
+        return XY
+
+
+def _empty(X): #TODO: ad test for _empty
+    """
+    Return true if X is None or if any element of X.shape is 0
+    """
+
+    if X is None:
+        return True
+    else return np.any(np.isclose(X.shape, 0))
+
 
 
 

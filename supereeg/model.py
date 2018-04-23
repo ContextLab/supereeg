@@ -11,7 +11,7 @@ import deepdish as dd
 import matplotlib.pyplot as plt
 from .helpers import _get_corrmat, _r2z, _z2r, _log_rbf, _blur_corrmat, _plot_borderless,\
     _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp, _gray, _nifti_to_brain,\
-    _unique, _to_log_complex, _to_exp_real
+    _unique, _union, _empty, _to_log_complex, _to_exp_real
 from .brain import Brain
 from .nifti import Nifti
 from scipy.spatial.distance import cdist
@@ -67,6 +67,9 @@ class Model(object):
     date created : str
         Time created
 
+    save : None
+        Optional filename to save created model
+
 
     Attributes
     ----------
@@ -90,7 +93,7 @@ class Model(object):
     """
     def __init__(self, data=None, locs=None, template=None,
                  numerator=None, denominator=None,
-                 n_subs=None, meta=None, date_created=None, rbf_width=20):
+                 n_subs=None, meta=None, date_created=None, rbf_width=20, save=None):
         from .load import load
 
         self.locs = None
@@ -110,9 +113,23 @@ class Model(object):
                 if len(data) == 0:
                     data = None
                 else:
-                    self.__init__(data=data[0], locs=self.locs, template=template, meta=self.meta, rbf_width=self.rbf_width, n_subs=1)
+                    if not (locs is None):
+                        if type(locs) == pd.DataFrame:
+                            locs = locs.as_matrix()
+                        assert type(locs) == np.array, 'Locations must be either a DataFrame or a numpy array'
+                        assert locs.shape[1] == 3, 'Only 3d locations are supported'
+                    all_locs = locs
                     for i in range(1, len(data)):
-                        self.update(Model(data=data[i], locs=self.locs, template=template, meta=self.meta, rbf_width=self.rbf_width, n_subs=1))
+                        if type(data) in (Model, Brain, Nifti):
+                            if all_locs is None:
+                                all_locs = data[i].get_locs().as_matrix()
+                            else:
+                                all_locs = np.vstack((all_locs, data[i].get_locs().as_matrix()))
+                    locs, loc_inds = _unique(all_locs)
+
+                    self.__init__(data=data[0], locs=locs, template=template, meta=self.meta, rbf_width=self.rbf_width, n_subs=1)
+                    for i in range(1, len(data)):
+                        self.update(Model(data=data[i], locs=locs, template=template, meta=self.meta, rbf_width=self.rbf_width, n_subs=1))
 
             if isinstance(data, six.string_types):
                 data = load(data)
@@ -195,6 +212,12 @@ class Model(object):
         self.n_locs = self.locs.shape[0]
         self.n_subs = n_subs
 
+        if not (save is None):
+            if type(save) == str:
+                self.save(save)
+            else:
+                warnings.warn('bad filename, cannot save to disk: ' + str(save))
+
     def get_model(self, z_transform=False):
         """ Returns a copy of the model in the form of a correlation matrix"""
         if (self.numerator is None) or (self.denominator is None):
@@ -209,8 +232,54 @@ class Model(object):
         """
         return self.locs
 
+    def set_locs(self, new_locs, include_original_locs=False):
+        """
+        update self.locs to a new set of locations (and blur the correlation matrix accordingly).  if
+        include_original_locs is True (default: False), the final set of locations will also include the old locations.
+        """
+        if include_original_locs:
+            new_locs = _union(self.locs, new_locs)
+        else:
+            new_locs, tmp = _unique(new_locs)
+
+        if _empty(self.locs):
+            self.locs = new_locs
+            if not _empty(new_locs):
+                self.numerator = np.log(self.zeros([new_locs.shape[0], new_locs.shape[0]], dtype=np.complex128))
+                self.denominator = np.zeros_like(self.numerator, dtype=np.float64)
+                self.locs = new_locs
+                self.n_locs = new_locs.shape[0]
+            return
+        elif _empty(new_locs):
+            if not include_original_locs:
+                self.locs = pd.DataFrame(columns=('x', 'y', 'z'))
+                self.n_locs = 0
+                self.numerator = np.array([], dtype=np.complex128)
+                self.denominator = np.array([], dtype=np.float64)
+            return
+
+        new_locs_in_self = _count_overlapping(self.get_locs(), new_locs)
+
+        if np.all(new_locs_in_self):
+            self.locs = self.locs.iloc[new_locs_in_self, :]
+            self.n_locs = self.locs.shape[0]
+            self.numerator = self.numerator[new_locs_in_self, :][:, new_locs_in_self]
+            self.denominator = self.denominator[new_locs_in_self, :][:, new_locs_in_self]
+            return
+        else:
+            rbf_weights = _log_rbf(new_locs, self.get_locs())
+            self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
+            self.locs = new_locs
+
+        self.locs, loc_inds = _unique(self.locs)
+        self.numerator = self.numerator[loc_inds, :][:, loc_inds]
+        self.denominator = self.denominator[loc_inds, :][:, loc_inds]
+        self.n_locs = self.locs.shape[0]
+
+
+
     def predict(self, bo, nearest_neighbor=False, match_threshold='auto',
-                force_update=False, preprocess='zscore'):
+                force_update=False, update_locs=True, preprocess='zscore'):
         """
         Takes a brain object and a 'full' covariance model, fills in all
         electrode timeseries for all missing locations and returns the new brain
@@ -218,8 +287,7 @@ class Model(object):
 
         Parameters
         ----------
-        bo : supereeg.Brain or a list of brain objects
-            The brain data object that you want to predict
+        bo : a Brain, Nifti, or Model object that will be converted to a Brain object.
 
         nearest_neighbor : True
             Default finds the nearest voxel for each subject's electrode
@@ -237,6 +305,11 @@ class Model(object):
         force_update : False
             If True, will update model with patient's correlation matrix.
 
+        update_locs : True
+            If True, and if force_update = False, update the locations in the model to include the locations in the
+            given brain object prior to generating the predictions.  If force_update = True, this parameter is
+            forced to be True (force_update requires updating the locations) and the specified value is ignored.
+
         preprocess : 'zscore' or None
             The predict algorithm requires the data to be zscored.  However, if
             your data are already zscored you can bypass this by setting to None.
@@ -247,6 +320,10 @@ class Model(object):
             New brain data object with missing electrode locations filled in
 
         """
+
+        if not (type(bo) == Brain):
+            bo = Brain(bo)
+
         bo = bo.get_filtered_bo()
 
         # if match_threshold auto, ignore all electrodes whose distance from the
@@ -255,7 +332,7 @@ class Model(object):
             bo = _near_neighbor(bo, self, match_threshold=match_threshold)
 
         if self.locs.shape[0] > 1000:
-            warnings.warn('Model locations exceed 1000, this may take a while. Good time for a cup of coffee.')
+            warnings.warn('Model locations exceed 1000, this may take a while. Go grab a cup of coffee.')
 
         # if True will update the model with subject's correlation matrix
         if force_update:
@@ -263,7 +340,8 @@ class Model(object):
         else:
             mo = self
 
-        #np.fill_diagonal(model_corrmat_x, 0)
+        #blur out model to include brain object locations
+        mo.set_locs(bo.get_locs(), include_original_locs=True)
 
         activations = _timeseries_recon(bo, mo, preprocess=preprocess)
         return Brain(data=activations, locs=mo.locs, sessions=bo.sessions, sample_rate=bo.sample_rate)
@@ -317,47 +395,34 @@ class Model(object):
 
         """
         if inplace:
-            m = self
+            m1 = self
         else:
-            m = Model(self)
+            m1 = Model(self)
 
-        if type(data) == list:
-            for d in data:
-                m.update(d)
-        elif (type(data) == Nifti) or (type(data) == Brain):
-            m.update(Model(data))
-        elif type(data) == Model:
-            # determine whether we need to expand out the locations
-            if not ((self.locs.shape[0] == data.locs.shape[0]) and np.allclose(self.locs, data.locs)): #different locations. note: locations are always sorted and unique
-                combined_locs, inds = _unique(np.vstack((m.locs.as_matrix(), data.locs.as_matrix())))
-                combined_locs = pd.DataFrame(combined_locs, columns=self.locs.columns)
+        m2 = Model(data)
+        locs = _union(m1.get_locs(), m2.get_locs())
 
-                data_rbf_weights = _log_rbf(combined_locs, data.locs, width=data.rbf_width)
-                data.numerator, data.denominator = _blur_corrmat(data.get_model(z_transform=True), data_rbf_weights)
+        m1.set_locs(locs)
+        m2.set_locs(locs)
 
-                m_rbf_weights = _log_rbf(combined_locs, m.locs, width=m.rbf_width)
-                n, d = _blur_corrmat(m.get_model(z_transform=True), m_rbf_weights)
-
-                m._set_numerator(np.logaddexp(n.real, data.numerator.real),
-                                 np.logaddexp(n.imag, data.numerator.imag))
-                m.denominator = np.logaddexp(d, data.denominator)
-                m.locs = combined_locs
-                m.n_locs = m.locs.shape[0]
-            else: #same locations
-                m._set_numerator(np.logaddexp(m.numerator.real, data.numerator.real),
-                                 np.logaddexp(m.numerator.imag, data.numerator.imag))
-                m.denominator = np.logaddexp(m.denominator, data.denominator)
-            m.n_subs += data.n_subs
+        m1._set_numerator(np.logaddexp(m1.numerator.real, m2.numerator.real),
+                          np.logaddexp(m1.numerator.imag, m2.numerator.imag))
+        m1.denominator = np.logaddexp(m1.denominator, m2.denominator)
+        m1.locs = locs
+        m1.n_locs = locs.shape[0]
+        m1.n_subs += m2.n_subs
 
         #combine meta info
-        if not ((m.meta is None) and (data.meta is None)):
-            if m.meta is None:
-                m.meta = data.meta
-            elif (type(m.meta) == dict) and (type(data.meta) == dict):
-                m.meta.update(data.meta)
+        if not ((m1.meta is None) and (m2.meta is None)):
+            if m1.meta is None:
+                m1.meta = m2.meta
+            elif (type(m1.meta) == dict) and (type(m2.meta) == dict):
+                m1.meta.update(m2.meta)
 
         if not inplace:
             return m
+
+
     def _set_numerator(self, n_real, n_imag):
         """
         Internal function for setting the numerator (deals with size mismatches)
