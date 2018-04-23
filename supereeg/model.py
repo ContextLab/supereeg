@@ -420,7 +420,7 @@ class Model(object):
                 m1.meta.update(m2.meta)
 
         if not inplace:
-            return m
+            return m1
 
 
     def _set_numerator(self, n_real, n_imag):

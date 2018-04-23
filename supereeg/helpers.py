@@ -889,7 +889,7 @@ def _union(X, Y): #TODO: add test for _union
         Y = Y.as_matrix()
 
     if dataframeX and dataframeY:
-        assert columnsX == columnsY, 'Input dataframes have mismatched columns'
+        assert np.all(columnsX == columnsY), 'Input dataframes have mismatched columns'
 
     assert X.shape[1] == Y.shape[1], 'Input data must have the same number of columns'
 
@@ -901,7 +901,7 @@ def _union(X, Y): #TODO: add test for _union
             columns = columnsX
         else:
             columns = columnsY
-        return pd.DataFrame(data=XY_unique, columns=columns, index=np.arange(XY.shape[0]))
+        return pd.DataFrame(data=XY_unique, columns=columns, index=np.arange(XY_unique.shape[0]))
     else:
         return XY
 
