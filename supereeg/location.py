@@ -1,15 +1,10 @@
 from __future__ import division
 from __future__ import print_function
 import time
-import os
-import warnings
-import copy
 import six
 import numpy as np
 import pandas as pd
-import nibabel as nib
 import deepdish as dd
-import matplotlib.pyplot as plt
 
 from .helpers import _unique, _union, _count_overlapping, tal2mni, _plot_locs_connectome
 
