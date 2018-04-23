@@ -9,7 +9,7 @@ import deepdish as dd
 from .brain import Brain
 from .nifti import Nifti
 from .model import Model
-from .helpers import _unique, _union, _count_overlapping, tal2mni, _plot_locs_connectome
+from .helpers import _unique, _union, _count_overlapping, tal2mni, _plot_locs_connectome, _plot_locs_hyp
 
 class Location(object):
     """
@@ -163,7 +163,7 @@ class Location(object):
         """
 
         if self.locs.shape[0] <= 10000:
-            _plot_locs_connectome(locs, label=None, pdfpath)
+            _plot_locs_connectome(self.locs, label=None, pdfpath=pdfpath)
         else:
             _plot_locs_hyp(self.locs, pdfpath)
 
