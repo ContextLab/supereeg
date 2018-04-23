@@ -913,7 +913,8 @@ def _empty(X): #TODO: ad test for _empty
 
     if X is None:
         return True
-    else return np.any(np.isclose(X.shape, 0))
+    else:
+        return np.any(np.isclose(X.shape, 0))
 
 
 
