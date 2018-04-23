@@ -6,6 +6,9 @@ import numpy as np
 import pandas as pd
 import deepdish as dd
 
+from .brain import Brain
+from .nifti import Nifti
+from .model import Model
 from .helpers import _unique, _union, _count_overlapping, tal2mni, _plot_locs_connectome
 
 class Location(object):
@@ -60,7 +63,7 @@ class Location(object):
         elif isinstance(data, six.string_types):
             self = Location(load(data))
             return
-        elif isinstance(data, Brain) or isinstance(data, Model) or isinstance(data, Nifti):
+        elif (isinstance(data, Brain) or isinstance(data, Model) or isinstance(data, Nifti)):
             self = data.get_locs()
             return
         elif isinstance(data, np.array):
