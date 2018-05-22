@@ -86,10 +86,10 @@ class Model(object):
     #TODO: __init__ should support data as a brain object, model object, nifti object, or string; if model object, just return data without copying it
     def __init__(self, data=None, locs=None, template=None,
                  numerator=None, denominator=None,
-                 n_subs=None, meta=None, date_created=None):
+                 n_subs=None, meta=None, date_created=None, radius=20):
 
         if all(v is not None for v in [numerator, denominator, locs, n_subs]):
-            _handle_superuser(self, numerator, denominator, locs, n_subs)
+            _handle_superuser(self, numerator, denominator, locs, n_subs, radius)
         else:
             _create_locs(self, locs, template)
 
@@ -97,16 +97,17 @@ class Model(object):
             self.numerator = np.zeros((s, s))
             self.denominator = np.zeros((s, s))
             self.n_subs = 0
+            self.radius = radius
 
             if type(data) is not list:
                 data = [data]
 
             for d in data:
-                d = _format_data(d, self.locs)
+                d = _format_data(d, self.locs, self.radius)
                 if isinstance(d, Brain):
-                    num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d, self.locs)
+                    num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d, self.locs, self.radius)
                 elif isinstance(d, Model):
-                    num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, self.locs)
+                    num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, self.locs, self.radius)
                 self.numerator += num_corrmat_x
                 self.denominator += denom_corrmat_x
                 self.n_subs += n_subs
@@ -179,7 +180,7 @@ class Model(object):
 
         # if True will update the model with subject's correlation matrix
         if force_update:
-            model_corrmat_x = _force_update(self, bo)
+            model_corrmat_x = _force_update(self, bo, self.radius)
         else:
             with np.errstate(invalid='ignore'):
                 model_corrmat_x = np.divide(self.numerator, self.denominator)
@@ -241,11 +242,11 @@ class Model(object):
         else:
             m = copy.deepcopy(self)
         for d in data:
-            d = _format_data(d, m.locs, locs, n)
+            d = _format_data(d, m.locs, locs, n, m.radius)
             if isinstance(d, Brain):
-                num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d.get_filtered_bo(), m.locs)
+                num_corrmat_x, denom_corrmat_x, n_subs = _bo2model(d.get_filtered_bo(), m.locs, m.radius)
             elif isinstance(d, Model):
-                num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, m.locs)
+                num_corrmat_x, denom_corrmat_x, n_subs = _mo2model(d, m.locs, m.radius)
                 if type(d.meta) == dict:
                     m.update(d.meta)
             m.numerator += num_corrmat_x
@@ -266,6 +267,7 @@ class Model(object):
         print('Number of subjects: ' + str(self.n_subs))
         print('Date created: ' + str(self.date_created))
         print('Meta data: ' + str(self.meta))
+        print('Radius: ' + str(self.radius))
 
     def plot_data(self, savefile=None, show=True, **kwargs):
         """
@@ -372,6 +374,7 @@ class Model(object):
         n_subs = self.n_subs
         meta = self.meta
         date_created = time.strftime("%c")
+        radius = self.radius
 
         if inplace:
             self.numerator = numerator
@@ -380,9 +383,10 @@ class Model(object):
             self.n_subs = n_subs
             self.meta = meta
             self.date_created = date_created
+            self.radius = radius
         else:
             return Model(numerator=numerator, denominator=denominator, locs=locs,
-                         n_subs=n_subs, meta=meta, date_created=date_created)
+                         n_subs=n_subs, meta=meta, date_created=date_created, radius=radius)
 
     def __add__(self, other):
         """
@@ -425,7 +429,7 @@ class Model(object):
 # helper functions for init
 ###################################
 
-def _handle_superuser(self, numerator, denominator, locs, n_subs):
+def _handle_superuser(self, numerator, denominator, locs, n_subs, radius):
     """Shortcuts model building if these args are passed"""
     self.numerator = numerator
     self.denominator = denominator
@@ -437,6 +441,7 @@ def _handle_superuser(self, numerator, denominator, locs, n_subs):
         self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
     self.n_subs = n_subs
+    self.radius = radius
 
 def _create_locs(self, locs, template):
     """get locations from template, or from locs arg"""
@@ -450,16 +455,16 @@ def _create_locs(self, locs, template):
     if self.locs.shape[0]>1000:
         warnings.warn('Model locations exceed 1000, this may take a while. Go get a cup of coffee or brew some tea!')
 
-def _bo2model(bo, locs):
+def _bo2model(bo, locs, radius):
     """Returns numerator and denominator given a brain object"""
     sub_corrmat = _get_corrmat(bo)
     np.fill_diagonal(sub_corrmat, 0)
     sub_corrmat_z = _r2z(sub_corrmat)
-    sub_rbf_weights = _rbf(locs, bo.get_locs())
+    sub_rbf_weights = _rbf(locs, bo.get_locs(), radius)
     n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
     return n, d, 1
 
-def _mo2model(mo, locs):
+def _mo2model(mo, locs, radius):
     """Returns numerator and denominator for model object"""
     if not isinstance(locs, pd.DataFrame):
         locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
@@ -470,11 +475,11 @@ def _mo2model(mo, locs):
         with np.errstate(invalid='ignore'):
             sub_corrmat_z = np.divide(mo.numerator, mo.denominator)
         np.fill_diagonal(sub_corrmat_z, 0)
-        sub_rbf_weights = _rbf(locs, mo.locs)
+        sub_rbf_weights = _rbf(locs, mo.locs, radius)
         n, d = _expand_corrmat_fit(sub_corrmat_z, sub_rbf_weights)
         return n, d, mo.n_subs
 
-def _format_data(d, model_locs, new_locs=None, n_subs=1):
+def _format_data(d, model_locs, new_locs=None, n_subs=1, radius=20):
     """Formats data to generate model object"""
     from .load import load
     from .brain import Brain
@@ -489,7 +494,7 @@ def _format_data(d, model_locs, new_locs=None, n_subs=1):
                                  " you must passed custom locations")
         np.fill_diagonal(d, 0)
         return Model(numerator=_r2z(d), denominator=np.ones_like(d)*n_subs,
-                     n_subs=n_subs, locs=new_locs)
+                     n_subs=n_subs, locs=new_locs, radius=radius)
     elif isinstance(d, Brain):
         return d
     elif isinstance(d, Nifti):
@@ -499,7 +504,7 @@ def _format_data(d, model_locs, new_locs=None, n_subs=1):
     else:
         raise TypeError("Did not recognize the type of one of your inputs to the model")
 
-def _force_update(mo, bo):
+def _force_update(mo, bo, radius):
 
     # get subject-specific correlation matrix
     sub_corrmat = _get_corrmat(bo)
@@ -511,7 +516,7 @@ def _force_update(mo, bo):
     sub_corrmat_z = _r2z(sub_corrmat)
 
     # get _rbf weights
-    sub__rbf_weights = _rbf(mo.locs, bo.get_locs())
+    sub__rbf_weights = _rbf(mo.locs, bo.get_locs(), radius)
 
     #  get subject expanded correlation matrix
     num_corrmat_x, denom_corrmat_x = _expand_corrmat_fit(sub_corrmat_z, sub__rbf_weights)
@@ -541,7 +546,7 @@ def _which_case(bo, bool_mask):
 def _no_overlap(self, bo, model_corrmat_x):
     """ Compute model when there is no overlap """
     # expanded _rbf weights
-    model__rbf_weights = _rbf(pd.concat([self.locs, bo.get_locs()]), self.locs)
+    model__rbf_weights = _rbf(pd.concat([self.locs, bo.get_locs()]), self.locs, self.radius)
 
     # get model expanded correlation matrix
     num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(model_corrmat_x, model__rbf_weights)
@@ -602,7 +607,7 @@ def _some_overlap(self, bo, model_corrmat_x, joint_model_inds):
     perm_inds_unknown = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds))
     # expanded _rbf weights
     #model__rbf_weights = _rbf(pd.concat([model_locs_permuted, bo.locs]), model_locs_permuted)
-    model__rbf_weights = _rbf(pd.concat([model_locs_permuted, sub_bo]), model_locs_permuted)
+    model__rbf_weights = _rbf(pd.concat([model_locs_permuted, sub_bo]), model_locs_permuted, self.radius)
 
     # get model expanded correlation matrix
     num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(model_permuted, model__rbf_weights)

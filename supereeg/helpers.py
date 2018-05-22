@@ -474,27 +474,21 @@ def _chunk_bo(bo, chunk):
     """
     return bo.get_slice(sample_inds=[i for i in chunk if i is not None])
 
-
 def _timeseries_recon(bo, K, chunk_size=1000, preprocess='zscore'):
     """
     Reconstruction done by chunking by session
-
         Parameters
     ----------
     bo : Brain object
         Data to be reconstructed
-
     K : Numpy.ndarray
         Correlation matix including observed and predicted locations
-
     chunk_size : int
         Size to break data into
-
     Returns
     ----------
     results : ndarray
         Compiled reconstructed timeseries
-
     """
     if preprocess==None:
         data = bo.get_data().as_matrix()
@@ -528,6 +522,65 @@ def _timeseries_recon(bo, K, chunk_size=1000, preprocess='zscore'):
     zresults = list(map(lambda s: zscore(results[bo.sessions == s, :]), sessions))
     return np.hstack([np.vstack(zresults), data])
 
+
+# def _timeseries_recon(bo, K, chunk_size=1000, preprocess='zscore'):
+#     """
+#     Reconstruction done by chunking by session
+#
+#         Parameters
+#     ----------
+#     bo : Brain object
+#         Data to be reconstructed
+#
+#     K : Numpy.ndarray
+#         Correlation matix including observed and predicted locations
+#
+#     chunk_size : int
+#         Size to break data into
+#
+#     Returns
+#     ----------
+#     results : ndarray
+#         Compiled reconstructed timeseries
+#
+#     """
+#     if preprocess==None:
+#         data = bo.get_data().as_matrix()
+#     elif preprocess=='zscore':
+#         if bo.data.shape[0]<3:
+#             warnings.warn('Not enough samples to zscore so it will be skipped.'
+#             ' Note that this will cause problems if your data are not already '
+#             'zscored.')
+#             data = bo.get_data().as_matrix()
+#         else:
+#             data = bo.get_data().as_matrix()
+#         #     data = bo.get_zscore_data()
+#         #
+#
+#     s = K.shape[0] - data.shape[1]
+#     Kba = K[:s, s:]
+#     Kaa = K[s:, s:]
+#     Kaa_inv = np.linalg.pinv(Kaa)
+#     sessions = bo.sessions.unique()
+#     chunks = [np.array(filter_chunk(i)) for session in sessions for i in _chunker(bo.sessions[bo.sessions == session].index.tolist(), chunk_size)]
+#     # results = np.vstack(Parallel(n_jobs=multiprocessing.cpu_count())(
+#     #     delayed(_reconstruct_activity)(data[chunk, :], Kba, Kaa_inv) for chunk in chunks))
+#
+#
+#     ## issue when stacking one dimensional reconstrutions
+#     ## transposing the reconstructions allows you to predict when s==1
+#
+#     if s == 1:
+#         results = np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv).T, chunks)))
+#     else:
+#         results = np.vstack(list(map(lambda x: _reconstruct_activity(zscore(data[x, :]), Kba, Kaa_inv), chunks)))
+#     zresults = list(map(lambda s: zscore(results[bo.sessions == s, :]), sessions)) # zscoring each chunk wrong
+#
+#     return np.hstack([np.vstack(zresults), data])
+#
+# def filter_chunk(L):
+#
+#     return [x for x in L if x is not None]
 
 def _chunker(iterable, chunksize, fillvalue=None):
     """
