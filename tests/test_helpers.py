@@ -46,21 +46,6 @@ test_model = se.Model(data=data, locs=locs, radius=20)
 bo_nii = se.Brain(_gray(20))
 nii = _brain_to_nifti(bo_nii, _gray(20))
 
-elec_ind = 1
-other_inds = [i for i in range(sub_locs.shape[0]) if i != elec_ind]
-bo_t = bo.get_slice(loc_inds=other_inds, inplace=False)
-bo_r = test_model.predict(bo_t, nearest_neighbor=False)
-bo_l = bo.get_slice(loc_inds=elec_ind, inplace=False)
-mo_inds = _count_overlapping(test_model, bo_l)
-bo_inds = _count_overlapping(bo_r, bo_l)
-bo_p = bo_r.get_slice(loc_inds=bo_inds, inplace=False)
-mo_carve_inds = _count_overlapping(test_model, bo)
-carved_mat = test_model.get_slice(inds=mo_carve_inds)
-bo_c = carved_mat.predict(bo_t, nearest_neighbor=False)
-bo_carve_inds = _count_overlapping(bo_c, bo_l)
-bo_p_2 = bo_c.get_slice(loc_inds=bo_carve_inds, inplace=False)
-
-
 
 def test_std():
     nii = _std(20)
@@ -232,8 +217,6 @@ def test_recon_carved():
     bo_c = carved_mat.predict(bo_t, nearest_neighbor=False)
     bo_carve_inds = _count_overlapping(bo_c, bo_l)
     bo_p_2 = bo_c.get_slice(loc_inds=bo_carve_inds, inplace=False)
-    print(bo_p.get_data())
-    print(bo_p_2.get_data())
     assert np.allclose(bo_p.get_data(), bo_p_2.get_data())
 
 

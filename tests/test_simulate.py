@@ -50,49 +50,6 @@ recon_3 = np.matrix([[ 0.119278,  0.162790,  -0.290248,  0.162790, -0.293615],
 
 
 
-random_seed = np.random.seed(123)
-noise = 0
-
-# load mini model
-gray = se.Brain(se.load('gray', vox_size=20))
-
-# extract 20 locations
-gray_locs = gray.locs.iloc[:5]
-
-# create model from 10 locations
-mo_locs = gray_locs.sample(4, random_state=random_seed).sort_values(['x', 'y', 'z'])
-
-# create covariance matrix from random seed
-c = se.create_cov(cov='random', n_elecs=5)
-
-# pull out model from covariance matrix
-data = c[:, mo_locs.index][mo_locs.index, :]
-
-# create model from subsetted covariance matrix and locations
-model = se.Model(numerator=np.array(data), denominator=np.ones(np.shape(data)), locs=mo_locs,
-                 n_subs=1)
-
-# create brain object from the remaining locations - first find remaining locations
-sub_locs = gray_locs[~gray_locs.index.isin(mo_locs.index)]
-
-sub_locs = sub_locs.append(gray_locs.sample(1, random_state=random_seed).sort_values(['x', 'y', 'z']))
-
-# create a brain object with all gray locations
-bo = se.simulate_bo(n_samples=5, sample_rate=1000, locs=gray_locs, noise=noise, random_seed=random_seed)
-
-# parse brain object to create synthetic patient data
-data = bo.data.iloc[:, sub_locs.index]
-
-# put data and locations together in new sample brain object
-bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
-
-# predict activity at all unknown locations
-recon = model.predict(bo_sample, nearest_neighbor=False)
-
-# actual = bo.data.iloc[:, unknown_ind]
-actual = bo.data.iloc[:, recon.locs.index]
-
-corr_vals = _corr_column(actual.as_matrix(), recon.data.as_matrix())
 
 def test_simulate_locations():
     locs = se.simulate_locations(10)
