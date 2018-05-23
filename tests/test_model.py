@@ -52,9 +52,11 @@ def test_create_model_superuser():
 def test_model_predict():
     model = se.Model(data=data[0:2], locs=locs)
     bo = model.predict(data[0], nearest_neighbor=False)
+    print(data[0].n_secs)
     assert isinstance(bo, se.Brain)
 
 def test_model_predict_nn():
+    print(data[0].n_secs)
     model = se.Model(data=data[0:2], locs=locs)
     bo = model.predict(data[0], nearest_neighbor=True)
     assert isinstance(bo, se.Brain)
@@ -111,7 +113,7 @@ def test_model_update_with_model_and_bo():
 def test_model_update_with_array():
     mo = se.Model(data=data[1:3], locs=locs)
     d = np.random.rand(*mo.numerator.shape)
-    mo = se.Model([mo, d])
+    mo = se.Model([mo, d], locs=mo.get_locs())
     assert isinstance(mo, se.Model)
 
 #This syntax is ambiguous and no longer supported

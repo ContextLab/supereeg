@@ -321,30 +321,30 @@ class Model(object):
 
         """
 
-        if not (type(bo) == Brain):
-            bo = Brain(bo)
+        if not isinstance(bo, Brain):
+            bor = Brain(bo)
 
-        bo = bo.get_filtered_bo()
+        bor = bo.get_filtered_bo()
 
         # if match_threshold auto, ignore all electrodes whose distance from the
         # nearest matching voxel is greater than the maximum voxel dimension
         if nearest_neighbor:
-            bo = _near_neighbor(bo, self, match_threshold=match_threshold)
+            bor = _near_neighbor(bor, self, match_threshold=match_threshold)
 
         if self.locs.shape[0] > 1000:
             warnings.warn('Model locations exceed 1000, this may take a while. Go grab a cup of coffee.')
 
         # if True will update the model with subject's correlation matrix
         if force_update:
-            mo = self.update(bo, inplace=False)
+            mo = self.update(bor, inplace=False)
         else:
             mo = self
 
         #blur out model to include brain object locations
-        mo.set_locs(bo.get_locs(), include_original_locs=True)
+        mo.set_locs(bor.get_locs(), include_original_locs=True)
 
-        activations = _timeseries_recon(bo, mo, preprocess=preprocess)
-        return Brain(data=activations, locs=mo.locs, sessions=bo.sessions, sample_rate=bo.sample_rate)
+        activations = _timeseries_recon(bor, mo, preprocess=preprocess)
+        return Brain(data=activations, locs=mo.locs, sessions=bor.sessions, sample_rate=bor.sample_rate)
 
         # bool_mask = _count_overlapping(self, bo)
         #

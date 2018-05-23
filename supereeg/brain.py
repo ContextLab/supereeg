@@ -272,16 +272,16 @@ class Brain(object):
 
     def get_filtered_bo(self):
         """ Return a filtered copy """
-        x = self.__dict__
+        x = copy.copy(self.__dict__)
         x['data'] = self.get_data()
         x['locs'] = self.get_locs()
         x['kurtosis'] = x['kurtosis'][x['kurtosis'] <= x['kurtosis_threshold']]
         for key in ['n_subs', 'n_elecs', 'n_sessions', 'filter_inds', 'n_secs']:
             if key in x.keys():
                 x.pop(key)
-        bo = Brain(**x)
-        bo.update_info()
-        return bo
+        boc = Brain(**x)
+        boc.update_info()
+        return boc
 
     def get_data(self):
         """
