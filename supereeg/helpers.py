@@ -268,9 +268,17 @@ def _z2r(z):
 
     """
     warnings.simplefilter('ignore')
+    if isinstance(z, list):
+        z = np.array(z)
     r = (np.exp(2 * z) - 1) / (np.exp(2 * z) + 1)
-    r[np.isinf(z) & (z > 0)] = 1
-    r[np.isinf(z) & (z < 0)] = -1
+    if isinstance(r, np.ndarray):
+        r[np.isinf(z) & (z > 0)] = 1
+        r[np.isinf(z) & (z < 0)] = -1
+    else:
+        if np.isinf(z) & (z > 0):
+            return 1
+        elif np.isinf(z) & (z < 0):
+            return -1
     return r
 
 def _r2z(r):

@@ -116,7 +116,7 @@ class Model(object):
                     if not (locs is None):
                         if type(locs) == pd.DataFrame:
                             locs = locs.as_matrix()
-                        assert type(locs) == np.array, 'Locations must be either a DataFrame or a numpy array'
+                        assert type(locs) == np.ndarray, 'Locations must be either a DataFrame or a numpy array'
                         assert locs.shape[1] == 3, 'Only 3d locations are supported'
                     all_locs = locs
                     for i in range(1, len(data)):

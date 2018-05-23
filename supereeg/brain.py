@@ -288,7 +288,7 @@ class Brain(object):
         Gets data from brain object
         """
         self.update_filter_inds()
-        return self.data.iloc[:, self.filter_inds.ravel()]
+        return self.data.iloc[:, self.filter_inds.ravel()].reset_index(drop=True)
 
     def get_zscore_data(self):
         """
@@ -302,7 +302,7 @@ class Brain(object):
         Gets locations from brain object
         """
         self.update_filter_inds()
-        return self.locs.iloc[self.filter_inds.ravel(), :]
+        return self.locs.iloc[self.filter_inds.ravel(), :].reset_index(drop=True)
 
     def get_slice(self, sample_inds=None, loc_inds=None, inplace=False):
         """
@@ -321,15 +321,15 @@ class Brain(object):
 
         """
         if sample_inds is None:
-            sample_inds = list(range(self.get_data().shape[0]))
+            sample_inds = list(self.get_data().index)
         if loc_inds is None:
-            loc_inds = list(range(self.get_locs().shape[0]))
+            loc_inds = list(self.get_locs().index)
         if isinstance(sample_inds, int):
             sample_inds = [sample_inds]
         if isinstance(loc_inds, int):
             loc_inds = [loc_inds]
 
-        data = self.get_data().iloc[sample_inds, loc_inds]
+        data = self.get_data().iloc[sample_inds, loc_inds].reset_index(drop=True)
         sessions = self.sessions.iloc[sample_inds]
         kurtosis = self.kurtosis[self.get_locs().index[loc_inds]]
         if self.sample_rate:
@@ -338,7 +338,7 @@ class Brain(object):
         else:
             sample_rate = self.sample_rate
         meta = copy.copy(self.meta)
-        locs = self.get_locs().iloc[loc_inds]
+        locs = self.get_locs().iloc[loc_inds].reset_index(drop=True)
         date_created = time.strftime("%c")
 
         b = Brain(data=data, locs=locs, sessions=sessions, sample_rate=sample_rate, meta=meta, date_created=date_created,
