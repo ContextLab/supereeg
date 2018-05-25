@@ -7,10 +7,11 @@ import deepdish as dd
 from .brain import Brain
 from .model import Model
 from .nifti import Nifti
+from .location import Location
 from .helpers import _resample_nii
 
 BASE_URL = 'https://docs.google.com/uc?export=download'
-homedir = os.path.expanduser('~/') #FIXME: use os.path.join rather than using slashes
+homedir = os.path.expanduser('~')
 datadir = os.path.join(homedir, 'supereeg_data')
 
 datadict = { #TODO: do the data types need to be specified or could they be inferred from the downloaded objects?
@@ -222,6 +223,8 @@ def _load_from_cache(fname, ftype, sample_inds=None, loc_inds=None, field=None):
         return Model(**dd.io.load(fullpath))
     elif ftype is 'nii':
         return Nifti(fullpath)
+    elif ftype is 'locs':
+        return Location(fullpath)
 
 def _load_field(fname, field):
     """ Loads a particular field of a file """

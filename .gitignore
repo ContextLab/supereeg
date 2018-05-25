@@ -97,3 +97,8 @@ ENV/
 *.pyc
 *.idea/
 .pytest_cache/
+/tests/debug_helpers.py
+tests/debug_helpers.py
+tests/model_algebra.py
+/tests/model_algebra.py
+/tests/model_tests.py

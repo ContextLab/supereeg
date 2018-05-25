@@ -10,7 +10,7 @@ import pandas as pd
 import nibabel as nib
 import deepdish as dd
 import matplotlib.pyplot as plt
-from scipy.stats import zscore
+
 from .helpers import _kurt_vals, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, \
     _plot_locs_hyp, _std, _gray, _nifti_to_brain, _brain_to_nifti, _z_score
 
@@ -114,13 +114,12 @@ class Brain(object):
                  kurtosis_threshold=10, minimum_voxel_size=3, maximum_voxel_size=20,
                  filter='kurtosis'):
 
-        from .load import load, datadict
+        from .load import load
         from .model import Model
         from .nifti import Nifti
 
         if isinstance(data, six.string_types):
-            if data in datadict.keys():
-                data = load(data)
+            data = Brain(load(data))
 
         if isinstance(data, Brain):
             self.__dict__.update(data.__dict__)
@@ -136,9 +135,7 @@ class Brain(object):
 
             if isinstance(data, Model):
                 locs = data.locs
-                with np.errstate(invalid='ignore'):
-                    data = np.divide(data.numerator, data.denominator)
-                np.fill_diagonal(data, 1)
+                data = data.get_model(z_transform=False)
 
             if isinstance(data, pd.DataFrame):
                 self.data = data
@@ -275,23 +272,23 @@ class Brain(object):
 
     def get_filtered_bo(self):
         """ Return a filtered copy """
-        x = self.__dict__
+        x = copy.copy(self.__dict__)
         x['data'] = self.get_data()
         x['locs'] = self.get_locs()
         x['kurtosis'] = x['kurtosis'][x['kurtosis'] <= x['kurtosis_threshold']]
         for key in ['n_subs', 'n_elecs', 'n_sessions', 'filter_inds', 'n_secs']:
             if key in x.keys():
                 x.pop(key)
-        bo = Brain(**x)
-        bo.update_info()
-        return bo
+        boc = Brain(**x)
+        boc.update_info()
+        return boc
 
     def get_data(self):
         """
         Gets data from brain object
         """
         self.update_filter_inds()
-        return self.data.iloc[:, self.filter_inds.ravel()]
+        return self.data.iloc[:, self.filter_inds.ravel()].reset_index(drop=True)
 
     def get_zscore_data(self):
         """
@@ -305,7 +302,7 @@ class Brain(object):
         Gets locations from brain object
         """
         self.update_filter_inds()
-        return self.locs.iloc[self.filter_inds.ravel(), :]
+        return self.locs.iloc[self.filter_inds.ravel(), :].reset_index(drop=True)
 
     def get_slice(self, sample_inds=None, loc_inds=None, inplace=False):
         """
@@ -324,38 +321,32 @@ class Brain(object):
 
         """
         if sample_inds is None:
-            sample_inds = list(range(self.get_data().shape[0]))
+            sample_inds = list(self.get_data().index)
         if loc_inds is None:
-            loc_inds = list(range(self.get_locs().shape[0]))
+            loc_inds = list(self.get_locs().index)
         if isinstance(sample_inds, int):
             sample_inds = [sample_inds]
         if isinstance(loc_inds, int):
             loc_inds = [loc_inds]
 
-        data = self.get_data().iloc[sample_inds, loc_inds]
+        data = self.get_data().iloc[sample_inds, loc_inds].reset_index(drop=True)
         sessions = self.sessions.iloc[sample_inds]
+        kurtosis = self.kurtosis[self.get_locs().index[loc_inds]]
         if self.sample_rate:
             sample_rate = [self.sample_rate[int(s-1)] for s in
                            sessions.unique()]
         else:
             sample_rate = self.sample_rate
         meta = copy.copy(self.meta)
-        locs = self.get_locs().iloc[loc_inds]
-        date_created = self.date_created
+        locs = self.get_locs().iloc[loc_inds].reset_index(drop=True)
+        date_created = time.strftime("%c")
 
+        b = Brain(data=data, locs=locs, sessions=sessions, sample_rate=sample_rate, meta=meta, date_created=date_created,
+                  filter=copy.copy(self.filter), kurtosis=kurtosis)
         if inplace:
-            self.data = data
-            self.locs = locs
-            self.sessions = sessions
-            self.sample_rate = sample_rate
-            self.meta = meta
-            self.date_created = date_created
-            self.filter=None
+            self = b
         else:
-            return Brain(data=data, locs=locs, sessions=sessions,
-                         sample_rate=sample_rate, meta=meta,
-                         date_created=date_created, kurtosis=self.kurtosis,
-                         filter=None) #TODO: make sure we preserve all other parameters/properties
+            return b
 
     def resample(self, resample_rate=None):
         """

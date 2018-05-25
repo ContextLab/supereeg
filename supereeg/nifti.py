@@ -7,6 +7,7 @@ from nibabel import Nifti1Image
 from nilearn.image import concat_imgs, index_img
 from nilearn import plotting as ni_plt
 from .helpers import make_gif_pngs
+from .brain import Brain
 
 class Nifti(Nifti1Image):
     """
@@ -209,6 +210,11 @@ class Nifti(Nifti1Image):
         assert len(self.shape)>3, '4D necessary for gif'
 
         make_gif_pngs(self, gifpath, index, name, **kwargs)
+
+
+    def get_locs(self):
+        bo = Brain(self)
+        return bo.get_locs()
 
 
     def save(self, filepath):
