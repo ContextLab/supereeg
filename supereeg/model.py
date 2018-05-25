@@ -677,7 +677,7 @@ def _mo2model(mo, locs, width=20):
         return n, d, mo.n_subs
 
 def _force_update(mo, bo, width=20):
-  
+
     # get subject-specific correlation matrix
     sub_corrmat = _get_corrmat(bo)
 
@@ -815,7 +815,6 @@ def _recover_model(num, denom, z_transform=False):
     else:
         np.fill_diagonal(m, 1)
         return _z2r(m)
-=======
     with np.errstate(invalid='ignore'):
         model_corrmat_x = np.divide(np.add(mo.numerator, num_corrmat_x), np.add(mo.denominator, denom_corrmat_x))
 
