@@ -22,7 +22,7 @@ import supereeg as se
 locs = se.simulate_locations(n_elecs=100)
 
 # simulate brain object
-bo = se.simulate_bo(n_samples=1000, sample_rate=1000, cov='toeplitz', locs=locs, noise =.3)
+bo = se.simulate_bo(n_samples=1000, sample_rate=1000, cov='random', locs=locs, noise =.3)
 
 # sample 10 locations, and get indices
 sub_locs = locs.sample(10, replace=False).sort_values(['x', 'y', 'z'])

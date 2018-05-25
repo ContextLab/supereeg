@@ -48,6 +48,9 @@ recon_3 = np.matrix([[ 0.119278,  0.162790,  -0.290248,  0.162790, -0.293615],
                      [ 0.165119,  0.419708,  -1.621756,  0.419708, -1.342744],
                      [ 0.801842,  0.560700,   1.398550,  0.560700,  0.597017]])
 
+
+
+
 def test_simulate_locations():
     locs = se.simulate_locations(10)
     assert isinstance(locs, pd.DataFrame)
