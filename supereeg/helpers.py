@@ -8,7 +8,7 @@ from __future__ import print_function
 #each of one session.  we could then use bo.groupby(session).aggregate(xform) to produce a list of objects, where each is
 #comprised of the xform applied to the brain object containing one session worth of data from the original object.
 
-#import multiprocessing
+import multiprocessing
 import copy
 import os
 import warnings
@@ -21,6 +21,7 @@ import nibabel as nib
 import hypertools as hyp
 import shutil
 
+
 from nilearn import plotting as ni_plt
 from nilearn import image
 from nilearn.input_data import NiftiMasker
@@ -31,7 +32,7 @@ from scipy.spatial.distance import squareform
 from scipy.special import logsumexp
 from scipy import linalg
 from scipy.ndimage.interpolation import zoom
-#from joblib import Parallel, delayed
+from joblib import Parallel, delayed
 
 
 def _std(res=None):
@@ -199,6 +200,7 @@ def _kurt_vals(bo):
 
 
 def _get_corrmat(bo):
+    ## add flag to for ztransform like in recover_model
     """
     Function that calculates the average subject level correlation matrix for brain object across session
 
@@ -326,6 +328,8 @@ def _log_rbf(to_coords, from_coords, width=20):
     weights = -cdist(to_coords, from_coords, metric='euclidean') ** 2 / float(width)
     return weights
 
+def _rbf(x, center, width=20):
+    return np.exp(-cdist(x, center, metric='euclidean') ** 2 / float(width))
 
 def tal2mni(r):
     """
@@ -465,14 +469,88 @@ def _to_exp_real(C):
     return np.exp(posX) - np.exp(negX)
 
 
-def _compute_coord(coord, weights, Z):
-    next_weights = np.sum.outer(weights[coord[0], :], weights[coord[1], :])
+def _logsubexp(x,y):
+    """
+    Subtracts logged arrays
+    Parameters
+    ----------
+    x : Numpy array
+        Log complex array
+    y : Numpy array
+        Log complex array
+    Returns
+    ----------
+    z : Numpy array
+        Returns log complex array of y-x
+    """
+    y = _to_exp_real(y)
+    sub_log = _to_log_complex(x)
+    neg_y_log = _to_log_complex(-y)
+    sub_log.real = np.logaddexp(x.real, neg_y_log.real)
+    sub_log.imag = np.logaddexp(x.imag, neg_y_log.imag)
+    return sub_log
 
-    next_weights = next_weights[np.triu_indices(next_weights)]
-    Z = Z[np.triu_indices(Z)]
+
+def _compute_coord(coord, weights, Z):
+    next_weights = np.add.outer(weights[coord[0], :], weights[coord[1], :])
+
+    next_weights = _logsubexp(next_weights, np.triu(next_weights))
+
 
     return logsumexp(next_weights), logsumexp(Z + next_weights)
 
+
+## replace with log weights
+def _compute_coord_old(coord, weights, Z):
+    exp_weights = np.exp(weights)
+    next_weights = np.outer(exp_weights[coord[0], :], exp_weights[coord[1], :])
+    next_weights = next_weights - np.triu(next_weights)
+    return np.sum(next_weights), np.sum(Z * next_weights)
+
+def _expand_corrmat_predict(Z, weights):
+    """
+    Gets full correlation matrix
+    Parameters
+    ----------
+    C : Numpy array
+        Subject's correlation matrix
+    weights : Numpy array
+        Weights matrix calculated using _rbf function matrix
+    mode : str
+        Specifies whether to compute over all elecs (fit mode) or just new elecs
+        (predict mode)
+    Returns
+    ----------
+    numerator : Numpy array
+        Numerator for the expanded correlation matrix
+    denominator : Numpy array
+        Denominator for the expanded correlation matrix
+    """
+
+    ## np.set_diagonal==0
+    Z[np.eye(Z.shape[0]) == 1] = 0
+    #Z[np.where(np.isinf(Z))] = 0
+    Z[np.where(np.isnan(Z))] = 0
+
+    #weights = np.exp(weights)  ## eventually should switch to log space
+    n = weights.shape[0]
+    K = np.zeros([n, n])
+    W = np.zeros([n, n])
+
+    s = Z.shape[0]
+
+    # coord = tuple((28, 0))
+    # try_old = _compute_coord_old(coord, weights, Z)
+    # try_new = _compute_coord(coord, weights, Z)
+
+    sliced_up = [(x, y) for x in range(s, n) for y in range(x)]
+    results = Parallel(n_jobs=multiprocessing.cpu_count())(
+        delayed(_compute_coord)(coord, weights, Z) for coord in sliced_up)
+
+    W[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[0] for x in results]
+    K[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[1] for x in results]
+
+    return (K + K.T), (W + W.T)
 
 def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore'):
     """

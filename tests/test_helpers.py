@@ -8,10 +8,11 @@ from scipy.stats import kurtosis, zscore
 import os
 
 ## don't understand why i have to do this:
-from supereeg.helpers import _std, _gray, _resample_nii, _apply_by_file_index, _kurt_vals, _get_corrmat, _z2r, _r2z, _log_rbf, \
+from supereeg.helpers import _std, _gray, _resample_nii, _apply_by_file_index, _kurt_vals, _get_corrmat, _z2r, _r2z, \
+    _log_rbf, \
     _blur_corrmat, _timeseries_recon, _chunker, \
     _corr_column, _normalize_Y, _near_neighbor, _vox_size, _count_overlapping, _resample, \
-    _nifti_to_brain, _brain_to_nifti
+    _nifti_to_brain, _brain_to_nifti, _to_log_complex, _to_exp_real, _logsubexp
 from supereeg.model import _recover_model
 
 locs = np.array([[-61., -77.,  -3.],
@@ -47,6 +48,16 @@ test_model = se.Model(data=data, locs=locs, rbf_width=100)
 bo_nii = se.Brain(_gray(20))
 nii = _brain_to_nifti(bo_nii, _gray(20))
 
+a = np.array([[1,2,3],[4,5,6],[7,8,9,]])
+b = np.array([[-1,2,2],[-4,5,5],[-7,8,8,]])
+c = np.array([[ 0,  4,  5], [ 0, 10, 11],[ 0, 16, 17]])
+add_log = _to_log_complex(a)
+a_log = _to_log_complex(a)
+b_log = _to_log_complex(b)
+c_log = _to_log_complex(c)
+add_log.real = np.logaddexp(a_log.real,b_log.real)
+add_log.imag = np.logaddexp(a_log.imag,b_log.imag)
+
 def test_std():
     nii = _std(20)
     assert isinstance(nii, se.Nifti)
@@ -81,6 +92,10 @@ def test_kurt_vals():
 #     kurts_1 = _apply_by_file_index(data[0], kurtosis, aggregate)
 #     kurts_2 = _kurt_vals(data[0])
 #     assert np.allclose(kurts_1, kurts_2)
+
+def test_logsubexp():
+    b_try = _to_exp_real(_logsubexp(a_log, c_log))
+    assert np.allclose(b_try, b)
 
 def test_get_corrmat():
     corrmat = _get_corrmat(data[0])

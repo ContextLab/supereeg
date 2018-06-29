@@ -6,10 +6,11 @@ import warnings
 import six
 import pandas as pd
 import numpy as np
+
 import seaborn as sns
 import deepdish as dd
 import matplotlib.pyplot as plt
-from .helpers import _get_corrmat, _r2z, _z2r, _log_rbf, _blur_corrmat, _plot_borderless,\
+from .helpers import _get_corrmat, _r2z, _z2r, _log_rbf, _expand_corrmat_predict, _rbf, _blur_corrmat, _plot_borderless,\
     _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp, _gray, _nifti_to_brain,\
     _unique, _union, _empty, _to_log_complex, _to_exp_real
 from .brain import Brain
@@ -164,13 +165,17 @@ class Model(object):
             assert type(template) == Nifti, 'template must be a Nifti object or a path to a Nifti object'
             bo = Brain(template)
             rbf_weights = _log_rbf(bo.get_locs(), self.locs, width=self.rbf_width)
-            self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
+            #rbf_weights = _rbf(bo.get_locs(), self.locs, width=self.rbf_width)
+            #self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
+            self.numerator, self.denominator = _expand_corrmat_predict(self.get_model(z_transform=True), rbf_weights)
             self.locs = bo.get_locs()
         elif not (locs is None): #blur correlation matrix out to locs
             if (isinstance(data, Brain) or isinstance(data, Model)): #self.locs may now conflict with locs
                 if not ((locs.shape[0] == self.locs.shape[0]) and np.allclose(locs, self.locs)):
                     rbf_weights = _log_rbf(locs, self.locs, width=self.rbf_width)
-                    self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
+                    #rbf_weights = _rbf(locs, self.locs, width=self.rbf_width)
+                    # self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
+                    self.numerator, self.denominator = _expand_corrmat_predict(self.get_model(z_transform=True), rbf_weights)
                     self.locs = locs
         elif self.locs is None:
             self.locs = locs
@@ -248,7 +253,9 @@ class Model(object):
             return
         else:
             rbf_weights = _log_rbf(new_locs, self.get_locs())
-            self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
+            #rbf_weights = _rbf(new_locs, self.get_locs())
+            #self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
+            self.numerator, self.denominator = _expand_corrmat_predict(self.get_model(z_transform=True), rbf_weights)
             self.locs = new_locs
 
         self.locs, loc_inds = _unique(self.locs)
@@ -603,7 +610,9 @@ def _bo2model(bo, locs, width=20):
     #np.fill_diagonal(sub_corrmat, 0)
     sub_corrmat_z = _r2z(sub_corrmat)
     sub_rbf_weights = _log_rbf(locs, bo.get_locs(), width=width)
-    n, d = _blur_corrmat(sub_corrmat_z, sub_rbf_weights)
+    #sub_rbf_weights = _rbf(locs, bo.get_locs(), width=width)
+    #n, d = _blur_corrmat(sub_corrmat_z, sub_rbf_weights)
+    n, d = _expand_corrmat_predict(sub_corrmat_z, sub_rbf_weights)
     return n, d, 1
 
 def _mo2model(mo, locs, width=20):
@@ -618,7 +627,9 @@ def _mo2model(mo, locs, width=20):
         sub_corrmat_z = _recover_model(mo.numerator, mo.denominator, z_transform=True)
         #np.fill_diagonal(sub_corrmat_z, 0)
         sub_rbf_weights = _log_rbf(locs, mo.locs, width=width)
-        n, d = _blur_corrmat(sub_corrmat_z, sub_rbf_weights)
+        #sub_rbf_weights = _rbf(locs, mo.locs, width=width)
+        # n, d = _blur_corrmat(sub_corrmat_z, sub_rbf_weights)
+        n, d = _expand_corrmat_predict(sub_corrmat_z, sub_rbf_weights)
         return n, d, mo.n_subs
 
 def _force_update(mo, bo, width=20):
@@ -633,9 +644,11 @@ def _force_update(mo, bo, width=20):
 
     # get _rbf weights
     sub__rbf_weights = _log_rbf(mo.locs, bo.get_locs(), width=width)
+    #sub__rbf_weights = _rbf(mo.locs, bo.get_locs(), width=width)
 
     #  get subject expanded correlation matrix
-    num_corrmat_x, denom_corrmat_x = _blur_corrmat(sub_corrmat_z, sub__rbf_weights)
+    # num_corrmat_x, denom_corrmat_x = _blur_corrmat(sub_corrmat_z, sub__rbf_weights)
+    num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(sub_corrmat_z, sub__rbf_weights)
 
     # add in new subj data
     #with np.errstate(invalid='ignore'):
