@@ -494,18 +494,20 @@ def _logsubexp(x,y):
 def _compute_coord(coord, weights, Z):
     next_weights = np.add.outer(weights[coord[0], :], weights[coord[1], :])
 
-    next_weights = _logsubexp(next_weights, np.triu(next_weights))
+    upper_tri = np.copy(next_weights)
 
+    upper_tri[np.tril_indices(upper_tri.shape[0], -1)] = -np.inf
+    next_weights = _logsubexp(next_weights, upper_tri)
 
     return logsumexp(next_weights), logsumexp(Z + next_weights)
 
 
-## replace with log weights
 def _compute_coord_old(coord, weights, Z):
     exp_weights = np.exp(weights)
     next_weights = np.outer(exp_weights[coord[0], :], exp_weights[coord[1], :])
     next_weights = next_weights - np.triu(next_weights)
     return np.sum(next_weights), np.sum(Z * next_weights)
+
 
 def _expand_corrmat_predict(Z, weights):
     """
@@ -527,25 +529,23 @@ def _expand_corrmat_predict(Z, weights):
         Denominator for the expanded correlation matrix
     """
 
-    ## np.set_diagonal==0
-    Z[np.eye(Z.shape[0]) == 1] = 0
-    #Z[np.where(np.isinf(Z))] = 0
-    Z[np.where(np.isnan(Z))] = 0
 
-    #weights = np.exp(weights)  ## eventually should switch to log space
+    Z[np.eye(Z.shape[0]) == 1] = 0
+    Z[np.where(np.isinf(Z))] = 0
+    #Z[np.where(np.isnan(Z))] = 0
+
+
     n = weights.shape[0]
     K = np.zeros([n, n])
     W = np.zeros([n, n])
 
     s = Z.shape[0]
 
-    # coord = tuple((28, 0))
-    # try_old = _compute_coord_old(coord, weights, Z)
-    # try_new = _compute_coord(coord, weights, Z)
+
 
     sliced_up = [(x, y) for x in range(s, n) for y in range(x)]
     results = Parallel(n_jobs=multiprocessing.cpu_count())(
-        delayed(_compute_coord)(coord, weights, Z) for coord in sliced_up)
+        delayed(_compute_coord_old)(coord, weights, Z) for coord in sliced_up)
 
     W[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[0] for x in results]
     K[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[1] for x in results]

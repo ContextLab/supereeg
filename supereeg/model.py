@@ -12,7 +12,7 @@ import deepdish as dd
 import matplotlib.pyplot as plt
 from .helpers import _get_corrmat, _r2z, _z2r, _log_rbf, _expand_corrmat_predict, _rbf, _blur_corrmat, _plot_borderless,\
     _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp, _gray, _nifti_to_brain,\
-    _unique, _union, _empty, _to_log_complex, _to_exp_real
+    _unique, _union, _empty, _to_log_complex, _to_exp_real, _logsubexp
 from .brain import Brain
 from .nifti import Nifti
 from scipy.spatial.distance import cdist
@@ -536,43 +536,43 @@ class Model(object):
         return self.update(other, inplace=False)
 
     # #subtraction is not working; removing functionality until fixed
-    # def __sub__(self, other):
-    #     """
-    #     Subtract one model object from another. The models must have matching
-    #     locations.  Meta properties are combined across objects, or if properties
-    #     conflict then the values from the first object are preferred.
-    #
-    #     Parameters
-    #     ----------
-    #     other: Model object to be subtracted from the current object
-    #     """
-    #
-    #     if type(other) == Brain:
-    #         d = Model(other, locs=other.get_locs())
-    #     elif type(other) == Nifti:
-    #         d = Model(other)
-    #     elif type(other) == Model:
-    #         d = Model(other, locs=other.locs) #make a copy
-    #     else:
-    #         raise Exception('Unsupported data type for subtraction from Model object: ' + str(type(other)))
-    #
-    #     def logdiffexp(a, b):
-    #         return np.add(a, np.log(np.subtract(1, np.exp(np.subtract(b, a)))))
-    #
-    #     assert np.allclose(self.locs, other.locs), 'subtraction is only supported for models with matching locations'
-    #
-    #     m = copy.deepcopy(self)
-    #     m.numerator.real = logdiffexp(self.numerator.real, other.numerator.real)
-    #     m.numerator.imag = logdiffexp(self.numerator.imag, other.numerator.imag)
-    #     m.denominator = logdiffexp(self.denominator, other.denominator)
-    #     m.n_subs -= other.n_subs
-    #
-    #     if m.meta is None:
-    #         m.meta = other.meta
-    #     elif (type(m.meta) == dict) and (type(other.meta) == dict):
-    #         m.meta.update(other.meta)
-    #
-    #     return m
+    def __sub__(self, other):
+        """
+        Subtract one model object from another. The models must have matching
+        locations.  Meta properties are combined across objects, or if properties
+        conflict then the values from the first object are preferred.
+
+        Parameters
+        ----------
+        other: Model object to be subtracted from the current object
+        """
+
+        if type(other) == Brain:
+            d = Model(other, locs=other.get_locs())
+        elif type(other) == Nifti:
+            d = Model(other)
+        elif type(other) == Model:
+            d = Model(other, locs=other.locs) #make a copy
+        else:
+            raise Exception('Unsupported data type for subtraction from Model object: ' + str(type(other)))
+
+
+        assert np.allclose(self.locs, other.locs), 'subtraction is only supported for models with matching locations'
+
+        m = copy.deepcopy(self)
+        # m.numerator.real = _logsubexp(self.numerator.real, other.numerator.real)
+        # m.numerator.imag = _logsubexp(self.numerator.imag, other.numerator.imag)
+        m.numerator = _logsubexp(self.numerator, other.numerator)
+
+        m.denominator = _logsubexp(self.denominator, other.denominator)
+        m.n_subs -= other.n_subs
+
+        if m.meta is None:
+            m.meta = other.meta
+        elif (type(m.meta) == dict) and (type(other.meta) == dict):
+            m.meta.update(other.meta)
+
+        return m
 
 
 ###################################
