@@ -33,7 +33,9 @@ model_bos = [se.simulate_model_bos(n_samples=1000, sample_rate=1000, locs=locs, 
              for x in range(3)]
 
 # create the model object
-model = se.Model(data=model_bos, locs=locs)
+model = se.Model(data=model_bos, locs=locs, n_subs=3)
+
+model.plot_data()
 
 # brain object locations subsetted
 sub_locs = locs.sample(10).sort_values(['x', 'y', 'z'])

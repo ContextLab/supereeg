@@ -2,8 +2,6 @@ from __future__ import print_function
 #from builtins import range
 import supereeg as se
 import numpy as np
-import scipy
-import pytest
 
 # some example locations
 
@@ -28,14 +26,19 @@ n_subs = 6
 # number of electrodes
 n_elecs = 5
 # simulate correlation matrix
-data = [se.simulate_model_bos(n_samples=10, sample_rate=10, locs=locs, sample_locs = n_elecs) for x in range(n_subs)]
+data = [se.simulate_model_bos(n_samples=10, sample_rate=10, locs=locs, sample_locs = n_elecs, random_seed=123, noise=0) for x in range(n_subs)]
 
-mo1 = se.Model(data=data[0:3], locs=locs)
-mo2 = se.Model(data=data[3:6], locs=locs)
+mo1 = se.Model(data=data[0:3], locs=locs, n_subs=3)
+mo2 = se.Model(data=data[3:6], locs=locs, n_subs=3)
 
 mo3 = mo1 + mo2
 
-mo3.n_subs == mo1.n_subs + mo2.n_subs
+mo3_alt = se.Model(data=data[0:6], locs=locs, n_subs=6)
+# assert np.allclose(mo3.numerator.real, mo3_alt.numerator.real)
+# assert np.allclose(mo3.numerator.imag, mo3_alt.numerator.imag)
+# assert np.allclose(mo3.denominator, mo3_alt.denominator)
+
+assert(mo3.n_subs == mo1.n_subs + mo2.n_subs)
 
 mo2_recon = mo3 - mo1
 

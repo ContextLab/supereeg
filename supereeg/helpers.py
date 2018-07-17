@@ -469,6 +469,7 @@ def _to_exp_real(C):
     return np.exp(posX) - np.exp(negX)
 
 
+
 def _logsubexp(x,y):
     """
     Subtracts logged arrays
@@ -481,25 +482,36 @@ def _logsubexp(x,y):
     Returns
     ----------
     z : Numpy array
-        Returns log complex array of y-x
+        Returns log complex array of x-y
     """
-    y = _to_exp_real(y)
+    if np.any(np.iscomplex(y)):
+        y = _to_exp_real(y)
+    else:
+        y = np.exp(y)
+
+    if np.any(np.iscomplex(x)):
+        x = _to_exp_real(x)
+    else:
+        x = np.exp(x)
     sub_log = _to_log_complex(x)
     neg_y_log = _to_log_complex(-y)
     sub_log.real = np.logaddexp(x.real, neg_y_log.real)
     sub_log.imag = np.logaddexp(x.imag, neg_y_log.imag)
     return sub_log
 
+def _fill_upper_diagonal(M, value):
+    upper_tri = np.copy(M)
+    upper_tri[np.triu_indices(upper_tri.shape[0], 1)] = value
+    np.fill_diagonal(upper_tri, value)
+    return upper_tri
 
 def _compute_coord(coord, weights, Z):
     next_weights = np.add.outer(weights[coord[0], :], weights[coord[1], :])
 
-    upper_tri = np.copy(next_weights)
+    W = _fill_upper_diagonal(next_weights, -np.inf)
 
-    upper_tri[np.tril_indices(upper_tri.shape[0], -1)] = -np.inf
-    next_weights = _logsubexp(next_weights, upper_tri)
-
-    return logsumexp(next_weights), logsumexp(Z + next_weights)
+    return logsumexp(W), logsumexp(W, b=Z)
+    #return np.exp(logsumexp(W)), np.exp(logsumexp(W, b=Z))  ## this make this equivalent to comput_coord_old
 
 
 def _compute_coord_old(coord, weights, Z):
@@ -545,12 +557,19 @@ def _expand_corrmat_predict(Z, weights):
 
     sliced_up = [(x, y) for x in range(s, n) for y in range(x)]
     results = Parallel(n_jobs=multiprocessing.cpu_count())(
-        delayed(_compute_coord_old)(coord, weights, Z) for coord in sliced_up)
+        delayed(_compute_coord)(coord, weights, Z) for coord in sliced_up)
 
     W[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[0] for x in results]
     K[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[1] for x in results]
 
-    return (K + K.T), (W + W.T)
+    a = (K + K.T)
+    b = (W + W.T)
+
+    a[np.where(a == 0)] = -np.inf
+    b[np.where(b == 0)] = -np.inf
+    np.fill_diagonal(a, 0)
+    np.fill_diagonal(b, 0)
+    return a,b
 
 def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore'):
     """

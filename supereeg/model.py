@@ -547,32 +547,39 @@ class Model(object):
         other: Model object to be subtracted from the current object
         """
 
-        if type(other) == Brain:
-            d = Model(other, locs=other.get_locs())
-        elif type(other) == Nifti:
-            d = Model(other)
-        elif type(other) == Model:
-            d = Model(other, locs=other.locs) #make a copy
-        else:
-            raise Exception('Unsupported data type for subtraction from Model object: ' + str(type(other)))
+        # if type(other) == Brain:
+        #     m = Model(other, locs=other.get_locs())
+        # elif type(other) == Nifti:
+        #     m = Model(other)
+        # elif type(other) == Model:
+        #     m = Model(other, locs=other.locs) #make a copy
+        # else:
+        #     raise Exception('Unsupported data type for subtraction from Model object: ' + str(type(other)))
+
+        m1 = Model(self)
+
+        m2 = Model(other)
+
+        assert np.allclose(m1.locs, m2.locs), 'subtraction is only supported for models with matching locations'
+
+        ### this should be the same right?: m2.numerator[0] == _to_log_complex(_to_exp_real(m2.numerator[0]))
+        o = np.exp(m2.numerator)
+        #o[np.where(np.isnan())] = 0
+        neg_o = _to_log_complex(-o)
+
+        #m2._set_numerator(neg_o.real, neg_o.imag)
+        m1._set_numerator(np.logaddexp(m1.numerator.real, neg_o.real),
+                          np.logaddexp(m1.numerator.imag, neg_o.imag))
+        #
+        # d = np.exp(m2.denominator)
+        # neg_d = _to_log_complex(-d)
+        # m1.denominator = np.logaddexp(m1.denominator, np.yl0og(-d))
+        m1.denominator = _logsubexp(m1.denominator, m2.denominator)
+        m1.n_subs -= m2.n_subs
 
 
-        assert np.allclose(self.locs, other.locs), 'subtraction is only supported for models with matching locations'
+        return m1
 
-        m = copy.deepcopy(self)
-        # m.numerator.real = _logsubexp(self.numerator.real, other.numerator.real)
-        # m.numerator.imag = _logsubexp(self.numerator.imag, other.numerator.imag)
-        m.numerator = _logsubexp(self.numerator, other.numerator)
-
-        m.denominator = _logsubexp(self.denominator, other.denominator)
-        m.n_subs -= other.n_subs
-
-        if m.meta is None:
-            m.meta = other.meta
-        elif (type(m.meta) == dict) and (type(other.meta) == dict):
-            m.meta.update(other.meta)
-
-        return m
 
 
 ###################################
