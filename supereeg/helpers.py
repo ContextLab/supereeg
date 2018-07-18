@@ -20,6 +20,7 @@ import imageio
 import nibabel as nib
 import hypertools as hyp
 import shutil
+import warnings
 
 
 from nilearn import plotting as ni_plt
@@ -451,10 +452,13 @@ def _to_log_complex(X):
     ----------
     log_X_complex : The log of X, stored as complex numbers to keep track of the positive and negative parts
     """
+    warnings.simplefilter('ignore')
+
     signX = np.sign(X)
     posX = np.log(np.multiply(signX > 0, X))
-    negX = np.log(np.abs(np.multiply(signX < 0, X)))
+    posX[np.isnan(posX)] = 0
 
+    negX = np.log(np.abs(np.multiply(signX < 0, X)))
     negX = np.multiply(0+1j, negX)
     negX.real[np.isnan(negX)] = 0
 
@@ -488,16 +492,12 @@ def _logsubexp(x,y):
         y = _to_exp_real(y)
     else:
         y = np.exp(y)
-
-    if np.any(np.iscomplex(x)):
-        x = _to_exp_real(x)
-    else:
-        x = np.exp(x)
     sub_log = _to_log_complex(x)
     neg_y_log = _to_log_complex(-y)
     sub_log.real = np.logaddexp(x.real, neg_y_log.real)
     sub_log.imag = np.logaddexp(x.imag, neg_y_log.imag)
     return sub_log
+
 
 def _fill_upper_diagonal(M, value):
     upper_tri = np.copy(M)

@@ -381,6 +381,10 @@ class Model(object):
 
         m1._set_numerator(np.logaddexp(m1.numerator.real, m2.numerator.real),
                           np.logaddexp(m1.numerator.imag, m2.numerator.imag))
+        #simplify to ensure that each entry of the numerator has either a non-zero real part OR a non-zero imag part
+        #(or neither).
+        n = _to_log_complex(_to_exp_real(m1.numerator))
+        m1._set_numerator(n.real, n.imag)
         m1.denominator = np.logaddexp(m1.denominator, m2.denominator)
         m1.locs = locs
         m1.n_locs = locs.shape[0]
@@ -535,7 +539,6 @@ class Model(object):
 
         return self.update(other, inplace=False)
 
-    # #subtraction is not working; removing functionality until fixed
     def __sub__(self, other):
         """
         Subtract one model object from another. The models must have matching
@@ -559,26 +562,38 @@ class Model(object):
         m1 = Model(self)
 
         m2 = Model(other)
+        n2 = m2.numerator
 
-        assert np.allclose(m1.locs, m2.locs), 'subtraction is only supported for models with matching locations'
+        m2._set_numerator(n2.imag, n2.real)
+        m2.n_subs = -m2.n_subs
 
-        ### this should be the same right?: m2.numerator[0] == _to_log_complex(_to_exp_real(m2.numerator[0]))
-        o = np.exp(m2.numerator)
-        #o[np.where(np.isnan())] = 0
-        neg_o = _to_log_complex(-o)
-
-        #m2._set_numerator(neg_o.real, neg_o.imag)
-        m1._set_numerator(np.logaddexp(m1.numerator.real, neg_o.real),
-                          np.logaddexp(m1.numerator.imag, neg_o.imag))
+        m3 = m1 + m2
+        m3.denominator = _to_log_complex(_to_exp_real(_logsubexp(m1.denominator, m2.denominator)))
+        return m3
         #
-        # d = np.exp(m2.denominator)
-        # neg_d = _to_log_complex(-d)
-        # m1.denominator = np.logaddexp(m1.denominator, np.yl0og(-d))
-        m1.denominator = _logsubexp(m1.denominator, m2.denominator)
-        m1.n_subs -= m2.n_subs
+        # assert np.allclose(m1.locs, m2.locs), 'subtraction is only supported for models with matching locations'
+        #
+        # ### this should be the same right?:
+        #
+        # # assert m2.numerator[0] == _to_log_complex(_to_exp_real(m2.numerator[0]))
+        #
+        # #o = np.exp(m2.numerator)
+        # #o[np.where(np.isnan())] = 0
+        # neg_o = _to_log_complex(-np.exp(m2.numerator))
+        #
+        # #m2._set_numerator(neg_o.real, neg_o.imag)
+        # m1._set_numerator(np.logaddexp(m1.numerator.real, neg_o.real),
+        #                   np.logaddexp(m1.numerator.imag, neg_o.imag))
+        # n = _to_log_complex(_to_exp_real(m1.numerator))
+        # m1._set_numerator(n.real, n.imag)
+        # # d = np.exp(m2.denominator)
+        # # neg_d = _to_log_complex(-d)
+        # # m1.denominator = np.logaddexp(m1.denominator, np.yl0og(-d))
+        # m1.denominator = _logsubexp(m1.denominator, m2.denominator)
+        # m1.n_subs -= m2.n_subs
 
 
-        return m1
+        #return m1
 
 
 

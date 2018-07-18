@@ -2,6 +2,7 @@ from __future__ import print_function
 #from builtins import range
 import supereeg as se
 import numpy as np
+from helpers import _to_exp_real, _to_log_complex
 
 # some example locations
 
@@ -34,18 +35,20 @@ mo2 = se.Model(data=data[3:6], locs=locs, n_subs=3)
 mo3 = mo1 + mo2
 
 mo3_alt = se.Model(data=data[0:6], locs=locs, n_subs=6)
-# assert np.allclose(mo3.numerator.real, mo3_alt.numerator.real)
-# assert np.allclose(mo3.numerator.imag, mo3_alt.numerator.imag)
-# assert np.allclose(mo3.denominator, mo3_alt.denominator)
+assert np.allclose(mo3.numerator.real, mo3_alt.numerator.real, equal_nan=True)
+assert np.allclose(mo3.numerator.imag, mo3_alt.numerator.imag, equal_nan=True)
+assert np.allclose(mo3.denominator, mo3_alt.denominator, equal_nan=True)
 
 assert(mo3.n_subs == mo1.n_subs + mo2.n_subs)
 
 mo2_recon = mo3 - mo1
 
-np.allclose(mo2.numerator.real, mo2_recon.numerator.real)
-np.allclose(mo2.numerator.imag, mo2_recon.numerator.imag)
-np.allclose(mo2.denominator, mo2_recon.denominator)
+np.allclose(mo2.numerator.real, mo2_recon.numerator.real, equal_nan=True)
+np.allclose(mo2.numerator.imag, mo2_recon.numerator.imag, equal_nan=True)
+np.allclose(mo2.denominator, mo2_recon.denominator, equal_nan=True)
 
 
 
 
+# d = np.array([[1,2,-np.inf],[4,5,6],[7,8,9,]])
+# _to_exp_real(_to_log_complex(d))
