@@ -82,8 +82,8 @@ class Model(object):
         self.denominator = None
         self.n_subs = 0
         self.meta = meta
-        if self.meta is None:
-            self.meta= {'stable': True}
+        # if self.meta is None:
+        #     self.meta= {'stable': True}
         self.disable_parallelization = disable_parallelization
         self.date_created = date_created
         #self.rbf_width = float(rbf_width)
@@ -133,7 +133,6 @@ class Model(object):
                 self.n_subs = data.n_subs
                 self.numerator = data.numerator
                 self.rbf_width = data.rbf_width
-                #self.disable_parallelization = data.disable_parallelization
                 #self = copy.deepcopy(data)
                 n_subs = self.n_subs
             elif isinstance(data, Brain):
@@ -386,7 +385,7 @@ class Model(object):
         else:
             m1 = Model(self)
 
-        assert m1.meta['stable']==True, 'solution unstable'
+        #assert m1.meta['stable']==True, 'solution unstable'
 
         m2 = Model(data)
         locs = _union(m1.get_locs(), m2.get_locs())
@@ -406,12 +405,12 @@ class Model(object):
         m1.n_subs += m2.n_subs
 
         #combine meta info
-        m1.meta.update(m2.meta)
-        # if not ((m1.meta is None) and (m2.meta is None)):
-        #     if m1.meta is None:
-        #         m1.meta = m2.meta
-        #     elif (type(m1.meta) == dict) and (type(m2.meta) == dict):
-        #         m1.meta.update(m2.meta)
+        #m1.meta.update(m2.meta)
+        if not ((m1.meta is None) and (m2.meta is None)):
+            if m1.meta is None:
+                m1.meta = m2.meta
+            elif (type(m1.meta) == dict) and (type(m2.meta) == dict):
+                m1.meta.update(m2.meta)
 
         if not inplace:
             return m1
