@@ -19,6 +19,7 @@ install:
 - conda create -q -n testenv python=$TRAVIS_PYTHON_VERSION pip pytest numpy pandas
   scipy matplotlib seaborn scikit-learn numba
 - source activate testenv
+- pip install Cython --install-option="--no-cython-compile"
 - pip install -r requirements.txt
 - python setup.py install
 script: py.test
