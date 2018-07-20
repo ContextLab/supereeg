@@ -73,7 +73,7 @@ class Model(object):
         A model that can be used to infer timeseries from unknown locations
     """
     def __init__(self, data=None, locs=None, template=None,
-                 numerator=None, denominator=None,
+                 numerator=None, denominator=None, disable_parallelization = False,
                  n_subs=None, meta=None, date_created=None, rbf_width=20, save=None):
         from .load import load
 
@@ -82,8 +82,12 @@ class Model(object):
         self.denominator = None
         self.n_subs = 0
         self.meta = meta
+        if self.meta is None:
+            self.meta= {'stable': True}
+        self.disable_parallelization = disable_parallelization
         self.date_created = date_created
-        self.rbf_width = float(rbf_width)
+        #self.rbf_width = float(rbf_width)
+        self.rbf_width = rbf_width
 
         if n_subs is None:
             n_subs = 1
@@ -108,9 +112,12 @@ class Model(object):
                                 all_locs = np.vstack((all_locs, data[i].get_locs().as_matrix()))
                     locs, loc_inds = _unique(all_locs)
 
-                    self.__init__(data=data[0], locs=locs, template=template, meta=self.meta, rbf_width=self.rbf_width, n_subs=1)
+                    self.__init__(data=data[0], locs=locs, template=template, meta=self.meta, rbf_width=self.rbf_width,
+                                  n_subs=1, disable_parallelization=disable_parallelization)
                     for i in range(1, len(data)):
-                        self.update(Model(data=data[i], locs=locs, template=template, meta=self.meta, rbf_width=self.rbf_width, n_subs=1))
+                        self.update(Model(data=data[i], locs=locs, template=template, meta=self.meta,
+                                          rbf_width=self.rbf_width, n_subs=1,
+                                          disable_parallelization=disable_parallelization))
 
             if isinstance(data, six.string_types):
                 data = load(data)
@@ -126,6 +133,7 @@ class Model(object):
                 self.n_subs = data.n_subs
                 self.numerator = data.numerator
                 self.rbf_width = data.rbf_width
+                #self.disable_parallelization = data.disable_parallelization
                 #self = copy.deepcopy(data)
                 n_subs = self.n_subs
             elif isinstance(data, Brain):
@@ -144,7 +152,8 @@ class Model(object):
             assert denominator.shape[0] == denominator.shape[1], 'denominator must be a square matrix'
             assert numerator.shape[0] == denominator.shape[0], 'numerator and denominator must be the same shape'
             assert not (locs is None), 'must specify model locations'
-            assert locs.shape[0] == numerator.shape[0], 'number of locations must match the size of the numerator and denominator matrices'
+            assert locs.shape[0] == numerator.shape[0], 'number of locations must match the size of the numerator ' \
+                                                        'and denominator matrices'
 
             if (self.numerator is None) or (self.denominator is None):
                 self.numerator = numerator
@@ -167,7 +176,8 @@ class Model(object):
             rbf_weights = _log_rbf(bo.get_locs(), self.locs, width=self.rbf_width)
             #rbf_weights = _rbf(bo.get_locs(), self.locs, width=self.rbf_width)
             #self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
-            self.numerator, self.denominator = _expand_corrmat_predict(self.get_model(z_transform=True), rbf_weights)
+            self.numerator, self.denominator = _expand_corrmat_predict(self.get_model(z_transform=True), rbf_weights,
+                                                                       disable_parallelization=disable_parallelization)
             self.locs = bo.get_locs()
         elif not (locs is None): #blur correlation matrix out to locs
             if (isinstance(data, Brain) or isinstance(data, Model)): #self.locs may now conflict with locs
@@ -175,7 +185,9 @@ class Model(object):
                     rbf_weights = _log_rbf(locs, self.locs, width=self.rbf_width)
                     #rbf_weights = _rbf(locs, self.locs, width=self.rbf_width)
                     # self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
-                    self.numerator, self.denominator = _expand_corrmat_predict(self.get_model(z_transform=True), rbf_weights)
+                    self.numerator, self.denominator = _expand_corrmat_predict(self.get_model(z_transform=True),
+                                                                               rbf_weights,
+                                                                               disable_parallelization = disable_parallelization)
                     self.locs = locs
         elif self.locs is None:
             self.locs = locs
@@ -255,7 +267,8 @@ class Model(object):
             rbf_weights = _log_rbf(new_locs, self.get_locs())
             #rbf_weights = _rbf(new_locs, self.get_locs())
             #self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
-            self.numerator, self.denominator = _expand_corrmat_predict(self.get_model(z_transform=True), rbf_weights)
+            self.numerator, self.denominator = _expand_corrmat_predict(self.get_model(z_transform=True), rbf_weights,
+                                                                       disable_parallelization=self.disable_parallelization)
             self.locs = new_locs
 
         self.locs, loc_inds = _unique(self.locs)
@@ -373,6 +386,8 @@ class Model(object):
         else:
             m1 = Model(self)
 
+        assert m1.meta['stable']==True, 'solution unstable'
+
         m2 = Model(data)
         locs = _union(m1.get_locs(), m2.get_locs())
 
@@ -391,11 +406,12 @@ class Model(object):
         m1.n_subs += m2.n_subs
 
         #combine meta info
-        if not ((m1.meta is None) and (m2.meta is None)):
-            if m1.meta is None:
-                m1.meta = m2.meta
-            elif (type(m1.meta) == dict) and (type(m2.meta) == dict):
-                m1.meta.update(m2.meta)
+        m1.meta.update(m2.meta)
+        # if not ((m1.meta is None) and (m2.meta is None)):
+        #     if m1.meta is None:
+        #         m1.meta = m2.meta
+        #     elif (type(m1.meta) == dict) and (type(m2.meta) == dict):
+        #         m1.meta.update(m2.meta)
 
         if not inplace:
             return m1
@@ -539,62 +555,59 @@ class Model(object):
 
         return self.update(other, inplace=False)
 
-    def __sub__(self, other):
-        """
-        Subtract one model object from another. The models must have matching
-        locations.  Meta properties are combined across objects, or if properties
-        conflict then the values from the first object are preferred.
-
-        Parameters
-        ----------
-        other: Model object to be subtracted from the current object
-        """
-
-        # if type(other) == Brain:
-        #     m = Model(other, locs=other.get_locs())
-        # elif type(other) == Nifti:
-        #     m = Model(other)
-        # elif type(other) == Model:
-        #     m = Model(other, locs=other.locs) #make a copy
-        # else:
-        #     raise Exception('Unsupported data type for subtraction from Model object: ' + str(type(other)))
-
-        m1 = Model(self)
-
-        m2 = Model(other)
-        n2 = m2.numerator
-
-        m2._set_numerator(n2.imag, n2.real)
-        m2.n_subs = -m2.n_subs
-
-        m3 = m1 + m2
-        m3.denominator = _to_log_complex(_to_exp_real(_logsubexp(m1.denominator, m2.denominator)))
-        return m3
-        #
-        # assert np.allclose(m1.locs, m2.locs), 'subtraction is only supported for models with matching locations'
-        #
-        # ### this should be the same right?:
-        #
-        # # assert m2.numerator[0] == _to_log_complex(_to_exp_real(m2.numerator[0]))
-        #
-        # #o = np.exp(m2.numerator)
-        # #o[np.where(np.isnan())] = 0
-        # neg_o = _to_log_complex(-np.exp(m2.numerator))
-        #
-        # #m2._set_numerator(neg_o.real, neg_o.imag)
-        # m1._set_numerator(np.logaddexp(m1.numerator.real, neg_o.real),
-        #                   np.logaddexp(m1.numerator.imag, neg_o.imag))
-        # n = _to_log_complex(_to_exp_real(m1.numerator))
-        # m1._set_numerator(n.real, n.imag)
-        # # d = np.exp(m2.denominator)
-        # # neg_d = _to_log_complex(-d)
-        # # m1.denominator = np.logaddexp(m1.denominator, np.yl0og(-d))
-        # m1.denominator = _logsubexp(m1.denominator, m2.denominator)
-        # m1.n_subs -= m2.n_subs
-
-
-        #return m1
-
+    # def __sub__(self, other):
+    #     """
+    #     Subtract one model object from another.  Meta property, stable is updated to False.
+    #
+    #     Parameters
+    #     ----------
+    #     other: Model object to be subtracted from the current object
+    #     """
+    #
+    #     # if type(other) == Brain:
+    #     #     m2 = Model(other, locs=other.get_locs())
+    #     # elif type(other) == Nifti:
+    #     #     m2 = Model(other)
+    #     # elif type(other) == Model:
+    #     #     m2 = Model(other, locs=other.locs) #make a copy
+    #     # else:
+    #     #     raise Exception('Unsupported data type for subtraction from Model object: ' + str(type(other)))
+    #
+    #     assert type(other) == Model, 'Unsupported data type for subtraction from Model object: ' + str(type(other))
+    #
+    #     m1 = self
+    #     m2 = other
+    #
+    #     assert m1.rbf_width == m2.rbf_width
+    #
+    #     locs = _union(m1.get_locs(), m2.get_locs())
+    #
+    #     m1.set_locs(locs)
+    #     m2.set_locs(locs)
+    #
+    #     m1.meta.update(m2.meta)
+    #
+    #     meta = copy.deepcopy(m1.meta)
+    #
+    #     assert meta['stable'] == True, 'solution unstable'
+    #
+    #
+    #
+    #     meta['stable'] = False
+    #
+    #     warnings.warn('solution unstable')
+    #
+    #
+    #     m1_z = m1.n_subs * m1.get_model(z_transform=True)
+    #
+    #     m2_z = m2.n_subs * m2.get_model(z_transform=True)
+    #
+    #     m2_z[np.where(np.isnan(m2_z))] = 0
+    #     np.fill_diagonal(m2_z, 1)
+    #
+    #     return Model(data=_z2r(np.divide(np.subtract(m1_z,m2_z), (m1.n_subs-m2.n_subs))),
+    #                  locs=locs, n_subs=m1.n_subs - m2.n_subs, meta=meta, rbf_width=m1.rbf_width)
+    #
 
 
 ###################################
@@ -626,7 +639,7 @@ def _create_locs(self, locs, template):
     if self.locs.shape[0]>1000:
         warnings.warn('Model locations exceed 1000, this may take a while. Go get a cup of coffee or brew some tea!')
 
-def _bo2model(bo, locs, width=20):
+def _bo2model(bo, locs, width=20, disable_parallelization=False):
     """Returns numerator and denominator given a brain object"""
     sub_corrmat = _get_corrmat(bo)
     #np.fill_diagonal(sub_corrmat, 0)
@@ -634,10 +647,10 @@ def _bo2model(bo, locs, width=20):
     sub_rbf_weights = _log_rbf(locs, bo.get_locs(), width=width)
     #sub_rbf_weights = _rbf(locs, bo.get_locs(), width=width)
     #n, d = _blur_corrmat(sub_corrmat_z, sub_rbf_weights)
-    n, d = _expand_corrmat_predict(sub_corrmat_z, sub_rbf_weights)
+    n, d = _expand_corrmat_predict(sub_corrmat_z, sub_rbf_weights, disable_parallelization=disable_parallelization)
     return n, d, 1
 
-def _mo2model(mo, locs, width=20):
+def _mo2model(mo, locs, width=20, disable_parallelization=False):
     """Returns numerator and denominator for model object"""
 
     if not isinstance(locs, pd.DataFrame):
@@ -651,7 +664,7 @@ def _mo2model(mo, locs, width=20):
         sub_rbf_weights = _log_rbf(locs, mo.locs, width=width)
         #sub_rbf_weights = _rbf(locs, mo.locs, width=width)
         # n, d = _blur_corrmat(sub_corrmat_z, sub_rbf_weights)
-        n, d = _expand_corrmat_predict(sub_corrmat_z, sub_rbf_weights)
+        n, d = _expand_corrmat_predict(sub_corrmat_z, sub_rbf_weights, disable_parallelization=disable_parallelization)
         return n, d, mo.n_subs
 
 def _force_update(mo, bo, width=20):
@@ -670,7 +683,8 @@ def _force_update(mo, bo, width=20):
 
     #  get subject expanded correlation matrix
     # num_corrmat_x, denom_corrmat_x = _blur_corrmat(sub_corrmat_z, sub__rbf_weights)
-    num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(sub_corrmat_z, sub__rbf_weights)
+    num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(sub_corrmat_z, sub__rbf_weights,
+                                                             disable_parallelization=mo.disable_parallelization)
 
     # add in new subj data
     #with np.errstate(invalid='ignore'):
@@ -791,5 +805,8 @@ def _recover_model(num, denom, z_transform=False):
         np.fill_diagonal(m, np.inf)
         return m
     else:
+        # np.fill_diagonal(m, 1)
+        # return _z2r(m)
+        m = _z2r(m)
         np.fill_diagonal(m, 1)
-        return _z2r(m)
+        return m

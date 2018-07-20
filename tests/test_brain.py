@@ -91,7 +91,7 @@ def test_brain_getitem():
     bo = bo[:2]
     assert bo.data.shape[0]==2
 
-def test_brain_getitem():
+def test_brain_getitem_2():
     bo = se.simulate_bo(n_samples=10, sample_rate=100)
     bos = [b for b in bo[:2]]
     assert all(isinstance(b, se.Brain) for b in bos)

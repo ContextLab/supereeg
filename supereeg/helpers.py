@@ -8,7 +8,7 @@ from __future__ import print_function
 #each of one session.  we could then use bo.groupby(session).aggregate(xform) to produce a list of objects, where each is
 #comprised of the xform applied to the brain object containing one session worth of data from the original object.
 
-import multiprocessing
+# import multiprocessing
 import copy
 import os
 import warnings
@@ -33,7 +33,7 @@ from scipy.spatial.distance import squareform
 from scipy.special import logsumexp
 from scipy import linalg
 from scipy.ndimage.interpolation import zoom
-from joblib import Parallel, delayed
+# from joblib import Parallel, delayed
 
 
 def _std(res=None):
@@ -514,61 +514,127 @@ def _compute_coord(coord, weights, Z):
     #return np.exp(logsumexp(W)), np.exp(logsumexp(W, b=Z))  ## this make this equivalent to comput_coord_old
 
 
-def _compute_coord_old(coord, weights, Z):
-    exp_weights = np.exp(weights)
-    next_weights = np.outer(exp_weights[coord[0], :], exp_weights[coord[1], :])
-    next_weights = next_weights - np.triu(next_weights)
-    return np.sum(next_weights), np.sum(Z * next_weights)
+# # def _compute_coord_old(coord, weights, Z):
+# #     exp_weights = np.exp(weights)
+# #     next_weights = np.outer(exp_weights[coord[0], :], exp_weights[coord[1], :])
+# #     next_weights = next_weights - np.triu(next_weights)
+# #     return np.sum(next_weights), np.sum(Z * next_weights)
+#
+#
+# def _expand_corrmat_predict(Z, weights):
+#     """
+#     Gets full correlation matrix
+#     Parameters
+#     ----------
+#     C : Numpy array
+#         Subject's correlation matrix
+#     weights : Numpy array
+#         Weights matrix calculated using _rbf function matrix
+#     mode : str
+#         Specifies whether to compute over all elecs (fit mode) or just new elecs
+#         (predict mode)
+#     Returns
+#     ----------
+#     numerator : Numpy array
+#         Numerator for the expanded correlation matrix
+#     denominator : Numpy array
+#         Denominator for the expanded correlation matrix
+#     """
+#
+#
+#     Z[np.eye(Z.shape[0]) == 1] = 0
+#     Z[np.where(np.isinf(Z))] = 0
+#     #Z[np.where(np.isnan(Z))] = 0
+#
+#
+#     n = weights.shape[0]
+#     K = np.zeros([n, n])
+#     W = np.zeros([n, n])
+#
+#     #s = Z.shape[0]
+#
+#     s = 0
+#
+#     sliced_up = [(x, y) for x in range(s, n) for y in range(x)]
+#     results = Parallel(n_jobs=multiprocessing.cpu_count())(
+#         delayed(_compute_coord)(coord, weights, Z) for coord in sliced_up)
+#
+#     W[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[0] for x in results]
+#     K[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[1] for x in results]
+#
+#     a = (K + K.T)
+#     b = (W + W.T)
+#
+#     # a[np.where(a == 0)] = -np.inf
+#     # b[np.where(b == 0)] = -np.inf
+#     # np.fill_diagonal(a, 0)
+#     # np.fill_diagonal(b, 0)
+#     return a,b
 
-
-def _expand_corrmat_predict(Z, weights):
+def _expand_corrmat_predict(Z, weights, disable_parallelization=False):
     """
-    Gets full correlation matrix
+    Gets expanded correlation matrix
+
     Parameters
     ----------
     C : Numpy array
         Subject's correlation matrix
+
     weights : Numpy array
-        Weights matrix calculated using _rbf function matrix
+        Weights matrix calculated using rbf function matrix
+
     mode : str
         Specifies whether to compute over all elecs (fit mode) or just new elecs
         (predict mode)
+
     Returns
     ----------
     numerator : Numpy array
         Numerator for the expanded correlation matrix
     denominator : Numpy array
         Denominator for the expanded correlation matrix
+
     """
-
-
     Z[np.eye(Z.shape[0]) == 1] = 0
     Z[np.where(np.isinf(Z))] = 0
-    #Z[np.where(np.isnan(Z))] = 0
-
 
     n = weights.shape[0]
     K = np.zeros([n, n])
     W = np.zeros([n, n])
 
-    s = Z.shape[0]
+    s = 0
+    if disable_parallelization:
+
+        vals = range(s, n)
+        for x in vals:
+            xweights = weights[x, :]
+
+            vals = range(x)
+            for y in vals:
+
+                yweights = weights[y, :]
+
+                next_weights = np.add.outer(xweights, yweights)
+                w = _fill_upper_diagonal(next_weights, -np.inf)
+
+                W[x, y] = logsumexp(w)
+                K[x, y] = logsumexp(w, b=Z)
 
 
+    else:
+        from joblib import Parallel, delayed
+        import multiprocessing
 
-    sliced_up = [(x, y) for x in range(s, n) for y in range(x)]
-    results = Parallel(n_jobs=multiprocessing.cpu_count())(
-        delayed(_compute_coord)(coord, weights, Z) for coord in sliced_up)
+        sliced_up = [(x, y) for x in range(s, n) for y in range(x)]
+        results = Parallel(n_jobs=multiprocessing.cpu_count())(
+            delayed(_compute_coord)(coord, weights, Z) for coord in sliced_up)
 
-    W[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[0] for x in results]
-    K[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[1] for x in results]
+        W[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[0] for x in results]
+        K[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[1] for x in results]
 
     a = (K + K.T)
     b = (W + W.T)
 
-    a[np.where(a == 0)] = -np.inf
-    b[np.where(b == 0)] = -np.inf
-    np.fill_diagonal(a, 0)
-    np.fill_diagonal(b, 0)
     return a,b
 
 def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore'):

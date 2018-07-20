@@ -26,7 +26,7 @@ n_elecs = 10
 # simulate correlation matrix
 data = [se.simulate_model_bos(n_samples=10, sample_rate=1000, locs=locs, sample_locs = n_elecs) for x in range(n_subs)]
 # test model to compare
-test_model = se.Model(data=data, locs=locs)
+test_model = se.Model(data=data, locs=locs, disable_parallelization=True)
 R = se.create_cov('random', len(locs))
 
 recon_1 = np.matrix([[ 0.453253,  1.569009,  1.569009,  0.944886, -0.115692],
@@ -148,7 +148,7 @@ def test_electrode_contingencies_1_null_set():
 
     # create model from subsetted covariance matrix and locations
     model = se.Model(numerator=np.array(data), denominator=np.ones(np.shape(data)), locs=mo_locs,
-                     n_subs=1)
+                     n_subs=1, disable_parallelization=True)
 
     # create brain object from the remaining locations - first find remaining locations
     sub_locs = gray_locs[~gray_locs.index.isin(mo_locs.index)]

@@ -2,7 +2,6 @@ from __future__ import print_function
 #from builtins import range
 import supereeg as se
 import numpy as np
-from helpers import _to_exp_real, _to_log_complex
 
 # some example locations
 
@@ -19,6 +18,7 @@ locs = np.array([[-61., -77.,  -3.],
                  [ 39.,   3.,  37.],
                  [ 59., -17.,  17.]])
 
+# locs = se.simulate_locations(1000)
 
 # number of timeseries samples
 n_samples = 10
@@ -27,10 +27,11 @@ n_subs = 6
 # number of electrodes
 n_elecs = 5
 # simulate correlation matrix
-data = [se.simulate_model_bos(n_samples=10, sample_rate=10, locs=locs, sample_locs = n_elecs, random_seed=123, noise=0) for x in range(n_subs)]
+data = [se.simulate_model_bos(n_samples=10, sample_rate=10, locs=locs, sample_locs = n_elecs)
+        for x in range(n_subs)]
 
-mo1 = se.Model(data=data[0:3], locs=locs, n_subs=3)
-mo2 = se.Model(data=data[3:6], locs=locs, n_subs=3)
+mo1 = se.Model(data=data[0:5], locs=locs, n_subs=3)
+mo2 = se.Model(data=data[5:6], locs=locs, n_subs=1)
 
 mo3 = mo1 + mo2
 
@@ -41,14 +42,11 @@ assert np.allclose(mo3.denominator, mo3_alt.denominator, equal_nan=True)
 
 assert(mo3.n_subs == mo1.n_subs + mo2.n_subs)
 
-mo2_recon = mo3 - mo1
 
-np.allclose(mo2.numerator.real, mo2_recon.numerator.real, equal_nan=True)
-np.allclose(mo2.numerator.imag, mo2_recon.numerator.imag, equal_nan=True)
-np.allclose(mo2.denominator, mo2_recon.denominator, equal_nan=True)
+mo1_recon = mo3 - mo2
+
+np.allclose(mo2.numerator.real, mo1_recon.numerator.real, equal_nan=True)
+np.allclose(mo2.numerator.imag, mo1_recon.numerator.imag, equal_nan=True)
+np.allclose(mo2.denominator, mo1_recon.denominator, equal_nan=True)
 
 
-
-
-# d = np.array([[1,2,-np.inf],[4,5,6],[7,8,9,]])
-# _to_exp_real(_to_log_complex(d))

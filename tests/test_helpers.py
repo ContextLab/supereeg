@@ -10,9 +10,9 @@ import os
 ## don't understand why i have to do this:
 from supereeg.helpers import _std, _gray, _resample_nii, _apply_by_file_index, _kurt_vals, _get_corrmat, _z2r, _r2z, \
     _log_rbf, \
-    _blur_corrmat, _timeseries_recon, _chunker, \
+    _timeseries_recon, _chunker, \
     _corr_column, _normalize_Y, _near_neighbor, _vox_size, _count_overlapping, _resample, \
-    _nifti_to_brain, _brain_to_nifti, _to_log_complex, _to_exp_real, _logsubexp
+    _nifti_to_brain, _brain_to_nifti, _to_log_complex, _to_exp_real, _logsubexp, _expand_corrmat_predict
 from supereeg.model import _recover_model
 
 locs = np.array([[-61., -77.,  -3.],
@@ -44,7 +44,7 @@ bo = se.Brain(data=sub_data.as_matrix(), sessions=bo_full.sessions, locs=sub_loc
 # simulate correlation matrix
 data = [se.simulate_model_bos(n_samples=10, locs=locs, sample_locs=n_elecs) for x in range(n_subs)]
 # test model to compare
-test_model = se.Model(data=data, locs=locs, rbf_width=100)
+test_model = se.Model(data=data, locs=locs, rbf_width=100, disable_parallelization=True)
 bo_nii = se.Brain(_gray(20))
 nii = _brain_to_nifti(bo_nii, _gray(20))
 
@@ -94,7 +94,7 @@ def test_kurt_vals():
 #     assert np.allclose(kurts_1, kurts_2)
 
 def test_logsubexp():
-    b_try = _to_exp_real(_logsubexp(a_log, c_log))
+    b_try = _to_exp_real(_logsubexp(c_log, a_log))
     assert np.allclose(b_try, b)
 
 def test_get_corrmat():
@@ -151,12 +151,13 @@ def test_tal2mni():
     tal_vals = tal2mni(locs)
     assert isinstance(tal_vals, np.ndarray)
 
-def test_blur_corrmat():
+def test_expand_corrmat_predict():
     sub_corrmat = _get_corrmat(bo)
     np.fill_diagonal(sub_corrmat, 0)
     sub_corrmat = _r2z(sub_corrmat)
     weights = _log_rbf(test_model.locs, bo.locs)
-    expanded_num_f, expanded_denom_f = _blur_corrmat(sub_corrmat, weights)
+
+    expanded_num_f, expanded_denom_f = _expand_corrmat_predict(sub_corrmat, weights, disable_parallelization=True)
 
     assert isinstance(expanded_num_f, np.ndarray)
     assert isinstance(expanded_denom_f, np.ndarray)
@@ -168,9 +169,9 @@ def test_expand_corrmats_same():
     sub_corrmat_z = _r2z(sub_corrmat)
     weights = _log_rbf(test_model.locs, bo.locs)
 
-    expanded_num_p, expanded_denom_p = _blur_corrmat(sub_corrmat_z, weights)
+    expanded_num_p, expanded_denom_p = _expand_corrmat_predict(sub_corrmat_z, weights)
     model_corrmat_p = _recover_model(expanded_num_p, expanded_denom_p)
-    expanded_num_f, expanded_denom_f = _blur_corrmat(sub_corrmat_z, weights)
+    expanded_num_f, expanded_denom_f = _expand_corrmat_predict(sub_corrmat_z, weights)
     model_corrmat_f = _recover_model(expanded_num_f, expanded_denom_f)
 
     np.fill_diagonal(model_corrmat_f, 0)
@@ -217,14 +218,14 @@ def test_normalize_Y():
 def test_model_compile(tmpdir):
     p = tmpdir.mkdir("sub")
     for m in range(len(data)):
-        model = se.Model(data=data[m], locs=locs)
+        model = se.Model(data=data[m], locs=locs, disable_parallelization=True)
         model.save(fname=os.path.join(p.strpath, str(m)))
     model_data = glob.glob(os.path.join(p.strpath, '*.mo'))
     mo = se.Model(model_data)
     assert isinstance(mo, se.Model)
-    assert np.allclose(mo.numerator.real, test_model.numerator.real)
-    assert np.allclose(mo.numerator.imag, test_model.numerator.imag)
-    assert np.allclose(mo.denominator, test_model.denominator)
+    assert np.allclose(mo.numerator.real, test_model.numerator.real, equal_nan=True)
+    assert np.allclose(mo.numerator.imag, test_model.numerator.imag, equal_nan=True)
+    assert np.allclose(mo.denominator, test_model.denominator, equal_nan=True)
 
 def test_timeseries_recon():
     recon = _timeseries_recon(bo, test_model, 2)
