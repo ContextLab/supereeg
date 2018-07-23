@@ -276,6 +276,11 @@ def create_cov(cov, n_elecs=10):
         R = datasets.make_spd_matrix(n_elecs, random_state=1)
         R -= np.min(R)
         R /= np.max(R)
+    # elif cov is 'distance':
+    #     D = scipy.squareform(1 - scipy.pdist(locs)) ## locs would need to be parameter passed to support this
+    #     R = np.max(D) - D
+    #     R = R - np.min(R)
+    #     R
     elif isinstance(cov, np.ndarray):
         R = cov
     return R

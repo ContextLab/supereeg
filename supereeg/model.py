@@ -6,7 +6,7 @@ import warnings
 import six
 import pandas as pd
 import numpy as np
-
+from scipy import linalg
 import seaborn as sns
 import deepdish as dd
 import matplotlib.pyplot as plt
@@ -114,6 +114,7 @@ class Model(object):
 
                     self.__init__(data=data[0], locs=locs, template=template, meta=self.meta, rbf_width=self.rbf_width,
                                   n_subs=1, disable_parallelization=disable_parallelization)
+
                     for i in range(1, len(data)):
                         self.update(Model(data=data[i], locs=locs, template=template, meta=self.meta,
                                           rbf_width=self.rbf_width, n_subs=1,
@@ -174,19 +175,19 @@ class Model(object):
             bo = Brain(template)
             rbf_weights = _log_rbf(bo.get_locs(), self.locs, width=self.rbf_width)
             #rbf_weights = _rbf(bo.get_locs(), self.locs, width=self.rbf_width)
-            #self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
-            self.numerator, self.denominator = _expand_corrmat_predict(self.get_model(z_transform=True), rbf_weights,
-                                                                       disable_parallelization=disable_parallelization)
+            self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
+            # self.numerator, self.denominator = _expand_corrmat_predict(self.get_model(z_transform=True), rbf_weights,
+            #                                                            disable_parallelization=disable_parallelization)
             self.locs = bo.get_locs()
         elif not (locs is None): #blur correlation matrix out to locs
             if (isinstance(data, Brain) or isinstance(data, Model)): #self.locs may now conflict with locs
                 if not ((locs.shape[0] == self.locs.shape[0]) and np.allclose(locs, self.locs)):
                     rbf_weights = _log_rbf(locs, self.locs, width=self.rbf_width)
                     #rbf_weights = _rbf(locs, self.locs, width=self.rbf_width)
-                    # self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
-                    self.numerator, self.denominator = _expand_corrmat_predict(self.get_model(z_transform=True),
-                                                                               rbf_weights,
-                                                                               disable_parallelization = disable_parallelization)
+                    self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
+                    # self.numerator, self.denominator = _expand_corrmat_predict(self.get_model(z_transform=True),
+                    #                                                            rbf_weights,
+                    #                                                            disable_parallelization=disable_parallelization)
                     self.locs = locs
         elif self.locs is None:
             self.locs = locs
@@ -265,9 +266,9 @@ class Model(object):
         else:
             rbf_weights = _log_rbf(new_locs, self.get_locs())
             #rbf_weights = _rbf(new_locs, self.get_locs())
-            #self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
-            self.numerator, self.denominator = _expand_corrmat_predict(self.get_model(z_transform=True), rbf_weights,
-                                                                       disable_parallelization=self.disable_parallelization)
+            self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
+            # self.numerator, self.denominator = _expand_corrmat_predict(self.get_model(z_transform=True), rbf_weights,
+            #                                                            disable_parallelization=self.disable_parallelization)
             self.locs = new_locs
 
         self.locs, loc_inds = _unique(self.locs)
@@ -645,8 +646,8 @@ def _bo2model(bo, locs, width=20, disable_parallelization=False):
     sub_corrmat_z = _r2z(sub_corrmat)
     sub_rbf_weights = _log_rbf(locs, bo.get_locs(), width=width)
     #sub_rbf_weights = _rbf(locs, bo.get_locs(), width=width)
-    #n, d = _blur_corrmat(sub_corrmat_z, sub_rbf_weights)
-    n, d = _expand_corrmat_predict(sub_corrmat_z, sub_rbf_weights, disable_parallelization=disable_parallelization)
+    n, d = _blur_corrmat(sub_corrmat_z, sub_rbf_weights)
+    # n, d = _expand_corrmat_predict(sub_corrmat_z, sub_rbf_weights, disable_parallelization=disable_parallelization)
     return n, d, 1
 
 def _mo2model(mo, locs, width=20, disable_parallelization=False):
@@ -662,8 +663,8 @@ def _mo2model(mo, locs, width=20, disable_parallelization=False):
         #np.fill_diagonal(sub_corrmat_z, 0)
         sub_rbf_weights = _log_rbf(locs, mo.locs, width=width)
         #sub_rbf_weights = _rbf(locs, mo.locs, width=width)
-        # n, d = _blur_corrmat(sub_corrmat_z, sub_rbf_weights)
-        n, d = _expand_corrmat_predict(sub_corrmat_z, sub_rbf_weights, disable_parallelization=disable_parallelization)
+        n, d = _blur_corrmat(sub_corrmat_z, sub_rbf_weights)
+        # n, d = _expand_corrmat_predict(sub_corrmat_z, sub_rbf_weights, disable_parallelization=disable_parallelization)
         return n, d, mo.n_subs
 
 def _force_update(mo, bo, width=20):
@@ -681,9 +682,9 @@ def _force_update(mo, bo, width=20):
     #sub__rbf_weights = _rbf(mo.locs, bo.get_locs(), width=width)
 
     #  get subject expanded correlation matrix
-    # num_corrmat_x, denom_corrmat_x = _blur_corrmat(sub_corrmat_z, sub__rbf_weights)
-    num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(sub_corrmat_z, sub__rbf_weights,
-                                                             disable_parallelization=mo.disable_parallelization)
+    num_corrmat_x, denom_corrmat_x = _blur_corrmat(sub_corrmat_z, sub__rbf_weights)
+    # num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(sub_corrmat_z, sub__rbf_weights,
+    #                                                          disable_parallelization=mo.disable_parallelization)
 
     # add in new subj data
     #with np.errstate(invalid='ignore'):
@@ -804,8 +805,6 @@ def _recover_model(num, denom, z_transform=False):
         np.fill_diagonal(m, np.inf)
         return m
     else:
-        # np.fill_diagonal(m, 1)
-        # return _z2r(m)
         m = _z2r(m)
         np.fill_diagonal(m, 1)
         return m

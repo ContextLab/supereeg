@@ -455,12 +455,13 @@ def _to_log_complex(X):
     warnings.simplefilter('ignore')
 
     signX = np.sign(X)
+
     posX = np.log(np.multiply(signX > 0, X))
     posX[np.isnan(posX)] = 0
 
     negX = np.log(np.abs(np.multiply(signX < 0, X)))
-    negX = np.multiply(0+1j, negX)
-    negX.real[np.isnan(negX)] = 0
+    negX = np.multiply(0 + 1j, negX)
+    negX.real[np.isnan(negX.real)] = 0
 
     return posX + negX
 
@@ -468,9 +469,12 @@ def _to_exp_real(C):
     """
     Inverse of _to_log_complex
     """
-    posX = C.real
-    negX = C.imag
-    return np.exp(posX) - np.exp(negX)
+    posX = np.exp(C.real)
+    if np.any(np.iscomplex(C)):
+        negX = np.exp(C.imag)
+        return posX - negX
+    else:
+        return posX
 
 
 
@@ -598,8 +602,15 @@ def _expand_corrmat_predict(Z, weights, disable_parallelization=False):
     Z[np.eye(Z.shape[0]) == 1] = 0
     Z[np.where(np.isinf(Z))] = 0
 
+    Z_pos = copy.deepcopy(Z)
+    Z_pos[Z_pos < 0] = 0.
+    Z_neg = copy.deepcopy(Z)
+    Z_neg[Z_neg > 0] = 0.
+    Z_neg *= -1
+
     n = weights.shape[0]
-    K = np.zeros([n, n])
+    K_pos = np.zeros([n, n])
+    K_neg = np.zeros([n, n])
     W = np.zeros([n, n])
 
     s = 0
@@ -618,24 +629,30 @@ def _expand_corrmat_predict(Z, weights, disable_parallelization=False):
                 w = _fill_upper_diagonal(next_weights, -np.inf)
 
                 W[x, y] = logsumexp(w)
-                K[x, y] = logsumexp(w, b=Z)
-
+                K_pos[x, y] = logsumexp(w, b=Z_pos)
+                K_neg[x, y] = logsumexp(w, b=Z_neg)
 
     else:
         from joblib import Parallel, delayed
         import multiprocessing
-
         sliced_up = [(x, y) for x in range(s, n) for y in range(x)]
         results = Parallel(n_jobs=multiprocessing.cpu_count())(
             delayed(_compute_coord)(coord, weights, Z) for coord in sliced_up)
+        results_pos = Parallel(n_jobs=multiprocessing.cpu_count())(
+            delayed(_compute_coord)(coord, weights, Z_pos) for coord in sliced_up)
+        results_neg = Parallel(n_jobs=multiprocessing.cpu_count())(
+            delayed(_compute_coord)(coord, weights, Z_neg) for coord in sliced_up)
 
         W[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[0] for x in results]
-        K[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[1] for x in results]
+        K_pos[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[1] for x in results_pos]
+        K_neg[[x[0] for x in sliced_up], [x[1] for x in sliced_up]] = [x[1] for x in results_neg]
 
-    a = (K + K.T)
+    a_pos = (K_pos + K_pos.T)
+    a_neg = np.multiply(0+1j, (K_neg + K_neg.T))
+    a = a_pos + a_neg
     b = (W + W.T)
 
-    return a,b
+    return a, b
 
 def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore'):
     """

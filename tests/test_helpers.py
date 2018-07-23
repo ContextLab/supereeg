@@ -169,9 +169,9 @@ def test_expand_corrmats_same():
     sub_corrmat_z = _r2z(sub_corrmat)
     weights = _log_rbf(test_model.locs, bo.locs)
 
-    expanded_num_p, expanded_denom_p = _expand_corrmat_predict(sub_corrmat_z, weights)
+    expanded_num_p, expanded_denom_p = _expand_corrmat_predict(sub_corrmat_z, weights, disable_parallelization=True)
     model_corrmat_p = _recover_model(expanded_num_p, expanded_denom_p)
-    expanded_num_f, expanded_denom_f = _expand_corrmat_predict(sub_corrmat_z, weights)
+    expanded_num_f, expanded_denom_f = _expand_corrmat_predict(sub_corrmat_z, weights, disable_parallelization=True)
     model_corrmat_f = _recover_model(expanded_num_f, expanded_denom_f)
 
     np.fill_diagonal(model_corrmat_f, 0)
