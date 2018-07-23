@@ -335,7 +335,11 @@ class Model(object):
         mo.set_locs(bor.get_locs(), include_original_locs=True)
 
         activations = _timeseries_recon(bor, mo, preprocess=preprocess)
-        return Brain(data=activations, locs=mo.locs, sessions=bor.sessions, sample_rate=bor.sample_rate)
+        loc_labels = np.array(['observed'] * len(mo.get_locs()))
+        loc_labels[_count_overlapping(bor.get_locs(), mo.get_locs())] = ['reconstructed']
+
+        return Brain(data=activations, locs=mo.locs, sessions=bor.sessions,
+                     sample_rate=bor.sample_rate, label=loc_labels.tolist())
 
         # bool_mask = _count_overlapping(self, bo)
         #
@@ -406,7 +410,6 @@ class Model(object):
         m1.n_subs += m2.n_subs
 
         #combine meta info
-        #m1.meta.update(m2.meta)
         if not ((m1.meta is None) and (m2.meta is None)):
             if m1.meta is None:
                 m1.meta = m2.meta
