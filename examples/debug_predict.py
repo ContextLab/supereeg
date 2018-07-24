@@ -190,10 +190,10 @@ def time_by_file_index_bo(bo, ave_data, known_inds, unknown_inds):
 locs = se.simulate_locations(n_elecs=100, random_seed=True)
 
 # simulate brain object
-bo = se.simulate_bo(n_samples=1000, sample_rate=100, cov='random', locs=locs, noise =0)
+bo = se.simulate_bo(n_samples=1000, sample_rate=100, cov='random', locs=locs, noise=0, random_seed=True)
 
 # sample 10 locations, and get indices
-sub_locs = locs.sample(90, replace=False).sort_values(['x', 'y', 'z']).index.values.tolist()
+sub_locs = locs.sample(90, replace=False, random_state=123).sort_values(['x', 'y', 'z']).index.values.tolist()
 
 # index brain object to get sample patient
 bo_sample = bo[: ,sub_locs]

@@ -707,10 +707,14 @@ def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore'):
         Z = _blur_corrmat(Z, rbf_weights)
 
     K = _z2r(Z)
-    Kaa = K[model_locs_in_brain, :][:, model_locs_in_brain]
+
+    known_inds, unknown_inds = known_unknown(mo.get_locs().as_matrix(), bo.get_locs().as_matrix(),
+                                             bo.get_locs().as_matrix())
+
+    Kaa = K[known_inds, :][:, known_inds]
     Kaa_inv = np.linalg.pinv(Kaa)
 
-    Kba = K[~model_locs_in_brain, :][:, model_locs_in_brain]
+    Kba = K[unknown_inds, :][:, known_inds]
 
     sessions = bo.sessions.unique()
     chunks = [np.array(i) for session in sessions for i in _chunker(bo.sessions[bo.sessions == session].index.tolist(), chunk_size)]
@@ -1163,7 +1167,78 @@ def _empty(X): #TODO: ad test for _empty
         return np.any(np.isclose(X.shape, 0))
 
 
+def get_rows(all_locations, subj_locations):
+    """
+        This function indexes a subject's electrode locations in the full array of electrode locations
 
+        Parameters
+        ----------
+        all_locations : ndarray
+            Full array of electrode locations
+
+        subj_locations : ndarray
+            Array of subject's electrode locations
+
+        Returns
+        ----------
+        results : list
+            Indexs for subject electrodes in the full array of electrodes
+
+        """
+    if subj_locations.ndim == 1:
+        subj_locations = subj_locations.reshape(1, 3)
+    inds = np.full([1, subj_locations.shape[0]], np.nan)
+    for i in range(subj_locations.shape[0]):
+        possible_locations = np.ones([all_locations.shape[0], 1])
+        try:
+            for c in range(all_locations.shape[1]):
+                possible_locations[all_locations[:, c] != subj_locations[i, c], :] = 0
+            inds[0, i] = np.where(possible_locations == 1)[0][0]
+        except:
+            pass
+    inds = inds[~np.isnan(inds)]
+    return [int(x) for x in inds]
+
+
+def known_unknown(fullarray, knownarray, subarray=None, electrode=None):
+    """
+        This finds the indices for known and unknown electrodes in the full array of electrode locations
+
+        Parameters
+        ----------
+        fullarray : ndarray
+            Full array of electrode locations - All electrodes that pass the kurtosis test
+
+        knownarray : ndarray
+            Subset of known electrode locations  - Subject's electrode locations that pass the kurtosis test (in the leave one out case, this is also has the specified location missing)
+
+        subarray : ndarray
+            Subject's electrode locations (all)
+
+        electrode : str
+            Index of electrode in subarray to remove (in the leave one out case)
+
+        Returns
+        ----------
+        known_inds : list
+            List of known indices
+
+        unknown_inds : list
+            List of unknown indices
+
+        """
+    ## where known electrodes are located in full matrix
+    known_inds = get_rows(np.round(fullarray, 3), np.round(knownarray, 3))
+    ## where the rest of the electrodes are located
+    unknown_inds = list(set(range(np.shape(fullarray)[0])) - set(known_inds))
+    if not electrode is None:
+        ## where the removed electrode is located in full matrix
+        rm_full_ind = get_rows(np.round(fullarray, 3), np.round(subarray[int(electrode)], 3))
+        ## where the removed electrode is located in the unknown index subset
+        rm_unknown_ind = np.where(np.array(unknown_inds) == np.array(rm_full_ind))[0].tolist()
+        return known_inds, unknown_inds, rm_unknown_ind
+    else:
+        return known_inds, unknown_inds
 
 
 
