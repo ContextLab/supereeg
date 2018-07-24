@@ -33,7 +33,10 @@ from scipy.spatial.distance import squareform
 from scipy.special import logsumexp
 from scipy import linalg
 from scipy.ndimage.interpolation import zoom
-# from joblib import Parallel, delayed
+try:
+    from itertools import zip_longest
+except:
+    from itertools import izip_longest as zip_longest
 
 
 def _std(res=None):
@@ -654,6 +657,11 @@ def _expand_corrmat_predict(Z, weights, disable_parallelization=False):
 
     return a, b
 
+def chunker(iterable, n, fillvalue=None):
+    #"grouper(3, 'ABCDEFG', 'x') --> ABC DEF Gxx"
+    args = [iter(iterable)] * n
+    return zip_longest(fillvalue=fillvalue, *args)
+
 def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore'):
     """
     Reconstruction done by chunking by session
@@ -717,13 +725,16 @@ def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore'):
     Kba = K[unknown_inds, :][:, known_inds]
 
     sessions = bo.sessions.unique()
+    try_filter = []
     chunks = [np.array(i) for session in sessions for i in _chunker(bo.sessions[bo.sessions == session].index.tolist(), chunk_size)]
-    chunks = list(map(lambda x: np.array(x[x != np.array(None)], dtype=np.int8), chunks))
-
+    #chunks = list(map(lambda x: x[x != np.array(None)], chunks))
+    for i in chunks:
+        #try_filter.append(filter(lambda v: v is not None, i))  ## this is only for python 2.7... need a better solution
+        try_filter.append([x for x in i if x is not None])
     #predict unobserved brain activitity
     combined_data = np.zeros((data.shape[0], K.shape[0]), dtype=data.dtype)
-    combined_data[:, ~model_locs_in_brain] = np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv), chunks)))
-    combined_data[:, model_locs_in_brain] = data
+    combined_data[:, unknown_inds] = np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv), try_filter)))
+    combined_data[:, known_inds] = data
 
     for s in sessions:
         combined_data[bo.sessions==s, :] = zscore(combined_data[bo.sessions==s, :])
