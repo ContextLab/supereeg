@@ -657,10 +657,6 @@ def _expand_corrmat_predict(Z, weights, disable_parallelization=False):
 
     return a, b
 
-def chunker(iterable, n, fillvalue=None):
-    #"grouper(3, 'ABCDEFG', 'x') --> ABC DEF Gxx"
-    args = [iter(iterable)] * n
-    return zip_longest(fillvalue=fillvalue, *args)
 
 def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore'):
     """

@@ -557,59 +557,58 @@ class Model(object):
 
         return self.update(other, inplace=False)
 
-    # def __sub__(self, other):
-    #     """
-    #     Subtract one model object from another.  Meta property, stable is updated to False.
-    #
-    #     Parameters
-    #     ----------
-    #     other: Model object to be subtracted from the current object
-    #     """
-    #
-    #     # if type(other) == Brain:
-    #     #     m2 = Model(other, locs=other.get_locs())
-    #     # elif type(other) == Nifti:
-    #     #     m2 = Model(other)
-    #     # elif type(other) == Model:
-    #     #     m2 = Model(other, locs=other.locs) #make a copy
-    #     # else:
-    #     #     raise Exception('Unsupported data type for subtraction from Model object: ' + str(type(other)))
-    #
-    #     assert type(other) == Model, 'Unsupported data type for subtraction from Model object: ' + str(type(other))
-    #
-    #     m1 = self
-    #     m2 = other
-    #
-    #     assert m1.rbf_width == m2.rbf_width
-    #
-    #     locs = _union(m1.get_locs(), m2.get_locs())
-    #
-    #     m1.set_locs(locs)
-    #     m2.set_locs(locs)
-    #
-    #     m1.meta.update(m2.meta)
-    #
-    #     meta = copy.deepcopy(m1.meta)
-    #
-    #     assert meta['stable'] == True, 'solution unstable'
-    #
-    #
-    #
-    #     meta['stable'] = False
-    #
-    #     warnings.warn('solution unstable')
-    #
-    #
-    #     m1_z = m1.n_subs * m1.get_model(z_transform=True)
-    #
-    #     m2_z = m2.n_subs * m2.get_model(z_transform=True)
-    #
-    #     m2_z[np.where(np.isnan(m2_z))] = 0
-    #     np.fill_diagonal(m2_z, 1)
-    #
-    #     return Model(data=_z2r(np.divide(np.subtract(m1_z,m2_z), (m1.n_subs-m2.n_subs))),
-    #                  locs=locs, n_subs=m1.n_subs - m2.n_subs, meta=meta, rbf_width=m1.rbf_width)
-    #
+    def __sub__(self, other):
+        """
+        Subtract one model object from another.  Meta property, stable is updated to False.
+
+        Parameters
+        ----------
+        other: Model object to be subtracted from the current object
+        """
+
+        # if type(other) == Brain:
+        #     m2 = Model(other, locs=other.get_locs())
+        # elif type(other) == Nifti:
+        #     m2 = Model(other)
+        # elif type(other) == Model:
+        #     m2 = Model(other, locs=other.locs) #make a copy
+        # else:
+        #     raise Exception('Unsupported data type for subtraction from Model object: ' + str(type(other)))
+
+        assert type(other) == Model, 'Unsupported data type for subtraction from Model object: ' + str(type(other))
+
+        m1 = self
+        m2 = other
+
+        assert m1.rbf_width == m2.rbf_width
+
+        locs = _union(m1.get_locs(), m2.get_locs())
+
+        m1.set_locs(locs)
+        m2.set_locs(locs)
+
+        #m1.meta.update(m2.meta)
+
+        meta = copy.deepcopy(m1.meta)
+
+        #assert meta['stable'] == True, 'solution unstable'
+
+
+
+        #meta['stable'] = False
+
+        warnings.warn('solution unstable')
+
+
+        m1_z = m1.n_subs * m1.get_model(z_transform=True)
+        m2_z = m2.n_subs * m2.get_model(z_transform=True)
+
+        m2_z[np.where(np.isnan(m2_z))] = 0
+        np.fill_diagonal(m2_z, 1)
+
+        return Model(data=_z2r(np.divide(np.subtract(m1_z,m2_z), (m1.n_subs-m2.n_subs))),
+                     locs=locs, n_subs=m1.n_subs - m2.n_subs, meta=meta, rbf_width=m1.rbf_width)
+
 
 
 ###################################
