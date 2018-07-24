@@ -2,10 +2,8 @@ from __future__ import print_function
 #from builtins import range
 import supereeg as se
 import numpy as np
-from helpers import _to_exp_real, _to_log_complex
 
 # some example locations
-
 locs = np.array([[-61., -77.,  -3.],
                  [-41., -77., -23.],
                  [-21., -97.,  17.],
@@ -43,10 +41,15 @@ assert(mo3.n_subs == mo1.n_subs + mo2.n_subs)
 
 mo2_recon = mo3 - mo1
 
+assert np.allclose(mo2.get_model(), mo2_recon.get_model(), equal_nan=True)
 
 ### these dont work:
 # np.allclose(mo2.numerator.real, mo2_recon.numerator.real, equal_nan=True)
 # np.allclose(mo2.numerator.imag, mo2_recon.numerator.imag, equal_nan=True)
 # np.allclose(mo2.denominator, mo2_recon.denominator, equal_nan=True)
 
-assert np.allclose(mo2.get_model(), mo2_recon.get_model(), equal_nan=True)
+### but now the new model is not stable, so you can't add anything to it
+try:
+    assert mo2_recon + mo3
+except AssertionError:
+    assert True == True

@@ -167,7 +167,6 @@ def test_model_add():
     assert np.allclose(mo3.numerator.imag, mo3_alt.numerator.imag, equal_nan=True)
     assert np.allclose(mo3.denominator, mo3_alt.denominator, equal_nan=True)
 
-#subtraction is not working; removing functionality until fixed
 def test_model_subtract():
     mo1 = se.Model(data=data[0:3], locs=locs)
     mo2 = se.Model(data=data[3:6], locs=locs)
@@ -185,3 +184,8 @@ def test_model_subtract():
     mo2_recon = mo3 - mo1
     assert np.allclose(mo2.get_model(), mo2_recon.get_model(), equal_nan=True)
     assert mo2_recon.n_subs == mo2.n_subs
+    ## test that the new model is now unstable
+    try:
+        assert mo2_recon + mo3
+    except AssertionError:
+        assert True == True

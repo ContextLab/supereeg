@@ -82,8 +82,8 @@ class Model(object):
         self.denominator = None
         self.n_subs = 0
         self.meta = meta
-        # if self.meta is None:
-        #     self.meta= {'stable': True}
+        if self.meta is None:
+            self.meta= {'stable': True}
         self.disable_parallelization = disable_parallelization
         self.date_created = date_created
         #self.rbf_width = float(rbf_width)
@@ -389,7 +389,7 @@ class Model(object):
         else:
             m1 = Model(self)
 
-        #assert m1.meta['stable']==True, 'solution unstable'
+        assert m1.meta['stable']==True, 'solution unstable'
 
         m2 = Model(data)
         locs = _union(m1.get_locs(), m2.get_locs())
@@ -566,15 +566,6 @@ class Model(object):
         other: Model object to be subtracted from the current object
         """
 
-        # if type(other) == Brain:
-        #     m2 = Model(other, locs=other.get_locs())
-        # elif type(other) == Nifti:
-        #     m2 = Model(other)
-        # elif type(other) == Model:
-        #     m2 = Model(other, locs=other.locs) #make a copy
-        # else:
-        #     raise Exception('Unsupported data type for subtraction from Model object: ' + str(type(other)))
-
         assert type(other) == Model, 'Unsupported data type for subtraction from Model object: ' + str(type(other))
 
         m1 = self
@@ -587,15 +578,15 @@ class Model(object):
         m1.set_locs(locs)
         m2.set_locs(locs)
 
-        #m1.meta.update(m2.meta)
+        m1.meta.update(m2.meta)
 
         meta = copy.deepcopy(m1.meta)
 
-        #assert meta['stable'] == True, 'solution unstable'
+        assert meta['stable'] == True, 'solution unstable'
 
 
 
-        #meta['stable'] = False
+        meta['stable'] = False
 
         warnings.warn('solution unstable')
 
