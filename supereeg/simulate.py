@@ -6,7 +6,7 @@ import pandas as pd
 from sklearn import datasets
 from .brain import Brain
 
-def simulate_locations(n_elecs=10):
+def simulate_locations(n_elecs=10, random_seed=False):
     """
     Simulate iEEG locations
 
@@ -21,6 +21,12 @@ def simulate_locations(n_elecs=10):
         A location by coordinate (x,y,z) matrix of simulated electrode locations
 
     """
+    if random_seed:
+        if isinstance(random_seed, int):
+            np.random.seed(random_seed)
+        else:
+            np.random.seed(123)
+
 
     sim_locs = np.array([[np.random.randint(-50, 50), np.random.randint(-50, 50),
                np.random.randint(-50, 50)] for i in range(n_elecs)])

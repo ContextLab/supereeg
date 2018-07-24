@@ -915,6 +915,7 @@ def _corr_column(X, Y):
     return np.array([pearsonr(x, y)[0] for x, y in zip(X.T, Y.T)])
 
 
+
 def _normalize_Y(Y_matrix): #TODO: should be part of bo.get_data and/or Brain.__init__
     """
     Normalizes timeseries

@@ -16,24 +16,17 @@ original brain object.
 # License: MIT
 
 import supereeg as se
-
+from supereeg.helpers import _corr_column
+import numpy as np
 
 # simulate 100 locations
 locs = se.simulate_locations(n_elecs=100)
 
 # simulate brain object
-bo = se.simulate_bo(n_samples=1000, sample_rate=1000, cov='random', locs=locs, noise =.3)
+bo = se.simulate_bo(n_samples=1000, sample_rate=100, cov='random', locs=locs, noise =.1)
 
 # sample 10 locations, and get indices
-sub_locs = locs.sample(10, replace=False).sort_values(['x', 'y', 'z'])
-
-R = se.create_cov(cov='random', n_elecs=len(sub_locs))
-toe_model = se.Model(data=R, locs=sub_locs)
-
-bo_s = toe_model.predict(bo, nearest_neighbor=False)
-
-# sample 10 locations, and get indices
-sub_locs = locs.sample(10).sort_values(['x', 'y', 'z']).index.values.tolist()
+sub_locs = locs.sample(90, replace=False).sort_values(['x', 'y', 'z']).index.values.tolist()
 
 # index brain object to get sample patient
 bo_sample = bo[: ,sub_locs]
@@ -43,3 +36,14 @@ bo_sample.plot_locs()
 
 # plot sample patient data
 bo_sample.plot_data()
+
+
+r_model = se.Model(data=bo, locs=locs, disable_parallelization=True)
+
+bo_s = r_model.predict(bo_sample, nearest_neighbor=False)
+
+recon_labels = np.where(np.array(bo_s.label) == 'reconstructed')
+corrs = _corr_column(bo.get_data().as_matrix(), bo_s.get_data().as_matrix())
+
+corrs[recon_labels].mean()
+

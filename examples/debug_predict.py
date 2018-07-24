@@ -1,7 +1,7 @@
 import supereeg as se
 import sys
 import numpy as np
-import six
+from supereeg.helpers import _corr_column
 try:
     from itertools import zip_longest
 except:
@@ -186,37 +186,47 @@ def time_by_file_index_bo(bo, ave_data, known_inds, unknown_inds):
         return results
 
 
-bo = se.load(sys.argv[1])
+# simulate 100 locations
+locs = se.simulate_locations(n_elecs=100, random_seed=True)
 
-bo_kurts = se.load(sys.argv[2], field='kurtosis')
+# simulate brain object
+bo = se.simulate_bo(n_samples=1000, sample_rate=100, cov='random', locs=locs, noise =0)
 
-bo.kurtosis = bo_kurts
+# sample 10 locations, and get indices
+sub_locs = locs.sample(90, replace=False).sort_values(['x', 'y', 'z']).index.values.tolist()
 
-bo.get_filtered_bo()
+# index brain object to get sample patient
+bo_sample = bo[: ,sub_locs]
 
-Model = np.load(sys.argv[3])['average_matrix']
+# plot sample patient locations
+bo_sample.plot_locs()
 
-R = np.load(sys.argv[4])['locs']
+# plot sample patient data
+bo_sample.plot_data()
 
-mo = se.Model(numerator=Model, denominator=np.ones((np.shape(R)[0], np.shape(R)[0])), locs = R, n_subs=1)
+Model = se.Model(data=bo, locs=locs)
 
-R_K_subj = bo.get_locs().as_matrix()
+R = Model.get_locs().as_matrix()
+
+R_K_subj = bo_sample.get_locs().as_matrix()
 
 known_inds, unknown_inds = known_unknown(R, R_K_subj, R_K_subj)
 
 
 
-recon_data = time_by_file_index_bo(bo, Model, known_inds, unknown_inds)
+recon_data = time_by_file_index_bo(bo_sample, Model.get_model(z_transform=False), known_inds, unknown_inds)
 
 bo_r = se.Brain(data=recon_data, locs = R, sample_rate=bo.sample_rate, sessions=bo.sessions.as_matrix())
 
-k, u = known_unknown(bo.get_locs().as_matrix(),R[1])
-data_1 = zscore(bo.get_data()[k]).ravel()
-data_2 = bo_r.get_data().as_matrix()[:, 1]
 
-for i in range(len(bo_r.label)):
-    if i in unknown_inds:
-        print(i)
-        bo_r.label[i] = 'reconstructed'
+corrs_1 = _corr_column(bo.get_data().as_matrix(), bo_r.get_data().as_matrix())
+corrs_1[unknown_inds].mean()
 
-bo_r2 = mo.predict(bo)
+
+
+bo_s = Model.predict(bo_sample, nearest_neighbor=False)
+
+recon_labels = np.where(np.array(bo_s.label) == 'reconstructed')
+corrs = _corr_column(bo.get_data().as_matrix(), bo_s.get_data().as_matrix())
+
+corrs[recon_labels].mean()
