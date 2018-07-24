@@ -336,7 +336,7 @@ class Model(object):
 
         activations = _timeseries_recon(bor, mo, preprocess=preprocess)
         loc_labels = np.array(['observed'] * len(mo.get_locs()))
-        loc_labels[_count_overlapping(bor.get_locs(), mo.get_locs())] = ['reconstructed']
+        loc_labels[~_count_overlapping(bor.get_locs(), mo.get_locs())] = ['reconstructed']
 
         return Brain(data=activations, locs=mo.locs, sessions=bor.sessions, sample_rate=bor.sample_rate, label=loc_labels.tolist())
 

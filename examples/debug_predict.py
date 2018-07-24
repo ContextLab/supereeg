@@ -168,7 +168,7 @@ def time_by_file_index_bo(bo, ave_data, known_inds, unknown_inds):
         block_results = []
         next = np.zeros((bo.get_data().shape[0], ave_data.shape[0]))
         ### right now, this doesn't use an overlap in time, but this needs to be addressed when I see edge effects
-        for each in chunker(next_inds, 50000):
+        for each in chunker(next_inds, 1000):
 
             next[:, unknown_inds] = np.squeeze(np.dot(np.dot(Kba, Kaa_inv),
                                                zscore(np.float32(
@@ -220,13 +220,16 @@ bo_r = se.Brain(data=recon_data, locs = R, sample_rate=bo.sample_rate, sessions=
 
 
 corrs_1 = _corr_column(bo.get_data().as_matrix(), bo_r.get_data().as_matrix())
-corrs_1[unknown_inds].mean()
 
+print('correlations with timeseries recon  = ' + str(corrs_1[unknown_inds].mean()))
 
 
 bo_s = Model.predict(bo_sample, nearest_neighbor=False)
 
-recon_labels = np.where(np.array(bo_s.label) == 'reconstructed')
+recon_labels = np.where(np.array(bo_s.label) != 'observed')
+
 corrs = _corr_column(bo.get_data().as_matrix(), bo_s.get_data().as_matrix())
 
-corrs[recon_labels].mean()
+print('correlations with predict function = ' + str(corrs[recon_labels].mean()))
+
+assert np.allclose(corrs, corrs_1)

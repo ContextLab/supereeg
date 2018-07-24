@@ -42,7 +42,7 @@ r_model = se.Model(data=bo, locs=locs, disable_parallelization=True)
 
 bo_s = r_model.predict(bo_sample, nearest_neighbor=False)
 
-recon_labels = np.where(np.array(bo_s.label) == 'reconstructed')
+recon_labels = np.where(np.array(bo_s.label) != 'observed')
 corrs = _corr_column(bo.get_data().as_matrix(), bo_s.get_data().as_matrix())
 
 corrs[recon_labels].mean()
