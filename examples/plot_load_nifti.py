@@ -20,5 +20,3 @@ nii = se.load('example_nifti')
 
 # plot nifti
 nii.plot_anat()
-
-mo_nii = se.Model('example_nifti')

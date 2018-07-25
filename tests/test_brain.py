@@ -36,7 +36,7 @@ def test_bo_nelecs_int():
     assert isinstance(bo.n_elecs, int)
 
 def test_bo_nsecs_list():
-    assert (bo.n_secs is None) or (type(bo.n_secs) is np.ndarray) or (type(bo.n_secs) is int) or (type(bo.n_secs) is float)
+    assert (bo.dur is None) or (type(bo.dur) is np.ndarray) or (type(bo.dur) is int) or (type(bo.dur) is float)
 
 def test_bo_nsessions_int():
     assert isinstance(bo.n_sessions, int)

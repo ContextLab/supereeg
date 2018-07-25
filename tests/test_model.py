@@ -34,11 +34,11 @@ n_elecs = 5
 data = [se.simulate_model_bos(n_samples=10, sample_rate=10, locs=locs, sample_locs = n_elecs, random_seed=123, noise=0) for x in range(n_subs)]
 
 # test model to compare
-test_model = se.Model(data=data[0:3], locs=locs, rbf_width=20, n_subs=3, disable_parallelization=True)
+test_model = se.Model(data=data[0:3], locs=locs, rbf_width=20, n_subs=3)
 
 
 def test_create_model_1bo():
-    model = se.Model(data=data[0], locs=locs, disable_parallelization=True)
+    model = se.Model(data=data[0], locs=locs)
     assert isinstance(model, se.Model)
 
 def test_create_model_2bo():
@@ -49,74 +49,74 @@ def test_create_model_superuser():
     locs = np.random.multivariate_normal(np.zeros(3), np.eye(3), size=10)
     numerator = scipy.linalg.toeplitz(np.linspace(0,10,len(locs))[::-1])
     denominator = np.random.multivariate_normal(np.zeros(10), np.eye(10), size=10)
-    model = se.Model(numerator=numerator, denominator=denominator, locs=locs, n_subs=2, disable_parallelization=True)
+    model = se.Model(numerator=numerator, denominator=denominator, locs=locs, n_subs=2)
     assert isinstance(model, se.Model)
 
 def test_model_predict():
-    model = se.Model(data=data[0:2], locs=locs, disable_parallelization=True)
+    model = se.Model(data=data[0:2], locs=locs)
     bo = model.predict(data[0], nearest_neighbor=False)
-    print(data[0].n_secs)
+    print(data[0].dur)
     assert isinstance(bo, se.Brain)
 
 def test_model_predict_nn():
-    print(data[0].n_secs)
-    model = se.Model(data=data[0:2], locs=locs, disable_parallelization=True)
+    print(data[0].dur)
+    model = se.Model(data=data[0:2], locs=locs)
     bo = model.predict(data[0], nearest_neighbor=True)
     assert isinstance(bo, se.Brain)
 
 def test_model_predict_nn_thresh():
-    model = se.Model(data=data[0:2], locs=locs, disable_parallelization=True)
+    model = se.Model(data=data[0:2], locs=locs)
     bo = model.predict(data[0], nearest_neighbor=True, match_threshold=30)
     assert isinstance(bo, se.Brain)
 
 def test_model_predict_nn_0():
-    model = se.Model(data=data[0:2], locs=locs, disable_parallelization=True)
+    model = se.Model(data=data[0:2], locs=locs)
     bo_1 = model.predict(data[0], nearest_neighbor=True, match_threshold=0)
     bo_2 = model.predict(data[0], nearest_neighbor=False)
     assert isinstance(bo_1, se.Brain)
     assert np.allclose(bo_1.get_data(), bo_2.get_data())
 
 def test_update():
-    model = se.Model(data=data[1:3], locs=locs, disable_parallelization=True)
-    mo = se.Model([model, data[0]], disable_parallelization=True)
+    model = se.Model(data=data[1:3], locs=locs)
+    mo = se.Model([model, data[0]])
     assert isinstance(mo, se.Model)
     assert np.allclose(mo.numerator.real, test_model.numerator.real, equal_nan=True)
     assert np.allclose(mo.numerator.imag, test_model.numerator.imag, equal_nan=True)
     assert np.allclose(mo.denominator, test_model.denominator, equal_nan=True)
 
 def test_create_model_str():
-    model = se.Model('example_data', disable_parallelization=True)
+    model = se.Model('example_data')
     assert isinstance(model, se.Model)
 
 def test_create_model_model():
-    mo = se.Model(data=data[1:3], locs=locs, disable_parallelization=True)
-    model = se.Model(mo, disable_parallelization=True)
+    mo = se.Model(data=data[1:3], locs=locs)
+    model = se.Model(mo)
     assert isinstance(model, se.Model)
 
 def test_model_update_inplace():
-    mo = se.Model(data=data[1:3], locs=locs, disable_parallelization=True)
+    mo = se.Model(data=data[1:3], locs=locs)
     mo = mo.update(data[0])
     assert mo is None
 
 def test_model_update_not_inplace():
-    mo = se.Model(data=data[1:3], locs=locs, disable_parallelization=True)
+    mo = se.Model(data=data[1:3], locs=locs)
     mo = mo.update(data[0], inplace=False)
     assert isinstance(mo, se.Model)
 
 def test_model_update_with_model():
-    mo = se.Model(data=data[1:3], locs=locs, disable_parallelization=True)
+    mo = se.Model(data=data[1:3], locs=locs)
     mo = mo.update(mo, inplace=False)
     assert isinstance(mo, se.Model)
 
 def test_model_update_with_model_and_bo():
-    mo = se.Model(data=data[1:3], locs=locs, disable_parallelization=True)
-    mo = se.Model([mo, data[0]], disable_parallelization=True)
+    mo = se.Model(data=data[1:3], locs=locs)
+    mo = se.Model([mo, data[0]])
     assert isinstance(mo, se.Model)
 
 def test_model_update_with_array():
-    mo = se.Model(data=data[1:3], locs=locs, disable_parallelization=True)
+    mo = se.Model(data=data[1:3], locs=locs)
     d = np.random.rand(*mo.numerator.shape)
-    mo = se.Model([mo, d], locs=mo.get_locs(), disable_parallelization=True)
+    mo = se.Model([mo, d], locs=mo.get_locs())
     assert isinstance(mo, se.Model)
 
 #This syntax is ambiguous and no longer supported
@@ -127,12 +127,12 @@ def test_model_update_with_array():
 #        mo = se.Model([mo, d])
 
 def test_model_get_model():
-    mo = se.Model(data=data[1:3], locs=locs, disable_parallelization=True)
+    mo = se.Model(data=data[1:3], locs=locs)
     m = mo.get_model()
     assert isinstance(m, np.ndarray)
 
 def test_model_get_slice():
-    mo = se.Model(data=data[1:3], locs=locs, disable_parallelization=True)
+    mo = se.Model(data=data[1:3], locs=locs)
     inds = [0, 1]
     s = mo.get_slice(inds)
     assert(type(s) == se.Model)
@@ -149,8 +149,8 @@ def test_model_get_slice():
     assert mo_model.shape[0] == len(inds)
 
 def test_model_add():
-    mo1 = se.Model(data=data[0:3], locs=locs, disable_parallelization=True)
-    mo2 = se.Model(data=data[3:6], locs=locs, disable_parallelization=True)
+    mo1 = se.Model(data=data[0:3], locs=locs)
+    mo2 = se.Model(data=data[3:6], locs=locs)
     mo3 = mo1 + mo2
 
     mo1_model = mo1.get_model()
@@ -162,7 +162,7 @@ def test_model_add():
 
     assert mo3.n_subs == mo1.n_subs + mo2.n_subs
 
-    mo3_alt = se.Model(data=data[0:6], locs=locs, disable_parallelization=True)
+    mo3_alt = se.Model(data=data[0:6], locs=locs)
     assert np.allclose(mo3.numerator.real, mo3_alt.numerator.real, equal_nan=True)
     assert np.allclose(mo3.numerator.imag, mo3_alt.numerator.imag, equal_nan=True)
     assert np.allclose(mo3.denominator, mo3_alt.denominator, equal_nan=True)

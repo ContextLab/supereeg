@@ -225,12 +225,13 @@ def _get_corrmat(bo):
         return p + n
 
     def zcorr_xform(bo):
-        return np.multiply(bo.n_secs, _r2z(1 - squareform(pdist(bo.get_data().T, 'correlation'))))
-
+        return np.multiply(bo.dur, _r2z(1 - squareform(pdist(bo.get_data().T, 'correlation'))))
+        ### ask jeremy about this!
+        ## what if bo.nsecs is 0 or None (issue arising in NIFTI case)
     summed_zcorrs = _apply_by_file_index(bo, zcorr_xform, aggregate)
 
     #weight each session by recording time
-    return _z2r(summed_zcorrs / np.sum(bo.n_secs))
+    return _z2r(summed_zcorrs / np.sum(bo.dur))
 
 
 def _z_score(bo):
@@ -1523,7 +1524,7 @@ def _nifti_to_brain(nifti, mask_file=None):
 
     R = np.array(np.dot(vox_coords, S[0:3, 0:3])) + S[:3, 3]
 
-    return Y, R, {'header': hdr}
+    return Y, R, {'header': hdr, 'unscaled_timing':True}
 
 
 def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; could be done much faster using reshape and/or nilearn masking

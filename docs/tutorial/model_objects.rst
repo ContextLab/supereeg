@@ -54,13 +54,13 @@ In addition, new model objects may be created via the ``load`` function
 
 .. code:: ipython2
 
-    nii_mo = se.Model('example_nifti')
+    #nii_mo = se.Model('example_nifti')
 
 Or:
 
 .. code:: ipython2
 
-    nii_mo = se.load('example_nifti', return_type='mo')
+    #nii_mo = se.load('example_nifti', return_type='mo')
 
 Model object methods
 ====================
@@ -81,8 +81,9 @@ This method will give you a summary of the model object:
 
     Number of locations: 210
     Number of subjects: 67
-    Date created: Thu Mar  8 10:17:39 2018
-    Meta data: None
+    RBF width: 20
+    Date created: Wed Jul 25 15:05:45 2018
+    Meta data: {'stable': True}
 
 
 ``mo.plot_data()``
@@ -112,7 +113,7 @@ accepts are supported by ``model.plot``.
 
 .. parsed-literal::
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x10cdbcc50>
+    <matplotlib.axes._subplots.AxesSubplot at 0x10fce3bd0>
 
 
 
@@ -147,7 +148,7 @@ data as a brain object. First, let’s load in an example subjects data:
 .. parsed-literal::
 
     Number of electrodes: 64
-    Recording time in seconds: None
+    Recording time in seconds: [ 5.3984375 14.1328125]
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
     Date created: Fri Mar  9 17:09:35 2018
@@ -166,11 +167,63 @@ model:
 
 .. parsed-literal::
 
-    Number of locations: 210
+    Number of locations: 274
     Number of subjects: 68
-    Date created: Thu Mar  8 10:17:39 2018
-    Meta data: None
+    RBF width: 20
+    Date created: Wed Jul 25 15:05:45 2018
+    Meta data: {'stable': True}
 
+
+You can also update the model by adding two model objects together.
+
+.. code:: ipython2
+
+    mo_bo = se.Model(bo, locs=updated_model.get_locs(), n_subs=1)
+    mo_mo = se.Model(model, locs=updated_model.get_locs(), n_subs=67)
+    added_model = mo_mo + mo_bo
+
+.. code:: ipython2
+
+    np.allclose(added_model.get_model(), updated_model.get_model())
+
+
+
+
+.. parsed-literal::
+
+    True
+
+
+
+You can subtract models too, but once this operation is performed, you
+won’t be able to update the model in the future.
+
+.. code:: ipython2
+
+    new_locs = se.simulate_locations(n_elecs=100)
+    mo_bo = se.Model(bo, locs=new_locs, n_subs=1)
+    add_model = mo_bo + mo_bo
+    sub_model = add_model - mo_bo
+
+.. code:: ipython2
+
+    np.allclose(mo_bo.get_model(), sub_model.get_model())
+
+
+
+
+.. parsed-literal::
+
+    True
+
+
+
+.. code:: ipython2
+
+    try:
+        assert sub_model + add_model
+    except AssertionError:
+        assert True == True 
 
 Note that the model is now comprised of 67 subjects, instead of 66
 before we updated it.
@@ -189,19 +242,19 @@ This method returns the model in the form of a correlation matrix.
 
 .. parsed-literal::
 
-    array([[        nan, -0.09780031,  0.1873786 , ...,  0.26601281,
-             0.34548057,  0.25212948],
-           [-0.09780031,         nan,  0.22795873, ...,  0.35538136,
-             0.07600037, -0.01200271],
-           [ 0.1873786 ,  0.22795873,         nan, ...,  0.01061793,
-            -0.02072452,  0.16553029],
+    array([[ 1.        , -0.09811393,  0.18961899, ...,  0.27256808,
+             0.36030263,  0.25768555],
+           [-0.09811393,  1.        ,  0.23203525, ...,  0.37158962,
+             0.07614721, -0.01200328],
+           [ 0.18961899,  0.23203525,  1.        , ...,  0.01061833,
+            -0.02072749,  0.1670675 ],
            ...,
-           [ 0.26601281,  0.35538136,  0.01061793, ...,         nan,
-             0.08080247,  0.15149649],
-           [ 0.34548057,  0.07600037, -0.02072452, ...,  0.08080247,
-                    nan, -0.03894018],
-           [ 0.25212948, -0.01200271,  0.16553029, ...,  0.15149649,
-            -0.03894018,         nan]])
+           [ 0.27256808,  0.37158962,  0.01061833, ...,  1.        ,
+             0.08097902,  0.15267173],
+           [ 0.36030263,  0.07614721, -0.02072749, ...,  0.08097902,
+             1.        , -0.03895988],
+           [ 0.25768555, -0.01200328,  0.1670675 , ...,  0.15267173,
+            -0.03895988,  1.        ]])
 
 
 
@@ -251,10 +304,10 @@ construct the model from that data:
 .. parsed-literal::
 
     Number of electrodes: 20
-    Recording time in seconds: None
+    Recording time in seconds: [1.]
     Sample Rate in Hz: [1000]
     Number of sessions: 1
-    Date created: Fri Mar 30 13:10:39 2018
+    Date created: Wed Jul 25 15:06:46 2018
     Meta data: {}
 
 
@@ -272,9 +325,10 @@ new model will be generated:
 .. parsed-literal::
 
     Number of locations: 100
-    Number of subjects: 10
-    Date created: Fri Mar 30 13:10:41 2018
-    Meta data: None
+    Number of subjects: 1
+    RBF width: 20
+    Date created: Wed Jul 25 15:06:46 2018
+    Meta data: {'stable': True}
 
 
 Created by adding to model object fields:
@@ -310,14 +364,14 @@ of locations to ``cov`` and the number of location to ``n_elecs``.
 
 
 
-.. image:: model_objects_files/model_objects_31_0.png
+.. image:: model_objects_files/model_objects_38_0.png
 
 
 
 
 .. parsed-literal::
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x10dd10ed0>
+    <matplotlib.axes._subplots.AxesSubplot at 0x110aac310>
 
 
 
@@ -381,7 +435,7 @@ model with the subject’s correlation matrix.
     BEFORE
     ------
     Number of electrodes: 64
-    Recording time in seconds: None
+    Recording time in seconds: [ 5.3984375 14.1328125]
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
     Date created: Fri Mar  9 17:09:35 2018
@@ -389,7 +443,7 @@ model with the subject’s correlation matrix.
 
 
 
-.. image:: model_objects_files/model_objects_37_1.png
+.. image:: model_objects_files/model_objects_44_1.png
 
 
 .. parsed-literal::
@@ -397,15 +451,15 @@ model with the subject’s correlation matrix.
     AFTER
     ------
     Number of electrodes: 274
-    Recording time in seconds: None
+    Recording time in seconds: [ 5.3984375 14.1328125]
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
-    Date created: Fri Mar 30 13:10:47 2018
+    Date created: Wed Jul 25 15:07:27 2018
     Meta data: {}
 
 
 
-.. image:: model_objects_files/model_objects_37_3.png
+.. image:: model_objects_files/model_objects_44_3.png
 
 
 Using the ``supereeg`` algorithm, we’ve ‘reconstructed’ whole brain
@@ -420,5 +474,5 @@ Observed locations are in black and predicted locations are in red.
 
 
 
-.. image:: model_objects_files/model_objects_40_0.png
+.. image:: model_objects_files/model_objects_47_0.png
 

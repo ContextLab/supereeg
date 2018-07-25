@@ -58,16 +58,16 @@ We’ll also simulate some electrode locations
 .. parsed-literal::
 
         x   y   z
-    0 -31  15 -41
-    1 -30  39  30
-    2 -22  27 -44
-    3 -10  16 -21
-    4  -6 -36 -24
-    5  14 -18  11
-    6  15 -32 -41
-    7  31  46  -1
-    8  44  22  32
-    9  46 -25  13
+    0 -49  -9  -9
+    1 -44 -45  46
+    2 -41 -43   6
+    3 -16  25 -46
+    4 -15 -14  32
+    5  -5 -33  43
+    6  14  29 -29
+    7  28  37 -17
+    8  37  32  16
+    9  48 -19  17
 
 
 Creating a brain object
@@ -91,10 +91,10 @@ To view a summary of the contents of the brain object, you can call the
 .. parsed-literal::
 
     Number of electrodes: 10
-    Recording time in seconds: None
+    Recording time in seconds: [10.]
     Sample Rate in Hz: [100]
     Number of sessions: 1
-    Date created: Fri Mar 30 13:10:15 2018
+    Date created: Wed Jul 25 15:05:28 2018
     Meta data: {}
 
 
@@ -112,10 +112,10 @@ each session. For example:
 .. parsed-literal::
 
     Number of electrodes: 10
-    Recording time in seconds: None
+    Recording time in seconds: [0.5 0.5]
     Sample Rate in Hz: [1000, 1000]
     Number of sessions: 2
-    Date created: Fri Mar 30 13:10:15 2018
+    Date created: Wed Jul 25 15:05:28 2018
     Meta data: {}
 
 
@@ -137,10 +137,10 @@ want:
 .. parsed-literal::
 
     Number of electrodes: 10
-    Recording time in seconds: None
+    Recording time in seconds: [0.5 0.5]
     Sample Rate in Hz: [1000, 1000]
     Number of sessions: 2
-    Date created: Fri Mar 30 13:10:15 2018
+    Date created: Wed Jul 25 15:05:28 2018
     Meta data: {'Hospital': 'DHMC', 'subjectID': '123', 'Investigator': 'Andy'}
 
 
@@ -225,68 +225,68 @@ that can be accessed with the ``get_data`` function:
       <tbody>
         <tr>
           <th>0</th>
-          <td>0.614784</td>
-          <td>0.964979</td>
-          <td>1.218808</td>
-          <td>-0.247632</td>
-          <td>0.263596</td>
-          <td>0.497417</td>
-          <td>-0.481262</td>
-          <td>0.031378</td>
-          <td>-0.238338</td>
-          <td>1.031453</td>
+          <td>0.924370</td>
+          <td>0.914526</td>
+          <td>1.095568</td>
+          <td>0.352445</td>
+          <td>0.711048</td>
+          <td>0.430243</td>
+          <td>0.871362</td>
+          <td>0.166763</td>
+          <td>0.659245</td>
+          <td>0.304610</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>0.522190</td>
-          <td>0.396732</td>
-          <td>0.122518</td>
-          <td>1.325476</td>
-          <td>1.300881</td>
-          <td>0.980269</td>
-          <td>1.752166</td>
-          <td>1.345516</td>
-          <td>0.481455</td>
-          <td>0.107633</td>
+          <td>-0.832705</td>
+          <td>-0.723965</td>
+          <td>-0.376357</td>
+          <td>0.145327</td>
+          <td>-0.154693</td>
+          <td>-0.918987</td>
+          <td>-0.289155</td>
+          <td>-0.091148</td>
+          <td>-0.017903</td>
+          <td>-0.255414</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>-0.219933</td>
-          <td>-0.435439</td>
-          <td>0.111899</td>
-          <td>-1.090518</td>
-          <td>-1.114338</td>
-          <td>-0.352126</td>
-          <td>-0.042179</td>
-          <td>-0.620433</td>
-          <td>0.042105</td>
-          <td>-0.350412</td>
+          <td>-0.525108</td>
+          <td>-0.803321</td>
+          <td>0.024293</td>
+          <td>0.830481</td>
+          <td>0.478131</td>
+          <td>-0.685611</td>
+          <td>0.605745</td>
+          <td>-0.046028</td>
+          <td>-0.520931</td>
+          <td>0.004125</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>0.211689</td>
-          <td>0.307069</td>
-          <td>0.634390</td>
-          <td>0.462167</td>
-          <td>0.123463</td>
-          <td>0.235162</td>
-          <td>0.471458</td>
-          <td>0.386023</td>
-          <td>-0.497866</td>
-          <td>-0.015918</td>
+          <td>0.150251</td>
+          <td>0.241623</td>
+          <td>-0.234430</td>
+          <td>-1.423271</td>
+          <td>-0.449356</td>
+          <td>0.011927</td>
+          <td>-1.133736</td>
+          <td>-1.075342</td>
+          <td>-0.742274</td>
+          <td>-0.677860</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>0.405383</td>
-          <td>0.221017</td>
-          <td>-0.153851</td>
-          <td>0.564812</td>
-          <td>0.400900</td>
-          <td>0.139092</td>
-          <td>-0.218972</td>
-          <td>0.366184</td>
-          <td>-0.222925</td>
-          <td>-0.397235</td>
+          <td>-1.149499</td>
+          <td>-0.964922</td>
+          <td>-0.664460</td>
+          <td>-0.096429</td>
+          <td>-0.320678</td>
+          <td>-0.794880</td>
+          <td>0.497118</td>
+          <td>-0.229457</td>
+          <td>-0.600667</td>
+          <td>-0.650340</td>
         </tr>
       </tbody>
     </table>
@@ -332,33 +332,33 @@ can be retrieved using the ``get_locs`` method:
       <tbody>
         <tr>
           <th>0</th>
-          <td>-31</td>
-          <td>15</td>
-          <td>-41</td>
+          <td>-49</td>
+          <td>-9</td>
+          <td>-9</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>-30</td>
-          <td>39</td>
-          <td>30</td>
+          <td>-44</td>
+          <td>-45</td>
+          <td>46</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>-22</td>
-          <td>27</td>
-          <td>-44</td>
+          <td>-41</td>
+          <td>-43</td>
+          <td>6</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>-10</td>
-          <td>16</td>
-          <td>-21</td>
+          <td>-16</td>
+          <td>25</td>
+          <td>-46</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>-6</td>
-          <td>-36</td>
-          <td>-24</td>
+          <td>-15</td>
+          <td>-14</td>
+          <td>32</td>
         </tr>
       </tbody>
     </table>
@@ -411,21 +411,21 @@ Brain objects are iterable, so you index a brain object like this:
       <tbody>
         <tr>
           <th>0</th>
-          <td>0.614784</td>
-          <td>0.964979</td>
-          <td>1.218808</td>
+          <td>0.924370</td>
+          <td>0.914526</td>
+          <td>1.095568</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>0.522190</td>
-          <td>0.396732</td>
-          <td>0.122518</td>
+          <td>-0.832705</td>
+          <td>-0.723965</td>
+          <td>-0.376357</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>-0.219933</td>
-          <td>-0.435439</td>
-          <td>0.111899</td>
+          <td>-0.525108</td>
+          <td>-0.803321</td>
+          <td>0.024293</td>
         </tr>
       </tbody>
     </table>
@@ -473,21 +473,21 @@ the brain object.
       <tbody>
         <tr>
           <th>0</th>
-          <td>0.614784</td>
-          <td>0.964979</td>
-          <td>1.218808</td>
+          <td>0.924370</td>
+          <td>0.914526</td>
+          <td>1.095568</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>0.522190</td>
-          <td>0.396732</td>
-          <td>0.122518</td>
+          <td>-0.832705</td>
+          <td>-0.723965</td>
+          <td>-0.376357</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>-0.219933</td>
-          <td>-0.435439</td>
-          <td>0.111899</td>
+          <td>-0.525108</td>
+          <td>-0.803321</td>
+          <td>0.024293</td>
         </tr>
       </tbody>
     </table>
@@ -506,10 +506,10 @@ You can resample your data by specifying a new sample rate
 .. parsed-literal::
 
     Number of electrodes: 10
-    Recording time in seconds: None
+    Recording time in seconds: [0.5 0.5]
     Sample Rate in Hz: [64, 64]
     Number of sessions: 2
-    Date created: Fri Mar 30 13:10:15 2018
+    Date created: Wed Jul 25 15:05:28 2018
     Meta data: {'Hospital': 'DHMC', 'subjectID': '123', 'Investigator': 'Andy'}
 
 
@@ -550,7 +550,7 @@ The other pieces of the brain object are listed below:
     n_elecs = bo.n_elecs
     
     # length of each recording session in seconds
-    n_seconds = bo.n_secs
+    n_seconds = bo.dur
     
     # the date and time that the bo was created
     date_created = bo.date_created
@@ -582,10 +582,10 @@ This method will give you a summary of the brain object:
 .. parsed-literal::
 
     Number of electrodes: 10
-    Recording time in seconds: None
+    Recording time in seconds: [0.5 0.5]
     Sample Rate in Hz: [64, 64]
     Number of sessions: 2
-    Date created: Fri Mar 30 13:10:15 2018
+    Date created: Wed Jul 25 15:05:28 2018
     Meta data: {'Hospital': 'DHMC', 'subjectID': '123', 'Investigator': 'Andy'}
 
 
@@ -639,7 +639,7 @@ This method allows you resample a brain object in place.
 
 .. parsed-literal::
 
-    <supereeg.brain.Brain at 0x10e6f5310>
+    <supereeg.brain.Brain at 0x1180a0e10>
 
 
 

@@ -10,9 +10,9 @@ from scipy import linalg
 import seaborn as sns
 import deepdish as dd
 import matplotlib.pyplot as plt
-from .helpers import _get_corrmat, _r2z, _z2r, _log_rbf, _expand_corrmat_predict, _rbf, _blur_corrmat, _plot_borderless,\
+from .helpers import _get_corrmat, _r2z, _z2r, _log_rbf, _blur_corrmat, _plot_borderless,\
     _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp, _gray, _nifti_to_brain,\
-    _unique, _union, _empty, _to_log_complex, _to_exp_real, _logsubexp
+    _unique, _union, _empty, _to_log_complex, _to_exp_real
 from .brain import Brain
 from .nifti import Nifti
 from scipy.spatial.distance import cdist
@@ -84,7 +84,6 @@ class Model(object):
         self.meta = meta
         if self.meta is None:
             self.meta= {'stable': True}
-        self.disable_parallelization = disable_parallelization
         self.date_created = date_created
         #self.rbf_width = float(rbf_width)
         self.rbf_width = rbf_width
@@ -174,20 +173,13 @@ class Model(object):
             assert type(template) == Nifti, 'template must be a Nifti object or a path to a Nifti object'
             bo = Brain(template)
             rbf_weights = _log_rbf(bo.get_locs(), self.locs, width=self.rbf_width)
-            #rbf_weights = _rbf(bo.get_locs(), self.locs, width=self.rbf_width)
             self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
-            # self.numerator, self.denominator = _expand_corrmat_predict(self.get_model(z_transform=True), rbf_weights,
-            #                                                            disable_parallelization=disable_parallelization)
             self.locs = bo.get_locs()
         elif not (locs is None): #blur correlation matrix out to locs
             if (isinstance(data, Brain) or isinstance(data, Model)): #self.locs may now conflict with locs
                 if not ((locs.shape[0] == self.locs.shape[0]) and np.allclose(locs, self.locs)):
                     rbf_weights = _log_rbf(locs, self.locs, width=self.rbf_width)
-                    #rbf_weights = _rbf(locs, self.locs, width=self.rbf_width)
                     self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
-                    # self.numerator, self.denominator = _expand_corrmat_predict(self.get_model(z_transform=True),
-                    #                                                            rbf_weights,
-                    #                                                            disable_parallelization=disable_parallelization)
                     self.locs = locs
         elif self.locs is None:
             self.locs = locs
@@ -265,10 +257,7 @@ class Model(object):
             return
         else:
             rbf_weights = _log_rbf(new_locs, self.get_locs())
-            #rbf_weights = _rbf(new_locs, self.get_locs())
             self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
-            # self.numerator, self.denominator = _expand_corrmat_predict(self.get_model(z_transform=True), rbf_weights,
-            #                                                            disable_parallelization=self.disable_parallelization)
             self.locs = new_locs
 
         self.locs, loc_inds = _unique(self.locs)
@@ -332,7 +321,6 @@ class Model(object):
             mo = self
 
         #blur out model to include brain object locations
-        #### doesnt this always bypass the location cases??
         mo.set_locs(bor.get_locs(), include_original_locs=include_original_locs)
 
         activations = _timeseries_recon(bor, mo, preprocess=preprocess)
@@ -341,35 +329,6 @@ class Model(object):
 
         return Brain(data=activations, locs=mo.locs, sessions=bor.sessions, sample_rate=bor.sample_rate, label=loc_labels.tolist())
 
-        # bool_mask = _count_overlapping(self, bo)
-        #
-        #
-        # case = _which_case(bo, bool_mask)
-        # if case is 'all_overlap':
-        #     d = cdist(bo.get_locs(), self.locs)
-        #     joint_bo_inds = np.where(np.isclose(d, 0))[0]
-        #     bo.locs = bo.locs.iloc[joint_bo_inds]
-        #     bo.data = bo.data[joint_bo_inds]
-        #     bo.kurtosis = bo.kurtosis[joint_bo_inds]
-        #     bo.label = np.array(bo.label)[joint_bo_inds].tolist()
-        #
-        #     return Brain(data=bo.data, locs=bo.locs, sessions=bo.sessions, sample_rate=bo.sample_rate)
-        # else:
-        #     # indices of the mask (where there is overlap
-        #     joint_model_inds = np.where(bool_mask)[0]
-        #     if case is 'no_overlap':
-        #         model_corrmat_z, loc_label, perm_locs = _no_overlap(self, bo, model_corrmat_z, width=self.rbf_width)
-        #     elif case is 'some_overlap':
-        #         model_corrmat_z, loc_label, perm_locs = _some_overlap(self, bo, model_corrmat_z, joint_model_inds, width=self.rbf_width)
-        #     elif case is 'subset':
-        #         model_corrmat_z, loc_label, perm_locs = _subset(self, bo, model_corrmat_z, joint_model_inds)
-        #
-        #     model_corrmat_z = _z2r(model_corrmat_z)
-        #     #np.fill_diagonal(model_corrmat_x, 0) #according to Lucy's latest explorations, we should *not* fill the diagonal with zeros
-        #     activations = _timeseries_recon(bo, model_corrmat_z, preprocess=preprocess)
-        #
-        #     return Brain(data=activations, locs=perm_locs, sessions=bo.sessions,
-        #                 sample_rate=bo.sample_rate, kurtosis=None, label=loc_label)
 
     def update(self, data, inplace=True):
         """
@@ -636,9 +595,7 @@ def _bo2model(bo, locs, width=20, disable_parallelization=False):
     #np.fill_diagonal(sub_corrmat, 0)
     sub_corrmat_z = _r2z(sub_corrmat)
     sub_rbf_weights = _log_rbf(locs, bo.get_locs(), width=width)
-    #sub_rbf_weights = _rbf(locs, bo.get_locs(), width=width)
     n, d = _blur_corrmat(sub_corrmat_z, sub_rbf_weights)
-    # n, d = _expand_corrmat_predict(sub_corrmat_z, sub_rbf_weights, disable_parallelization=disable_parallelization)
     return n, d, 1
 
 def _mo2model(mo, locs, width=20, disable_parallelization=False):
@@ -653,9 +610,7 @@ def _mo2model(mo, locs, width=20, disable_parallelization=False):
         sub_corrmat_z = _recover_model(mo.numerator, mo.denominator, z_transform=True)
         #np.fill_diagonal(sub_corrmat_z, 0)
         sub_rbf_weights = _log_rbf(locs, mo.locs, width=width)
-        #sub_rbf_weights = _rbf(locs, mo.locs, width=width)
         n, d = _blur_corrmat(sub_corrmat_z, sub_rbf_weights)
-        # n, d = _expand_corrmat_predict(sub_corrmat_z, sub_rbf_weights, disable_parallelization=disable_parallelization)
         return n, d, mo.n_subs
 
 def _force_update(mo, bo, width=20):
@@ -674,8 +629,6 @@ def _force_update(mo, bo, width=20):
 
     #  get subject expanded correlation matrix
     num_corrmat_x, denom_corrmat_x = _blur_corrmat(sub_corrmat_z, sub__rbf_weights)
-    # num_corrmat_x, denom_corrmat_x = _expand_corrmat_predict(sub_corrmat_z, sub__rbf_weights,
-    #                                                          disable_parallelization=mo.disable_parallelization)
 
     # add in new subj data
     #with np.errstate(invalid='ignore'):
@@ -683,110 +636,6 @@ def _force_update(mo, bo, width=20):
     n.real = np.logaddexp(n.real, num_corrmat_x.real)
     n.imag = np.logaddexp(n.imag, num_corrmat_x.imag)
     return _recover_model(n, np.logaddexp(mo.denominator, denom_corrmat_x), z_transform=True)
-
-# ###################################
-# # helper functions for predict
-# ###################################
-#
-# def _which_case(bo, bool_mask):
-#     """Determine which predict scenario we are in"""
-#     if all(bool_mask):
-#         return 'all_overlap'
-#     if not any(bool_mask):
-#         return 'no_overlap'
-#     elif sum(bool_mask) == bo.get_locs().shape[0]:
-#         return 'subset'
-#     elif sum(bool_mask) != bo.get_locs().shape[0]:
-#         return 'some_overlap'
-#
-#
-#
-#
-# def _no_overlap(self, bo, model_corrmat_x, width=20):
-#     """ Compute model when there is no overlap """
-#
-#     # expanded _rbf weights
-#     model__rbf_weights = _log_rbf(pd.concat([self.locs, bo.get_locs()]), self.locs, width=width)
-#
-#     # get model expanded correlation matrix
-#     num_corrmat_x, denom_corrmat_x = _blur_corrmat(model_corrmat_x, model__rbf_weights)
-#
-#     # divide the numerator and denominator
-#     #with np.errstate(invalid='ignore'):
-#     model_corrmat_x = _recover_model(num_corrmat_x, denom_corrmat_x, z_transform=True)
-#
-#     # label locations as reconstructed or observed
-#     loc_label = ['reconstructed'] * len(self.locs) + ['observed'] * len(bo.get_locs())
-#
-#     # grab the locs
-#     perm_locs = self.locs.append(bo.get_locs())
-#
-#     return model_corrmat_x, loc_label, perm_locs
-#
-# def _subset(self, bo, model_corrmat_x, joint_model_inds):
-#     """ Compute model when bo is a subset of the model """
-#     # permute the correlation matrix so that the inds to reconstruct are on the right edge of the matrix
-#     perm_inds = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds)) + sorted(set(joint_model_inds))
-#     model_corrmat_x = model_corrmat_x[:, perm_inds][perm_inds, :]
-#
-#     # label locations as reconstructed or observed
-#     loc_label = ['reconstructed'] * (len(self.locs)-len(bo.get_locs())) + ['observed'] * len(bo.get_locs())
-#
-#     # grab permuted locations
-#     perm_locs = self.locs.iloc[perm_inds]
-#
-#     return model_corrmat_x, loc_label, perm_locs
-#
-# def _some_overlap(self, bo, model_corrmat_x, joint_model_inds, width=20):
-#     """ Compute model when there is some overlap """
-#
-#     # get subject indices where subject locs do not overlap with model locs
-#
-#     bool_bo_mask= np.sum([(bo.get_locs() == y).all(1) for idy, y in self.locs.iterrows()], 0).astype(bool)
-#     disjoint_bo_inds = np.where(~bool_bo_mask)[0]
-#     # d = cdist(bo.get_locs(), self.locs)
-#     # disjoint_bo_inds = np.where(np.isclose(d, 0))[0]
-#
-#     # permute the correlation matrix so that the inds to reconstruct are on the right edge of the matrix
-#     perm_inds = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds)) + sorted(set(joint_model_inds))
-#     model_permuted = model_corrmat_x[:, perm_inds][perm_inds, :]
-#
-#     # permute the model locations (important for the _rbf calculation later)
-#     model_locs_permuted = self.locs.iloc[perm_inds]
-#
-#     # permute the subject locations arranging them
-#     bo_perm_inds = sorted(set(range(bo.get_locs().shape[0])) - set(disjoint_bo_inds)) + sorted(set(disjoint_bo_inds))
-#     sub_bo = bo.get_locs().iloc[disjoint_bo_inds]
-#
-#     #FIXME: won't this change the brain object that the user passes in?  seems problematic...do we need to copy it first?
-#     bo = copy.deepcopy(bo) #added this line re: FIXME statement...
-#     bo.locs = bo.locs.iloc[bo_perm_inds]
-#     bo.data = bo.data[bo_perm_inds]
-#     bo.kurtosis = bo.kurtosis[bo_perm_inds]
-#
-#     # permuted indices for unknown model locations
-#     perm_inds_unknown = sorted(set(range(self.locs.shape[0])) - set(joint_model_inds))
-#     # expanded _rbf weights
-#     #model__rbf_weights = _rbf(pd.concat([model_locs_permuted, bo.locs]), model_locs_permuted)
-#     model__rbf_weights = _log_rbf(pd.concat([model_locs_permuted, sub_bo]), model_locs_permuted, width=width)
-#
-#     # get model expanded correlation matrix
-#     num_corrmat_x, denom_corrmat_x = _blur_corrmat(model_permuted, model__rbf_weights)
-#
-#     # divide the numerator and denominator
-#     #with np.errstate(invalid='ignore'):
-#     model_corrmat_x = _recover_model(num_corrmat_x, denom_corrmat_x, z_transform=True)
-#
-#     # add back the permuted correlation matrix for complete subject prediction
-#     model_corrmat_x[:model_permuted.shape[0], :model_permuted.shape[0]] = model_permuted
-#
-#     # label locations as reconstructed or observed
-#     loc_label = ['reconstructed'] * len(self.locs.iloc[perm_inds_unknown]) + ['observed'] * len(bo.get_locs())
-#
-#     ## unclear if this will return too many locations
-#     perm_locs = self.locs.iloc[perm_inds_unknown].append(bo.get_locs())
-#
-#     return model_corrmat_x, loc_label, perm_locs
 
 def _recover_model(num, denom, z_transform=False):
     warnings.simplefilter('ignore')

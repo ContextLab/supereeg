@@ -12,7 +12,7 @@ from supereeg.helpers import _std, _gray, _resample_nii, _apply_by_file_index, _
     _log_rbf, \
     _timeseries_recon, _chunker, \
     _corr_column, _normalize_Y, _near_neighbor, _vox_size, _count_overlapping, _resample, \
-    _nifti_to_brain, _brain_to_nifti, _to_log_complex, _to_exp_real, _logsubexp, _expand_corrmat_predict
+    _nifti_to_brain, _brain_to_nifti, _to_log_complex, _to_exp_real, _logsubexp
 from supereeg.model import _recover_model
 
 locs = np.array([[-61., -77.,  -3.],
@@ -151,43 +151,43 @@ def test_tal2mni():
     tal_vals = tal2mni(locs)
     assert isinstance(tal_vals, np.ndarray)
 
-def test_expand_corrmat_predict():
-    sub_corrmat = _get_corrmat(bo)
-    np.fill_diagonal(sub_corrmat, 0)
-    sub_corrmat = _r2z(sub_corrmat)
-    weights = _log_rbf(test_model.locs, bo.locs)
-
-    expanded_num_f, expanded_denom_f = _expand_corrmat_predict(sub_corrmat, weights, disable_parallelization=True)
-
-    assert isinstance(expanded_num_f, np.ndarray)
-    assert isinstance(expanded_denom_f, np.ndarray)
-    assert np.shape(expanded_num_f)[0] == test_model.locs.shape[0]
-
-def test_expand_corrmats_same():
-    sub_corrmat = _get_corrmat(bo)
-    np.fill_diagonal(sub_corrmat, 0)  # <- possible failpoint
-    sub_corrmat_z = _r2z(sub_corrmat)
-    weights = _log_rbf(test_model.locs, bo.locs)
-
-    expanded_num_p, expanded_denom_p = _expand_corrmat_predict(sub_corrmat_z, weights, disable_parallelization=True)
-    model_corrmat_p = _recover_model(expanded_num_p, expanded_denom_p)
-    expanded_num_f, expanded_denom_f = _expand_corrmat_predict(sub_corrmat_z, weights, disable_parallelization=True)
-    model_corrmat_f = _recover_model(expanded_num_f, expanded_denom_f)
-
-    np.fill_diagonal(model_corrmat_f, 0)
-    np.fill_diagonal(model_corrmat_p, 0)
-
-    s = test_model.locs.shape[0] - bo.locs.shape[0]
-
-    Kba_p = model_corrmat_p[:s, s:]
-    Kba_f = model_corrmat_f[:s, s:]
-    Kaa_p = model_corrmat_p[s:, s:]
-    Kaa_f = model_corrmat_f[s:, s:]
-
-    assert isinstance(Kaa_p, np.ndarray)
-    assert isinstance(Kaa_f, np.ndarray)
-    assert np.allclose(Kaa_p, Kaa_f, equal_nan=True)
-    assert np.allclose(Kba_p, Kba_f, equal_nan=True)
+# def test_expand_corrmat_predict():
+#     sub_corrmat = _get_corrmat(bo)
+#     np.fill_diagonal(sub_corrmat, 0)
+#     sub_corrmat = _r2z(sub_corrmat)
+#     weights = _log_rbf(test_model.locs, bo.locs)
+#
+#     expanded_num_f, expanded_denom_f = _expand_corrmat_predict(sub_corrmat, weights, disable_parallelization=True)
+#
+#     assert isinstance(expanded_num_f, np.ndarray)
+#     assert isinstance(expanded_denom_f, np.ndarray)
+#     assert np.shape(expanded_num_f)[0] == test_model.locs.shape[0]
+#
+# def test_expand_corrmats_same():
+#     sub_corrmat = _get_corrmat(bo)
+#     np.fill_diagonal(sub_corrmat, 0)  # <- possible failpoint
+#     sub_corrmat_z = _r2z(sub_corrmat)
+#     weights = _log_rbf(test_model.locs, bo.locs)
+#
+#     expanded_num_p, expanded_denom_p = _expand_corrmat_predict(sub_corrmat_z, weights, disable_parallelization=True)
+#     model_corrmat_p = _recover_model(expanded_num_p, expanded_denom_p)
+#     expanded_num_f, expanded_denom_f = _expand_corrmat_predict(sub_corrmat_z, weights, disable_parallelization=True)
+#     model_corrmat_f = _recover_model(expanded_num_f, expanded_denom_f)
+#
+#     np.fill_diagonal(model_corrmat_f, 0)
+#     np.fill_diagonal(model_corrmat_p, 0)
+#
+#     s = test_model.locs.shape[0] - bo.locs.shape[0]
+#
+#     Kba_p = model_corrmat_p[:s, s:]
+#     Kba_f = model_corrmat_f[:s, s:]
+#     Kaa_p = model_corrmat_p[s:, s:]
+#     Kaa_f = model_corrmat_f[s:, s:]
+#
+#     assert isinstance(Kaa_p, np.ndarray)
+#     assert isinstance(Kaa_f, np.ndarray)
+#     assert np.allclose(Kaa_p, Kaa_f, equal_nan=True)
+#     assert np.allclose(Kba_p, Kba_f, equal_nan=True)
 
 def test_reconstruct():
     recon_test = test_model.predict(bo, nearest_neighbor=False, force_update=True)

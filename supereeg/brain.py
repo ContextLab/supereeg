@@ -78,7 +78,7 @@ class Brain(object):
     n_elecs : int
         Number of electrodes
 
-    n_secs : float
+    dur : float
         Amount of data in seconds for each session
 
     n_sessions : int
@@ -131,6 +131,7 @@ class Brain(object):
             if isinstance(data, (Nifti, nib.nifti1.Nifti1Image)):
                 warnings.simplefilter('ignore')
                 data, locs, meta = _nifti_to_brain(data)
+                sample_rate = 1
 
             if isinstance(data, Model):
                 locs = data.locs
@@ -179,14 +180,14 @@ class Brain(object):
                 self.sample_rate = None
 
                 if self.data.shape[0] == 1:
-                    self.n_secs = 0
+                    self.dur = 0
                 else:
-                    self.n_secs = None
+                    self.dur = None
                     warnings.warn('No sample rate given.  Number of seconds cant be computed')
 
             if sample_rate is not None:
                 index, counts = np.unique(self.sessions, return_counts=True)
-                self.n_secs = np.true_divide(counts, np.array(sample_rate))
+                self.dur = np.true_divide(counts, np.array(sample_rate))
 
             if meta:
                 self.meta = meta
@@ -250,9 +251,9 @@ class Brain(object):
         ## not entirely sure if try/except necessary and not if/else
         try:
             index, counts = np.unique(self.sessions, return_counts=True)
-            self.n_secs = np.true_divide(counts, np.array(self.sample_rate))
+            self.dur = np.true_divide(counts, np.array(self.sample_rate))
         except:
-            self.n_secs = None
+            self.dur = None
 
     def info(self):
         """
@@ -263,7 +264,7 @@ class Brain(object):
         """
         self.update_info()
         print('Number of electrodes: ' + str(self.n_elecs))
-        print('Recording time in seconds: ' + str(self.n_secs))
+        print('Recording time in seconds: ' + str(self.dur))
         print('Sample Rate in Hz: '+ str(self.sample_rate))
         print('Number of sessions: ' + str(self.n_sessions))
         print('Date created: ' + str(self.date_created))
@@ -275,7 +276,7 @@ class Brain(object):
         x['data'] = self.get_data()
         x['locs'] = self.get_locs()
         x['kurtosis'] = x['kurtosis'][x['kurtosis'] <= x['kurtosis_threshold']]
-        for key in ['n_subs', 'n_elecs', 'n_sessions', 'filter_inds', 'n_secs']:
+        for key in ['n_subs', 'n_elecs', 'n_sessions', 'filter_inds', 'dur']:
             if key in x.keys():
                 x.pop(key)
         boc = Brain(**x)
