@@ -703,6 +703,7 @@ def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore'):
     if ~np.any(brain_locs_in_model):
         #if none of the brain locations are in the model, we need to blur out the model to match up with the
         # locations in the brain object
+        ### isnt this bypassed in the set_locs??
         combined_locs = np.vstack((bo.get_locs(), mo.get_locs()))
         model_locs_in_brain = [False]*bo.get_locs().shape[0]
         model_locs_in_brain.extend([True]*mo.get_locs().shape[0])
@@ -723,9 +724,7 @@ def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore'):
     sessions = bo.sessions.unique()
     try_filter = []
     chunks = [np.array(i) for session in sessions for i in _chunker(bo.sessions[bo.sessions == session].index.tolist(), chunk_size)]
-    #chunks = list(map(lambda x: x[x != np.array(None)], chunks))
     for i in chunks:
-        #try_filter.append(filter(lambda v: v is not None, i))  ## this is only for python 2.7... need a better solution
         try_filter.append([x for x in i if x is not None])
     #predict unobserved brain activitity
     combined_data = np.zeros((data.shape[0], K.shape[0]), dtype=data.dtype)

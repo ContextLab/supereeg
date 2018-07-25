@@ -1,7 +1,7 @@
 import supereeg as se
 import sys
 import numpy as np
-from supereeg.helpers import _corr_column
+from supereeg.helpers import _corr_column, _count_overlapping
 try:
     from itertools import zip_longest
 except:
@@ -244,7 +244,7 @@ noise = 0
 # locs
 locs = se.simulate_locations(n_elecs=100, random_seed=random_seed)
 
-# create model locs from 50 locations
+# create model locs from 75 locations
 mo_locs = locs.sample(75, random_state=random_seed).sort_values(['x', 'y', 'z'])
 
 # create covariance matrix from random seed
@@ -256,7 +256,7 @@ data = c[:, mo_locs.index][mo_locs.index, :]
 # create model from subsetted covariance matrix and locations
 model = se.Model(data=data, locs=mo_locs, n_subs=1)
 
-# create brain object from the remaining locations - first find remaining locations
+# create brain object from the remaining locations - first find remaining 25 locations
 sub_locs = locs[~locs.index.isin(mo_locs.index)]
 
 # create a brain object with all gray locations
@@ -295,7 +295,7 @@ noise = 0
 locs = se.simulate_locations(n_elecs=100, random_seed=random_seed)
 
 # create model locs from 50 locations
-mo_locs = locs.sample(75, random_state=random_seed).sort_values(['x', 'y', 'z'])
+mo_locs = locs.sample(100, random_state=random_seed).sort_values(['x', 'y', 'z'])
 
 # create covariance matrix from random seed
 c = se.create_cov(cov='random', n_elecs=100)
@@ -310,7 +310,7 @@ model = se.Model(data=data, locs=mo_locs, n_subs=1)
 sub_locs = mo_locs.sample(25, random_state=random_seed).sort_values(['x', 'y', 'z'])
 
 # create a brain object with all gray locations
-bo = se.simulate_bo(n_samples=1000, sample_rate=100, locs=locs, noise=noise, random_seed=random_seed)
+bo = se.simulate_bo(n_samples=1000, sample_rate=100, locs=mo_locs, noise=noise, random_seed=random_seed)
 
 # parse brain object to create synthetic patient data
 data = bo.data.iloc[:, sub_locs.index]
@@ -341,7 +341,7 @@ noise = 0
 # locs
 locs = se.simulate_locations(n_elecs=100, random_seed=random_seed)
 
-# create model locs from 50 locations
+# create model locs from 75 locations
 mo_locs = locs.sample(75, random_state=random_seed).sort_values(['x', 'y', 'z'])
 
 # create covariance matrix from random seed
@@ -398,7 +398,7 @@ locs = se.simulate_locations(n_elecs=100, random_seed=random_seed)
 bo_locs = locs.sample(75, random_state=random_seed).sort_values(['x', 'y', 'z'])
 
 # create model locs from 50 locations
-mo_locs = bo_locs.sample(75, random_state=random_seed).sort_values(['x', 'y', 'z'])
+mo_locs = bo_locs.sample(50, random_state=random_seed).sort_values(['x', 'y', 'z'])
 
 # create covariance matrix from random seed
 c = se.create_cov(cov='random', n_elecs=100)
@@ -414,7 +414,7 @@ model = se.Model(data=data, locs=mo_locs, n_subs=1)
 bo = se.simulate_bo(n_samples=1000, sample_rate=100, locs=locs, noise=noise, random_seed=random_seed)
 
 # parse brain object to create synthetic patient data
-data = bo.data.iloc[:, sub_locs.index]
+data = bo.data.iloc[:, bo_locs.index]
 
 # put data and locations together in new sample brain object
 bo_sample = se.Brain(data=data.as_matrix(), locs=bo_locs, sample_rate=100)
@@ -422,13 +422,14 @@ bo_sample = se.Brain(data=data.as_matrix(), locs=bo_locs, sample_rate=100)
 # predict activity at all unknown locations
 recon = model.predict(bo_sample, nearest_neighbor=False)
 
-# get reconstructed indices
+# get reconstructed indices - since model is entirely a subset of brain object,
+# there should be no reconstructed locations
 recon_labels = np.where(np.array(recon.label) != 'observed')
 
 # actual = bo.data.iloc[:, unknown_ind]
-actual_data = bo.get_zscore_data()[:, recon_labels[0]]
+actual_data = bo_sample.get_zscore_data()
 
-recon_data = recon[:, recon_labels[0]].get_data().as_matrix()
+recon_data = recon.get_data().as_matrix()
 corr_vals = _corr_column(actual_data, recon_data)
 
 print('case 4 (model subset of brain locs) correlation = ' +str(corr_vals.mean()))
