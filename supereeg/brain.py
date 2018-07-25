@@ -132,7 +132,6 @@ class Brain(object):
                 warnings.simplefilter('ignore')
                 data, locs, meta = _nifti_to_brain(data)
 
-
             if isinstance(data, Model):
                 locs = data.locs
                 data = data.get_model(z_transform=False)

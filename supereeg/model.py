@@ -584,8 +584,6 @@ class Model(object):
 
         assert meta['stable'] == True, 'solution unstable'
 
-
-
         meta['stable'] = False
 
         warnings.warn('solution unstable')

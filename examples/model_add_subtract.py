@@ -27,8 +27,8 @@ n_elecs = 5
 # simulate correlation matrix
 data = [se.simulate_model_bos(n_samples=10, sample_rate=10, locs=locs, sample_locs = n_elecs, random_seed=123, noise=0) for x in range(n_subs)]
 
-mo1 = se.Model(data=data[0:3], locs=locs, n_subs=3)
-mo2 = se.Model(data=data[3:6], locs=locs, n_subs=3)
+mo1 = se.Model(data=data[0:5], locs=locs, n_subs=5)
+mo2 = se.Model(data=data[5:6], locs=locs, n_subs=6)
 
 mo3 = mo1 + mo2
 
@@ -53,3 +53,4 @@ try:
     assert mo2_recon + mo3
 except AssertionError:
     assert True == True
+
