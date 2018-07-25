@@ -279,7 +279,7 @@ class Model(object):
 
 
     def predict(self, bo, nearest_neighbor=False, match_threshold='auto',
-                force_update=False, update_locs=True, preprocess='zscore'):
+                force_update=False, include_original_locs=True, preprocess='zscore'):
         """
         Takes a brain object and a 'full' covariance model, fills in all
         electrode timeseries for all missing locations and returns the new brain
@@ -332,7 +332,8 @@ class Model(object):
             mo = self
 
         #blur out model to include brain object locations
-        mo.set_locs(bor.get_locs(), include_original_locs=True)
+        #### doesnt this always bypass the location cases??
+        mo.set_locs(bor.get_locs(), include_original_locs=include_original_locs)
 
         activations = _timeseries_recon(bor, mo, preprocess=preprocess)
         loc_labels = np.array(['observed'] * len(mo.get_locs()))
