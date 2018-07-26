@@ -44,7 +44,7 @@ bo = se.Brain(data=sub_data.as_matrix(), sessions=bo_full.sessions, locs=sub_loc
 # simulate correlation matrix
 data = [se.simulate_model_bos(n_samples=10, locs=locs, sample_locs=n_elecs) for x in range(n_subs)]
 # test model to compare
-test_model = se.Model(data=data, locs=locs, rbf_width=100, disable_parallelization=True)
+test_model = se.Model(data=data, locs=locs, rbf_width=100)
 bo_nii = se.Brain(_gray(20))
 nii = _brain_to_nifti(bo_nii, _gray(20))
 
@@ -218,7 +218,7 @@ def test_normalize_Y():
 def test_model_compile(tmpdir):
     p = tmpdir.mkdir("sub")
     for m in range(len(data)):
-        model = se.Model(data=data[m], locs=locs, disable_parallelization=True)
+        model = se.Model(data=data[m], locs=locs)
         model.save(fname=os.path.join(p.strpath, str(m)))
     model_data = glob.glob(os.path.join(p.strpath, '*.mo'))
     mo = se.Model(model_data)

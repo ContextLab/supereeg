@@ -21,7 +21,7 @@ locs = np.array([[-61., -77.,  -3.],
 
 data = [se.simulate_model_bos(n_samples=10, sample_rate=10, locs=locs, sample_locs = 3) for x in range(2)]
 # test model to compare
-mo = se.Model(data=data, locs=locs, disable_parallelization=True)
+mo = se.Model(data=data, locs=locs)
 
 bo = data[0]
 nii_bo = se.Nifti(bo)

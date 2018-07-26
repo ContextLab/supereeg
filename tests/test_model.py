@@ -31,7 +31,8 @@ n_subs = 6
 n_elecs = 5
 # simulate correlation matrix
 
-data = [se.simulate_model_bos(n_samples=10, sample_rate=10, locs=locs, sample_locs = n_elecs, random_seed=123, noise=0) for x in range(n_subs)]
+data = [se.simulate_model_bos(n_samples=10, sample_rate=10, locs=locs, sample_locs = n_elecs,
+                              random_seed=123, noise=0) for x in range(n_subs)]
 
 # test model to compare
 test_model = se.Model(data=data[0:3], locs=locs, rbf_width=20, n_subs=3)

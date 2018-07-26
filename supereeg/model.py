@@ -72,6 +72,7 @@ class Model(object):
         subjects contributing to each matrix cell
     n_subs : int
         Number of subject used to create the model
+
     Returns
     ----------
     model : supereeg.Model instance
