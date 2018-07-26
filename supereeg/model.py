@@ -6,12 +6,12 @@ import warnings
 import six
 import pandas as pd
 import numpy as np
-from scipy import linalg
 import seaborn as sns
 import deepdish as dd
 import matplotlib.pyplot as plt
 from .helpers import _get_corrmat, _r2z, _z2r, _log_rbf, _blur_corrmat, _plot_borderless,\
-    _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, _plot_locs_hyp, _gray, _nifti_to_brain,\
+    _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, \
+    _plot_locs_hyp, _gray, _nifti_to_brain,\
     _unique, _union, _empty, _to_log_complex, _to_exp_real
 from .brain import Brain
 from .nifti import Nifti

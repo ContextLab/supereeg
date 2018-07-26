@@ -8,10 +8,8 @@ from __future__ import print_function
 #each of one session.  we could then use bo.groupby(session).aggregate(xform) to produce a list of objects, where each is
 #comprised of the xform applied to the brain object containing one session worth of data from the original object.
 
-# import multiprocessing
 import copy
 import os
-import warnings
 import numpy.matlib as mat
 import matplotlib.pyplot as plt
 import pandas as pd

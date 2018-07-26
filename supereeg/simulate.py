@@ -15,6 +15,10 @@ def simulate_locations(n_elecs=10, random_seed=False):
     n_elecs : int
         Number of electrodes
 
+    random_seed : bool or int
+        Default False.  If True, set random seed to 123.  If int, set random
+        seed to value.
+
     Returns
     ----------
     elecs : pd.DataFrame
