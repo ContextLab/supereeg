@@ -278,6 +278,7 @@ class Model(object):
         Takes a brain object and a 'full' covariance model, fills in all
         electrode timeseries for all missing locations and returns the new brain
         object
+
         Parameters
         ----------
         bo : a Brain, Nifti, or Model object that will be converted to a Brain object.
@@ -293,13 +294,14 @@ class Model(object):
             that distance of matched voxel
         force_update : False
             If True, will update model with patient's correlation matrix.
-        update_locs : True
+        include_original_locs : True
             If True, and if force_update = False, update the locations in the model to include the locations in the
             given brain object prior to generating the predictions.  If force_update = True, this parameter is
             forced to be True (force_update requires updating the locations) and the specified value is ignored.
         preprocess : 'zscore' or None
             The predict algorithm requires the data to be zscored.  However, if
             your data are already zscored you can bypass this by setting to None.
+
         Returns
         ----------
         bo_p : supereeg.Brain
@@ -338,12 +340,14 @@ class Model(object):
     def update(self, data, inplace=True):
         """
         Update a model with new data.
+
         Parameters
         ----------
         data : supereeg.Brain, supereeg.Nifti, supereeg.Model (or a mixed list of these)
             New data
         inplace : bool
             Whether to run update in place or return a new model (default True).
+
         Returns
         ----------
         model : supereeg.Model
@@ -411,10 +415,12 @@ class Model(object):
         This function wraps seaborn's heatmap and accepts any inputs that seaborn
         supports for models less than 2000x2000.  If the model is larger, the plot cannot be
         generated without specifying a savefile.
+
         Parameters
         ----------
         show : bool
             If False, image not rendered (default : True)
+
         Returns
         ----------
         ax : matplotlib.Axes
@@ -438,6 +444,7 @@ class Model(object):
     def plot_locs(self, pdfpath=None):
         """
         Plots electrode locations from brain object
+
         Parameters
         ----------
         pdfpath : str
@@ -456,6 +463,7 @@ class Model(object):
         The data will be saved as a 'mo' file, which is a dictionary containing
         the elements of a model object saved in the hd5 format using
         `deepdish`.
+
         Parameters
         ----------
         fname : str
@@ -484,10 +492,12 @@ class Model(object):
     def get_slice(self, inds, inplace=False):
         """
         Indexes model object data
+
         Parameters
         ----------
         inds : scalar, list, or numpy array
-            locations you wish to index (relative to model.get_locs())
+            Locations you wish to index (relative to model.get_locs())
+
         inplace : bool
             If True, indexes in place; otherwise a new Model object is returned
             (default: False)
