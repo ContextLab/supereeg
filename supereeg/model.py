@@ -28,7 +28,7 @@ class Model(object):
     new model by passing numerator, denominator, locations, and n_subs
     (see parameters for details).  Additionally, you can include a meta dictionary
     with any other information that you want to save with the model.
-    
+
     Parameters
     ----------
     data : supereeg.Brain or list supereeg.Brain, supereeg.Nifti or list supereeg.Nifti, or Numpy.ndarray
@@ -51,14 +51,17 @@ class Model(object):
         The number of subjects used to create the model.  Required if you pass
         numerator/denominator.  Otherwise computed automatically from the data.
     rbf_width : positive scalar
-        The width of of the radial basis function (RBF) used as a spatial prior for
+        The width of the radial basis function (RBF) used as a spatial prior for
         smoothing estimates at nearby locations.  (Default: 20)
     meta : dict
-        Optional dict containing whatever you want
+        Dict containing whatever you want:
+        Initialized with a stability field {'stable':True}. This is changed
+        to {'stable':False} after subtraction performed.
     date created : str
         Time created
     save : None
         Optional filename to save created model
+
     Attributes
     ----------
     numerator : Numpy.ndarray
@@ -75,7 +78,7 @@ class Model(object):
         A model that can be used to infer timeseries from unknown locations
     """
     def __init__(self, data=None, locs=None, template=None,
-                 numerator=None, denominator=None, disable_parallelization = False,
+                 numerator=None, denominator=None,
                  n_subs=None, meta=None, date_created=None, rbf_width=20, save=None):
         from .load import load
 
@@ -114,12 +117,11 @@ class Model(object):
                     locs, loc_inds = _unique(all_locs)
 
                     self.__init__(data=data[0], locs=locs, template=template, meta=self.meta, rbf_width=self.rbf_width,
-                                  n_subs=1, disable_parallelization=disable_parallelization)
+                                  n_subs=1)
 
                     for i in range(1, len(data)):
                         self.update(Model(data=data[i], locs=locs, template=template, meta=self.meta,
-                                          rbf_width=self.rbf_width, n_subs=1,
-                                          disable_parallelization=disable_parallelization))
+                                          rbf_width=self.rbf_width, n_subs=1))
 
             if isinstance(data, six.string_types):
                 data = load(data)
