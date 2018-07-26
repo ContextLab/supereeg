@@ -4,5 +4,5 @@ from .nifti import Nifti
 from .location import Location
 from .load import load
 from .simulate import *
-from .helpers import model_compile, tal2mni
+from .helpers import tal2mni
 
