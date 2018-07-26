@@ -1,3 +1,18 @@
+
+# -*- coding: utf-8 -*-
+"""
+=============================
+debug predict
+=============================
+
+This example shows debugging process for predict.  Delete before pip push.
+
+"""
+
+# Code source: Lucy Owen & Andrew Heusser
+# License: MIT
+
+
 import supereeg as se
 import sys
 import numpy as np

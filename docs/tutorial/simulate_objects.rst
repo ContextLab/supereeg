@@ -61,33 +61,33 @@ To begin, we can either simulate locations:
       <tbody>
         <tr>
           <th>0</th>
-          <td>-25</td>
-          <td>14</td>
-          <td>22</td>
+          <td>-41</td>
+          <td>-9</td>
+          <td>-19</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>-21</td>
-          <td>-19</td>
-          <td>26</td>
+          <td>-31</td>
+          <td>15</td>
+          <td>-32</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>-21</td>
-          <td>13</td>
-          <td>-41</td>
+          <td>-27</td>
+          <td>-11</td>
+          <td>-34</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>-16</td>
-          <td>14</td>
-          <td>-43</td>
+          <td>-18</td>
+          <td>-14</td>
+          <td>19</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>-13</td>
-          <td>-1</td>
-          <td>13</td>
+          <td>1</td>
+          <td>19</td>
+          <td>38</td>
         </tr>
       </tbody>
     </table>
