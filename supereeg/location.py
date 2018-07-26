@@ -7,8 +7,6 @@ import pandas as pd
 import deepdish as dd
 
 from .brain import Brain
-from .nifti import Nifti
-from .model import Model
 from .helpers import _unique, _union, _count_overlapping, tal2mni, _plot_locs_connectome, _plot_locs_hyp
 
 class Location(object):

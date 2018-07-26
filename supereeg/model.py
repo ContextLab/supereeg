@@ -15,11 +15,12 @@ from .helpers import _get_corrmat, _r2z, _z2r, _log_rbf, _blur_corrmat, _plot_bo
     _unique, _union, _empty, _to_log_complex, _to_exp_real
 from .brain import Brain
 from .nifti import Nifti
-from scipy.spatial.distance import cdist
+
 
 class Model(object):
     """
-    supereeg model and associated locations
+    Model data object for the supereeg package
+
     This class holds your supereeg model.  To create an instance, pass a list
     of brain objects and the model will be generated from those brain objects.
     You can also add your own model by passing a numpy array as your matrix and
@@ -27,6 +28,7 @@ class Model(object):
     new model by passing numerator, denominator, locations, and n_subs
     (see parameters for details).  Additionally, you can include a meta dictionary
     with any other information that you want to save with the model.
+    
     Parameters
     ----------
     data : supereeg.Brain or list supereeg.Brain, supereeg.Nifti or list supereeg.Nifti, or Numpy.ndarray
