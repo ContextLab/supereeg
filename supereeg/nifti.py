@@ -213,10 +213,15 @@ class Nifti(Nifti1Image):
 
 
     def get_locs(self):
+        """
+        Return locations of voxels
+        """
         bo = Brain(self)
         return bo.get_locs()
 
 
     def save(self, filepath):
-
+        """
+        Save file to disk
+        """
         self.to_filename(filepath)

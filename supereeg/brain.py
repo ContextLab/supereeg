@@ -237,6 +237,9 @@ class Brain(object):
         return s
 
     def next(self):
+        """
+        Return next sample from Brain object (wrapper for self.__next__)
+        """
         return self.__next__()
 
     def update_filter_inds(self):
