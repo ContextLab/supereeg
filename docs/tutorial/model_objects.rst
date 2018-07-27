@@ -82,7 +82,7 @@ This method will give you a summary of the model object:
     Number of locations: 210
     Number of subjects: 67
     RBF width: 20
-    Date created: Wed Jul 25 19:19:40 2018
+    Date created: Fri Jul 27 11:44:57 2018
     Meta data: {'stable': True}
 
 
@@ -113,7 +113,7 @@ accepts are supported by ``model.plot``.
 
 .. parsed-literal::
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x10a1915d0>
+    <matplotlib.axes._subplots.AxesSubplot at 0x110fa4e90>
 
 
 
@@ -170,7 +170,7 @@ model:
     Number of locations: 274
     Number of subjects: 68
     RBF width: 20
-    Date created: Wed Jul 25 19:19:40 2018
+    Date created: Fri Jul 27 11:44:57 2018
     Meta data: {'stable': True}
 
 
@@ -307,7 +307,7 @@ construct the model from that data:
     Recording time in seconds: [1.]
     Sample Rate in Hz: [1000]
     Number of sessions: 1
-    Date created: Wed Jul 25 19:20:38 2018
+    Date created: Fri Jul 27 11:45:57 2018
     Meta data: {}
 
 
@@ -327,7 +327,7 @@ new model will be generated:
     Number of locations: 100
     Number of subjects: 1
     RBF width: 20
-    Date created: Wed Jul 25 19:20:39 2018
+    Date created: Fri Jul 27 11:45:57 2018
     Meta data: {'stable': True}
 
 
@@ -371,7 +371,7 @@ of locations to ``cov`` and the number of location to ``n_elecs``.
 
 .. parsed-literal::
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x10afd8150>
+    <matplotlib.axes._subplots.AxesSubplot at 0x113cd3790>
 
 
 
@@ -454,7 +454,7 @@ model with the subject’s correlation matrix.
     Recording time in seconds: [ 5.3984375 14.1328125]
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
-    Date created: Wed Jul 25 19:21:15 2018
+    Date created: Fri Jul 27 11:46:35 2018
     Meta data: {}
 
 

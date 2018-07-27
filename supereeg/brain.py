@@ -342,7 +342,7 @@ class Brain(object):
         date_created = time.strftime("%c")
 
         b = Brain(data=data, locs=locs, sessions=sessions, sample_rate=sample_rate, meta=meta, date_created=date_created,
-                  filter=None, kurtosis=kurtosis)
+                  filter=copy.copy(self.filter), kurtosis=kurtosis)
         if inplace:
             self = b
         else:
