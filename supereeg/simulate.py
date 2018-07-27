@@ -137,7 +137,7 @@ def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None
         Noise added to simulation
 
     set_random_seed : bool or int
-        Default False.  If True, set random seed to 123.  If int, set random seed to value.
+        Default False (choose a random seed).  If True, set random seed to 123.  If int, set random seed to the specified value.
 
     Returns
     ----------
