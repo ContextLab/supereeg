@@ -226,12 +226,13 @@ class Model(object):
         """
         return self.locs
 
-    def set_locs(self, new_locs, include_original_locs=False):
+    def set_locs(self, new_locs, force_include_bo_locs=False):
         """
         update self.locs to a new set of locations (and blur the correlation matrix accordingly).  if
-        include_original_locs is True (default: False), the final set of locations will also include the old locations.
+        force_include_bo_locs is True (default: False), the final set of locations will also include the old locations.
         """
-        if include_original_locs:
+
+        if force_include_bo_locs:
             new_locs = _union(self.locs, new_locs)
         else:
             new_locs, tmp = _unique(new_locs)
@@ -245,7 +246,7 @@ class Model(object):
                 self.n_locs = new_locs.shape[0]
             return
         elif _empty(new_locs):
-            if not include_original_locs:
+            if not force_include_bo_locs:
                 self.locs = pd.DataFrame(columns=('x', 'y', 'z'))
                 self.n_locs = 0
                 self.numerator = np.array([], dtype=np.complex128)
@@ -273,7 +274,7 @@ class Model(object):
 
 
     def predict(self, bo, nearest_neighbor=False, match_threshold='auto',
-                force_update=False, include_original_locs=True, preprocess='zscore'):
+                force_update=False, force_include_bo_locs=True, preprocess='zscore'):
         """
         Takes a brain object and a 'full' covariance model, fills in all
         electrode timeseries for all missing locations and returns the new brain
@@ -294,7 +295,7 @@ class Model(object):
             that distance of matched voxel
         force_update : False
             If True, will update model with patient's correlation matrix.
-        include_original_locs : True
+        force_include_bo_locs : True
             If True, and if force_update = False, update the locations in the model to include the locations in the
             given brain object prior to generating the predictions.  If force_update = True, this parameter is
             forced to be True (force_update requires updating the locations) and the specified value is ignored.
@@ -328,7 +329,7 @@ class Model(object):
             mo = self
 
         #blur out model to include brain object locations
-        mo.set_locs(bor.get_locs(), include_original_locs=include_original_locs)
+        mo.set_locs(bor.get_locs(), force_include_bo_locs=force_include_bo_locs)
 
         activations = _timeseries_recon(bor, mo, preprocess=preprocess)
         loc_labels = np.array(['observed'] * len(mo.get_locs()))
@@ -490,22 +491,25 @@ class Model(object):
 
         dd.io.save(fname, mo, compression=compression)
 
-    def get_slice(self, inds, inplace=False):
+    def get_slice(self, loc_inds, inplace=False):
         """
-        Indexes model object data
+        Indexes brain object data
 
         Parameters
         ----------
-        inds : scalar, list, or numpy array
-            Locations you wish to index (relative to model.get_locs())
+        sample_inds : int or list
+            Times you wish to index
+
+        loc_inds : int or list
+            Locations you with to index
 
         inplace : bool
-            If True, indexes in place; otherwise a new Model object is returned
-            (default: False)
+            If True, indexes in place.
+
         """
-        numerator = self.numerator[inds][:, inds]
-        denominator = self.denominator[inds][:, inds]
-        locs = self.locs.iloc[inds]
+        numerator = self.numerator[loc_inds][:, loc_inds]
+        denominator = self.denominator[loc_inds][:, loc_inds]
+        locs = self.locs.iloc[loc_inds]
         n_subs = self.n_subs
         meta = self.meta
         date_created = time.strftime("%c")
@@ -558,7 +562,7 @@ class Model(object):
 
         meta = copy.deepcopy(m1.meta)
 
-        assert meta['stable'] == True, 'solution unstable'
+        assert meta['stable'] == True, 'Model is numerically unstable; cannot update model'
 
         meta['stable'] = False
 
@@ -605,7 +609,7 @@ def _create_locs(self, locs, template):
     if self.locs.shape[0]>1000:
         warnings.warn('Model locations exceed 1000, this may take a while. Go get a cup of coffee or brew some tea!')
 
-def _bo2model(bo, locs, width=20, disable_parallelization=False):
+def _bo2model(bo, locs, width=20):
     """Returns numerator and denominator given a brain object"""
     sub_corrmat = _get_corrmat(bo)
     #np.fill_diagonal(sub_corrmat, 0)
@@ -614,7 +618,7 @@ def _bo2model(bo, locs, width=20, disable_parallelization=False):
     n, d = _blur_corrmat(sub_corrmat_z, sub_rbf_weights)
     return n, d, 1
 
-def _mo2model(mo, locs, width=20, disable_parallelization=False):
+def _mo2model(mo, locs, width=20):
     """Returns numerator and denominator for model object"""
 
     if not isinstance(locs, pd.DataFrame):
@@ -641,7 +645,6 @@ def _force_update(mo, bo, width=20):
 
     # get _rbf weights
     sub__rbf_weights = _log_rbf(mo.locs, bo.get_locs(), width=width)
-    #sub__rbf_weights = _rbf(mo.locs, bo.get_locs(), width=width)
 
     #  get subject expanded correlation matrix
     num_corrmat_x, denom_corrmat_x = _blur_corrmat(sub_corrmat_z, sub__rbf_weights)

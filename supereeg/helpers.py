@@ -202,7 +202,6 @@ def _kurt_vals(bo):
 
 
 def _get_corrmat(bo):
-    ## add flag to for ztransform like in recover_model
     """
     Function that calculates the average subject level correlation matrix for brain object across session
 
@@ -224,8 +223,7 @@ def _get_corrmat(bo):
 
     def zcorr_xform(bo):
         return np.multiply(bo.dur, _r2z(1 - squareform(pdist(bo.get_data().T, 'correlation'))))
-        ### ask jeremy about this!
-        ## what if bo.nsecs is 0 or None (issue arising in NIFTI case)
+
     summed_zcorrs = _apply_by_file_index(bo, zcorr_xform, aggregate)
 
     #weight each session by recording time
@@ -331,8 +329,6 @@ def _log_rbf(to_coords, from_coords, width=20):
     weights = -cdist(to_coords, from_coords, metric='euclidean') ** 2 / float(width)
     return weights
 
-def _rbf(x, center, width=20):
-    return np.exp(-cdist(x, center, metric='euclidean') ** 2 / float(width))
 
 def tal2mni(r):
     """
@@ -479,7 +475,6 @@ def _to_exp_real(C):
         return posX
 
 
-
 def _logsubexp(x,y):
     """
     Subtracts logged arrays
@@ -505,7 +500,7 @@ def _logsubexp(x,y):
     return sub_log
 
 
-def _fill_upper_diagonal(M, value):
+def _fill_upper_triangle(M, value):
     upper_tri = np.copy(M)
     upper_tri[np.triu_indices(upper_tri.shape[0], 1)] = value
     np.fill_diagonal(upper_tri, value)

@@ -6,7 +6,7 @@ import pandas as pd
 from sklearn import datasets
 from .brain import Brain
 
-def simulate_locations(n_elecs=10, random_seed=False):
+def simulate_locations(n_elecs=10, set_random_seed=False):
     """
     Simulate iEEG locations
 
@@ -15,7 +15,7 @@ def simulate_locations(n_elecs=10, random_seed=False):
     n_elecs : int
         Number of electrodes
 
-    random_seed : bool or int
+    set_random_seed : bool or int
         Default False.  If True, set random seed to 123.  If int, set random
         seed to value.
 
@@ -25,9 +25,9 @@ def simulate_locations(n_elecs=10, random_seed=False):
         A location by coordinate (x,y,z) matrix of simulated electrode locations
 
     """
-    if random_seed:
-        if isinstance(random_seed, int):
-            np.random.seed(random_seed)
+    if set_random_seed:
+        if isinstance(set_random_seed, int):
+            np.random.seed(set_random_seed)
         else:
             np.random.seed(123)
 
@@ -40,8 +40,8 @@ def simulate_locations(n_elecs=10, random_seed=False):
     return pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
 def simulate_model_bos(n_samples=1000, locs=None, sample_locs=None, cov='random',
-                sample_rate=1000, sessions=None, meta=None, noise=.1,
-                random_seed=False):
+                       sample_rate=1000, sessions=None, meta=None, noise=.1,
+                       set_random_seed=False):
     """
     Simulate brain object
 
@@ -83,7 +83,7 @@ def simulate_model_bos(n_samples=1000, locs=None, sample_locs=None, cov='random'
     noise : int or float
         Noise added to simulation
 
-    random_seed : bool or int
+    set_random_seed : bool or int
         Default False.  If True, set random seed to 123.  If int, set random seed to value.
 
     Returns
@@ -93,14 +93,14 @@ def simulate_model_bos(n_samples=1000, locs=None, sample_locs=None, cov='random'
 
     """
 
-    data, sub_locs= simulate_model_data(n_samples=n_samples, locs=locs, sample_locs=sample_locs, cov=cov, noise=noise, random_seed=random_seed)
+    data, sub_locs= simulate_model_data(n_samples=n_samples, locs=locs, sample_locs=sample_locs, cov=cov, noise=noise, set_random_seed=set_random_seed)
 
     return Brain(data=data, locs=sub_locs, sample_rate=sample_rate,
                  sessions=sessions, meta=meta)
 
 
 def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None,
-                        cov='random', noise=.1, random_seed=False):
+                        cov='random', noise=.1, set_random_seed=False):
     """
     Simulate iEEG data
 
@@ -136,7 +136,7 @@ def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None
     noise : int or float
         Noise added to simulation
 
-    random_seed : bool or int
+    set_random_seed : bool or int
         Default False.  If True, set random seed to 123.  If int, set random seed to value.
 
     Returns
@@ -148,14 +148,14 @@ def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None
         A location by coordinate (x,y,z) matrix of simulated electrode locations
 
     """
-    if random_seed:
-        if isinstance(random_seed, int):
-            np.random.seed(random_seed)
+    if set_random_seed:
+        if isinstance(set_random_seed, int):
+            np.random.seed(set_random_seed)
         else:
             np.random.seed(123)
-            random_seed = 123
+            set_random_seed = 123
     else:
-        random_seed = None
+        set_random_seed = None
 
     if type(locs) is np.ndarray:
         locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
@@ -168,7 +168,7 @@ def simulate_model_data(n_samples=1000, n_elecs=170, locs=None, sample_locs=None
         R = create_cov(cov, n_elecs=len(locs))
         n = np.random.normal(0, noise, len(locs))
         R = R+n*n.T
-        sub_locs = locs.sample(sample_locs, random_state=random_seed).sort_values(['x', 'y', 'z'])
+        sub_locs = locs.sample(sample_locs, random_state=set_random_seed).sort_values(['x', 'y', 'z'])
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             full_data = np.random.multivariate_normal(np.zeros(len(locs)), R, size=n_samples)
@@ -243,7 +243,7 @@ def simulate_bo(n_samples=1000, n_elecs=10, locs=None, cov='random',
     if type(sessions) is int:
         sessions = np.sort([x + 1 for x in range(sessions)] * int(np.floor(np.divide(n_samples, sessions))))
 
-    data, locs = simulate_model_data(n_samples=n_samples, n_elecs=n_elecs, locs=locs, cov=cov, noise=noise, random_seed=random_seed)
+    data, locs = simulate_model_data(n_samples=n_samples, n_elecs=n_elecs, locs=locs, cov=cov, noise=noise, set_random_seed=random_seed)
 
     return Brain(data=data, locs=locs, sample_rate=sample_rate,
                  sessions=sessions, meta=meta)
@@ -286,11 +286,6 @@ def create_cov(cov, n_elecs=10):
         R = datasets.make_spd_matrix(n_elecs, random_state=1)
         R -= np.min(R)
         R /= np.max(R)
-    # elif cov is 'distance':
-    #     D = scipy.squareform(1 - scipy.pdist(locs)) ## locs would need to be parameter passed to support this
-    #     R = np.max(D) - D
-    #     R = R - np.min(R)
-    #     R
     elif isinstance(cov, np.ndarray):
         R = cov
     return R

@@ -257,7 +257,7 @@ random_seed = np.random.seed(123)
 noise = 0
 
 # locs
-locs = se.simulate_locations(n_elecs=100, random_seed=random_seed)
+locs = se.simulate_locations(n_elecs=100, set_random_seed=random_seed)
 
 # create model locs from 75 locations
 mo_locs = locs.sample(75, random_state=random_seed).sort_values(['x', 'y', 'z'])
@@ -307,7 +307,7 @@ random_seed = np.random.seed(123)
 noise = 0
 
 # locs
-locs = se.simulate_locations(n_elecs=100, random_seed=random_seed)
+locs = se.simulate_locations(n_elecs=100, set_random_seed=random_seed)
 
 # create model locs from 50 locations
 mo_locs = locs.sample(100, random_state=random_seed).sort_values(['x', 'y', 'z'])
@@ -354,7 +354,7 @@ random_seed = np.random.seed(123)
 noise = 0
 
 # locs
-locs = se.simulate_locations(n_elecs=100, random_seed=random_seed)
+locs = se.simulate_locations(n_elecs=100, set_random_seed=random_seed)
 
 # create model locs from 75 locations
 mo_locs = locs.sample(75, random_state=random_seed).sort_values(['x', 'y', 'z'])
@@ -407,7 +407,7 @@ random_seed = np.random.seed(123)
 noise = 0
 
 # locs
-locs = se.simulate_locations(n_elecs=100, random_seed=random_seed)
+locs = se.simulate_locations(n_elecs=100, set_random_seed=random_seed)
 
 # create brain locs from 75 locations
 bo_locs = locs.sample(75, random_state=random_seed).sort_values(['x', 'y', 'z'])

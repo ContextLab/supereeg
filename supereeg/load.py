@@ -4,6 +4,7 @@ import warnings
 import requests
 import numpy as np
 import deepdish as dd
+from datetime import datetime
 from .brain import Brain
 from .model import Model
 from .nifti import Nifti
@@ -221,11 +222,15 @@ def _load_from_cache(fname, ftype, sample_inds=None, loc_inds=None, field=None):
             return Brain(**dd.io.load(fullpath))
     elif ftype is 'mo':
         #return Model(**dd.io.load(fullpath))
-        num = _load_field(fullpath, field='numerator')
-        den = _load_field(fullpath, field='denominator')
-        locs = _load_field(fullpath, field='locs')
-        n_subs = _load_field(fullpath, field='n_subs')
-        return Model(data=np.divide(num, den), locs=locs, n_subs=n_subs)
+        date_created = _load_field(fullpath, field='date_created')
+        if datetime.strptime(date_created, "%c")< datetime(2018, 7, 27, 14, 40, 48, 359141):
+            num = _load_field(fullpath, field='numerator')
+            den = _load_field(fullpath, field='denominator')
+            locs = _load_field(fullpath, field='locs')
+            n_subs = _load_field(fullpath, field='n_subs')
+            return Model(data=np.divide(num, den), locs=locs, n_subs=n_subs)
+        else:
+            return Model(**dd.io.load(fullpath))
     elif ftype is 'nii':
         return Nifti(fullpath)
     elif ftype is 'locs':

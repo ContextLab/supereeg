@@ -291,7 +291,7 @@ class Brain(object):
                 x.pop(key)
 
         boc = Brain(**x)
-        boc.filter = None # neither works
+        boc.filter = None
         boc.update_info()
         if inplace:
             self.__init__(boc)
@@ -381,8 +381,7 @@ class Brain(object):
             self.data = data
             self.sessions = sessions
             self.sample_rate = sample_rate
-            #if not sample_rate == resample_rate:
-            #    self.kurtosis = _kurt_vals(self)
+
 
     def plot_data(self, filepath=None, time_min=None, time_max=None, title=None,
                   electrode=None):
