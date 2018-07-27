@@ -270,18 +270,35 @@ class Brain(object):
         print('Date created: ' + str(self.date_created))
         print('Meta data: ' + str(self.meta))
 
-    def get_filtered_bo(self):
+    def apply_filter(self, inplace=True):
         """ Return a filtered copy """
+
+        if self.filter is None:
+            if not inplace:
+                return copy.deepcopy(self)
+            else:
+                return None
+
         x = copy.copy(self.__dict__)
         x['data'] = self.get_data()
         x['locs'] = self.get_locs()
-        x['kurtosis'] = x['kurtosis'][x['kurtosis'] <= x['kurtosis_threshold']]
-        for key in ['n_subs', 'n_elecs', 'n_sessions', 'filter_inds', 'dur']:
+        # x['filter']=None # neither work
+
+        if self.filter == 'kurtosis':
+            #x['filter_inds'] = x['filter_inds'][x['kurtosis'] <= x['kurtosis_threshold']]
+            x['kurtosis'] = x['kurtosis'][x['kurtosis'] <= x['kurtosis_threshold']]
+
+        for key in ['n_subs', 'n_elecs', 'n_sessions', 'dur', 'filter_inds']:
             if key in x.keys():
                 x.pop(key)
+
         boc = Brain(**x)
+        boc.filter = None # neither works
         boc.update_info()
-        return boc
+        if inplace:
+            self.__init__(boc)
+        else:
+            return boc
 
     def get_data(self):
         """
@@ -342,7 +359,7 @@ class Brain(object):
         date_created = time.strftime("%c")
 
         b = Brain(data=data, locs=locs, sessions=sessions, sample_rate=sample_rate, meta=meta, date_created=date_created,
-                  filter=copy.copy(self.filter), kurtosis=kurtosis)
+                  filter=None, kurtosis=kurtosis)
         if inplace:
             self = b
         else:
@@ -366,8 +383,8 @@ class Brain(object):
             self.data = data
             self.sessions = sessions
             self.sample_rate = sample_rate
-            if not sample_rate == resample_rate:
-                self.kurtosis = _kurt_vals(self)
+            #if not sample_rate == resample_rate:
+            #    self.kurtosis = _kurt_vals(self)
 
     def plot_data(self, filepath=None, time_min=None, time_max=None, title=None,
                   electrode=None):

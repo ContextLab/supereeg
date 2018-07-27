@@ -311,7 +311,7 @@ class Model(object):
         if not isinstance(bo, Brain):
             bor = Brain(bo)
 
-        bor = bo.get_filtered_bo()
+        bor = bo.apply_filter(inplace=False)
 
         # if match_threshold auto, ignore all electrodes whose distance from the
         # nearest matching voxel is greater than the maximum voxel dimension
@@ -334,7 +334,8 @@ class Model(object):
         loc_labels = np.array(['observed'] * len(mo.get_locs()))
         loc_labels[~_count_overlapping(bor.get_locs(), mo.get_locs())] = ['reconstructed']
 
-        return Brain(data=activations, locs=mo.locs, sessions=bor.sessions, sample_rate=bor.sample_rate, label=loc_labels.tolist())
+        return Brain(data=activations, locs=mo.locs, sessions=bor.sessions, sample_rate=bor.sample_rate,
+                     label=loc_labels.tolist(), filter=None)
 
 
     def update(self, data, inplace=True):
