@@ -282,10 +282,8 @@ class Brain(object):
         x = copy.copy(self.__dict__)
         x['data'] = self.get_data()
         x['locs'] = self.get_locs()
-        # x['filter']=None # neither work
 
         if self.filter == 'kurtosis':
-            #x['filter_inds'] = x['filter_inds'][x['kurtosis'] <= x['kurtosis_threshold']]
             x['kurtosis'] = x['kurtosis'][x['kurtosis'] <= x['kurtosis_threshold']]
 
         for key in ['n_subs', 'n_elecs', 'n_sessions', 'dur', 'filter_inds']:
