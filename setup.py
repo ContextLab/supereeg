@@ -8,7 +8,7 @@ LICENSE = 'MIT'
 
 setup(
     name='supereeg',
-    version='0.1.1',
+    version='0.2.0',
     description=DESCRIPTION,
     long_description=' ',
     author='Contextual Dynamics Laboratory',

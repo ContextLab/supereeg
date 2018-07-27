@@ -19,8 +19,18 @@ new data.
 
 
 
-.. image:: /auto_examples/images/sphx_glr_plot_update_model_001.png
-    :align: center
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image:: /auto_examples/images/sphx_glr_plot_update_model_001.png
+            :scale: 47
+
+    *
+
+      .. image:: /auto_examples/images/sphx_glr_plot_update_model_002.png
+            :scale: 47
 
 
 
@@ -48,7 +58,8 @@ new data.
                  for x in range(3)]
 
     # create the model object
-    model = se.Model(data=model_bos, locs=locs)
+    model = se.Model(data=model_bos, locs=locs, n_subs=3)
+    model.plot_data()
 
     # brain object locations subsetted
     sub_locs = locs.sample(10).sort_values(['x', 'y', 'z'])
@@ -74,7 +85,7 @@ new data.
     plt.tight_layout()
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  1.054 seconds)
+**Total running time of the script:** ( 0 minutes  3.762 seconds)
 
 
 

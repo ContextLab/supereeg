@@ -8,10 +8,11 @@ from scipy.stats import kurtosis, zscore
 import os
 
 ## don't understand why i have to do this:
-from supereeg.helpers import _std, _gray, _resample_nii, _apply_by_file_index, _kurt_vals, _get_corrmat, _z2r, _r2z, _log_rbf, \
-    _blur_corrmat, _timeseries_recon, _chunker, \
+from supereeg.helpers import _std, _gray, _resample_nii, _apply_by_file_index, _kurt_vals, _get_corrmat, _z2r, _r2z, \
+    _log_rbf, \
+    _timeseries_recon, _chunker, \
     _corr_column, _normalize_Y, _near_neighbor, _vox_size, _count_overlapping, _resample, \
-    _nifti_to_brain, _brain_to_nifti
+    _nifti_to_brain, _brain_to_nifti, _to_log_complex, _to_exp_real, _logsubexp
 from supereeg.model import _recover_model
 
 locs = np.array([[-61., -77.,  -3.],
@@ -47,6 +48,16 @@ test_model = se.Model(data=data, locs=locs, rbf_width=100)
 bo_nii = se.Brain(_gray(20))
 nii = _brain_to_nifti(bo_nii, _gray(20))
 
+a = np.array([[1,2,3],[4,5,6],[7,8,9,]])
+b = np.array([[-1,2,2],[-4,5,5],[-7,8,8,]])
+c = np.array([[ 0,  4,  5], [ 0, 10, 11],[ 0, 16, 17]])
+add_log = _to_log_complex(a)
+a_log = _to_log_complex(a)
+b_log = _to_log_complex(b)
+c_log = _to_log_complex(c)
+add_log.real = np.logaddexp(a_log.real,b_log.real)
+add_log.imag = np.logaddexp(a_log.imag,b_log.imag)
+
 def test_std():
     nii = _std(20)
     assert isinstance(nii, se.Nifti)
@@ -81,6 +92,10 @@ def test_kurt_vals():
 #     kurts_1 = _apply_by_file_index(data[0], kurtosis, aggregate)
 #     kurts_2 = _kurt_vals(data[0])
 #     assert np.allclose(kurts_1, kurts_2)
+
+def test_logsubexp():
+    b_try = _to_exp_real(_logsubexp(c_log, a_log))
+    assert np.allclose(b_try, b)
 
 def test_get_corrmat():
     corrmat = _get_corrmat(data[0])
@@ -136,43 +151,6 @@ def test_tal2mni():
     tal_vals = tal2mni(locs)
     assert isinstance(tal_vals, np.ndarray)
 
-def test_blur_corrmat():
-    sub_corrmat = _get_corrmat(bo)
-    np.fill_diagonal(sub_corrmat, 0)
-    sub_corrmat = _r2z(sub_corrmat)
-    weights = _log_rbf(test_model.locs, bo.locs)
-    expanded_num_f, expanded_denom_f = _blur_corrmat(sub_corrmat, weights)
-
-    assert isinstance(expanded_num_f, np.ndarray)
-    assert isinstance(expanded_denom_f, np.ndarray)
-    assert np.shape(expanded_num_f)[0] == test_model.locs.shape[0]
-
-def test_expand_corrmats_same():
-    sub_corrmat = _get_corrmat(bo)
-    np.fill_diagonal(sub_corrmat, 0)  # <- possible failpoint
-    sub_corrmat_z = _r2z(sub_corrmat)
-    weights = _log_rbf(test_model.locs, bo.locs)
-
-    expanded_num_p, expanded_denom_p = _blur_corrmat(sub_corrmat_z, weights)
-    model_corrmat_p = _recover_model(expanded_num_p, expanded_denom_p)
-    expanded_num_f, expanded_denom_f = _blur_corrmat(sub_corrmat_z, weights)
-    model_corrmat_f = _recover_model(expanded_num_f, expanded_denom_f)
-
-    np.fill_diagonal(model_corrmat_f, 0)
-    np.fill_diagonal(model_corrmat_p, 0)
-
-    s = test_model.locs.shape[0] - bo.locs.shape[0]
-
-    Kba_p = model_corrmat_p[:s, s:]
-    Kba_f = model_corrmat_f[:s, s:]
-    Kaa_p = model_corrmat_p[s:, s:]
-    Kaa_f = model_corrmat_f[s:, s:]
-
-    assert isinstance(Kaa_p, np.ndarray)
-    assert isinstance(Kaa_f, np.ndarray)
-    assert np.allclose(Kaa_p, Kaa_f, equal_nan=True)
-    assert np.allclose(Kba_p, Kba_f, equal_nan=True)
-
 def test_reconstruct():
     recon_test = test_model.predict(bo, nearest_neighbor=False, force_update=True)
     actual_test = bo_full.data.iloc[:, recon_test.locs.index]
@@ -207,9 +185,9 @@ def test_model_compile(tmpdir):
     model_data = glob.glob(os.path.join(p.strpath, '*.mo'))
     mo = se.Model(model_data)
     assert isinstance(mo, se.Model)
-    assert np.allclose(mo.numerator.real, test_model.numerator.real)
-    assert np.allclose(mo.numerator.imag, test_model.numerator.imag)
-    assert np.allclose(mo.denominator, test_model.denominator)
+    assert np.allclose(mo.numerator.real, test_model.numerator.real, equal_nan=True)
+    assert np.allclose(mo.numerator.imag, test_model.numerator.imag, equal_nan=True)
+    assert np.allclose(mo.denominator, test_model.denominator, equal_nan=True)
 
 def test_timeseries_recon():
     recon = _timeseries_recon(bo, test_model, 2)

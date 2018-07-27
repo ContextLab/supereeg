@@ -8,10 +8,8 @@ from __future__ import print_function
 #each of one session.  we could then use bo.groupby(session).aggregate(xform) to produce a list of objects, where each is
 #comprised of the xform applied to the brain object containing one session worth of data from the original object.
 
-#import multiprocessing
 import copy
 import os
-import warnings
 import numpy.matlib as mat
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -20,6 +18,8 @@ import imageio
 import nibabel as nib
 import hypertools as hyp
 import shutil
+import warnings
+
 
 from nilearn import plotting as ni_plt
 from nilearn import image
@@ -31,7 +31,10 @@ from scipy.spatial.distance import squareform
 from scipy.special import logsumexp
 from scipy import linalg
 from scipy.ndimage.interpolation import zoom
-#from joblib import Parallel, delayed
+try:
+    from itertools import zip_longest
+except:
+    from itertools import izip_longest as zip_longest
 
 
 def _std(res=None):
@@ -219,12 +222,12 @@ def _get_corrmat(bo):
         return p + n
 
     def zcorr_xform(bo):
-        return np.multiply(bo.n_secs, _r2z(1 - squareform(pdist(bo.get_data().T, 'correlation'))))
+        return np.multiply(bo.dur, _r2z(1 - squareform(pdist(bo.get_data().T, 'correlation'))))
 
     summed_zcorrs = _apply_by_file_index(bo, zcorr_xform, aggregate)
 
     #weight each session by recording time
-    return _z2r(summed_zcorrs / np.sum(bo.n_secs))
+    return _z2r(summed_zcorrs / np.sum(bo.dur))
 
 
 def _z_score(bo):
@@ -447,12 +450,16 @@ def _to_log_complex(X):
     ----------
     log_X_complex : The log of X, stored as complex numbers to keep track of the positive and negative parts
     """
-    signX = np.sign(X)
-    posX = np.log(np.multiply(signX > 0, X))
-    negX = np.log(np.abs(np.multiply(signX < 0, X)))
+    warnings.simplefilter('ignore')
 
-    negX = np.multiply(0+1j, negX)
-    negX.real[np.isnan(negX)] = 0
+    signX = np.sign(X)
+
+    posX = np.log(np.multiply(signX > 0, X))
+    posX[np.isnan(posX)] = 0
+
+    negX = np.log(np.abs(np.multiply(signX < 0, X)))
+    negX = np.multiply(0 + 1j, negX)
+    negX.real[np.isnan(negX.real)] = 0
 
     return posX + negX
 
@@ -460,18 +467,44 @@ def _to_exp_real(C):
     """
     Inverse of _to_log_complex
     """
-    posX = C.real
-    negX = C.imag
-    return np.exp(posX) - np.exp(negX)
+    posX = np.exp(C.real)
+    if np.any(np.iscomplex(C)):
+        negX = np.exp(C.imag)
+        return posX - negX
+    else:
+        return posX
 
 
-def _compute_coord(coord, weights, Z):
-    next_weights = np.sum.outer(weights[coord[0], :], weights[coord[1], :])
+def _logsubexp(x,y):
+    """
+    Subtracts logged arrays
+    Parameters
+    ----------
+    x : Numpy array
+        Log complex array
+    y : Numpy array
+        Log complex array
+    Returns
+    ----------
+    z : Numpy array
+        Returns log complex array of x-y
+    """
+    if np.any(np.iscomplex(y)):
+        y = _to_exp_real(y)
+    else:
+        y = np.exp(y)
+    sub_log = _to_log_complex(x)
+    neg_y_log = _to_log_complex(-y)
+    sub_log.real = np.logaddexp(x.real, neg_y_log.real)
+    sub_log.imag = np.logaddexp(x.imag, neg_y_log.imag)
+    return sub_log
 
-    next_weights = next_weights[np.triu_indices(next_weights)]
-    Z = Z[np.triu_indices(Z)]
 
-    return logsumexp(next_weights), logsumexp(Z + next_weights)
+def _fill_upper_triangle(M, value):
+    upper_tri = np.copy(M)
+    upper_tri[np.triu_indices(upper_tri.shape[0], 1)] = value
+    np.fill_diagonal(upper_tri, value)
+    return upper_tri
 
 
 def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore'):
@@ -519,6 +552,7 @@ def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore'):
     if ~np.any(brain_locs_in_model):
         #if none of the brain locations are in the model, we need to blur out the model to match up with the
         # locations in the brain object
+        ### isnt this bypassed in the set_locs??
         combined_locs = np.vstack((bo.get_locs(), mo.get_locs()))
         model_locs_in_brain = [False]*bo.get_locs().shape[0]
         model_locs_in_brain.extend([True]*mo.get_locs().shape[0])
@@ -527,84 +561,29 @@ def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore'):
         Z = _blur_corrmat(Z, rbf_weights)
 
     K = _z2r(Z)
-    Kaa = K[model_locs_in_brain, :][:, model_locs_in_brain]
+
+    known_inds, unknown_inds = known_unknown(mo.get_locs().as_matrix(), bo.get_locs().as_matrix(),
+                                             bo.get_locs().as_matrix())
+
+    Kaa = K[known_inds, :][:, known_inds]
     Kaa_inv = np.linalg.pinv(Kaa)
 
-    Kba = K[~model_locs_in_brain, :][:, model_locs_in_brain]
+    Kba = K[unknown_inds, :][:, known_inds]
 
     sessions = bo.sessions.unique()
+    try_filter = []
     chunks = [np.array(i) for session in sessions for i in _chunker(bo.sessions[bo.sessions == session].index.tolist(), chunk_size)]
-    chunks = list(map(lambda x: np.array(x[x != np.array(None)], dtype=np.int8), chunks))
-
+    for i in chunks:
+        try_filter.append([x for x in i if x is not None])
     #predict unobserved brain activitity
     combined_data = np.zeros((data.shape[0], K.shape[0]), dtype=data.dtype)
-    combined_data[:, ~model_locs_in_brain] = np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv), chunks)))
-    combined_data[:, model_locs_in_brain] = data
+    combined_data[:, unknown_inds] = np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv), try_filter)))
+    combined_data[:, known_inds] = data
 
     for s in sessions:
         combined_data[bo.sessions==s, :] = zscore(combined_data[bo.sessions==s, :])
 
     return combined_data
-
-
-# def _timeseries_recon(bo, K, chunk_size=1000, preprocess='zscore'):
-#     """
-#     Reconstruction done by chunking by session
-#
-#         Parameters
-#     ----------
-#     bo : Brain object
-#         Data to be reconstructed
-#
-#     K : Numpy.ndarray
-#         Correlation matix including observed and predicted locations
-#
-#     chunk_size : int
-#         Size to break data into
-#
-#     Returns
-#     ----------
-#     results : ndarray
-#         Compiled reconstructed timeseries
-#
-#     """
-#     if preprocess==None:
-#         data = bo.get_data().as_matrix()
-#     elif preprocess=='zscore':
-#         if bo.data.shape[0]<3:
-#             warnings.warn('Not enough samples to zscore so it will be skipped.'
-#             ' Note that this will cause problems if your data are not already '
-#             'zscored.')
-#             data = bo.get_data().as_matrix()
-#         else:
-#             data = bo.get_data().as_matrix()
-#         #     data = bo.get_zscore_data()
-#         #
-#
-#     s = K.shape[0] - data.shape[1]
-#     Kba = K[:s, s:]
-#     Kaa = K[s:, s:]
-#     Kaa_inv = np.linalg.pinv(Kaa)
-#     sessions = bo.sessions.unique()
-#     chunks = [np.array(filter_chunk(i)) for session in sessions for i in _chunker(bo.sessions[bo.sessions == session].index.tolist(), chunk_size)]
-#     # results = np.vstack(Parallel(n_jobs=multiprocessing.cpu_count())(
-#     #     delayed(_reconstruct_activity)(data[chunk, :], Kba, Kaa_inv) for chunk in chunks))
-#
-#
-#     ## issue when stacking one dimensional reconstrutions
-#     ## transposing the reconstructions allows you to predict when s==1
-#
-#     if s == 1:
-#         results = np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv).T, chunks)))
-#     else:
-#         results = np.vstack(list(map(lambda x: _reconstruct_activity(zscore(data[x, :]), Kba, Kaa_inv), chunks)))
-#     zresults = list(map(lambda s: zscore(results[bo.sessions == s, :]), sessions)) # zscoring each chunk wrong
-#
-#     return np.hstack([np.vstack(zresults), data])
-#
-# def filter_chunk(L):
-#
-#     return [x for x in L if x is not None]
 
 def _chunker(iterable, chunksize, fillvalue=None):
     """
@@ -733,6 +712,7 @@ def filter_subj(bo, measure='kurtosis', return_locs=False, threshold=10):
 
 def _corr_column(X, Y):
     return np.array([pearsonr(x, y)[0] for x, y in zip(X.T, Y.T)])
+
 
 
 def _normalize_Y(Y_matrix): #TODO: should be part of bo.get_data and/or Brain.__init__
@@ -982,7 +962,78 @@ def _empty(X): #TODO: ad test for _empty
         return np.any(np.isclose(X.shape, 0))
 
 
+def get_rows(all_locations, subj_locations):
+    """
+        This function indexes a subject's electrode locations in the full array of electrode locations
 
+        Parameters
+        ----------
+        all_locations : ndarray
+            Full array of electrode locations
+
+        subj_locations : ndarray
+            Array of subject's electrode locations
+
+        Returns
+        ----------
+        results : list
+            Indexs for subject electrodes in the full array of electrodes
+
+        """
+    if subj_locations.ndim == 1:
+        subj_locations = subj_locations.reshape(1, 3)
+    inds = np.full([1, subj_locations.shape[0]], np.nan)
+    for i in range(subj_locations.shape[0]):
+        possible_locations = np.ones([all_locations.shape[0], 1])
+        try:
+            for c in range(all_locations.shape[1]):
+                possible_locations[all_locations[:, c] != subj_locations[i, c], :] = 0
+            inds[0, i] = np.where(possible_locations == 1)[0][0]
+        except:
+            pass
+    inds = inds[~np.isnan(inds)]
+    return [int(x) for x in inds]
+
+
+def known_unknown(fullarray, knownarray, subarray=None, electrode=None):
+    """
+        This finds the indices for known and unknown electrodes in the full array of electrode locations
+
+        Parameters
+        ----------
+        fullarray : ndarray
+            Full array of electrode locations - All electrodes that pass the kurtosis test
+
+        knownarray : ndarray
+            Subset of known electrode locations  - Subject's electrode locations that pass the kurtosis test (in the leave one out case, this is also has the specified location missing)
+
+        subarray : ndarray
+            Subject's electrode locations (all)
+
+        electrode : str
+            Index of electrode in subarray to remove (in the leave one out case)
+
+        Returns
+        ----------
+        known_inds : list
+            List of known indices
+
+        unknown_inds : list
+            List of unknown indices
+
+        """
+    ## where known electrodes are located in full matrix
+    known_inds = get_rows(np.round(fullarray, 3), np.round(knownarray, 3))
+    ## where the rest of the electrodes are located
+    unknown_inds = list(set(range(np.shape(fullarray)[0])) - set(known_inds))
+    if not electrode is None:
+        ## where the removed electrode is located in full matrix
+        rm_full_ind = get_rows(np.round(fullarray, 3), np.round(subarray[int(electrode)], 3))
+        ## where the removed electrode is located in the unknown index subset
+        rm_unknown_ind = np.where(np.array(unknown_inds) == np.array(rm_full_ind))[0].tolist()
+        return known_inds, unknown_inds, rm_unknown_ind
+    else:
+        return known_inds, unknown_inds
 
 
 
@@ -1261,7 +1312,7 @@ def _nifti_to_brain(nifti, mask_file=None):
 
     R = np.array(np.dot(vox_coords, S[0:3, 0:3])) + S[:3, 3]
 
-    return Y, R, {'header': hdr}
+    return Y, R, {'header': hdr, 'unscaled_timing':True}
 
 
 def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; could be done much faster using reshape and/or nilearn masking

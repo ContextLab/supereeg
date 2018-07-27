@@ -42,13 +42,13 @@ This example filters electrodes based on kurtosis thresholding (default=10).
  Out::
 
     Number of electrodes: 40
-    Recording time in seconds: None
+    Recording time in seconds: [10.00186035]
     Sample Rate in Hz: [499.907]
     Number of sessions: 1
     Date created: Mon Jan 15 14:39:35 2018
     Meta data: BW013
     Number of electrodes: 40
-    Recording time in seconds: None
+    Recording time in seconds: [10.00186035]
     Sample Rate in Hz: [499.907]
     Number of sessions: 1
     Date created: Mon Jan 15 14:39:35 2018
@@ -87,13 +87,13 @@ This example filters electrodes based on kurtosis thresholding (default=10).
     # plot unfiltered data
     bo.plot_data()
 
-    # plot unfiltered locations
+    # plot unfiltered locations (in aqua)
     bo.plot_locs()
 
     # 40 locations
     bo.info()
 
-**Total running time of the script:** ( 0 minutes  1.299 seconds)
+**Total running time of the script:** ( 0 minutes  1.058 seconds)
 
 
 

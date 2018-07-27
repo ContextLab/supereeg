@@ -32,7 +32,7 @@ bo.filter = None
 # plot unfiltered data
 bo.plot_data()
 
-# plot unfiltered locations
+# plot unfiltered locations (in aqua)
 bo.plot_locs()
 
 # 40 locations

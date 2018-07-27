@@ -36,7 +36,7 @@ This example loads a nifti file and plots it.
     # plot nifti
     nii.plot_anat()
 
-**Total running time of the script:** ( 0 minutes  0.362 seconds)
+**Total running time of the script:** ( 0 minutes  0.298 seconds)
 
 
 

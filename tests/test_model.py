@@ -30,9 +30,13 @@ n_subs = 6
 # number of electrodes
 n_elecs = 5
 # simulate correlation matrix
-data = [se.simulate_model_bos(n_samples=10, sample_rate=10, locs=locs, sample_locs = n_elecs) for x in range(n_subs)]
+
+data = [se.simulate_model_bos(n_samples=10, sample_rate=10, locs=locs, sample_locs = n_elecs,
+                              set_random_seed=123, noise=0) for x in range(n_subs)]
+
 # test model to compare
-test_model = se.Model(data=data[0:3], locs=locs, rbf_width=20)
+test_model = se.Model(data=data[0:3], locs=locs, rbf_width=20, n_subs=3)
+
 
 def test_create_model_1bo():
     model = se.Model(data=data[0], locs=locs)
@@ -52,11 +56,11 @@ def test_create_model_superuser():
 def test_model_predict():
     model = se.Model(data=data[0:2], locs=locs)
     bo = model.predict(data[0], nearest_neighbor=False)
-    print(data[0].n_secs)
+    print(data[0].dur)
     assert isinstance(bo, se.Brain)
 
 def test_model_predict_nn():
-    print(data[0].n_secs)
+    print(data[0].dur)
     model = se.Model(data=data[0:2], locs=locs)
     bo = model.predict(data[0], nearest_neighbor=True)
     assert isinstance(bo, se.Brain)
@@ -77,9 +81,9 @@ def test_update():
     model = se.Model(data=data[1:3], locs=locs)
     mo = se.Model([model, data[0]])
     assert isinstance(mo, se.Model)
-    assert np.allclose(mo.numerator.real, test_model.numerator.real)
-    assert np.allclose(mo.numerator.imag, test_model.numerator.imag)
-    assert np.allclose(mo.denominator, test_model.denominator)
+    assert np.allclose(mo.numerator.real, test_model.numerator.real, equal_nan=True)
+    assert np.allclose(mo.numerator.imag, test_model.numerator.imag, equal_nan=True)
+    assert np.allclose(mo.denominator, test_model.denominator, equal_nan=True)
 
 def test_create_model_str():
     model = se.Model('example_data')
@@ -160,31 +164,29 @@ def test_model_add():
     assert mo3.n_subs == mo1.n_subs + mo2.n_subs
 
     mo3_alt = se.Model(data=data[0:6], locs=locs)
-    assert np.allclose(mo3.numerator.real, mo3_alt.numerator.real)
-    assert np.allclose(mo3.numerator.imag, mo3_alt.numerator.imag)
-    assert np.allclose(mo3.denominator, mo3_alt.denominator)
+    assert np.allclose(mo3.numerator.real, mo3_alt.numerator.real, equal_nan=True)
+    assert np.allclose(mo3.numerator.imag, mo3_alt.numerator.imag, equal_nan=True)
+    assert np.allclose(mo3.denominator, mo3_alt.denominator, equal_nan=True)
 
-#subtraction is not working; removing functionality until fixed
-# def test_model_subtract():
-#     mo1 = se.Model(data=data[0:3], locs=locs)
-#     mo2 = se.Model(data=data[3:6], locs=locs)
-#     mo3 = mo1 - mo2
-#
-#     mo1_model = mo1.get_model()
-#     mo2_model = mo2.get_model()
-#     mo3_model = mo3.get_model()
-#     assert np.allclose(mo1_model.shape, mo2_model.shape)
-#     assert np.allclose(mo2_model.shape, mo3_model.shape)
-#     assert mo1_model.shape[0] == mo1_model.shape[1]
-#
-#     assert mo3.n_subs == mo1.n_subs - mo2.n_subs
-#
-#     mo2_recon = mo3 - mo1
-#     assert np.allclose(mo2.numerator.real, mo2_recon.numerator.real)
-#     assert np.allclose(mo2.numerator.imag, mo2_recon.numerator.imag)
-#     assert np.allclose(mo2.denominator, mo2_recon.denominator)
-#
-#     mo1_recon = mo3 - mo2
-#     assert np.allclose(mo1.numerator.real, mo1_recon.numerator.real)
-#     assert np.allclose(mo1.numerator.imag, mo1_recon.numerator.imag)
-#     assert np.allclose(mo1.denominator, mo1_recon.denominator)
+def test_model_subtract():
+    mo1 = se.Model(data=data[0:3], locs=locs)
+    mo2 = se.Model(data=data[3:6], locs=locs)
+    mo3 = mo1 + mo2
+
+    mo1_model = mo1.get_model()
+    mo2_model = mo2.get_model()
+    mo3_model = mo3.get_model()
+    assert np.allclose(mo1_model.shape, mo2_model.shape)
+    assert np.allclose(mo2_model.shape, mo3_model.shape)
+    assert mo1_model.shape[0] == mo1_model.shape[1]
+
+    assert mo3.n_subs == mo1.n_subs + mo2.n_subs
+
+    mo2_recon = mo3 - mo1
+    assert np.allclose(mo2.get_model(), mo2_recon.get_model(), equal_nan=True)
+    assert mo2_recon.n_subs == mo2.n_subs
+    ## test that the new model is now unstable
+    try:
+        assert mo2_recon + mo3
+    except AssertionError:
+        assert True == True

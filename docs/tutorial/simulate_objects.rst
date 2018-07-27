@@ -61,33 +61,33 @@ To begin, we can either simulate locations:
       <tbody>
         <tr>
           <th>0</th>
-          <td>-44</td>
-          <td>12</td>
-          <td>37</td>
+          <td>-49</td>
+          <td>11</td>
+          <td>32</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>-42</td>
-          <td>5</td>
-          <td>-40</td>
+          <td>-29</td>
+          <td>44</td>
+          <td>34</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>-39</td>
-          <td>23</td>
-          <td>2</td>
+          <td>-3</td>
+          <td>32</td>
+          <td>14</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>-19</td>
-          <td>44</td>
-          <td>33</td>
+          <td>-1</td>
+          <td>8</td>
+          <td>21</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>-12</td>
+          <td>13</td>
           <td>30</td>
-          <td>-20</td>
+          <td>-16</td>
         </tr>
       </tbody>
     </table>
@@ -361,6 +361,7 @@ recovered.
 .. image:: simulate_objects_files/simulate_objects_30_0.png
 
 
+
 Simulation Example 3:
 ---------------------
 
@@ -379,7 +380,7 @@ recovery of the true model.
 .. code:: ipython2
 
     # n_electrodes - number of electrodes for reconstructed patient
-    n_elecs = range(10, 100, 10)
+    n_elecs = range(10, 100, 50)
     
     
     # m_patients - number of patients in the model
@@ -387,10 +388,10 @@ recovery of the true model.
     
     
     # m_electrodes - number of electrodes for each patient in the model
-    m_elecs = range(10, 100, 10)
+    m_elecs = range(10, 100, 50)
     
     
-    iter_val = 5
+    iter_val = 1
     
     append_d = pd.DataFrame()
     
@@ -420,23 +421,23 @@ recovery of the true model.
     
             # reconstruct at 'unknown' locations
             bo_r = model.predict(bo_sample)
-    
+            
             # find the reconstructed indices
-            recon_inds = [i for i, x in enumerate(bo_r.label) if x == 'reconstructed']
-    
+            recon_inds = np.where(np.array(bo_r.label) != 'observed')
+            
             # sample reconstructed data a reconstructed indices
-            recon = bo_r.data.iloc[:, recon_inds]
+            recon = bo_r[:, recon_inds[0]]
     
             # sample actual data at reconstructed locations
-            actual = bo.data.iloc[:, recon_inds]
+            actual = bo[:, recon_inds[0]]
     
             # correlate reconstruction with actual data
-            corr_vals = _corr_column(actual.as_matrix(), recon.as_matrix())
-            corr_vals_sample = np.random.choice(corr_vals, 5)
+            corr_vals = _corr_column(actual.get_data().as_matrix(), recon.get_data().as_matrix())
+            #corr_vals_sample = np.random.choice(corr_vals, 5)
     
             d.append(
                 {'Subjects in model': p, 'Electrodes per subject in model': m, 'Electrodes per reconstructed subject': n,
-                 'Average Correlation': corr_vals_sample.mean(), 'Correlations': corr_vals})
+                 'Average Correlation': corr_vals.mean(), 'Correlations': corr_vals})
     
         d = pd.DataFrame(d, columns=['Subjects in model', 'Electrodes per subject in model',
                                      'Electrodes per reconstructed subject', 'Average Correlation', 'Correlations'])
@@ -466,14 +467,8 @@ recovery of the true model.
     plt.show()
 
 
-.. parsed-literal::
 
-    /Users/lucyowen/repos/superEEG/supereeg/brain.py:187: UserWarning: No sample rate given.  Number of seconds cant be computed
-      warnings.warn('No sample rate given.  Number of seconds cant be computed')
-
-
-
-.. image:: simulate_objects_files/simulate_objects_33_1.png
+.. image:: simulate_objects_files/simulate_objects_34_0.png
 
 
 Simulations run on the cluster:
@@ -486,6 +481,6 @@ Simulations run on the cluster:
 
 
 
-.. image:: simulate_objects_files/simulate_objects_35_0.png
+.. image:: simulate_objects_files/simulate_objects_36_0.png
 
 

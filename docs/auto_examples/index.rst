@@ -29,26 +29,6 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Here we load the example model, and then plot it along with the locations.">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_model_thumb.png
-
-        :ref:`sphx_glr_auto_examples_plot_model.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/plot_model
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="This example converts electrodes locations from talairach to MNI space.">
 
 .. only:: html
@@ -129,26 +109,6 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This example filters electrodes based on kurtosis thresholding (default=10).">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_filtering_thumb.png
-
-        :ref:`sphx_glr_auto_examples_plot_filtering.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/plot_filtering
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="In this example, we load in a single subject example, load a model, and predict activity at all...">
 
 .. only:: html
@@ -166,6 +126,26 @@ Gallery of Examples
    :hidden:
 
    /auto_examples/plot_labels
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example filters electrodes based on kurtosis thresholding (default=10).">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_filtering_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_filtering.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_filtering
 
 .. raw:: html
 
@@ -269,6 +249,26 @@ Gallery of Examples
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Here we load the example model, and then plot it along with the locations.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_model_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_model.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_model
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="In this example, we load in a single subject example, remove electrodes that exceed a kurtosis ...">
 
 .. only:: html
@@ -326,6 +326,46 @@ Gallery of Examples
    :hidden:
 
    /auto_examples/plot_update_model
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we show you how to add and subtract models.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_model_add_subtract_thumb.png
+
+        :ref:`sphx_glr_auto_examples_model_add_subtract.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/model_add_subtract
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example shows debugging process for predict.  Delete before pip push.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_debug_predict_thumb.png
+
+        :ref:`sphx_glr_auto_examples_debug_predict.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/debug_predict
 .. raw:: html
 
     <div style='clear:both'></div>

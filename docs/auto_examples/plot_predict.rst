@@ -34,11 +34,11 @@ a nifti and plot the reconstruction.
 
  Out::
 
-    Number of electrodes: 210
-    Recording time in seconds: None
+    Number of electrodes: 274
+    Recording time in seconds: [ 5.3984375 14.1328125]
     Sample Rate in Hz: [256, 256]
     Number of sessions: 2
-    Date created: Fri Mar 30 13:59:40 2018
+    Date created: Wed Jul 25 20:26:51 2018
     Meta data: {}
 
 
@@ -62,7 +62,7 @@ a nifti and plot the reconstruction.
     model = se.load('example_model')
 
     # the default will replace the electrode location with the nearest voxel and reconstruct at all other locations
-    reconstructed_bo = model.predict(bo)
+    reconstructed_bo = model.predict(bo, force_update=True)
 
     # plot locations colored by label
     reconstructed_bo.plot_locs()
@@ -75,7 +75,7 @@ a nifti and plot the reconstruction.
 
     # plot nifti reconstruction
     reconstructed_nii.plot_glass_brain()
-**Total running time of the script:** ( 0 minutes  1.846 seconds)
+**Total running time of the script:** ( 0 minutes  32.736 seconds)
 
 
 

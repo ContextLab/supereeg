@@ -36,7 +36,7 @@ def test_bo_nelecs_int():
     assert isinstance(bo.n_elecs, int)
 
 def test_bo_nsecs_list():
-    assert (bo.n_secs is None) or (type(bo.n_secs) is np.ndarray) or (type(bo.n_secs) is int) or (type(bo.n_secs) is float)
+    assert (bo.dur is None) or (type(bo.dur) is np.ndarray) or (type(bo.dur) is int) or (type(bo.dur) is float)
 
 def test_bo_nsessions_int():
     assert isinstance(bo.n_sessions, int)
@@ -91,7 +91,7 @@ def test_brain_getitem():
     bo = bo[:2]
     assert bo.data.shape[0]==2
 
-def test_brain_getitem():
+def test_brain_getitem_2():
     bo = se.simulate_bo(n_samples=10, sample_rate=100)
     bos = [b for b in bo[:2]]
     assert all(isinstance(b, se.Brain) for b in bos)
