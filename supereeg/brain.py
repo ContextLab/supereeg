@@ -243,7 +243,7 @@ class Brain(object):
         if self.filter == 'kurtosis':
             self.filter_inds = self.kurtosis <= self.kurtosis_threshold
         else:
-            self.filter_inds = np.ones((1, self.locs.shape[0]), dtype=np.bool) #TODO: check this
+            self.filter_inds = np.ones((1, self.locs.shape[0]), dtype=np.bool)[0] #TODO: check this
 
     def update_info(self):
         self.n_elecs = self.data.shape[1] # needs to be calculated by sessions
@@ -342,7 +342,7 @@ class Brain(object):
         date_created = time.strftime("%c")
 
         b = Brain(data=data, locs=locs, sessions=sessions, sample_rate=sample_rate, meta=meta, date_created=date_created,
-                  filter=copy.copy(self.filter), kurtosis=kurtosis)
+                  filter=None, kurtosis=kurtosis)
         if inplace:
             self = b
         else:

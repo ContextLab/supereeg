@@ -62,18 +62,23 @@ original brain object.
     # plot sample patient data
     bo_sample.plot_data()
 
+    # make model from brain object
+    r_model = se.Model(data=bo, locs=locs)
 
-    r_model = se.Model(data=bo, locs=locs, disable_parallelization=True)
-
+    # predict
     bo_s = r_model.predict(bo_sample, nearest_neighbor=False)
 
+    # find indices for reconstructed locations
     recon_labels = np.where(np.array(bo_s.label) != 'observed')
+
+    # find correlations between predicted and actual data
     corrs = _corr_column(bo.get_data().as_matrix(), bo_s.get_data().as_matrix())
 
+    # index reconstructed correlations
     corrs[recon_labels].mean()
 
 
-**Total running time of the script:** ( 0 minutes  1.184 seconds)
+**Total running time of the script:** ( 0 minutes  0.834 seconds)
 
 
 
