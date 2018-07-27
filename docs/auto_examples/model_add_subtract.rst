@@ -42,7 +42,7 @@ In this example, we show you how to add and subtract models.
     # number of electrodes
     n_elecs = 5
     # simulate some brain objects
-    data = [se.simulate_model_bos(n_samples=10, sample_rate=10, locs=locs, sample_locs = n_elecs, random_seed=123, noise=0) for x in range(n_subs)]
+    data = [se.simulate_model_bos(n_samples=10, sample_rate=10, locs=locs, sample_locs = n_elecs, set_random_seed=123, noise=0) for x in range(n_subs)]
     # create a model from the first 5 brain objects and another from 1 brain object
     mo1 = se.Model(data=data[0:5], locs=locs, n_subs=5)
     mo2 = se.Model(data=data[5:6], locs=locs, n_subs=1)

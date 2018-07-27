@@ -221,7 +221,8 @@ def _load_from_cache(fname, ftype, sample_inds=None, loc_inds=None, field=None):
         else:
             return Brain(**dd.io.load(fullpath))
     elif ftype is 'mo':
-        #return Model(**dd.io.load(fullpath))
+        # if the model was created using supereeg<0.2.0, load using the "old" format
+        # (i.e. supereeg>=0.2.0 computes model in log space)
         date_created = _load_field(fullpath, field='date_created')
         if datetime.strptime(date_created, "%c")< datetime(2018, 7, 27, 14, 40, 48, 359141):
             num = _load_field(fullpath, field='numerator')

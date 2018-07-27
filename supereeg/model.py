@@ -256,10 +256,11 @@ class Model(object):
         new_locs_in_self = _count_overlapping(self.get_locs(), new_locs)
 
         if np.all(new_locs_in_self):
-            self.locs = self.locs.iloc[new_locs_in_self, :]
+            inds = _count_overlapping(new_locs, self.get_locs())
+            self.locs = self.locs.iloc[inds, :]
             self.n_locs = self.locs.shape[0]
-            self.numerator = self.numerator[new_locs_in_self, :][:, new_locs_in_self]
-            self.denominator = self.denominator[new_locs_in_self, :][:, new_locs_in_self]
+            self.numerator = self.numerator[inds, :][:, inds]
+            self.denominator = self.denominator[inds, :][:, inds]
             return
         else:
             rbf_weights = _log_rbf(new_locs, self.get_locs())
