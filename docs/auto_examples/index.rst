@@ -346,26 +346,6 @@ Gallery of Examples
    :hidden:
 
    /auto_examples/model_add_subtract
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="This example shows debugging process for predict.  Delete before pip push.">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_debug_predict_thumb.png
-
-        :ref:`sphx_glr_auto_examples_debug_predict.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/debug_predict
 .. raw:: html
 
     <div style='clear:both'></div>
