@@ -17,3 +17,4 @@ google-cloud
 multiprocessing
 pathos
 jupyter_client
+Cython
