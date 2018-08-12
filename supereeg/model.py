@@ -275,7 +275,7 @@ class Model(object):
 
 
     def predict(self, bo, nearest_neighbor=False, match_threshold='auto',
-                force_update=False, force_include_bo_locs=True, preprocess='zscore'):
+                force_update=False, force_include_bo_locs=True, preprocess='zscore', recon_at_loc=None):
         """
         Takes a brain object and a 'full' covariance model, fills in all
         electrode timeseries for all missing locations and returns the new brain
@@ -303,6 +303,8 @@ class Model(object):
         preprocess : 'zscore' or None
             The predict algorithm requires the data to be zscored.  However, if
             your data are already zscored you can bypass this by setting to None.
+        recon_at_loc : electrode ind or None
+            Index for estimated location in model (location in unknown_inds)
 
         Returns
         ----------
@@ -332,12 +334,18 @@ class Model(object):
         #blur out model to include brain object locations
         mo.set_locs(bor.get_locs(), force_include_bo_locs=force_include_bo_locs)
 
-        activations = _timeseries_recon(bor, mo, preprocess=preprocess)
-        loc_labels = np.array(['observed'] * len(mo.get_locs()))
-        loc_labels[~_count_overlapping(bor.get_locs(), mo.get_locs())] = ['reconstructed']
+        activations = _timeseries_recon(bor, mo, preprocess=preprocess, recon_at_loc=recon_at_loc)
 
-        return Brain(data=activations, locs=mo.locs, sessions=bor.sessions, sample_rate=bor.sample_rate,
-                     label=loc_labels.tolist(), filter=None)
+        if not recon_at_loc:
+            loc_labels = np.array(['observed'] * len(mo.get_locs()))
+            loc_labels[~_count_overlapping(bor.get_locs(), mo.get_locs())] = ['reconstructed']
+            recon_loc = mo.locs
+        else:
+            recon_loc = mo.get_locs().iloc[recon_at_loc[0]]
+            loc_labels = np.array(['reconstructed'] * len(list(recon_at_loc)))
+
+        return Brain(data=activations, locs=recon_loc, sessions=bor.sessions, sample_rate=bor.sample_rate,
+                         label=loc_labels.tolist(), filter=None)
 
 
     def update(self, data, inplace=True):
