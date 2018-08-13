@@ -507,7 +507,7 @@ def _fill_upper_triangle(M, value):
     return upper_tri
 
 
-def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore'):
+def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore', recon_loc_inds=None):
     """
     Reconstruction done by chunking by session
         Parameters
@@ -518,9 +518,12 @@ def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore'):
     mo : Model object
         Model to base the reconstructions on
 
-
     chunk_size : int
         Size to break data into
+
+    recon_at_loc: list
+        Indexes for estimated location in average matrix (location in unknown_inds)
+
     Returns
     ----------
     results : ndarray
@@ -563,8 +566,7 @@ def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore'):
     K = _z2r(Z)
 
     known_inds, unknown_inds = known_unknown(mo.get_locs().as_matrix(), bo.get_locs().as_matrix(),
-                                             bo.get_locs().as_matrix())
-
+                                                  bo.get_locs().as_matrix())
     Kaa = K[known_inds, :][:, known_inds]
     Kaa_inv = np.linalg.pinv(Kaa)
 
@@ -575,10 +577,20 @@ def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore'):
     chunks = [np.array(i) for session in sessions for i in _chunker(bo.sessions[bo.sessions == session].index.tolist(), chunk_size)]
     for i in chunks:
         try_filter.append([x for x in i if x is not None])
+
     #predict unobserved brain activitity
-    combined_data = np.zeros((data.shape[0], K.shape[0]), dtype=data.dtype)
-    combined_data[:, unknown_inds] = np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv), try_filter)))
-    combined_data[:, known_inds] = data
+
+    if recon_loc_inds:
+
+        combined_data = np.zeros((data.shape[0], len(recon_loc_inds)), dtype=data.dtype)
+        combined_data[:, range(len(recon_loc_inds))] = np.vstack(list(
+            map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv), try_filter)))[:, recon_loc_inds[0]][:,
+                                                     np.newaxis]
+    else:
+        combined_data = np.zeros((data.shape[0], K.shape[0]), dtype=data.dtype)
+        combined_data[:, unknown_inds] = np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv),
+                                                            try_filter)))
+        combined_data[:, known_inds] = data
 
     for s in sessions:
         combined_data[bo.sessions==s, :] = zscore(combined_data[bo.sessions==s, :])
@@ -634,7 +646,6 @@ def _reconstruct_activity(Y, Kba, Kaa_inv):
 
     """
     return np.dot(np.dot(Kba, Kaa_inv), Y.T).T
-
 
 def filter_elecs(bo, measure='kurtosis', threshold=10):
     """
