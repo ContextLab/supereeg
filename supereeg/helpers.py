@@ -1047,6 +1047,30 @@ def known_unknown(fullarray, knownarray, subarray=None, electrode=None):
         return known_inds, unknown_inds
 
 
+def remove_electrode(subkarray, subarray, electrode):
+    """
+        Removes electrode from larger array
+
+        Parameters
+        ----------
+        subkarray : ndarray
+            Subject's electrode locations that pass the kurtosis test
+
+        subarray : ndarray
+            Subject's electrode locations (all)
+
+        electrode : str
+            Index of electrode in subarray to remove
+
+        Returns
+        ----------
+        results : ndarray
+            Subject's electrode locations that pass kurtosis test with electrode removed
+
+        """
+    rm_ind = get_rows(subkarray, subarray[electrode])
+    other_inds = [i for i in range(np.shape(subkarray)[0]) if i != electrode]
+    return np.delete(subkarray, rm_ind, 0), other_inds
 
 def _count_overlapping(X, Y):
     """
