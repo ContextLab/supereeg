@@ -275,7 +275,7 @@ class Model(object):
 
 
     def predict(self, bo, nearest_neighbor=False, match_threshold='auto',
-                force_update=False, force_include_bo_locs=True, preprocess='zscore', recon_at_loc=None):
+                force_update=False, force_include_bo_locs=True, preprocess='zscore', recon_loc_inds=None):
         """
         Takes a brain object and a 'full' covariance model, fills in all
         electrode timeseries for all missing locations and returns the new brain
@@ -334,15 +334,15 @@ class Model(object):
         #blur out model to include brain object locations
         mo.set_locs(bor.get_locs(), force_include_bo_locs=force_include_bo_locs)
 
-        activations = _timeseries_recon(bor, mo, preprocess=preprocess, recon_at_loc=recon_at_loc)
+        activations = _timeseries_recon(bor, mo, preprocess=preprocess, recon_loc_inds=recon_loc_inds)
 
-        if not recon_at_loc:
+        if not recon_loc_inds:
             loc_labels = np.array(['observed'] * len(mo.get_locs()))
             loc_labels[~_count_overlapping(bor.get_locs(), mo.get_locs())] = ['reconstructed']
             recon_loc = mo.locs
         else:
-            recon_loc = mo.get_locs().iloc[recon_at_loc[0]]
-            loc_labels = np.array(['reconstructed'] * len(list(recon_at_loc)))
+            recon_loc = mo.get_locs().iloc[recon_loc_inds[0]]
+            loc_labels = np.array(['reconstructed'] * len(list(recon_loc_inds)))
 
         return Brain(data=activations, locs=recon_loc, sessions=bor.sessions, sample_rate=bor.sample_rate,
                          label=loc_labels.tolist(), filter=None)

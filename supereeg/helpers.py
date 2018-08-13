@@ -507,7 +507,7 @@ def _fill_upper_triangle(M, value):
     return upper_tri
 
 
-def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore', recon_at_loc=None):
+def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore', recon_loc_inds=None):
     """
     Reconstruction done by chunking by session
         Parameters
@@ -580,11 +580,11 @@ def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore', recon_at_loc
 
     #predict unobserved brain activitity
 
-    if recon_at_loc:
+    if recon_loc_inds:
 
-        combined_data = np.zeros((data.shape[0], len(recon_at_loc)), dtype=data.dtype)
-        combined_data[:, range(len(recon_at_loc))] = np.vstack(list(
-            map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv), try_filter)))[:, recon_at_loc[0]][:,
+        combined_data = np.zeros((data.shape[0], len(recon_loc_inds)), dtype=data.dtype)
+        combined_data[:, range(len(recon_loc_inds))] = np.vstack(list(
+            map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv), try_filter)))[:, recon_loc_inds[0]][:,
                                                      np.newaxis]
     else:
         combined_data = np.zeros((data.shape[0], K.shape[0]), dtype=data.dtype)
