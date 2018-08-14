@@ -581,11 +581,10 @@ def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore', recon_loc_in
     #predict unobserved brain activitity
 
     if recon_loc_inds:
-
         combined_data = np.zeros((data.shape[0], len(recon_loc_inds)), dtype=data.dtype)
-        combined_data[:, range(len(recon_loc_inds))] = np.vstack(list(
-            map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv), try_filter)))[:, recon_loc_inds[0]][:,
-                                                     np.newaxis]
+        combined_data[:, range(len(recon_loc_inds))] = np.hstack(list(
+            map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv, recon_loc_inds=recon_loc_inds),
+                try_filter)))[:, np.newaxis]
     else:
         combined_data = np.zeros((data.shape[0], K.shape[0]), dtype=data.dtype)
         combined_data[:, unknown_inds] = np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv),
@@ -624,7 +623,7 @@ def _chunker(iterable, chunksize, fillvalue=None):
     return list(zip_longest(*args, fillvalue=fillvalue))
 
 
-def _reconstruct_activity(Y, Kba, Kaa_inv):
+def _reconstruct_activity(Y, Kba, Kaa_inv, recon_loc_inds=None):
     """
     Reconstruct activity
 
@@ -645,7 +644,10 @@ def _reconstruct_activity(Y, Kba, Kaa_inv):
         Reconstructed timeseries
 
     """
-    return np.dot(np.dot(Kba, Kaa_inv), Y.T).T
+    if recon_loc_inds:
+        return np.squeeze(np.dot(np.dot(Kba, Kaa_inv), Y.T).T)[:, recon_loc_inds[0]]
+    else:
+        return np.dot(np.dot(Kba, Kaa_inv), Y.T).T
 
 def filter_elecs(bo, measure='kurtosis', threshold=10):
     """
