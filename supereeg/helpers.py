@@ -573,7 +573,7 @@ def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore', recon_loc_in
     Kba = K[unknown_inds, :][:, known_inds]
 
     sessions = bo.sessions.unique()
-    try_filter = []
+    filter_chunks = []
     chunks = [np.array(i) for session in sessions for i in _chunker(bo.sessions[bo.sessions == session].index.tolist(), chunk_size)]
     for i in chunks:
         filter_chunks.append([x for x in i if x is not None])
