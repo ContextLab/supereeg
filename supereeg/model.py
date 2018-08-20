@@ -341,7 +341,7 @@ class Model(object):
             loc_labels[~_count_overlapping(bor.get_locs(), mo.get_locs())] = ['reconstructed']
             recon_loc = mo.locs
         else:
-            recon_loc = mo.get_locs().iloc[recon_loc_inds[0]]
+            recon_loc = np.atleast_2d(mo.get_locs().iloc[~_count_overlapping(bor.get_locs(), mo.get_locs())].iloc[recon_loc_inds[0]].as_matrix())
             loc_labels = np.array(['reconstructed'] * len(list(recon_loc_inds)))
 
         return Brain(data=activations, locs=recon_loc, sessions=bor.sessions, sample_rate=bor.sample_rate,

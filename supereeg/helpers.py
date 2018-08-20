@@ -573,22 +573,24 @@ def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore', recon_loc_in
     Kba = K[unknown_inds, :][:, known_inds]
 
     sessions = bo.sessions.unique()
-    try_filter = []
+    filter_chunks = []
     chunks = [np.array(i) for session in sessions for i in _chunker(bo.sessions[bo.sessions == session].index.tolist(), chunk_size)]
     for i in chunks:
-        try_filter.append([x for x in i if x is not None])
+        filter_chunks.append([x for x in i if x is not None])
+    chunks=None
 
-    #predict unobserved brain activitity
 
     if recon_loc_inds:
         combined_data = np.zeros((data.shape[0], len(recon_loc_inds)), dtype=data.dtype)
-        combined_data[:, range(len(recon_loc_inds))] = np.hstack(list(
-            map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv, recon_loc_inds=recon_loc_inds),
-                try_filter)))[:, np.newaxis]
+
+        for x in filter_chunks:
+
+            combined_data[x,range(len(recon_loc_inds))] = _reconstruct_activity(data[x, :], Kba, Kaa_inv, recon_loc_inds=recon_loc_inds)
+
     else:
         combined_data = np.zeros((data.shape[0], K.shape[0]), dtype=data.dtype)
         combined_data[:, unknown_inds] = np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv),
-                                                            try_filter)))
+                                                            filter_chunks)))
         combined_data[:, known_inds] = data
 
     for s in sessions:
