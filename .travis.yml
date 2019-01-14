@@ -9,7 +9,7 @@ apt_packages:
   - libbz2-dev
   - libhdf5-serial-dev
   - liblzo2-dev
-
+#allows for python3.7 testing in travis ci
 matrix:
   include:
     - python: 3.7
