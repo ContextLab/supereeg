@@ -507,7 +507,7 @@ def _fill_upper_triangle(M, value):
     return upper_tri
 
 
-def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore', recon_loc_inds=None):
+def _timeseries_recon(bo, mo, chunk_size=25000, preprocess='zscore', recon_loc_inds=None):
     """
     Reconstruction done by chunking by session
         Parameters
@@ -584,9 +584,10 @@ def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore', recon_loc_in
         combined_data = np.zeros((data.shape[0], len(recon_loc_inds)), dtype=data.dtype)
 
         for x in filter_chunks:
-
-            combined_data[x,range(len(recon_loc_inds))] = _reconstruct_activity(data[x, :], Kba, Kaa_inv, recon_loc_inds=recon_loc_inds)
-
+            try:
+                combined_data[x,range(len(recon_loc_inds))] = _reconstruct_activity(data[x, :], Kba, Kaa_inv, recon_loc_inds=recon_loc_inds)
+            except:
+                print('issue with chunksize: ' + str(x))
     else:
         combined_data = np.zeros((data.shape[0], K.shape[0]), dtype=data.dtype)
         combined_data[:, unknown_inds] = np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv),
