@@ -20,10 +20,6 @@ before_script:
 - "sh -e /etc/init.d/xvfb start"
 - sleep 3
 
-before_install:
-  - pip install cython
-  - python setup.py sdist
-
 install:
 - pip install dist/*.tar.gz
 - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
