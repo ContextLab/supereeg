@@ -38,7 +38,7 @@ To install the latest (bleeding edge) version directly from this repository use:
 
 5. `docker build . -t seeg_image` this may take a while, the image is just over 2 GB
 
-6. `docker run -it --name supereeg seeg_image`
+6. `docker run -it -p 9999:9999 --name supereeg -v <path-to-your-supereeg-cloned-directory>:/docker seeg_image`
 
 7. (Optional) Connect Docker to PyCharm or another IDE
 
