@@ -28,11 +28,17 @@ To install the latest (bleeding edge) version directly from this repository use:
 
 <h3>Installing the Docker container</h3>
 1. Install [Docker](https://docker.com)
+
 2. Launch and set up Docker with enough resources (see Docker [documentation](https://docs.docker.com/get-started/))
+
 3. Download the Docker folder from this repo
+
 4. In Docker, navigate using shell commands to the Docker folder
+
 5. 'docker build . -t seeg_image' this may take a while
+
 6. 'docker run -it --name supereeg seeg_image'
+
 7. (Optional) Connect Docker to PyCharm or another IDE
 
 <h2>Requirements</h2>
