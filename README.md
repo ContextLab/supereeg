@@ -42,6 +42,8 @@ To install the latest (bleeding edge) version directly from this repository use:
 
 7. (Optional) Connect Docker to PyCharm or another IDE
 
+To start the Docker container again, simply run `docker start supereeg && docker attach supereeg`
+
 <h2>Requirements</h2>
 
 The toolbox is currently supported on Mac and Linux.  It has not been tested on Windows (and we expect key functionality not to work properly on Windows systems).
