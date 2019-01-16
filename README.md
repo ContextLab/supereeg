@@ -36,7 +36,7 @@ To install the latest (bleeding edge) version directly from this repository use:
 
 4. In Docker, navigate using shell commands to the Docker directory
 
-5. `docker build . -t seeg_image` this may take a while
+5. `docker build . -t seeg_image` this may take a while, the image is just over 2 GB
 
 6. `docker run -it --name supereeg seeg_image`
 
