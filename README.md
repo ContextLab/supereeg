@@ -27,7 +27,7 @@ To install the latest (bleeding edge) version directly from this repository use:
 
 `pip install --upgrade git+https://github.com/ContextLab/supereeg.git`
 
-<h3>Installing the Docker container</h3>
+<h3>Installing the Docker container with Python 3.7.1</h3>
 
 1. Install [Docker](https://docker.com/)
 
@@ -50,7 +50,7 @@ To run the Jupyter notebook, run `jupyter notebook --ip 0.0.0.0 --allow-root --n
 The toolbox is currently supported on Mac and Linux.  It has not been tested on Windows (and we expect key functionality not to work properly on Windows systems). If using Windows, consider using Windows Subsystem for Linux or a Docker container.
 
 Dependencies:
-+ python 2.7, 3.5+
++ python 2.7, 3.5+ (3.7.1 supported)
 + pandas>=0.21.1
 + seaborn>=0.7.1
 + matplotlib==2.1.0
