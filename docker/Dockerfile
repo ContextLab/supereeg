@@ -1,4 +1,4 @@
-# pull latest stable slim image of debian as of Jan 2019
+# pull latest stable slim image of debian
 FROM debian:stretch-slim
 
 # update package list and install requirements for miniconda
@@ -15,8 +15,12 @@ ENV PATH=/miniconda/bin:${PATH}
 # install pytables separately to prevent HDF5 errors
 RUN conda install pytables -y
 
-# install supereeg!
+# install supereeg! (and jupyter)
 RUN python3.7 -m pip install supereeg
+RUN python3.7 -m pip install jupyter
 
-#set entrypoint for terminal
+# expose port for jupyter
+EXPOSE 8888
+
+# set entrypoint for terminal
 ENTRYPOINT ["/bin/bash"]
