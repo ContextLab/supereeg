@@ -13,7 +13,7 @@ Toolbox documentation, including a full API specification, tutorials, and galler
 <h2>Installation</h2>
 
 <h3>Recommended way of installing the toolbox</h3>
-You may install the latest stable version of our toolbox using [pip](https://pypi.python.org/pypi/pip/) :
+You may install the latest stable version of our toolbox using [pip](https://pypi.python.org/pypi/pip/):
 
 `pip install supereeg`
 
