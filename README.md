@@ -32,15 +32,11 @@ To install the latest (bleeding edge) version directly from this repository use:
 
 2. Launch and set up Docker with enough resources (see Docker [documentation](https://docs.docker.com/get-started/))
 
-3. Download the Docker directory from this repo
+3. `docker pull contextualdynamicslab/supereeg`
 
-4. In Docker, navigate using shell commands to the Docker directory
+4. `docker run -it -p 8888:8888 --name supereeg -v <path-to-your-supereeg-cloned-directory>:/mount contextualdynamicslab/supereeg`
 
-5. `docker build . -t seeg_image` this may take a while, the image is just over 2 GB
-
-6. `docker run -it -p 8888:8888 --name supereeg -v <path-to-your-supereeg-cloned-directory>:/mount seeg_image`
-
-7. (Optional) Connect Docker to PyCharm or another IDE
+5. (Optional) Connect Docker to PyCharm or another IDE
 
 To start the Docker container again, simply run `docker start supereeg && docker attach supereeg`
 
