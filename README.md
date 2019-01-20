@@ -36,6 +36,8 @@ To install the latest (bleeding edge) version directly from this repository use:
 
 4. Start the container with `docker run -it -p 8888:8888 --name supereeg -v <path-to-desired directory>:/mount contextualdynamicslab/supereeg`
 
+The `-p` tag maps the container's port `8888` to host's port `8888`; the `-v` tag mounts the /mount directory to your desired directory to provide a shared volume between the host and the container; the `-it` tag makes the container interactive and activates a terminal in the container
+
 5. (Optional) Connect Docker to [PyCharm](https://www.jetbrains.com/help/pycharm/using-docker-as-a-remote-interpreter.html) or another IDE
 
 To start the Docker container again, simply run `docker start supereeg && docker attach supereeg`
