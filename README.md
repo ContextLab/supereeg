@@ -38,11 +38,13 @@ To install the latest (bleeding edge) version directly from this repository use:
 
 5. `docker build . -t seeg_image` this may take a while, the image is just over 2 GB
 
-6. `docker run -it -p 9999:9999 --name supereeg -v <path-to-your-supereeg-cloned-directory>:/docker seeg_image`
+6. `docker run -it -p 8888:8888 --name supereeg -v <path-to-your-supereeg-cloned-directory>:/mount seeg_image`
 
 7. (Optional) Connect Docker to PyCharm or another IDE
 
 To start the Docker container again, simply run `docker start supereeg && docker attach supereeg`
+
+To run the Jupyter notebook, run `jupyter notebook --ip 0.0.0.0 --allow-root --no-browser`, then using the host browser, navigate to localhost:8888 (or http://192.168.99.100:8888 if using Docker Toolbox) and enter the token shown in the Docker container.
 
 <h2>Requirements</h2>
 
