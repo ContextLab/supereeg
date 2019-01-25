@@ -359,7 +359,7 @@ def tal2mni(r):
     return np.round(inpoints[0:3, :].T, decimals=2)
 
 
-def _blur_corrmat(Z, weights):
+def _blur_corrmat(Z, Zp, weights):
     """
     Gets full correlation matrix
 
@@ -384,14 +384,12 @@ def _blur_corrmat(Z, weights):
     """
     #import seaborn as sns
     #import matplotlib.pyplot as plt
-
     triu_inds = np.triu_indices(Z.shape[0], k=1)
+    import torch
+    GPU = True
 
     #need to do computations seperately for positive and negative values
     sign_Z_full = np.sign(Z)
-    #logZ_pos_full = np.log(np.multiply(sign_Z_full > 0, Z))
-    #logZ_neg_full = np.log(np.multiply(sign_Z_full < 0, np.abs(Z)))
-
     sign_Z = sign_Z_full[triu_inds]
     logZ_pos = np.log(np.multiply(sign_Z > 0, Z[triu_inds]))
     logZ_neg = np.log(np.multiply(sign_Z < 0, np.abs(Z[triu_inds])))
@@ -401,6 +399,9 @@ def _blur_corrmat(Z, weights):
     K_neg = np.zeros([n, n])
     W = np.zeros([n, n])
 
+    import time
+    start = time.time()
+    print('--processing original way')
     for x in range(n-1):
         xweights = weights[x, :]
         x_match = np.isclose(xweights, 0)
@@ -420,13 +421,86 @@ def _blur_corrmat(Z, weights):
                     K_pos[x, y] = -np.inf
                     K_neg[x, y] = np.log(np.abs(Z_match_val))
                 continue
-
             next_weights = np.add.outer(xweights, yweights)
             next_weights = next_weights[triu_inds]
 
             W[x, y] = logsumexp(next_weights)
             K_pos[x, y] = logsumexp(logZ_pos + next_weights)
             K_neg[x, y] = logsumexp(logZ_neg + next_weights)
+
+    stop = time.time()
+    orig = round(stop-start, 3)
+
+    start = time.time()
+    print('--processing optimized way')
+
+    t1 = time.time()
+    tx, ty = np.triu_indices(n, k=1)
+    wclose = np.isclose(weights, 0).sum(axis=1)
+    matches = np.triu(np.outer(wclose, wclose), k=1).astype(bool)
+    next_weights = np.add.outer(weights, weights).swapaxes(1, 2)[(slice(None),)*2 + triu_inds]
+    next_weights = next_weights[tx, ty, :]
+    t2 = time.time()
+
+    t3 = time.time()
+    pos_matches = np.where(Zp > 0, np.log(Zp), -np.inf)
+    pos_matches[(Zp == 0) | (~matches)] = 0
+    logzp_and_next_wts = next_weights + logZ_pos
+
+    Kp = np.zeros([n, n])
+    if GPU:
+        Kp[tx, ty] = torch.logsumexp(torch.from_numpy(logzp_and_next_wts), dim=1)
+    else:
+        Kp[tx, ty] = logsumexp(logzp_and_next_wts, axis=1)
+    Kp = Kp*~matches + np.triu(pos_matches, k=1)
+
+    t4 = time.time()
+
+    t5 = time.time()
+
+    neg_matches = np.where(Zp > 0, -np.inf, np.log(np.abs(Zp)))
+    neg_matches[np.where(Zp == 0) or np.where(~matches)] = 0
+    logzn_and_next_wts = next_weights + logZ_neg
+
+    Kn = np.zeros([n, n])
+    if GPU:
+        Kn[tx, ty] = torch.logsumexp(torch.from_numpy(logzn_and_next_wts), dim=1)
+    else:
+        Kn = logsumexp(logzn_and_next_wts, axis=1)
+    Kn = Kn*~matches + np.triu(neg_matches, k=1)
+
+    t6 = time.time()
+    t7 = time.time()
+
+    Wc = np.zeros([n, n])
+    if GPU:
+        Wc[tx, ty] = torch.logsumexp(torch.from_numpy(next_weights), dim=1)
+    else:
+        Wc[tx, ty] = logsumexp(next_weights, axis=1)
+    Wc[np.where(matches)] = 0
+    t8 = time.time()
+
+    print('GPU stats')
+    print('Next weights block: {}'.format(round(t2 - t1, 3)))
+    print('Kp block          : {}'.format(round(t4 - t3, 3)))
+    print('Kn block          : {}'.format(round(t6 - t5, 3)))
+    print('Wc block          : {}'.format(round(t8 - t7, 3)))
+
+    stop = time.time()
+    new = round(stop-start, 3)
+
+    try:
+        assert np.allclose(Kn, K_neg, equal_nan=True), 'Kn and K_neg differ!'
+        assert np.allclose(Kp, K_pos, equal_nan=True), 'Kp and K_pos differ!'
+        assert np.allclose(Wc, W, equal_nan=True), 'Wc and W differ!'
+    except:
+        import ipdb; ipdb.set_trace()
+        pos_idxs = list(zip(*np.where(~np.isclose(Kp, K_pos, equal_nan=True))))
+        neg_idxs = list(zip(*np.where(~np.isclose(Kn, K_neg, equal_nan=True))))
+
+    print('Old: {}\nNew: {}'.format(orig, new))
+
+    import ipdb; ipdb.set_trace()
 
     #turn K_neg into complex numbers.  Where K_neg is infinite, this results in nans for the real number parts, so we'll
     #set any nans in K_neg.real to 0
@@ -436,6 +510,34 @@ def _blur_corrmat(Z, weights):
     K = K_pos + K_neg
 
     return K + K.T, W + W.T
+
+
+def _zero_pad_corrmat(Z, locs, _full_locs):
+    '''
+    Expand a subject's correlation matrix to the full electrode locations by
+    zero padding (currently) unknown correlations.  This function helps
+    vectorize _blurr_corrmat's model expansion.
+
+    Parameters
+    ----------
+    Z : Numpy array, Subject's Fisher z-transformed correlation matrix
+    locs : numpy array, Subject's electrode locations
+    full_locs : Pandas DataFrame, all Subject's electrode locations
+
+    Returns
+    -------
+    Z_padded : Numpy array, Subject's correlatio matrix zero padded to the full
+               electrode locations
+    '''
+    full_locs = pd.DataFrame(_full_locs, columns=list('xyz'))
+    n = full_locs.shape[0]
+    Z_padded = np.zeros([n, n])
+    idxs = full_locs.reset_index().merge(locs.reset_index(), on=list('xyz'))
+    known_idxs = idxs['index_x'].values
+    locs_idxs = idxs['index_y'].values
+    Z_padded[np.ix_(known_idxs, known_idxs)] = Z[np.ix_(locs_idxs, locs_idxs)]
+    return Z_padded
+
 
 def _to_log_complex(X):
     """

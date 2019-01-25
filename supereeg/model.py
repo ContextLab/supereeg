@@ -11,7 +11,7 @@ import deepdish as dd
 import matplotlib.pyplot as plt
 from .helpers import _get_corrmat, _r2z, _z2r, _log_rbf, _blur_corrmat, _plot_borderless,\
     _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, \
-    _plot_locs_hyp, _gray, _nifti_to_brain,\
+    _plot_locs_hyp, _gray, _nifti_to_brain, _zero_pad_corrmat,\
     _unique, _union, _empty, _to_log_complex, _to_exp_real
 from .brain import Brain
 from .nifti import Nifti
@@ -178,13 +178,19 @@ class Model(object):
             assert type(template) == Nifti, 'template must be a Nifti object or a path to a Nifti object'
             bo = Brain(template)
             rbf_weights = _log_rbf(bo.get_locs(), self.locs, width=self.rbf_width)
-            self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
+            # TODO: zero pad to expanded model
+            Z = self.get_model(z_transform=True)
+            Zp = _zero_pad_corrmat(Z, self.locs, locs)
+            self.numerator, self.denominator = _blur_corrmat(Z, Zp, rbf_weights)
             self.locs = bo.get_locs()
         elif not (locs is None): #blur correlation matrix out to locs
             if (isinstance(data, Brain) or isinstance(data, Model)): #self.locs may now conflict with locs
                 if not ((locs.shape[0] == self.locs.shape[0]) and np.allclose(locs, self.locs)):
                     rbf_weights = _log_rbf(locs, self.locs, width=self.rbf_width)
-                    self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
+                    # TODO: zero pad to expanded model
+                    Z = self.get_model(z_transform=True)
+                    Zp = _zero_pad_corrmat(Z, self.locs, locs)
+                    self.numerator, self.denominator = _blur_corrmat(Z, Zp, rbf_weights)
                     self.locs = locs
         elif self.locs is None:
             self.locs = locs
