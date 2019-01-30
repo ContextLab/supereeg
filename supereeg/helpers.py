@@ -24,6 +24,7 @@ import warnings
 from nilearn import plotting as ni_plt
 from nilearn import image
 from nilearn.input_data import NiftiMasker
+from numba import njit, prange
 from scipy.stats import kurtosis, zscore, pearsonr
 from scipy.spatial.distance import pdist
 from scipy.spatial.distance import cdist
@@ -385,8 +386,6 @@ def _blur_corrmat(Z, Zp, weights):
     #import seaborn as sns
     #import matplotlib.pyplot as plt
     triu_inds = np.triu_indices(Z.shape[0], k=1)
-    import torch
-    GPU = True
 
     #need to do computations seperately for positive and negative values
     sign_Z_full = np.sign(Z)
@@ -405,11 +404,11 @@ def _blur_corrmat(Z, Zp, weights):
     for x in range(n-1):
         xweights = weights[x, :]
         x_match = np.isclose(xweights, 0)
-        for y in range(x+1, n): #fill in upper triangle only
+        for y in range(x+1, n):
             yweights = weights[y, :]
             y_match = np.isclose(yweights, 0)
 
-            if np.any(x_match) and np.any(y_match): #the pair of locations we're filling in already exists in the given data
+            if np.any(x_match) and np.any(y_match):
                 x_ind = np.where(x_match)[0]
                 y_ind = np.where(y_match)[0]
                 Z_match_val = np.mean(Z[x_ind, y_ind])
@@ -434,57 +433,68 @@ def _blur_corrmat(Z, Zp, weights):
     start = time.time()
     print('--processing optimized way')
 
-    t1 = time.time()
-    tx, ty = np.triu_indices(n, k=1)
+    @njit(parallel=True)
+    def wk_trius(weights, Zp, lzp, lzn, matches, wtx, wty, ktx, kty):
+        w  = np.zeros(len(wtx), dtype=np.float64)
+        kp = np.zeros(len(wtx), dtype=np.float64)
+        kn = np.zeros(len(wtx), dtype=np.float64)
+        for i in prange(len(wtx)):
+            x = wtx[i]
+            y = wty[i]
+            if matches[x, y]:
+                zval = Zp[x, y]
+                if zval > 0:
+                    kp[i] = np.log(zval)
+                    kn[i] = -np.inf
+                else:
+                    kp[i] = -np.inf
+                    kn[i] = np.log(np.abs(zval))
+            else:
+                wx = weights[x, :]
+                wy = weights[y, :]
+                w[i], kp[i], kn[i] = logsxp(wx, wy, lzp, lzn, ktx, kty)
+        return w, kp, kn
+
+    @njit
+    def logsxp(xweights, yweights, lzp, lzn, ktx, kty):
+        n       = len(ktx)
+        w_sums  = np.zeros(n, dtype=np.float64)
+        kp_sums = np.zeros(n, dtype=np.float64)
+        kn_sums = np.zeros(n, dtype=np.float64)
+        for i in range(len(ktx)):
+            x_wt    = xweights[ktx[i]]
+            y_wt    = yweights[kty[i]]
+            xy_wt   = x_wt + y_wt
+            w_sums[i]  = xy_wt
+            kp_sums[i] = xy_wt + lzp[i]
+            kn_sums[i] = xy_wt + lzn[i]
+        wmax  = np.max(w_sums)
+        kpmax = np.max(kp_sums)
+        knmax = np.max(kp_sums)
+        w_logsxp = np.log(np.sum(np.exp(w_sums - wmax))) + wmax
+        kp_logsxp = np.log(np.sum(np.exp(kp_sums - kpmax))) + kpmax
+        kn_logsxp = np.log(np.sum(np.exp(kn_sums - kpmax))) + knmax
+        return w_logsxp, kp_logsxp, kn_logsxp
+
+    k_triu_inds = np.triu_indices(Z.shape[0], k=1)
+    ktx, kty = k_triu_inds
+
+    w_triu_inds = np.triu_indices(n, k=1)
+    wtx, wty = w_triu_inds
+
     wclose = np.isclose(weights, 0).sum(axis=1)
     matches = np.triu(np.outer(wclose, wclose), k=1).astype(bool)
-    next_weights = np.add.outer(weights, weights).swapaxes(1, 2)[(slice(None),)*2 + triu_inds]
-    next_weights = next_weights[tx, ty, :]
-    t2 = time.time()
 
-    t3 = time.time()
-    pos_matches = np.where(Zp > 0, np.log(Zp), -np.inf)
-    pos_matches[(Zp == 0) | (~matches)] = 0
-    logzp_and_next_wts = next_weights + logZ_pos
+    w, kp, kn = wk_trius(weights, Zp, logZ_pos, logZ_neg, matches, wtx, wty, ktx, kty)
+
+    Wc  = np.zeros([n, n])
+    Wc[wtx, wty] = w
 
     Kp = np.zeros([n, n])
-    if GPU:
-        Kp[tx, ty] = torch.logsumexp(torch.from_numpy(logzp_and_next_wts), dim=1)
-    else:
-        Kp[tx, ty] = logsumexp(logzp_and_next_wts, axis=1)
-    Kp = Kp*~matches + np.triu(pos_matches, k=1)
-
-    t4 = time.time()
-
-    t5 = time.time()
-
-    neg_matches = np.where(Zp > 0, -np.inf, np.log(np.abs(Zp)))
-    neg_matches[np.where(Zp == 0) or np.where(~matches)] = 0
-    logzn_and_next_wts = next_weights + logZ_neg
+    Kp[wtx, wty] = kp
 
     Kn = np.zeros([n, n])
-    if GPU:
-        Kn[tx, ty] = torch.logsumexp(torch.from_numpy(logzn_and_next_wts), dim=1)
-    else:
-        Kn = logsumexp(logzn_and_next_wts, axis=1)
-    Kn = Kn*~matches + np.triu(neg_matches, k=1)
-
-    t6 = time.time()
-    t7 = time.time()
-
-    Wc = np.zeros([n, n])
-    if GPU:
-        Wc[tx, ty] = torch.logsumexp(torch.from_numpy(next_weights), dim=1)
-    else:
-        Wc[tx, ty] = logsumexp(next_weights, axis=1)
-    Wc[np.where(matches)] = 0
-    t8 = time.time()
-
-    print('GPU stats')
-    print('Next weights block: {}'.format(round(t2 - t1, 3)))
-    print('Kp block          : {}'.format(round(t4 - t3, 3)))
-    print('Kn block          : {}'.format(round(t6 - t5, 3)))
-    print('Wc block          : {}'.format(round(t8 - t7, 3)))
+    Kn[wtx, wty] = kn
 
     stop = time.time()
     new = round(stop-start, 3)
@@ -497,10 +507,9 @@ def _blur_corrmat(Z, Zp, weights):
         import ipdb; ipdb.set_trace()
         pos_idxs = list(zip(*np.where(~np.isclose(Kp, K_pos, equal_nan=True))))
         neg_idxs = list(zip(*np.where(~np.isclose(Kn, K_neg, equal_nan=True))))
+        w_idxs   = list(zip(*np.where(~np.isclose(Wc, W, equal_nan=True))))
 
     print('Old: {}\nNew: {}'.format(orig, new))
-
-    import ipdb; ipdb.set_trace()
 
     #turn K_neg into complex numbers.  Where K_neg is infinite, this results in nans for the real number parts, so we'll
     #set any nans in K_neg.real to 0
