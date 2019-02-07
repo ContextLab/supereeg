@@ -190,12 +190,12 @@ class Model(object):
 
                     # timing
 
-                    # Numba
-                    print('Numba... ', end=' ')
-                    from .helpers import _blur_corrmat_numba
+                    # pycuda
+                    print('pycuda... ', end=' ')
+                    from .helpers import _blur_corrmat_pycuda
                     start = time.time()
                     Zp = _zero_pad_corrmat(Z, self.locs, locs)
-                    Kn, Wn = _blur_corrmat_numba(Z, Zp, rbf_weights)
+                    Kn, Wn = _blur_corrmat_pycuda(Z, Zp, rbf_weights)
                     end = time.time()
                     print(round(end-start, 3), end=', ')
 
@@ -205,10 +205,16 @@ class Model(object):
                     Ko, Wo = _blur_corrmat(Z, rbf_weights)
                     end = time.time()
                     print(round(end-start, 3))
-
-                    assert np.allclose(Kn, Ko, atol=1e-6, equal_nan=True)
-                    assert np.allclose(Wn, Wo, atol=1e-6, equal_nan=True)
                     return
+
+                    '''
+                    try:
+                        assert np.allclose(Kn, Ko, atol=1e-6, equal_nan=True)
+                        assert np.allclose(Wn, Wo, atol=1e-6, equal_nan=True)
+                    except:
+                        import ipdb; ipdb.set_trace()
+                        temp = 5
+                    '''
 
                     self.numerator, self.denominator = _blur_corrmat(Z, rbf_weights)
                     self.locs = locs

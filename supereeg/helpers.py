@@ -19,12 +19,13 @@ import nibabel as nib
 import hypertools as hyp
 import shutil
 import warnings
-
+import pycuda.autoinit
 
 from nilearn import plotting as ni_plt
 from nilearn import image
 from nilearn.input_data import NiftiMasker
-from numba import njit, prange
+from pycuda import gpuarray
+from pycuda.compiler import SourceModule
 from scipy.stats import kurtosis, zscore, pearsonr
 from scipy.spatial.distance import pdist
 from scipy.spatial.distance import cdist
@@ -360,86 +361,120 @@ def tal2mni(r):
     return np.round(inpoints[0:3, :].T, decimals=2)
 
 
-def _blur_corrmat_numba(Z, Zp, weights):
+def _blur_corrmat_pycuda(Z, Zp, weights):
 
-    @njit(parallel=True)
-    def wk_trius(weights, Zp, lzp, lzn, matches, wtx, wty, ktx, kty):
-        w  = np.zeros(len(wtx), dtype=np.float64)
-        kp = np.zeros(len(wtx), dtype=np.float64)
-        kn = np.zeros(len(wtx), dtype=np.float64)
-        for i in prange(len(wtx)):
-            x = wtx[i]
-            y = wty[i]
-            if matches[x, y]:
-                zval = Zp[x, y]
-                if zval > 0:
-                    kp[i] = np.log(zval)
-                    kn[i] = -np.inf
-                else:
-                    kp[i] = -np.inf
-                    kn[i] = np.log(np.abs(zval))
-            else:
-                wx = weights[x, :]
-                wy = weights[y, :]
-                w[i], kp[i], kn[i] = logsxp(wx, wy, lzp, lzn, ktx, kty)
-        return w, kp, kn
-
-    @njit
-    def logsxp(xweights, yweights, lzp, lzn, ktx, kty):
-        n     = len(ktx)
-        wmax  = -np.inf
-        kpmax = -np.inf
-        knmax = -np.inf
-        for i in range(len(ktx)):
-            x_wt = xweights[ktx[i]]
-            y_wt = yweights[kty[i]]
-            xy_wt = x_wt + y_wt
-            wmax  = max(wmax,  xy_wt)
-            kpmax = max(kpmax, xy_wt + lzp[i])
-            knmax = max(knmax, xy_wt + lzn[i])
-        w  = 0
-        kp = 0
-        kn = 0
-        for i in range(len(ktx)):
-            x_wt = xweights[ktx[i]]
-            y_wt = yweights[kty[i]]
-            xy_wt = x_wt + y_wt
-            w     += np.exp(xy_wt - wmax)
-            kp    += np.exp(xy_wt + lzp[i] - kpmax)
-            kn    += np.exp(xy_wt + lzn[i] - knmax)
-        w  = np.log(w)  + wmax
-        kp = np.log(kp) + kpmax
-        kn = np.log(kn) + knmax
-        return w, kp, kn
+    mod = SourceModule('''
+      #include <math.h>
 
 
-    triu_inds = np.triu_indices(Z.shape[0], k=1)
-    n = weights.shape[0]
+      __global__ void blur_gpu(float *w, float *kp, float *kn,
+                               float *weights, float *Zp, float *lzp,
+                               float *lzn, int *matches,
+                               int w_n_rows, int w_n_cols,
+                               int *wtx, int *wty, int n_wt,
+                               int *ktx, int *kty, int n_kt) {
 
+        int idx = blockDim.x * blockIdx.x + threadIdx.x;
+
+        if (idx < n_wt) {
+
+          float pos_inf = __int_as_float(0x7f800000);
+          float neg_inf = __int_as_float(0xff800000);
+
+          int x = wtx[idx];
+          int y = wty[idx];
+
+          if (matches[x*w_n_rows + y] == 1) {
+
+            float zval = Zp[x*w_n_rows + y];
+
+            if (zval > 0) {
+              kp[idx] = log(zval);
+              kn[idx] = neg_inf;
+            } else {
+              kp[idx] = neg_inf;;
+              kn[idx] = log(abs(zval));
+            }
+
+          } else {
+
+            float xy_wt;
+            float wmax  = neg_inf;
+            float kpmax = neg_inf;
+            float knmax = neg_inf;
+
+            for (int i=0; i < n_kt; i++) {
+              xy_wt = weights[x*w_n_cols + ktx[i]] + weights[y*w_n_cols + kty[i]];
+              wmax  = max(wmax,  xy_wt);
+              kpmax = max(kpmax, xy_wt + lzp[i]);
+              knmax = max(knmax, xy_wt + lzn[i]);
+            }
+
+            for (int i=0; i < n_kt; i++) {
+              xy_wt    = weights[x*w_n_cols + ktx[i]] + weights[y*w_n_cols + kty[i]];
+              w[idx]  += exp(xy_wt - wmax);
+              kp[idx] += exp(xy_wt + lzp[i] - kpmax);
+              kn[idx] += exp(xy_wt + lzn[i] - knmax);
+            }
+
+            w[idx]  = log(w[idx])  + wmax;
+            kp[idx] = log(kp[idx]) + kpmax;
+            kn[idx] = log(kn[idx]) + knmax;
+          }
+        }
+      }
+      ''')
+
+    blur_gpu = mod.get_function('blur_gpu')
+
+    n           = weights.shape[0]
+    wtx, wty    = np.triu_indices(n, k=1)
+    ktx, kty    = np.triu_indices(Z.shape[0], k=1)
+    triu_inds   = np.triu_indices(Z.shape[0], k=1)
     sign_Z_full = np.sign(Z)
-    sign_Z = sign_Z_full[triu_inds]
-    logZ_pos = np.log(np.multiply(sign_Z > 0, Z[triu_inds]))
-    logZ_neg = np.log(np.multiply(sign_Z < 0, np.abs(Z[triu_inds])))
+    sign_Z      = sign_Z_full[triu_inds]
+    logZ_pos    = np.log(np.multiply(sign_Z > 0, Z[triu_inds]))
+    logZ_neg    = np.log(np.multiply(sign_Z < 0, np.abs(Z[triu_inds])))
+    wclose      = np.isclose(weights, 0).sum(axis=1)
+    matches     = np.triu(np.outer(wclose, wclose)).astype(bool)
 
-    k_triu_inds = np.triu_indices(Z.shape[0], k=1)
-    ktx, kty = k_triu_inds
+    n_wt        = np.int32(len(wtx))
+    n_kt        = np.int32(len(ktx))
+    w_n_rows    = np.int32(weights.shape[0])
+    w_n_cols    = np.int32(weights.shape[1])
 
-    w_triu_inds = np.triu_indices(n, k=1)
-    wtx, wty = w_triu_inds
+    w_gpu       = gpuarray.zeros(n_wt, np.float32)
+    kp_gpu      = gpuarray.zeros(n_wt, np.float32)
+    kn_gpu      = gpuarray.zeros(n_wt, np.float32)
 
-    wclose = np.isclose(weights, 0).sum(axis=1)
-    matches = np.triu(np.outer(wclose, wclose), k=1).astype(bool)
+    weights_gpu = gpuarray.to_gpu(weights.astype(np.float32))
+    Zp_gpu      = gpuarray.to_gpu(Zp.astype(np.float32))
+    lzp_gpu     = gpuarray.to_gpu(logZ_pos.astype(np.float32))
+    lzn_gpu     = gpuarray.to_gpu(logZ_neg.astype(np.float32))
+    matches_gpu = gpuarray.to_gpu(matches.astype(np.int32))
 
-    w, kp, kn = wk_trius(weights, Zp, logZ_pos, logZ_neg, matches, wtx, wty, ktx, kty)
+    wtx_gpu     = gpuarray.to_gpu(wtx.astype(np.int32))
+    wty_gpu     = gpuarray.to_gpu(wty.astype(np.int32))
+    ktx_gpu     = gpuarray.to_gpu(ktx.astype(np.int32))
+    kty_gpu     = gpuarray.to_gpu(kty.astype(np.int32))
+
+    block_len = np.int(min(n, 1024))
+    block = (block_len, 1, 1)
+    num_blocks = np.int(np.ceil(n / block_len))
+    grid = (num_blocks, 1, 1)
+    blur_gpu(w_gpu, kp_gpu, kn_gpu, weights_gpu, Zp_gpu,
+             lzp_gpu, lzn_gpu, matches_gpu, w_n_rows, w_n_cols,
+             wtx_gpu, wty_gpu, n_wt, ktx_gpu, kty_gpu, n_kt,
+             block=block, grid=grid)
 
     W  = np.zeros([n, n])
-    W[wtx, wty] = w
+    W[wtx, wty] = w_gpu.get()
 
     K_pos = np.zeros([n, n])
-    K_pos[wtx, wty] = kp
+    K_pos[wtx, wty] = kp_gpu.get()
 
     K_neg = np.zeros([n, n])
-    K_neg[wtx, wty] = kn
+    K_neg[wtx, wty] = kn_gpu.get()
 
     K_neg = np.multiply(0+1j, K_neg)
     K_neg.real[np.isnan(K_neg)] = 0
