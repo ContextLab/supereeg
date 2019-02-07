@@ -391,25 +391,30 @@ def _blur_corrmat_numba(Z, Zp, weights):
         kpmax = -np.inf
         knmax = -np.inf
         for i in range(len(ktx)):
-            xy_wt   = xweights[ktx[i]] + yweights[kty[i]]
-            wmax  = max(wmax, xy_wt)
+            x_wt = xweights[ktx[i]]
+            y_wt = yweights[kty[i]]
+            xy_wt = x_wt + y_wt
+            wmax  = max(wmax,  xy_wt)
             kpmax = max(kpmax, xy_wt + lzp[i])
             knmax = max(knmax, xy_wt + lzn[i])
         w  = 0
         kp = 0
         kn = 0
         for i in range(len(ktx)):
-            xy_wt  = weights[ktx[i]] + yweights[kty[i]]
+            x_wt = xweights[ktx[i]]
+            y_wt = yweights[kty[i]]
+            xy_wt = x_wt + y_wt
             w     += np.exp(xy_wt - wmax)
             kp    += np.exp(xy_wt + lzp[i] - kpmax)
             kn    += np.exp(xy_wt + lzn[i] - knmax)
-        w  = np.log(w) + wmax
+        w  = np.log(w)  + wmax
         kp = np.log(kp) + kpmax
         kn = np.log(kn) + knmax
         return w, kp, kn
 
 
     triu_inds = np.triu_indices(Z.shape[0], k=1)
+    n = weights.shape[0]
 
     sign_Z_full = np.sign(Z)
     sign_Z = sign_Z_full[triu_inds]
@@ -443,7 +448,7 @@ def _blur_corrmat_numba(Z, Zp, weights):
     return K + K.T, W + W.T
 
 
-def _blur_corrmat(Z, Zp, weights):
+def _blur_corrmat(Z, weights):
     """
     Gets full correlation matrix
 
