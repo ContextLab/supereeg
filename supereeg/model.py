@@ -180,25 +180,6 @@ class Model(object):
             rbf_weights = _log_rbf(bo.get_locs(), self.locs, width=self.rbf_width)
             Z = self.get_model(z_transform=True)
 
-            # timing
-            import time
-
-            # Numba
-            from .helpers import _blur_corrmat_numba
-            start = time.time()
-            Zp = _zero_pad_corrmat(Z, self.locs, locs)
-            Kn, Wn = _blur_corrmat_numba(Z, Zp, rbf_weights)
-            end = time.time()
-            print('Numba: {}'.format(round(end-start, 3)))
-
-            # Orig
-            start = time.time()
-            Ko, Wo = _blur_corrmat(Z, rbf_weights)
-            end = time.time()
-            print('Orig: {}'.format(round(end-start, 3)))
-            return
-
-
             self.numerator, self.denominator = _blur_corrmat(Z, rbf_weights)
             self.locs = bo.get_locs()
         elif not (locs is None): #blur correlation matrix out to locs
@@ -206,6 +187,29 @@ class Model(object):
                 if not ((locs.shape[0] == self.locs.shape[0]) and np.allclose(locs, self.locs)):
                     rbf_weights = _log_rbf(locs, self.locs, width=self.rbf_width)
                     Z = self.get_model(z_transform=True)
+
+                    # timing
+
+                    # Numba
+                    print('Numba... ', end=' ')
+                    from .helpers import _blur_corrmat_numba
+                    start = time.time()
+                    Zp = _zero_pad_corrmat(Z, self.locs, locs)
+                    Kn, Wn = _blur_corrmat_numba(Z, Zp, rbf_weights)
+                    end = time.time()
+                    print(round(end-start, 3), end=', ')
+
+                    # Orig
+                    print('Orig... ', end=' ')
+                    start = time.time()
+                    Ko, Wo = _blur_corrmat(Z, rbf_weights)
+                    end = time.time()
+                    print(round(end-start, 3))
+
+                    assert np.allclose(Kn, Ko, atol=1e-6, equal_nan=True)
+                    assert np.allclose(Wn, Wo, atol=1e-6, equal_nan=True)
+                    return
+
                     self.numerator, self.denominator = _blur_corrmat(Z, rbf_weights)
                     self.locs = locs
         elif self.locs is None:
