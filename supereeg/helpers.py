@@ -360,6 +360,89 @@ def tal2mni(r):
     return np.round(inpoints[0:3, :].T, decimals=2)
 
 
+def _blur_corrmat_numba(Z, Zp, weights):
+
+    @njit(parallel=True)
+    def wk_trius(weights, Zp, lzp, lzn, matches, wtx, wty, ktx, kty):
+        w  = np.zeros(len(wtx), dtype=np.float64)
+        kp = np.zeros(len(wtx), dtype=np.float64)
+        kn = np.zeros(len(wtx), dtype=np.float64)
+        for i in prange(len(wtx)):
+            x = wtx[i]
+            y = wty[i]
+            if matches[x, y]:
+                zval = Zp[x, y]
+                if zval > 0:
+                    kp[i] = np.log(zval)
+                    kn[i] = -np.inf
+                else:
+                    kp[i] = -np.inf
+                    kn[i] = np.log(np.abs(zval))
+            else:
+                wx = weights[x, :]
+                wy = weights[y, :]
+                w[i], kp[i], kn[i] = logsxp(wx, wy, lzp, lzn, ktx, kty)
+        return w, kp, kn
+
+    @njit
+    def logsxp(xweights, yweights, lzp, lzn, ktx, kty):
+        n     = len(ktx)
+        wmax  = -np.inf
+        kpmax = -np.inf
+        knmax = -np.inf
+        for i in range(len(ktx)):
+            xy_wt   = xweights[ktx[i]] + yweights[kty[i]]
+            wmax  = max(wmax, xy_wt)
+            kpmax = max(kpmax, xy_wt + lzp[i])
+            knmax = max(knmax, xy_wt + lzn[i])
+        w  = 0
+        kp = 0
+        kn = 0
+        for i in range(len(ktx)):
+            xy_wt  = weights[ktx[i]] + yweights[kty[i]]
+            w     += np.exp(xy_wt - wmax)
+            kp    += np.exp(xy_wt + lzp[i] - kpmax)
+            kn    += np.exp(xy_wt + lzn[i] - knmax)
+        w  = np.log(w) + wmax
+        kp = np.log(kp) + kpmax
+        kn = np.log(kn) + knmax
+        return w, kp, kn
+
+
+    triu_inds = np.triu_indices(Z.shape[0], k=1)
+
+    sign_Z_full = np.sign(Z)
+    sign_Z = sign_Z_full[triu_inds]
+    logZ_pos = np.log(np.multiply(sign_Z > 0, Z[triu_inds]))
+    logZ_neg = np.log(np.multiply(sign_Z < 0, np.abs(Z[triu_inds])))
+
+    k_triu_inds = np.triu_indices(Z.shape[0], k=1)
+    ktx, kty = k_triu_inds
+
+    w_triu_inds = np.triu_indices(n, k=1)
+    wtx, wty = w_triu_inds
+
+    wclose = np.isclose(weights, 0).sum(axis=1)
+    matches = np.triu(np.outer(wclose, wclose), k=1).astype(bool)
+
+    w, kp, kn = wk_trius(weights, Zp, logZ_pos, logZ_neg, matches, wtx, wty, ktx, kty)
+
+    W  = np.zeros([n, n])
+    W[wtx, wty] = w
+
+    K_pos = np.zeros([n, n])
+    K_pos[wtx, wty] = kp
+
+    K_neg = np.zeros([n, n])
+    K_neg[wtx, wty] = kn
+
+    K_neg = np.multiply(0+1j, K_neg)
+    K_neg.real[np.isnan(K_neg)] = 0
+    K = K_pos + K_neg
+
+    return K + K.T, W + W.T
+
+
 def _blur_corrmat(Z, Zp, weights):
     """
     Gets full correlation matrix
@@ -398,9 +481,6 @@ def _blur_corrmat(Z, Zp, weights):
     K_neg = np.zeros([n, n])
     W = np.zeros([n, n])
 
-    import time
-    start = time.time()
-    print('--processing original way')
     for x in range(n-1):
         xweights = weights[x, :]
         x_match = np.isclose(xweights, 0)
@@ -427,89 +507,6 @@ def _blur_corrmat(Z, Zp, weights):
             K_pos[x, y] = logsumexp(logZ_pos + next_weights)
             K_neg[x, y] = logsumexp(logZ_neg + next_weights)
 
-    stop = time.time()
-    orig = round(stop-start, 3)
-
-    start = time.time()
-    print('--processing optimized way')
-
-    @njit(parallel=True)
-    def wk_trius(weights, Zp, lzp, lzn, matches, wtx, wty, ktx, kty):
-        w  = np.zeros(len(wtx), dtype=np.float64)
-        kp = np.zeros(len(wtx), dtype=np.float64)
-        kn = np.zeros(len(wtx), dtype=np.float64)
-        for i in prange(len(wtx)):
-            x = wtx[i]
-            y = wty[i]
-            if matches[x, y]:
-                zval = Zp[x, y]
-                if zval > 0:
-                    kp[i] = np.log(zval)
-                    kn[i] = -np.inf
-                else:
-                    kp[i] = -np.inf
-                    kn[i] = np.log(np.abs(zval))
-            else:
-                wx = weights[x, :]
-                wy = weights[y, :]
-                w[i], kp[i], kn[i] = logsxp(wx, wy, lzp, lzn, ktx, kty)
-        return w, kp, kn
-
-    @njit
-    def logsxp(xweights, yweights, lzp, lzn, ktx, kty):
-        n       = len(ktx)
-        w_sums  = np.zeros(n, dtype=np.float64)
-        kp_sums = np.zeros(n, dtype=np.float64)
-        kn_sums = np.zeros(n, dtype=np.float64)
-        for i in range(len(ktx)):
-            x_wt    = xweights[ktx[i]]
-            y_wt    = yweights[kty[i]]
-            xy_wt   = x_wt + y_wt
-            w_sums[i]  = xy_wt
-            kp_sums[i] = xy_wt + lzp[i]
-            kn_sums[i] = xy_wt + lzn[i]
-        wmax  = np.max(w_sums)
-        kpmax = np.max(kp_sums)
-        knmax = np.max(kp_sums)
-        w_logsxp = np.log(np.sum(np.exp(w_sums - wmax))) + wmax
-        kp_logsxp = np.log(np.sum(np.exp(kp_sums - kpmax))) + kpmax
-        kn_logsxp = np.log(np.sum(np.exp(kn_sums - kpmax))) + knmax
-        return w_logsxp, kp_logsxp, kn_logsxp
-
-    k_triu_inds = np.triu_indices(Z.shape[0], k=1)
-    ktx, kty = k_triu_inds
-
-    w_triu_inds = np.triu_indices(n, k=1)
-    wtx, wty = w_triu_inds
-
-    wclose = np.isclose(weights, 0).sum(axis=1)
-    matches = np.triu(np.outer(wclose, wclose), k=1).astype(bool)
-
-    w, kp, kn = wk_trius(weights, Zp, logZ_pos, logZ_neg, matches, wtx, wty, ktx, kty)
-
-    Wc  = np.zeros([n, n])
-    Wc[wtx, wty] = w
-
-    Kp = np.zeros([n, n])
-    Kp[wtx, wty] = kp
-
-    Kn = np.zeros([n, n])
-    Kn[wtx, wty] = kn
-
-    stop = time.time()
-    new = round(stop-start, 3)
-
-    try:
-        assert np.allclose(Kn, K_neg, equal_nan=True), 'Kn and K_neg differ!'
-        assert np.allclose(Kp, K_pos, equal_nan=True), 'Kp and K_pos differ!'
-        assert np.allclose(Wc, W, equal_nan=True), 'Wc and W differ!'
-    except:
-        import ipdb; ipdb.set_trace()
-        pos_idxs = list(zip(*np.where(~np.isclose(Kp, K_pos, equal_nan=True))))
-        neg_idxs = list(zip(*np.where(~np.isclose(Kn, K_neg, equal_nan=True))))
-        w_idxs   = list(zip(*np.where(~np.isclose(Wc, W, equal_nan=True))))
-
-    print('Old: {}\nNew: {}'.format(orig, new))
 
     #turn K_neg into complex numbers.  Where K_neg is infinite, this results in nans for the real number parts, so we'll
     #set any nans in K_neg.real to 0
