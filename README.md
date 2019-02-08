@@ -28,6 +28,7 @@ To install the latest (bleeding edge) version directly from this repository use:
 `pip install --upgrade git+https://github.com/ContextLab/supereeg.git`
 
 <h3>One time setup</h3>
+
 1. Install Docker on your computer using the appropriate guide below:
     - [OSX](https://docs.docker.com/docker-for-mac/install/#download-docker-for-mac)
     - [Windows](https://docs.docker.com/docker-for-windows/install/)
