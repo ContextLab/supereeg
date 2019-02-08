@@ -43,7 +43,7 @@ To install the latest (bleeding edge) version directly from this repository use:
 6. (Optional) Connect Docker to [PyCharm](https://www.jetbrains.com/help/pycharm/using-docker-as-a-remote-interpreter.html) or another IDE
 
 
-</h3Using the container after setup</h3>
+</h3>Using the container after setup</h3>
 1. You can always fire up the container by typing the following into a terminal
     - `docker start supereeg && docker attach supereeg`
     - When you see the `root@` prefix, letting you know you're inside the container
