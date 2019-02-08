@@ -127,15 +127,15 @@ class Nifti(Nifti1Image):
                 if hasattr(type(index), "__iter__"):
                     for i in index:
                         nii = index_img(self, i)
-                        ni_plt.plot_anat(nii)
+                        ni_plt.plot_anat(nii, output_file=pdfpath)
                 else:
                     nii = index_img(self, index)
-                    ni_plt.plot_anat(nii)
+                    ni_plt.plot_anat(nii, output_file=pdfpath)
 
             else:
-                ni_plt.plot_anat(self)
+                ni_plt.plot_anat(self, output_file=pdfpath)
         else:
-            ni_plt.plot_anat(self)
+            ni_plt.plot_anat(self, output_file=pdfpath)
 
         if not pdfpath:
             ni_plt.show()
@@ -171,12 +171,12 @@ class Nifti(Nifti1Image):
                 if hasattr(type(index), "__iter__"):
                     for i in index:
                         nii = index_img(self, i)
-                        ni_plt.plot_glass_brain(nii)
+                        ni_plt.plot_glass_brain(nii, output_file=pdfpath)
                 else:
                     nii = index_img(self, index)
-                    ni_plt.plot_glass_brain(nii)
+                    ni_plt.plot_glass_brain(nii, output_file=pdfpath)
             else:
-                ni_plt.plot_glass_brain(self)
+                ni_plt.plot_glass_brain(self, output_file=pdfpath)
 
         if not pdfpath:
             ni_plt.show()
