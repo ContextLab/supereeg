@@ -418,7 +418,7 @@ class Brain(object):
 
         if self.get_data().shape[0] == 1:
             nii = self.to_nii()
-            nii.plot_glass_brain()
+            nii.plot_glass_brain(pdfpath=filepath)
         elif self.get_data().empty:
             fig = plt.figure()
             ax = fig.add_subplot(111, aspect='equal')
