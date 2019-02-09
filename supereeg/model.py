@@ -205,16 +205,14 @@ class Model(object):
                     Ko, Wo = _blur_corrmat(Z, rbf_weights)
                     end = time.time()
                     print(round(end-start, 3))
-                    return
 
-                    '''
                     try:
                         assert np.allclose(Kn, Ko, atol=1e-6, equal_nan=True)
                         assert np.allclose(Wn, Wo, atol=1e-6, equal_nan=True)
+                        print('...equivalent!')
                     except:
                         import ipdb; ipdb.set_trace()
                         temp = 5
-                    '''
 
                     self.numerator, self.denominator = _blur_corrmat(Z, rbf_weights)
                     self.locs = locs
