@@ -458,9 +458,9 @@ def _blur_corrmat_pycuda(Z, Zp, weights):
     ktx_gpu     = gpuarray.to_gpu(ktx.astype(np.int32))
     kty_gpu     = gpuarray.to_gpu(kty.astype(np.int32))
 
-    block_len = np.int(min(n, 1024))
+    block_len = np.int(min(n_wt, 1024))
     block = (block_len, 1, 1)
-    num_blocks = np.int(np.ceil(n / block_len))
+    num_blocks = np.int(np.ceil(n_wt / block_len))
     grid = (num_blocks, 1, 1)
     blur_gpu(w_gpu, kp_gpu, kn_gpu, weights_gpu, Zp_gpu,
              lzp_gpu, lzn_gpu, matches_gpu, w_n_rows, w_n_cols,
