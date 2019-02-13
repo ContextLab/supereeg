@@ -37,6 +37,8 @@ class Model(object):
         MNI coordinate (x,y,z) by number of electrode df containing electrode locations
     template : filepath
         Path to a template nifti file used to set model locations
+    gpu : boolean
+        Build model using PyCUDA with GPU
     numerator : Numpy.ndarray
         (Optional) A locations x locations matrix comprising the sum of the log z-transformed
         correlation matrices over subjects.  If used, must also pass denominator,
