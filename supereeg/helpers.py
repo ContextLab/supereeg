@@ -483,8 +483,12 @@ def _blur_corrmat_pycuda(Z, Zp, weights):
     return K + K.T, W + W.T
 
 
-def _blur_corrmat(Z, weights):
+def _blur_corrmat(Z, Zp, weights, gpu):
     """
+    TODO: need to clean up the use of gpu, this is a quick fix to move on other
+    work.
+    TODO: update docstrings
+
     Gets full correlation matrix
 
     Parameters
@@ -506,6 +510,8 @@ def _blur_corrmat(Z, weights):
     denominator : Numpy array
         Denominator for the expanded correlation matrix
     """
+    if gpu:
+        return _blur_corrmat_pycuda(Z, Zp, weights)
     #import seaborn as sns
     #import matplotlib.pyplot as plt
     triu_inds = np.triu_indices(Z.shape[0], k=1)

@@ -78,7 +78,7 @@ class Model(object):
     model : supereeg.Model instance
         A model that can be used to infer timeseries from unknown locations
     """
-    def __init__(self, data=None, locs=None, template=None,
+    def __init__(self, data=None, locs=None, template=None, gpu=False,
                  numerator=None, denominator=None,
                  n_subs=None, meta=None, date_created=None, rbf_width=20, save=None):
         from .load import load
@@ -86,6 +86,7 @@ class Model(object):
         self.locs = None
         self.numerator = None
         self.denominator = None
+        self.gpu = gpu
         self.n_subs = 0
         self.meta = meta
         if self.meta is None:
@@ -122,7 +123,8 @@ class Model(object):
 
                     for i in range(1, len(data)):
                         self.update(Model(data=data[i], locs=locs, template=template, meta=self.meta,
-                                          rbf_width=self.rbf_width, n_subs=1))
+                                          rbf_width=self.rbf_width, n_subs=1,
+                                          gpu=self.gpu))
 
             if isinstance(data, six.string_types):
                 data = load(data)
@@ -133,6 +135,7 @@ class Model(object):
             if isinstance(data, Model):
                 self.date_created = data.date_created
                 self.denominator = data.denominator
+                self.gpu = gpu
                 self.locs = data.locs
                 self.meta = data.meta
                 self.n_subs = data.n_subs
@@ -142,7 +145,8 @@ class Model(object):
                 n_subs = self.n_subs
             elif isinstance(data, Brain):
                 corrmat = _get_corrmat(data)
-                self.__init__(data=corrmat, locs=data.get_locs(), n_subs=1)
+                self.__init__(data=corrmat, locs=data.get_locs(), n_subs=1,
+                        gpu=self.gpu)
             elif isinstance(data, np.ndarray):
                 assert not (locs is None), 'must specify model locations'
                 assert locs.shape[0] == data.shape[0], 'number of locations must match the size of the given correlation matrix'
@@ -179,42 +183,18 @@ class Model(object):
             bo = Brain(template)
             rbf_weights = _log_rbf(bo.get_locs(), self.locs, width=self.rbf_width)
             Z = self.get_model(z_transform=True)
-
-            self.numerator, self.denominator = _blur_corrmat(Z, rbf_weights)
+            Zp = _zero_pad_corrmat(Z, self.locs, locs)
+            self.numerator, self.denominator = _blur_corrmat(Z, Zp,
+                    rbf_weights, self.gpu)
             self.locs = bo.get_locs()
         elif not (locs is None): #blur correlation matrix out to locs
             if (isinstance(data, Brain) or isinstance(data, Model)): #self.locs may now conflict with locs
                 if not ((locs.shape[0] == self.locs.shape[0]) and np.allclose(locs, self.locs)):
                     rbf_weights = _log_rbf(locs, self.locs, width=self.rbf_width)
                     Z = self.get_model(z_transform=True)
-
-                    # timing
-
-                    # pycuda
-                    print('pycuda... ', end=' ')
-                    from .helpers import _blur_corrmat_pycuda
-                    start = time.time()
                     Zp = _zero_pad_corrmat(Z, self.locs, locs)
-                    Kn, Wn = _blur_corrmat_pycuda(Z, Zp, rbf_weights)
-                    end = time.time()
-                    print(round(end-start, 3), end=', ')
-
-                    # Orig
-                    print('Orig... ', end=' ')
-                    start = time.time()
-                    Ko, Wo = _blur_corrmat(Z, rbf_weights)
-                    end = time.time()
-                    print(round(end-start, 3))
-
-                    try:
-                        assert np.allclose(Kn, Ko, atol=1e-6, equal_nan=True)
-                        assert np.allclose(Wn, Wo, atol=1e-6, equal_nan=True)
-                        print('...equivalent!')
-                    except:
-                        import ipdb; ipdb.set_trace()
-                        temp = 5
-
-                    self.numerator, self.denominator = _blur_corrmat(Z, rbf_weights)
+                    self.numerator, self.denominator = _blur_corrmat(Z, Zp,
+                            rbf_weights, self.gpu)
                     self.locs = locs
         elif self.locs is None:
             self.locs = locs
@@ -294,7 +274,10 @@ class Model(object):
             return
         else:
             rbf_weights = _log_rbf(new_locs, self.get_locs())
-            self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
+            Z = self.get_model(z_transform=True)
+            Zp = _zero_pad_corrmat(Z, self.locs, locs)
+            self.numerator, self.denominator = _blur_corrmat(Z, Zp,
+                    rbf_weights, self.gpu)
             self.locs = new_locs
 
         self.locs, loc_inds = _unique(self.locs)
@@ -649,6 +632,7 @@ def _create_locs(self, locs, template):
         warnings.warn('Model locations exceed 1000, this may take a while. Go get a cup of coffee or brew some tea!')
 
 def _bo2model(bo, locs, width=20):
+    # TODO: will not work needs to be fixed for gpu
     """Returns numerator and denominator given a brain object"""
     sub_corrmat = _get_corrmat(bo)
     #np.fill_diagonal(sub_corrmat, 0)
@@ -658,6 +642,7 @@ def _bo2model(bo, locs, width=20):
     return n, d, 1
 
 def _mo2model(mo, locs, width=20):
+    # TODO: will not work needs to be fixed for gpu
     """Returns numerator and denominator for model object"""
 
     if not isinstance(locs, pd.DataFrame):
@@ -673,6 +658,7 @@ def _mo2model(mo, locs, width=20):
         return n, d, mo.n_subs
 
 def _force_update(mo, bo, width=20):
+    # TODO: will not work, needs to be fixed for gpu
     # get subject-specific correlation matrix
     sub_corrmat = _get_corrmat(bo)
 
