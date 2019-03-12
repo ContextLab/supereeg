@@ -277,7 +277,7 @@ class Model(object):
         else:
             rbf_weights = _log_rbf(new_locs, self.get_locs())
             Z = self.get_model(z_transform=True)
-            Zp = _zero_pad_corrmat(Z, self.locs, locs)
+            Zp = _zero_pad_corrmat(Z, self.locs, new_locs)
             self.numerator, self.denominator = _blur_corrmat(Z, Zp,
                     rbf_weights, self.gpu)
             self.locs = new_locs
