@@ -563,9 +563,8 @@ def _timeseries_recon(bo, mo, chunk_size=25000, preprocess='zscore', recon_loc_i
         model_locs_in_brain.extend([True]*mo.get_locs().shape[0])
 
         rbf_weights = _log_rbf(combined_locs, mo.get_locs())
-        #from .model import _recover_model #deferred import to remove circular dependency
-        #Z = _recover_model(*_blur_corrmat(Z, rbf_weights), z_transform=True)
-        Z = _blur_corrmat(Z, rbf_weights)
+        from .model import _recover_model #deferred import to remove circular dependency
+        Z = _recover_model(*_blur_corrmat(Z, rbf_weights), z_transform=True)
 
     K = _z2r(Z)
 
