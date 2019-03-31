@@ -21,6 +21,8 @@ import shutil
 import warnings
 
 
+from PIL import Image
+
 from nilearn import plotting as ni_plt
 from nilearn import image
 from nilearn.input_data import NiftiMasker
@@ -561,8 +563,9 @@ def _timeseries_recon(bo, mo, chunk_size=25000, preprocess='zscore', recon_loc_i
         model_locs_in_brain.extend([True]*mo.get_locs().shape[0])
 
         rbf_weights = _log_rbf(combined_locs, mo.get_locs())
-        from .model import _recover_model #deferred import to remove circular dependency
-        Z = _recover_model(*_blur_corrmat(Z, rbf_weights), z_transform=True)
+        #from .model import _recover_model #deferred import to remove circular dependency
+        #Z = _recover_model(*_blur_corrmat(Z, rbf_weights), z_transform=True)
+        Z = _blur_corrmat(Z, rbf_weights)
 
     K = _z2r(Z)
 
@@ -1140,6 +1143,53 @@ def make_gif_pngs(nifti, gif_path, index=range(100, 200), name=None, **kwargs):
     else:
         gif_outfile = os.path.join(gif_path, str(name) + '.gif')
     imageio.mimsave(gif_outfile, images)
+
+def make_sliced_gif_pngs(nifti, gif_path, time_index=range(100, 200), slice_index=range(-4,52,7), name=None, slice='x', **kwargs):
+    """
+    Plots series of nifti timepoints as nilearn plot_anat_brain in .png format
+
+    :param nifti: Nifti object to be plotted
+    :param gif_path: Directory to save .png files
+    :param time_index: Time indices to be plotted
+    :param name: Name of output gif
+    :param slice: Dimension to be sliced, e.g., 'x', 'y', or 'z'
+    :param kwargs: Other args to be passed to nilearn's plot_anat_brain
+    :return:
+    """
+    for i in time_index:
+        os.mkdir(str(i))
+        for loc in slice_index:
+            nii_i = image.index_img(nifti, i)
+            outfile = os.path.join(gif_path, str(i), str(loc).zfill(3) + '.png')
+            display = ni_plt.plot_anat_brain(nii_i, display_mode=slice, cut_coords=[loc], **kwargs)
+            # display.add_contours(mask, levels=[.5], filled=True, colors='y') need to add mask?
+            plt.savefig(outfile)
+
+    images = []
+    num_slice = len(slice_index)
+    num_row = np.floor(np.sqrt(num_slice))
+    num_col = np.ceil(num_slice / num_row)
+    (width, height) = Image.open(os.path.join(gif_path, str(time_index[0]), str(slice_index[0]).zfill(3) + '.png')).size
+
+    # builds an frame of all cuts for each time point, adds it to images
+    for i in time_index:
+        curr_col = 0
+        curr_row = 0
+        img = Image.new('RGB', (width * num_col, height*num_row))
+        for file in os.listdir(os.path.join(gif_path, str(i))):
+            if file.endswith(".png"):
+                img.paste(im=Image.open(file), box=(curr_col * width, curr_row * height))
+                curr_row += np.floor(curr_col / num_col)
+                curr_col = curr_col % num_col
+        images.append(img)
+
+    if name is None:
+        gif_outfile = os.path.join(gif_path, 'gif_' + str(min(time_index)) + '_' + str(max(time_index)) + '.gif')
+    else:
+        gif_outfile = os.path.join(gif_path, str(name) + '.gif')
+
+    # creates the gif from the frames
+    images[0].save(gif_outfile, format='GIF', append_images=images[1:], save_all=True, duration=100, loop=0)
 
 
 def _data_and_samplerate_by_file_index(bo, xform, **kwargs):
