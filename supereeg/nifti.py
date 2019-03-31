@@ -6,7 +6,7 @@ import six # Python 2 and 3 compatibility
 from nibabel import Nifti1Image
 from nilearn.image import concat_imgs, index_img
 from nilearn import plotting as ni_plt
-from .helpers import make_gif_pngs
+from .helpers import make_gif_pngs, make_sliced_gif_pngs
 from .brain import Brain
 
 class Nifti(Nifti1Image):
@@ -211,6 +211,41 @@ class Nifti(Nifti1Image):
 
         make_gif_pngs(self, gifpath, index, name, **kwargs)
 
+    def make_sliced_gif(self, gifpath, time_index=range(0, 10), slice_index=range(-4, 52, 7), slice='x', name=None, **kwargs):
+        """
+                Plots nifti data as png and compiles as gif, slicing the brain according to the slice_index and slice
+
+                Parameters
+                ----------
+                nifti : nifti image
+                    Nifti image to plot
+
+
+                gifpath : str
+                    Path to save pngs (necessary argument)
+
+                time_index : int or list
+                    Timepoints to plot
+
+                slice_index : int or list
+                    Slices to plot
+
+                slice : 'x', 'y', 'z', or other slice permissible by nilearn.plotting.plot_anat_brain
+                    Chooses the axis on which to slice
+
+                name : str
+                    Name for png files
+
+                Returns
+                ----------
+                results: nilearn plot_anat_brain gif
+                    plot data and compile gif
+
+
+                """
+        assert len(self.shape) > 3, '4D necessary for gif'
+
+        make_sliced_gif_pngs(self, gifpath, time_index=time_index, name=name, slice_index=slice_index, slice=slice, **kwargs)
 
     def get_locs(self):
         """
