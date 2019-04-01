@@ -11,7 +11,7 @@ first with the plot_glass_brain and then create .png files and compile as a gif.
 
 """
 
-# Code source: Lucy Owen & Andrew Heusser
+# Code source: Lucy Owen & Andrew Heusser, modified by Tudor Muntianu
 # License: MIT
 
 # load
