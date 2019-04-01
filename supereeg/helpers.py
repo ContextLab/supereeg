@@ -20,7 +20,6 @@ import hypertools as hyp
 import shutil
 import warnings
 
-
 from PIL import Image
 
 from nilearn import plotting as ni_plt
@@ -1156,13 +1155,13 @@ def make_sliced_gif_pngs(nifti, gif_path, time_index=range(100, 200), slice_inde
     :return:
     """
     for i in time_index:
-        os.mkdir(str(i))
+        os.mkdir(os.path.join(gif_path, str(i)))
         for loc in slice_index:
             nii_i = image.index_img(nifti, i)
             outfile = os.path.join(gif_path, str(i), str(loc).zfill(3) + '.png')
-            display = ni_plt.plot_anat_brain(nii_i, display_mode=slice, cut_coords=[loc], **kwargs)
+            open(outfile, 'a').close()
+            ni_plt.plot_anat(nii_i, display_mode=slice, cut_coords=[loc], output_file=outfile, **kwargs)
             # display.add_contours(mask, levels=[.5], filled=True, colors='y') need to add mask?
-            plt.savefig(outfile)
 
     images = []
     num_slice = len(slice_index)
@@ -1174,12 +1173,12 @@ def make_sliced_gif_pngs(nifti, gif_path, time_index=range(100, 200), slice_inde
     for i in time_index:
         curr_col = 0
         curr_row = 0
-        img = Image.new('RGB', (width * num_col, height*num_row))
+        img = Image.new('RGB', (int(width * num_col), int(height*num_row)))
         for file in os.listdir(os.path.join(gif_path, str(i))):
             if file.endswith(".png"):
-                img.paste(im=Image.open(file), box=(curr_col * width, curr_row * height))
-                curr_row += np.floor(curr_col / num_col)
-                curr_col = curr_col % num_col
+                img.paste(im=Image.open(os.path.join(gif_path, str(i), file)), box=(int(curr_col * width), int(curr_row * height)))
+                curr_row += np.floor(curr_col / (num_col - 1))
+                curr_col = (curr_col + 1) % num_col
         images.append(img)
 
     if name is None:
