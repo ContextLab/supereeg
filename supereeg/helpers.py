@@ -23,7 +23,7 @@ import warnings
 from PIL import Image
 
 from nilearn import plotting as ni_plt
-from nilearn import image
+from nilearn import image, datasets
 from nilearn.input_data import NiftiMasker
 from scipy.stats import kurtosis, zscore, pearsonr
 from scipy.spatial.distance import pdist
@@ -1154,14 +1154,19 @@ def make_sliced_gif_pngs(nifti, gif_path, time_index=range(100, 200), slice_inde
     :param kwargs: Other args to be passed to nilearn's plot_anat_brain
     :return:
     """
+
+    # get Haxby mask
+    mask = datasets.fetch_haxby().mask
+
     for i in time_index:
         os.mkdir(os.path.join(gif_path, str(i)))
         for loc in slice_index:
             nii_i = image.index_img(nifti, i)
             outfile = os.path.join(gif_path, str(i), str(loc).zfill(3) + '.png')
             open(outfile, 'a').close()
-            ni_plt.plot_anat(nii_i, display_mode=slice, cut_coords=[loc], output_file=outfile, **kwargs)
-            # display.add_contours(mask, levels=[.5], filled=True, colors='y') need to add mask?
+            display = ni_plt.plot_anat(nii_i, display_mode=slice, cut_coords=[loc], **kwargs)
+            display.add_contours(mask, levels=[.5], filled=True, colors='y')
+            plt.savefig(outfile)
 
     images = []
     num_slice = len(slice_index)
