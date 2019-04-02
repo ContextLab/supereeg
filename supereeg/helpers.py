@@ -1142,21 +1142,23 @@ def make_gif_pngs(nifti, gif_path, index=range(100, 200), name=None, **kwargs):
         gif_outfile = os.path.join(gif_path, str(name) + '.gif')
     imageio.mimsave(gif_outfile, images)
 
-def make_sliced_gif_pngs(nifti, gif_path, time_index=range(100, 200), slice_index=range(-4,52,7), name=None, slice='x', **kwargs):
+
+def make_sliced_gif_pngs(nifti, gif_path, time_index=range(100, 200), slice_index=range(-4,52,7), name=None, vmax=2, **kwargs):
     """
     Plots series of nifti timepoints as nilearn plot_anat_brain in .png format
 
     :param nifti: Nifti object to be plotted
     :param gif_path: Directory to save .png files
     :param time_index: Time indices to be plotted
+    :param slice_index: Coordinates to be plotted
     :param name: Name of output gif
-    :param slice: Dimension to be sliced, e.g., 'x', 'y', or 'z'
+    :param vmax: scale of colorbar (IMPORTANT! change if
     :param kwargs: Other args to be passed to nilearn's plot_anat_brain
     :return:
     """
 
     # get Haxby mask
-    mask = datasets.fetch_haxby().mask
+    # mask = datasets.fetch_haxby().mask
 
     for i in time_index:
         os.mkdir(os.path.join(gif_path, str(i)))
@@ -1164,9 +1166,13 @@ def make_sliced_gif_pngs(nifti, gif_path, time_index=range(100, 200), slice_inde
             nii_i = image.index_img(nifti, i)
             outfile = os.path.join(gif_path, str(i), str(loc).zfill(3) + '.png')
             open(outfile, 'a').close()
-            display = ni_plt.plot_anat(nii_i, display_mode=slice, cut_coords=[loc], **kwargs)
-            display.add_contours(mask, levels=[.5], filled=True, colors='y')
+            if loc == slice_index[len(slice_index) - 1]:
+                display = ni_plt.plot_stat_map(nii_i, cut_coords=[loc], colorbar=True, symmetric_cbar=True, vmax=vmax, **kwargs)
+            else:
+                display = ni_plt.plot_stat_map(nii_i, cut_coords=[loc], colorbar=False, symmetric_cbar=True, vmax=vmax, **kwargs)
+            # display.add_contours(mask, levels=[.5], filled=True, colors='y')
             plt.savefig(outfile)
+            plt.close()
 
     images = []
     num_slice = len(slice_index)
@@ -1178,7 +1184,7 @@ def make_sliced_gif_pngs(nifti, gif_path, time_index=range(100, 200), slice_inde
     for i in time_index:
         curr_col = 0
         curr_row = 0
-        img = Image.new('RGB', (int(width * num_col), int(height*num_row)))
+        img = Image.new('RGB', (int(width * num_col) + 30, int(height*num_row)))
         for file in os.listdir(os.path.join(gif_path, str(i))):
             if file.endswith(".png"):
                 img.paste(im=Image.open(os.path.join(gif_path, str(i), file)), box=(int(curr_col * width), int(curr_row * height)))

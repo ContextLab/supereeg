@@ -211,7 +211,7 @@ class Nifti(Nifti1Image):
 
         make_gif_pngs(self, gifpath, index, name, **kwargs)
 
-    def make_sliced_gif(self, gifpath, time_index=range(0, 10), slice_index=range(-4, 52, 7), slice='x', name=None, **kwargs):
+    def make_sliced_gif(self, gifpath, time_index=range(0, 10), slice_index=range(-4, 52, 7), display_mode='x', name=None, **kwargs):
         """
                 Plots nifti data as png and compiles as gif, slicing the brain according to the slice_index and slice
 
@@ -230,7 +230,7 @@ class Nifti(Nifti1Image):
                 slice_index : int or list
                     Slices to plot
 
-                slice : 'x', 'y', 'z', or other slice permissible by nilearn.plotting.plot_anat_brain
+                display_mode : 'x', 'y', 'z', or other slice permissible by nilearn.plotting.plot_anat_brain
                     Chooses the axis on which to slice
 
                 name : str
@@ -245,7 +245,7 @@ class Nifti(Nifti1Image):
                 """
         assert len(self.shape) > 3, '4D necessary for gif'
 
-        make_sliced_gif_pngs(self, gifpath, time_index=time_index, name=name, slice_index=slice_index, slice=slice, **kwargs)
+        make_sliced_gif_pngs(self, gifpath, time_index=time_index, name=name, slice_index=slice_index, display_mode=display_mode, **kwargs)
 
     def get_locs(self):
         """

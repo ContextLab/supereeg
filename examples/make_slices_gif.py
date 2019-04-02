@@ -19,12 +19,17 @@ import supereeg as se
 import numpy as np
 
 # load example data
-bo = se.load('example_data')
+# bo = se.load('example_data')
+
+# simulate 100 locations
+locs = se.simulate_locations(n_elecs=100)
+
+# simulate brain object
+bo = se.simulate_bo(n_samples=400, sample_rate=100, cov='random', locs=locs, noise =.1)
 
 # convert to nifti
-nii = bo.to_nii(template='gray', vox_size=20)
+nii = bo.to_nii(template='std', vox_size=6)
 
-# make gif, default time window is 0 to 10, but you can specifiy by setting a range with index
+# make gif
 # '/your/path/to/gif/'
-
-nii.make_sliced_gif('C:\\Users\\tmunt\\Documents\\gif', time_index=np.arange(3), name='sample_gif')
+nii.make_sliced_gif('C:\\Users\\tmunt\\Documents\\gif', time_index=np.arange(10), slice_index=range(-4,52,4), name='sample_gif', alpha=0.7)
