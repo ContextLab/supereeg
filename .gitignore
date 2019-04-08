@@ -23,9 +23,15 @@ lib64/
 parts/
 sdist/
 var/
+/Lib
+/Scripts
+/pyvenv.cfg
 *.egg-info/
 .installed.cfg
 *.egg
+.vscode
+/hht
+/PyEMD
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
