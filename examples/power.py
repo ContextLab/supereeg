@@ -21,6 +21,8 @@ try:
     lgamma = freqs[33:42]
     hgamma = freqs[42:50]
 
+    bands = [delta, theta, alpha, beta, lgamma, hgamma]
+
     power = np.zeros(shape=bo.data.T.shape)
 
     for electrode in range(0, len(bo.data.T)):
