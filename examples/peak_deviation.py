@@ -21,7 +21,7 @@ hgamma = freqs[42:50]
 
 bands = [delta, theta, alpha, beta, lgamma, hgamma]
 
-log_freqs = np.log(freqs)
+
 
 peak_deviations = np.zeros(shape=bo.data.T.shape)
 
@@ -31,6 +31,7 @@ for i, band in enumerate(bands):
         raw_power = np.square(np.abs(wav_transform))
         avg_power = np.average(raw_power, axis=0)
         log_power = np.log(avg_power)
+        log_freqs = np.log(band)
         HR = sklearn.linear_model.HuberRegressor()
         HR.fit(log_freqs.reshape(-1,1), log_power)
         narrowband_power = log_power - (log_freqs * HR.coef_[0] + HR.intercept_)
