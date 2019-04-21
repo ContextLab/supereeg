@@ -35,7 +35,7 @@ for i, band in enumerate(bands):
         log_power = np.log(avg_power)
         log_freqs = np.log(band)
         HR = sklearn.linear_model.HuberRegressor()
-        pdb.set_trace()
+       # pdb.set_trace()
         HR.fit(log_freqs.reshape(-1,1), log_power)
         narrowband_power = log_power - (log_freqs * HR.coef_[0] + HR.intercept_)
         peak_deviations[electrode] = narrowband_power
