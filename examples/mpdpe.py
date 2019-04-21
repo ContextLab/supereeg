@@ -38,6 +38,7 @@ try:
                 HR = sklearn.linear_model.HuberRegressor()
                 HR.fit(log_freqs.reshape(-1,1), log_power)
                 narrowband_power = log_power - (log_freqs * HR.coef_[0] + HR.intercept_)
+                m = np.amax(narrowband_power)
                 peak_deviations[electrode][int(time/epoch)] = m
             # print('time ' + str(time) + ' of ' + str(toprange))
 
