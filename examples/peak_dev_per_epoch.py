@@ -25,7 +25,7 @@ hgamma = freqs[42:50]
 
 epoch = 1000
 
-peak_deviations = np.zeros(shape=(bo.data.shape[1], int(np.floor(bo.data.shape[0]/epoch))))
+peak_deviations = np.zeros(shape=bo.data.T.shape)
 
 bands = [delta, theta, alpha, beta, lgamma, hgamma]
 
@@ -40,11 +40,12 @@ for i, band in enumerate(bands):
             log_freqs = np.log(band)
             HR = sklearn.linear_model.HuberRegressor()
             HR.fit(log_freqs.reshape(-1,1), log_power)
+            raw_power = np.log(raw_power)
             for i, freq in enumerate(band):
-                raw_power[i] -= np.exp(np.log(freq)*HR.coef_[0] + HR.intercept_)
+                raw_power[i] -= np.log(freq)*HR.coef_[0] + HR.intercept_
             # narrowband_power = log_power - (log_freqs * HR.coef_[0] + HR.intercept_)
             avg_power = np.average(raw_power, axis=0)
-            pdb.set_trace()
+            # pdb.set_trace()
             peak_deviations[electrode][time:time+epoch] = avg_power
         # print('time ' + str(time) + ' of ' + str(toprange))
 
