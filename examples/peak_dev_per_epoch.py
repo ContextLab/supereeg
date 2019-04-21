@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import sklearn
 
 if __name__ == "__main__":
-    fname = sys.argv[0]
+    fname = sys.argv[1]
 
 try:
     bo = se.load(fname)

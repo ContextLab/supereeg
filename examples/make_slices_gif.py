@@ -3,19 +3,13 @@
 # load
 import supereeg as se
 import numpy as np
+import glob
 
-# load example data
-bo = se.load('peakdev.bo')
+fnames = glob.glob('*.bo')
 
-# simulate 100 locations
-# locs = se.simulate_locations(n_elecs=100)
+for i, fname in enumerate(fnames):
+    bo = se.load(fname)
+    nii = bo.to_nii(template='std', vox_size=6)
 
-# simulate brain object
-# bo = se.simulate_bo(n_samples=400, sample_rate=100, cov='random', locs=locs, noise =.1)
-
-# convert to nifti
-nii = bo.to_nii(template='std', vox_size=6)
-
-# make gif
-# '/your/path/to/gif/'
-nii.make_sliced_gif('C:\\Users\\tmunt\\Documents\\gif', time_index=np.arange(len(bo.data[0])), slice_index=range(-4,52,4), name='sample_gif', vmax=3, symmetric_cbar=False, duration=200, alpha=0.7)
+    time_index = np.arange(200*180, len(bo.data[0]) - 200*420)
+    nii.make_sliced_gif('\\dartfs\\rc\\lab\\D\\DBIC\\CDL\\f003f64\\gifs', time_index=time_index, slice_index=range(-50,50, 4), name=fname.split('.')[0] + '.gif', vmax=3.5, symmetric_cbar=False, duration=5, alpha=0.4)
