@@ -20,7 +20,7 @@ try:
     lgamma = freqs[33:42]
     hgamma = freqs[42:50]
 
-    epoch = 1000
+    epoch = 400
 
     peak_deviations = np.zeros(shape=(bo.data.shape[1], int(np.floor(bo.data.shape[0]/epoch))))
 
