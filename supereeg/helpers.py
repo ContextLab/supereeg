@@ -1221,7 +1221,6 @@ def make_slices(nifti, gif_path, time_index=range(100, 200), slice_index=range(-
     num_slice = len(slice_index)
     nrow = np.floor(np.sqrt(num_slice))
     ncol = np.ceil(num_slice / nrow)
-    index = 1
 
     for i in time_index:
         temp_img = []

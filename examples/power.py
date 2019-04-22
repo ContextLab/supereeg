@@ -26,7 +26,8 @@ try:
     power = np.zeros(shape=bo.data.T.shape)
 
     for electrode in range(0, len(bo.data.T)):
-        wav_transform, sj, wavelet_freqs, coi, fft, fftfreqs = wavelet.cwt(bo.data[electrode], 1/bo.sample_rate[0], freqs = freqs, wavelet=wavelet.Morlet(4))
+        #not full brain object!
+        wav_transform, sj, wavelet_freqs, coi, fft, fftfreqs = wavelet.cwt(bo.data[electrode][36000:42000], 1/bo.sample_rate[0], freqs = freqs, wavelet=wavelet.Morlet(4))
         raw_power = np.square(np.abs(wav_transform))
         avg_power = np.average(raw_power, axis=0)
         power[electrode] = avg_power

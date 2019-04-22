@@ -45,7 +45,7 @@ for i, band in enumerate(bands):
                 raw_power[i] -= np.log(freq)*HR.coef_[0] + HR.intercept_
             # narrowband_power = log_power - (log_freqs * HR.coef_[0] + HR.intercept_)
             avg_power = np.average(raw_power, axis=0)
-            # pdb.set_trace()
+            #pdb.set_trace()
             peak_deviations[electrode][time:time+epoch] = avg_power
         # print('time ' + str(time) + ' of ' + str(toprange))
 
