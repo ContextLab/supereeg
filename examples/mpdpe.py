@@ -21,9 +21,9 @@ lgamma = freqs[33:42]
 hgamma = freqs[42:50]
 
 epoch = 200
-please = 600
+please = 6
 # peak_deviations = np.zeros(shape=(bo.data.shape[1], int(np.floor(bo.data.shape[0]/epoch))))
-peak_deviations = np.full((bo.data.shape[1], please+1), 13.5)
+peak_deviations = np.full((bo.data.shape[1], please), 13.5)
 
 bands = [delta, theta, alpha, beta, lgamma, hgamma]
 
@@ -42,7 +42,7 @@ for i, band in enumerate(bands):
             HR.fit(log_freqs.reshape(-1,1), log_power)
             narrowband_power = log_power - (log_freqs * HR.coef_[0] + HR.intercept_)
             m = np.amax(narrowband_power)
-            peak_deviations[electrode][i] = m
+            peak_deviations[electrode][index] = m
         index+=1
         # print('time ' + str(time) + ' of ' + str(toprange))
 
