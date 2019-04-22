@@ -30,7 +30,7 @@ bands = [delta, theta, alpha, beta, lgamma, hgamma]
 for i, band in enumerate(bands):
     # toprange = int(np.floor(len(bo.data[0])/epoch)*epoch)
     toprange = 660000
-    i=0
+    index=0
     for time in list(range(0, toprange))[36000:36000+please*epoch:epoch]:
         for electrode in range(0, len(bo.data.T), 6):
             wav_transform, sj, wavelet_freqs, coi, fft, fftfreqs = wavelet.cwt(bo.data[electrode][time:time+epoch], 1/bo.sample_rate[0], freqs = band, wavelet=wavelet.Morlet(4))
@@ -43,7 +43,7 @@ for i, band in enumerate(bands):
             narrowband_power = log_power - (log_freqs * HR.coef_[0] + HR.intercept_)
             m = np.amax(narrowband_power)
             peak_deviations[electrode][i] = m
-        i+=1
+        index+=1
         # print('time ' + str(time) + ' of ' + str(toprange))
 
 
