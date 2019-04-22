@@ -21,7 +21,7 @@ lgamma = freqs[33:42]
 hgamma = freqs[42:50]
 
 epoch = 200
-please = 6
+please = 60
 # peak_deviations = np.zeros(shape=(bo.data.shape[1], int(np.floor(bo.data.shape[0]/epoch))))
 peak_deviations = np.full((bo.data.shape[1], please), 13.5)
 
@@ -32,7 +32,7 @@ for i, band in enumerate(bands):
     toprange = 660000
     index=0
     for time in list(range(0, toprange))[36000:36000+please*epoch:epoch]:
-        for electrode in range(0, len(bo.data.T), 6):
+        for electrode in range(0, len(bo.data.T)):
             wav_transform, sj, wavelet_freqs, coi, fft, fftfreqs = wavelet.cwt(bo.data[electrode][time:time+epoch], 1/bo.sample_rate[0], freqs = band, wavelet=wavelet.Morlet(4))
             raw_power = np.square(np.abs(wav_transform))
             avg_power = np.average(raw_power, axis=1)
