@@ -23,7 +23,7 @@ hgamma = freqs[42:50]
 
 bands = [delta, theta, alpha, beta, lgamma, hgamma]
 
-power = np.zeros(shape=(bo.data.T.shape[1], 6000))
+power = np.zeros(shape=(bo.data.T.shape[0], 6000))
 
 for electrode in range(0, len(bo.data.T)):
     #not full brain object!
