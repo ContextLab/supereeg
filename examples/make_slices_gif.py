@@ -4,6 +4,13 @@
 import supereeg as se
 import numpy as np
 import glob
+import matplotlib.pyplot as plt
+from PIL import Image
+from nilearn import plotting as ni_plt
+from nilearn import image, datasets
+from nilearn.input_data import NiftiMasker
+import io
+import os
 
 def make_slices(nifti, gif_path, time_index=range(100, 200), slice_index=range(-4,52,7), name=None, vmax=2, duration=1000, symmetric_cbar=True, **kwargs):
     """
