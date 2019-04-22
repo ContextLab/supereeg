@@ -79,8 +79,8 @@ for i, fname in enumerate(fnames):
     nii = bo.to_nii(template='std', vox_size=6)
 
     # time_index = np.arange(200*180, len(bo.data[0]) - 200*420)
-    time_index = np.arange(0,6000)[::2]
+    time_index = np.arange(0,len(bo.data[0]))
     #C:\Users\tmunt\Documents\gif   \\dartfs\\rc\\lab\\D\\DBIC\\CDL\\f003f64\\gifs
 
     #change duration!
-    make_slices(nii, '\\dartfs\\rc\\lab\\D\\DBIC\\CDL\\f003f64\\gifs', time_index=time_index, slice_index=range(-50,50, 4), name=fname.split('.')[0] + '.gif', vmax=np.amax(bo.data[0]), symmetric_cbar=False, duration=10, alpha=0.4, display_mode='y')
+    make_slices(nii, '\\dartfs\\rc\\lab\\D\\DBIC\\CDL\\f003f64\\gifs', time_index=time_index, slice_index=range(-50,50, 4), name=fname.split('.')[0] + '.gif', vmax=np.amax(bo.data[0]), symmetric_cbar=False, duration=200, alpha=0.4, display_mode='y')
