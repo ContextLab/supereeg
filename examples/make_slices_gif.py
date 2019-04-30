@@ -7,12 +7,13 @@ import glob
 import matplotlib.pyplot as plt
 from PIL import Image
 from nilearn import plotting as ni_plt
+from nilearn import _utils
 from nilearn import image, datasets
 from nilearn.input_data import NiftiMasker
 # from nilearn.plotting.displays import BaseSlicer
 import io
 import os
-import timeit
+import cProfile, pstats
 
 def sliced_gif_eff(nifti, gif_path, time_index=range(100, 200), slice_index=range(-4,52,7), name=None, vmax=3.5, duration=1000, symmetric_cbar=False, alpha=0.5, **kwargs):
     """
@@ -37,7 +38,7 @@ def sliced_gif_eff(nifti, gif_path, time_index=range(100, 200), slice_index=rang
     ax = ax.reshape(-1)
 
     displays = []
-
+    # nifti = _utils.check_niimg_4d(nifti)
     for currax, loc in enumerate(slice_index):
         nii_i = image.index_img(nifti, 0)
         if loc == slice_index[len(slice_index) - 1]:
@@ -132,9 +133,19 @@ for i, fname in enumerate(fnames):
     time_index = np.arange(0,2)
     #C:\\Users\\tmunt\\Documents\\gif   \\dartfs\\rc\\lab\\D\\DBIC\\CDL\\f003f64\\gifs
 
-    sg_wr = wrapper(sliced_gif, nii, 'C:\\Users\\tmunt\\Documents\\gif', time_index=time_index, slice_index=range(-50,50, 4), name='test.gif', vmax=3.5, symmetric_cbar=True, duration=200, alpha=0.6, display_mode='y')
-    sge_wr = wrapper(sliced_gif, nii, 'C:\\Users\\tmunt\\Documents\\gif', time_index=time_index, slice_index=range(-50,50, 4), name='testeff.gif', vmax=3.5, symmetric_cbar=True, duration=200, alpha=0.6, display_mode='y')
+    sg_wr = wrapper(sliced_gif, nii, 'C:\\Users\\tmunt\\Documents\\gif', time_index=time_index, slice_index=range(-50,50, 4), name='test', vmax=3.5, symmetric_cbar=True, duration=200, alpha=0.6, display_mode='y')
+    sge_wr = wrapper(sliced_gif_eff, nii, 'C:\\Users\\tmunt\\Documents\\gif', time_index=time_index, slice_index=range(-50,50, 4), name='testeff', vmax=3.5, symmetric_cbar=True, duration=200, alpha=0.6, display_mode='y')
 
-    print("regular: " + str(timeit.timeit(sg_wr)))
-    print("eff: " + str(timeit.timeit(sge_wr)))
+    # print("regular: " + str(timeit.timeit(sg_wr, number=1)))
+    # print("eff: " + str(timeit.timeit(sge_wr, number=1)))
+    pr = cProfile.Profile()
+    pr.enable()
+    sliced_gif_eff(nii, 'C:\\Users\\tmunt\\Documents\\gif', time_index=time_index, slice_index=range(-50,50, 4), name='testeff', vmax=3.5, symmetric_cbar=True, duration=200, alpha=0.6, display_mode='y')
+    pr.disable()
+    s = io.StringIO()
+    sortby = pstats.SortKey.CUMULATIVE
+    ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+    ps.print_stats()
+    print(s.getvalue())
+
     # sliced_gif(nii, 'C:\\Users\\tmunt\\Documents\\gif', time_index=time_index, slice_index=range(-50,50, 4), name=fname.split('.')[0] + '.gif', vmax=3.5, symmetric_cbar=True, duration=200, alpha=0.6, display_mode='y')
