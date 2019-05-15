@@ -75,7 +75,7 @@ class Location(object):
             data = data[['x', 'y', 'z']] #ensure dimensions are sorted in x, y, z order
 
         if reference == 'tal':
-            data = tal2mni(data.as_matrix())
+            data = tal2mni(data.values)
             data = pd.DataFrame(data=data, columns=['x', 'y', 'z'])
         else:
             assert reference == 'mni', 'Locations must be specified in either Talairach or MNI space.'

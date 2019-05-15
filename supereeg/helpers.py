@@ -679,13 +679,13 @@ def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore', recon_loc_in
         Compiled reconstructed timeseries
     """
     if preprocess==None:
-        data = bo.get_data().as_matrix()
+        data = bo.get_data().values
     elif preprocess=='zscore':
         if bo.data.shape[0]<3:
             warnings.warn('Not enough samples to zscore so it will be skipped.'
             ' Note that this will cause problems if your data are not already '
             'zscored.')
-            data = bo.get_data().as_matrix()
+            data = bo.get_data().values
         else:
             data = bo.get_zscore_data()
     else:
@@ -714,8 +714,8 @@ def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore', recon_loc_in
 
     K = _z2r(Z)
 
-    known_inds, unknown_inds = known_unknown(mo.get_locs().as_matrix(), bo.get_locs().as_matrix(),
-                                                  bo.get_locs().as_matrix())
+    known_inds, unknown_inds = known_unknown(mo.get_locs().values, bo.get_locs().values,
+                                                  bo.get_locs().values)
     Kaa = K[known_inds, :][:, known_inds]
     Kaa_inv = np.linalg.pinv(Kaa)
 
@@ -1055,7 +1055,7 @@ def _unique(X):
     dataframe = type(X) is pd.DataFrame
     if dataframe:
         columns = X.columns
-        X = X.as_matrix()
+        X = X.values
 
     assert type(X) is np.ndarray, 'must pass in a numpy ndarray or dataframe'
     uX, inds = np.unique(X, axis=0, return_index=True)
@@ -1090,12 +1090,12 @@ def _union(X, Y): #TODO: add test for _union
     dataframeX = type(X) is pd.DataFrame
     if dataframeX:
         columnsX = X.columns
-        X = X.as_matrix()
+        X = X.values
 
     dataframeY = type(Y) is pd.DataFrame
     if dataframeY:
         columnsY = Y.columns
-        Y = Y.as_matrix()
+        Y = Y.values
 
     if dataframeX and dataframeY:
         assert np.all(columnsX == columnsY), 'Input dataframes have mismatched columns'
@@ -1530,7 +1530,7 @@ def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; c
     temp_v_size = hdr.get_zooms()[0:3]
 
     R = bo.get_locs()
-    Y = bo.data.as_matrix()
+    Y = bo.data.values
     Y = np.array(Y, ndmin=2)
     S = nii_template.affine
     locs = np.array(np.dot(R - S[:3, 3], np.linalg.inv(S[0:3, 0:3])), dtype='int')

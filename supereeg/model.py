@@ -108,16 +108,16 @@ class Model(object):
                 else:
                     if not (locs is None):
                         if type(locs) == pd.DataFrame:
-                            locs = locs.as_matrix()
+                            locs = locs.values
                         assert type(locs) == np.ndarray, 'Locations must be either a DataFrame or a numpy array'
                         assert locs.shape[1] == 3, 'Only 3d locations are supported'
                     all_locs = locs
                     for i in range(1, len(data)):
                         if type(data) in (Model, Brain, Nifti):
                             if all_locs is None:
-                                all_locs = data[i].get_locs().as_matrix()
+                                all_locs = data[i].get_locs().values
                             else:
-                                all_locs = np.vstack((all_locs, data[i].get_locs().as_matrix()))
+                                all_locs = np.vstack((all_locs, data[i].get_locs().values))
                     locs, loc_inds = _unique(all_locs)
 
                     self.__init__(data=data[0], locs=locs, template=template, meta=self.meta, rbf_width=self.rbf_width,
@@ -356,7 +356,7 @@ class Model(object):
             loc_labels[~_count_overlapping(bor.get_locs(), mo.get_locs())] = ['reconstructed']
             recon_loc = mo.locs
         else:
-            recon_loc = np.atleast_2d(mo.get_locs().iloc[~_count_overlapping(bor.get_locs(), mo.get_locs())].iloc[recon_loc_inds[0]].as_matrix())
+            recon_loc = np.atleast_2d(mo.get_locs().iloc[~_count_overlapping(bor.get_locs(), mo.get_locs())].iloc[recon_loc_inds[0]].values)
             loc_labels = np.array(['reconstructed'] * len(list(recon_loc_inds)))
 
         return Brain(data=activations, locs=recon_loc, sessions=bor.sessions, sample_rate=bor.sample_rate,

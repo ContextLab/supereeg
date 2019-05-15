@@ -160,7 +160,7 @@ def test_electrode_contingencies_1_null_set():
     data = bo.data.iloc[:, sub_locs.index]
 
     # put data and locations together in new sample brain object
-    bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
+    bo_sample = se.Brain(data=data.values, locs=sub_locs, sample_rate=1000)
 
     # predict activity at all unknown locations
     recon = model.predict(bo_sample, nearest_neighbor=False)
@@ -168,7 +168,7 @@ def test_electrode_contingencies_1_null_set():
     # actual = bo.data.iloc[:, unknown_ind]
     actual = bo.data.iloc[:, recon.locs.index]
 
-    corr_vals = _corr_column(actual.as_matrix(), recon.data.as_matrix())
+    corr_vals = _corr_column(actual.values, recon.data.values)
 
     assert 1 >= corr_vals.mean() >= -1
     #assert np.allclose(zscore(recon_1), recon.data, equal_nan=True)
@@ -203,14 +203,14 @@ def test_electrode_contingencies_2_subset():
     data = bo.data.iloc[:, sub_locs.index]
 
     # put data and locations together in new sample brain object
-    bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
+    bo_sample = se.Brain(data=data.values, locs=sub_locs, sample_rate=1000)
 
     # predict activity at all unknown locations
     recon = model.predict(bo_sample, nearest_neighbor=False)
 
     actual = bo.data.iloc[:, recon.locs.index]
 
-    corr_vals = _corr_column(actual.as_matrix(), recon.data.as_matrix())
+    corr_vals = _corr_column(actual.values, recon.data.values)
 
     #assert np.allclose(zscore(recon_2), recon.data, equal_nan=True)
     assert 1 >= corr_vals.mean() >= -1
@@ -252,7 +252,7 @@ def test_electrode_contingencies_3_locations_can_subset():
     data = bo.data.iloc[:, sub_locs.index]
 
     # put data and locations together in new sample brain object
-    bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=1000)
+    bo_sample = se.Brain(data=data.values, locs=sub_locs, sample_rate=1000)
 
     # predict activity at all unknown locations
     recon = model.predict(bo_sample, nearest_neighbor=False)
@@ -260,7 +260,7 @@ def test_electrode_contingencies_3_locations_can_subset():
     # actual = bo.data.iloc[:, unknown_ind]
     actual = bo.data.iloc[:, recon.locs.index]
 
-    corr_vals = _corr_column(actual.as_matrix(), recon.data.as_matrix())
+    corr_vals = _corr_column(actual.values, recon.data.values)
 
     assert 1 >= corr_vals.mean() >= -1
     #assert np.allclose(zscore(recon_3), recon.data, equal_nan=True)

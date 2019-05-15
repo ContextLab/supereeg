@@ -39,7 +39,7 @@ bo_full = se.simulate_bo(n_samples=10, sessions=2, sample_rate=10, locs=locs)
 # create brain object from subset of locations
 sub_locs = bo_full.locs.iloc[6:]
 sub_data = bo_full.data.iloc[:, sub_locs.index]
-bo = se.Brain(data=sub_data.as_matrix(), sessions=bo_full.sessions, locs=sub_locs, sample_rate=10,
+bo = se.Brain(data=sub_data.values, sessions=bo_full.sessions, locs=sub_locs, sample_rate=10,
               meta={'brain object locs sampled': 2})
 # simulate correlation matrix
 data = [se.simulate_model_bos(n_samples=10, locs=locs, sample_locs=n_elecs) for x in range(n_subs)]
@@ -157,7 +157,7 @@ def test_reconstruct():
 
     # actual_test: the true data
     # recon_test: the reconstructed data (using Model.predict)
-    corr_vals = _corr_column(actual_test.as_matrix(), recon_test.data.as_matrix())
+    corr_vals = _corr_column(actual_test.values, recon_test.data.values)
     assert np.all(corr_vals[~np.isnan(corr_vals)] <= 1) and np.all(corr_vals[~np.isnan(corr_vals)] >= -1)
 
 def test_filter_elecs():
