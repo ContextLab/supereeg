@@ -634,7 +634,6 @@ def _create_locs(self, locs, template):
         warnings.warn('Model locations exceed 1000, this may take a while. Go get a cup of coffee or brew some tea!')
 
 def _bo2model(bo, locs, width=20):
-    # TODO: will not work needs to be fixed for gpu
     """Returns numerator and denominator given a brain object"""
     sub_corrmat = _get_corrmat(bo)
     #np.fill_diagonal(sub_corrmat, 0)
@@ -644,7 +643,6 @@ def _bo2model(bo, locs, width=20):
     return n, d, 1
 
 def _mo2model(mo, locs, width=20):
-    # TODO: will not work needs to be fixed for gpu
     """Returns numerator and denominator for model object"""
 
     if not isinstance(locs, pd.DataFrame):
@@ -660,7 +658,6 @@ def _mo2model(mo, locs, width=20):
         return n, d, mo.n_subs
 
 def _force_update(mo, bo, width=20):
-    # TODO: will not work, needs to be fixed for gpu
     # get subject-specific correlation matrix
     sub_corrmat = _get_corrmat(bo)
 
