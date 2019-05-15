@@ -116,7 +116,7 @@ if __name__ == "__main__":
     timepoints = bo.data.shape[0]
     ranges = np.array_split(np.arange(timepoints), nworkers) #nworkers
     nii = bo.to_nii(template='std', vox_size=6)
-    path = 'C:\\Users\\tmunt\\Documents\\gif'
+    path = '\\dartfs\\rc\\lab\\D\\DBIC\\CDL\\f003f64\\gifs' # 'C:\\Users\\tmunt\\Documents\\gif'
     helpwrap = wrapper(helper, nifti=nii, path=path, slice_index=range(-50, 50, 4), vmax=3.5, symmetric_cbar=True, display_mode='y')
     pr = cProfile.Profile()
     pr.enable()
@@ -134,15 +134,6 @@ if __name__ == "__main__":
 
     for p in processes:
         p.join()
-    # for range in ranges:
-    #     async_results.append(apply_async(pool, helpwrap, range))
-    #     print('ye')
-
-    # pool.apply_async(helper2, [0,1,2]).get()
-    # pids = []
-    # for result in async_results:
-    #     pids.append(result.get())
-    # print(pids)
 
     gif_outfile = os.path.join(path, fname.split('.')[0] + '.gif')
 
