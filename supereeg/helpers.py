@@ -1521,6 +1521,52 @@ def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; c
 
     return Nifti(data, affine=nii_template.affine)
 
+def _brain_to_nifti2(bo, nii_template): #FIXME: this is incredibly inefficient; could be done much faster using reshape and/or nilearn masking
+
+    """
+    Takes or loads nifti file and converts to brain object
+
+    Parameters
+    ----------
+    bo : brain object
+
+    template : str, Nifti1Image, or None
+
+        Template is a nifti file with the desired resolution to save the brain object activity
+
+
+    Returns
+    ----------
+    results: nibabel.Nifti12mage
+        A nibabel nifti image
+
+
+    """
+    from .nifti import Nifti2
+
+    hdr = nii_template.get_header()
+    temp_v_size = hdr.get_zooms()[0:3]
+
+    R = bo.get_locs()
+    Y = bo.data.as_matrix()
+    Y = np.array(Y, ndmin=2)
+    S = nii_template.affine
+    locs = np.array(np.dot(R - S[:3, 3], np.linalg.inv(S[0:3, 0:3])), dtype='int')
+
+    shape = np.max(np.vstack([np.max(locs, axis=0) + 1, nii_template.shape[0:3]]), axis=0)
+    data = np.zeros(tuple(list(shape) + [Y.shape[0]]))
+    counts = np.zeros(data.shape)
+
+    for i in range(R.shape[0]):
+        data[locs[i, 0], locs[i, 1], locs[i, 2], :] += Y[:, i]
+        counts[locs[i, 0], locs[i, 1], locs[i, 2], :] += 1
+
+    with np.errstate(invalid='ignore'):
+        for i in range(R.shape[0]):
+            data[locs[i, 0], locs[i, 1], locs[i, 2], :] = np.divide(data[locs[i, 0], locs[i, 1], locs[i, 2], :], counts[locs[i, 0], locs[i, 1], locs[i, 2], :])
+
+    return Nifti2(data, affine=nii_template.affine)
+
 
 
 

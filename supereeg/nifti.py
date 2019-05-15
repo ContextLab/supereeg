@@ -3,7 +3,7 @@ from __future__ import print_function
 
 import numpy as np
 import six # Python 2 and 3 compatibility
-from nibabel import Nifti1Image
+from nibabel import Nifti1Image, Nifti2Image
 from nilearn.image import concat_imgs, index_img
 from nilearn import plotting as ni_plt
 from .helpers import make_gif_pngs, make_sliced_gif_pngs, make_slices
@@ -260,3 +260,65 @@ class Nifti(Nifti1Image):
         Save file to disk
         """
         self.to_filename(filepath)
+
+class Nifti2(Nifti2Image):
+    """
+    Nifti class for the supereeg package.  Extends the Nibabel.Nifti2Image class.
+
+    Parameters
+    ----------
+
+    data : object or path to Nifti1Image, supereeg.Brain, supereeg.Model, supereeg.Nifti or np.ndarray
+
+        Data can be a nifti image (either supereeg.Nifti or path to Nifti1Image), supereeg.Brain object,
+        supereeg.Model object, or a np.ndarray an N-D array containing the image data
+
+
+    affine : np.ndarray
+
+        A (4, 4) affine matrix mapping array coordinates to coordinates in MNI coordinate space.
+
+
+    header : nibabel.nifti1.Nifti1Header
+        Image metadata in the form of a header (optional parameter, use when creating nifti object from np.ndarray).
+
+
+    Returns
+    ----------
+
+    nii : supereeg.Nifti
+        Instance of Nifti data class, (nibabel.nifti1.Nifti1Image subclass)
+
+    """
+
+
+    def __init__(self, data, affine=None, **kwargs):
+
+        from .load import load, datadict
+        from .brain import Brain
+        from .model import Model
+
+        if isinstance(data, six.string_types):
+            if data in datadict.keys():
+                data = load(data)
+            else:
+                image = Nifti1Image.load(data)
+                super(Nifti2, self).__init__(image.dataobj, image.affine)
+
+        if isinstance(data, np.ndarray):
+            if affine is None:
+                raise IOError("If data is provided as array, affine must also be provided")
+            else:
+                super(Nifti2,self).__init__(data,affine,**kwargs)
+
+        elif isinstance(data, Nifti):
+            super(Nifti2, self).__init__(data.dataobj, data.affine)
+
+        elif isinstance(data, Brain):
+            data = data.to_nii(**kwargs)
+            super(Nifti2, self).__init__(data.dataobj, data.affine)
+
+        elif isinstance(data, Model):
+            bo = Brain(data)
+            data = bo.to_nii(**kwargs)
+            super(Nifti2, self).__init__(data.dataobj, data.affine)

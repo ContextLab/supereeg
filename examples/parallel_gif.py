@@ -116,7 +116,7 @@ if __name__ == "__main__":
     bo = se.load(fname)
     timepoints = bo.data.shape[0]
     ranges = np.array_split(np.arange(timepoints), nworkers) #nworkers
-    nii = bo.to_nii(template='std', vox_size=6)
+    nii = bo.to_nii2(template='std', vox_size=6)
     path = '\\dartfs\\rc\\lab\\D\\DBIC\\CDL\\f003f64\\gifs' # 'C:\\Users\\tmunt\\Documents\\gif'
     helpwrap = wrapper(helper, nifti=nii, path=path, slice_index=range(-50, 50, 4), vmax=3.5, symmetric_cbar=True, display_mode='y')
     pr = cProfile.Profile()

@@ -12,7 +12,7 @@ import deepdish as dd
 import matplotlib.pyplot as plt
 
 from .helpers import _kurt_vals, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, \
-    _plot_locs_hyp, _std, _gray, _nifti_to_brain, _brain_to_nifti, _z_score
+    _plot_locs_hyp, _std, _gray, _nifti_to_brain, _brain_to_nifti, _brain_to_nifti2, _z_score
 
 class Brain(object):
     """
@@ -595,6 +595,108 @@ class Brain(object):
 
         return nifti
 
+    def to_nii2(self, filepath=None, template='gray', vox_size=None, sample_rate=None):
+
+        """
+        Save brain object as a nifti file.
+
+
+        Parameters
+        ----------
+
+        filepath : str
+
+            Path to save the nifti file
+
+        template : str, Nifti1Image, or None
+
+            Template is a nifti file with the desired resolution to save the brain object activity
+
+                If template is None (default) :
+                    - Uses gray matter masked brain downsampled to brain object voxel size (max 20 mm)
+
+                If template is str :
+                    - Checks if nifti file path and uses specified nifti
+
+                    - If not a filepath, checks if 'std' or 'gray'
+                        - 'std': Uses standard brain downsampled to brain object voxel size
+                        - 'gray': Uses gray matter masked brain downsampled to brain object voxel size
+
+                If template is Nifti1Image :
+                    - Uses specified Nifti image
+
+        Returns
+        ----------
+
+        nifti : supereeg.Nifti
+            A supereeg nifti object
+
+        """
+        from .nifti import Nifti2
+
+        if vox_size:
+            v_size = vox_size
+        else:
+            v_size = _vox_size(self.locs)
+
+        if np.isscalar(self.minimum_voxel_size):
+            mnv = np.multiply(self.minimum_voxel_size, np.ones_like(v_size))
+        else:
+            mnv = self.minimum_voxel_size
+
+        if np.isscalar(self.maximum_voxel_size):
+            mxv = np.multiply(self.maximum_voxel_size, np.ones_like(v_size))
+        else:
+            mxv = self.maximum_voxel_size
+
+        if np.any(v_size < self.minimum_voxel_size):
+            v_size[v_size < self.minimum_voxel_size] = mnv[v_size < self.minimum_voxel_size]
+
+        if np.any(v_size > self.maximum_voxel_size):
+            v_size[v_size > self.maximum_voxel_size] = mxv[v_size > self.maximum_voxel_size]
+
+        if template is None:
+            img = _gray(v_size)
+
+        elif type(template) is nib.nifti1.Nifti1Image:
+            img = template
+
+        elif isinstance(template, str) or isinstance(template, basestring):
+
+            if os.path.exists(template):
+                img = nib.load(template)
+
+            elif template is 'gray':
+                img = _gray(v_size)
+
+            elif template is 'std':
+                img = _std(v_size)
+
+            else:
+                warnings.warn('template format not supported')
+        else:
+            warnings.warn('Nifti format not supported')
+
+        if sample_rate:
+            data, sessions, sample_rate = _resample(self, sample_rate)
+            self.data = data
+            self.sessions = sessions
+            self.sample_rate = sample_rate
+
+
+        hdr = img.get_header()
+        temp_v_size = hdr.get_zooms()[0:3]
+
+        if not np.array_equiv(temp_v_size, v_size):
+            warnings.warn('Voxel sizes of reconstruction and template do not match. '
+                          'Voxel sizes calculated from model locations.')
+
+        nifti = _brain_to_nifti2(self, img)
+
+        if filepath:
+            nifti.to_filename(filepath)
+
+        return nifti
 
     def save(self, fname, compression='blosc'):
         """
