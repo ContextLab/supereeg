@@ -485,10 +485,6 @@ def _blur_corrmat_pycuda(Z, Zp, weights):
 
 def _blur_corrmat(Z, Zp, weights, gpu):
     """
-    TODO: need to clean up the use of gpu, this is a quick fix to move on other
-    work.
-    TODO: update docstrings
-
     Gets full correlation matrix
 
     Parameters
@@ -496,12 +492,11 @@ def _blur_corrmat(Z, Zp, weights, gpu):
     Z : Numpy array
         Subject's Fisher z-transformed correlation matrix
 
+    Zp : Numpy array, Subject's correlation matrix zero padded to the full
+               electrode locations
+
     weights : Numpy array
         Weights matrix calculated using _log_rbf function matrix
-
-    mode : str
-        Specifies whether to compute over all elecs (fit mode) or just new elecs
-        (predict mode)
 
     Returns
     ----------
@@ -512,8 +507,6 @@ def _blur_corrmat(Z, Zp, weights, gpu):
     """
     if gpu:
         return _blur_corrmat_pycuda(Z, Zp, weights)
-    #import seaborn as sns
-    #import matplotlib.pyplot as plt
     triu_inds = np.triu_indices(Z.shape[0], k=1)
 
     #need to do computations seperately for positive and negative values
@@ -573,12 +566,14 @@ def _zero_pad_corrmat(Z, locs, _full_locs):
     Parameters
     ----------
     Z : Numpy array, Subject's Fisher z-transformed correlation matrix
+
     locs : numpy array, Subject's electrode locations
+
     full_locs : Pandas DataFrame, all Subject's electrode locations
 
     Returns
     -------
-    Z_padded : Numpy array, Subject's correlatio matrix zero padded to the full
+    Z_padded : Numpy array, Subject's correlation matrix zero padded to the full
                electrode locations
     '''
     full_locs = pd.DataFrame(_full_locs, columns=list('xyz'))
