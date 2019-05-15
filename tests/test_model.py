@@ -190,3 +190,37 @@ def test_model_subtract():
         assert mo2_recon + mo3
     except AssertionError:
         assert True == True
+
+def test_cpu_vs_gpu_single_subject():
+    locs = np.random.randn(25, 3)
+    bo1 = se.simulate_bo(n_samples=512*30, locs=locs, sample_rate=512)
+    bo2 = se.simulate_bo(n_samples=512*30, locs=locs, sample_rate=512)
+
+    mo_cpu = se.Model([bo1, bo2])
+    mo_gpu = se.Model([bo1, bo2], gpu=True)
+    assert mo_cpu.locs.equals(mo_gpu.locs)
+    assert np.allclose(mo_cpu.get_model(), mo_gpu.get_model())
+
+    mo_cpu = se.Model(bo1) + se.Model(bo2)
+    mo_gpu = se.Model(bo1, gpu=True) + se.Model(bo2, gpu=True)
+    assert mo_cpu.locs.equals(mo_gpu.locs)
+    assert np.allclose(mo_cpu.get_model(), mo_gpu.get_model())
+
+def test_cpu_vs_gpu_mult_subject():
+    locs1 = np.random.randn(25, 3)
+    bo1a = se.simulate_bo(n_samples=512*30, locs=locs1, sample_rate=512)
+    bo1b = se.simulate_bo(n_samples=512*30, locs=locs1, sample_rate=512)
+
+    locs2 = np.random.randn(25, 3)
+    bo2a = se.simulate_bo(n_samples=512*30, locs=locs2, sample_rate=512)
+    bo2b = se.simulate_bo(n_samples=512*30, locs=locs2, sample_rate=512)
+
+    mo_cpu = se.Model([bo1a, bo1b, bo2a, bo2b])
+    mo_gpu = se.Model([bo1a, bo1b, bo2a, bo2b], gpu=True)
+    assert mo_cpu.locs.equals(mo_gpu.locs)
+    assert np.allclose(mo_cpu.get_model(), mo_gpu.get_model())
+
+    mo_cpu = se.Model([bo1a, bo1b]) + se.Model([bo2a, bo2b])
+    mo_gpu = se.Model([bo1a, bo1b], gpu=True) + se.Model([bo2a, bo2b], gpu=True)
+    assert mo_cpu.locs.equals(mo_gpu.locs)
+    assert np.allclose(mo_cpu.get_model(), mo_gpu.get_model())
