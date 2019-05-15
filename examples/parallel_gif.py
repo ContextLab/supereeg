@@ -111,7 +111,7 @@ def helper2(time_index):
 
 if __name__ == "__main__":
     nworkers = mp.cpu_count()
-    fname = 'test.bo'
+    fname = sys.argv[1]
     bo = se.load(fname)
     timepoints = bo.data.shape[0]
     ranges = np.array_split(np.arange(timepoints), nworkers) #nworkers
