@@ -50,8 +50,10 @@ def helper(time_index, nifti=None, path=None, slice_index=range(-4,52,7), vmax=3
             display = ni_plt.plot_stat_map(nii_i, cut_coords=[loc], colorbar=False, symmetric_cbar=symmetric_cbar,
                                            figure=fig, axes=ax[currax], vmax=vmax, alpha=alpha, **kwargs)
         displays.append(display)
-
-    plt.savefig(os.path.join(path, str(time_index[0])+'.png'), format='png')
+    out = os.path.join(path, str(time_index[0])+'.png')
+    f = open(out)
+    f.close()
+    plt.savefig(out, format='png')
 
     for i in time_index[1:]:
         nii_i = image.index_img(nifti, i)
@@ -61,7 +63,10 @@ def helper(time_index, nifti=None, path=None, slice_index=range(-4,52,7), vmax=3
                                                figure=fig, axes=ax[currax], vmax=vmax, alpha=alpha, **kwargs)
             else:
                 display.add_overlay(nii_i, colorbar=False, vmax=vmax, alpha=alpha)
-        plt.savefig(os.path.join(path, str(i)) + '.png', format='png')
+        out = os.path.join(path, str(i)) + '.png'
+        f = open(out)
+        f.close()
+        plt.savefig(out, format='png')
 
     plt.close()
     return os.getpid()
