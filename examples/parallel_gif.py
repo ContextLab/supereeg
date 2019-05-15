@@ -51,7 +51,7 @@ def helper(time_index, nifti=None, path=None, slice_index=range(-4,52,7), vmax=3
                                            figure=fig, axes=ax[currax], vmax=vmax, alpha=alpha, **kwargs)
         displays.append(display)
     out = os.path.join(path, str(time_index[0])+'.png')
-    f = open(out)
+    f = open(out, 'w+')
     f.close()
     plt.savefig(out, format='png')
 
@@ -64,7 +64,7 @@ def helper(time_index, nifti=None, path=None, slice_index=range(-4,52,7), vmax=3
             else:
                 display.add_overlay(nii_i, colorbar=False, vmax=vmax, alpha=alpha)
         out = os.path.join(path, str(i)) + '.png'
-        f = open(out)
+        f = open(out, 'w+')
         f.close()
         plt.savefig(out, format='png')
 
@@ -122,7 +122,7 @@ if __name__ == "__main__":
     timepoints = bo.data.shape[0]
     ranges = np.array_split(np.arange(timepoints), nworkers) #nworkers
     nii = bo.to_nii2(template='std', vox_size=6)
-    path = '\\dartfs\\rc\\lab\\D\\DBIC\\CDL\\f003f64\\gifs' # 'C:\\Users\\tmunt\\Documents\\gif'
+    path = '/dartfs/rc/lab/D/DBIC/CDL/f003f64/gifs' # 'C:\\Users\\tmunt\\Documents\\gif'
     helpwrap = wrapper(helper, nifti=nii, path=path, slice_index=range(-50, 50, 4), vmax=3.5, symmetric_cbar=True, display_mode='y')
     pr = cProfile.Profile()
     pr.enable()
