@@ -50,7 +50,7 @@ def helper(time_index, nifti=None, path=None, slice_index=range(-4,52,7), vmax=3
             display = ni_plt.plot_stat_map(nii_i, cut_coords=[loc], colorbar=False, symmetric_cbar=symmetric_cbar,
                                            figure=fig, axes=ax[currax], vmax=vmax, alpha=alpha, **kwargs)
         displays.append(display)
-    out = os.path.join(path, str(time_index[0])+'.png')
+    out = os.path.join(path,str(fname) + str(time_index[0])+'.png')
     f = open(out, 'w+')
     f.close()
     plt.savefig(out, format='png')
@@ -63,7 +63,7 @@ def helper(time_index, nifti=None, path=None, slice_index=range(-4,52,7), vmax=3
                                                figure=fig, axes=ax[currax], vmax=vmax, alpha=alpha, **kwargs)
             else:
                 display.add_overlay(nii_i, colorbar=False, vmax=vmax, alpha=alpha)
-        out = os.path.join(path, str(i)) + '.png'
+        out = os.path.join(path, str(fname) + str(i)) + '.png'
         f = open(out, 'w+')
         f.close()
         plt.savefig(out, format='png')
@@ -143,7 +143,7 @@ if __name__ == "__main__":
 
     gif_outfile = os.path.join(path, fname.split('.')[0] + '.gif')
 
-    image_fnames = glob.glob(os.path.join(path, '*.png'))
+    image_fnames = glob.glob(os.path.join(path, fname + '*.png'))
     images = []
 
     for im_fname in image_fnames:
