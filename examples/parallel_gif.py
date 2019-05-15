@@ -119,7 +119,7 @@ if __name__ == "__main__":
     nworkers = mp.cpu_count()
     fname = sys.argv[1]
     try:
-        vmax = sys.argv[2]
+        vmax = int(sys.argv[2])
     except:
         vmax = 3.5
     bo = se.load(fname)
