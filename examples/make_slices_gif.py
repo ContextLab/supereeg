@@ -8,9 +8,7 @@ import matplotlib.pyplot as plt
 from PIL import Image
 from nilearn import plotting as ni_plt
 from nilearn import _utils
-from nilearn import image, datasets
-from nilearn.input_data import NiftiMasker
-# from nilearn.plotting.displays import BaseSlicer
+from nilearn import image
 import io
 import os
 import cProfile, pstats
@@ -38,7 +36,7 @@ def sliced_gif_eff(nifti, gif_path, time_index=range(100, 200), slice_index=rang
     ax = ax.reshape(-1)
 
     displays = []
-    # nifti = _utils.check_niimg_4d(nifti)
+    nifti = _utils.check_niimg_4d(nifti)
     for currax, loc in enumerate(slice_index):
         nii_i = image.index_img(nifti, 0)
         if loc == slice_index[len(slice_index) - 1]:
@@ -55,7 +53,7 @@ def sliced_gif_eff(nifti, gif_path, time_index=range(100, 200), slice_index=rang
     images.append(Image.open(buf))
 
     for i in time_index[1:]:
-        nii_i = image.index_img(nifti, i + 1)
+        nii_i = image.index_img(nifti, i)
         for display in displays:
             display.add_overlay(nii_i, colorbar=False, vmax=vmax, alpha=alpha)
         buf = io.BytesIO()
@@ -130,7 +128,7 @@ for i, fname in enumerate(fnames):
     nii = bo.to_nii(template='std', vox_size=6)
 
     # time_index = np.arange(200*180, len(bo.data[0]) - 200*420)
-    time_index = np.arange(0,2)
+    time_index = np.arange(0,9)
     #C:\\Users\\tmunt\\Documents\\gif   \\dartfs\\rc\\lab\\D\\DBIC\\CDL\\f003f64\\gifs
 
     sg_wr = wrapper(sliced_gif, nii, 'C:\\Users\\tmunt\\Documents\\gif', time_index=time_index, slice_index=range(-50,50, 4), name='test', vmax=3.5, symmetric_cbar=True, duration=200, alpha=0.6, display_mode='y')
@@ -140,7 +138,8 @@ for i, fname in enumerate(fnames):
     # print("eff: " + str(timeit.timeit(sge_wr, number=1)))
     pr = cProfile.Profile()
     pr.enable()
-    sliced_gif_eff(nii, 'C:\\Users\\tmunt\\Documents\\gif', time_index=time_index, slice_index=range(-50,50, 4), name='testeff', vmax=3.5, symmetric_cbar=True, duration=200, alpha=0.6, display_mode='y')
+    sliced_gif(nii, 'C:\\Users\\tmunt\\Documents\\gif', time_index=time_index, slice_index=range(-50,50, 4), name=fname.split('.')[0] + '.gif', vmax=3.5, symmetric_cbar=True, duration=200, alpha=0.6, display_mode='y')
+    # sliced_gif_eff(nii, 'C:\\Users\\tmunt\\Documents\\gif', time_index=time_index, slice_index=range(-50,50, 4), name='testeff', vmax=3.5, symmetric_cbar=True, duration=200, alpha=0.6, display_mode='y')
     pr.disable()
     s = io.StringIO()
     sortby = pstats.SortKey.CUMULATIVE
@@ -148,4 +147,3 @@ for i, fname in enumerate(fnames):
     ps.print_stats()
     print(s.getvalue())
 
-    # sliced_gif(nii, 'C:\\Users\\tmunt\\Documents\\gif', time_index=time_index, slice_index=range(-50,50, 4), name=fname.split('.')[0] + '.gif', vmax=3.5, symmetric_cbar=True, duration=200, alpha=0.6, display_mode='y')
