@@ -132,6 +132,9 @@ class Brain(object):
                 warnings.simplefilter('ignore')
                 data, locs, meta, affine = _nifti_to_brain(data)
                 sample_rate = 1
+                self.nifti_shape = data.shape
+            else:
+                self.nifti_shape = None
 
             if isinstance(data, Model):
                 locs = data.locs

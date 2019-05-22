@@ -1507,7 +1507,11 @@ def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; c
     S = bo.affine
     locs = np.array(np.round(np.array(np.dot(R - S[:3, 3], np.linalg.inv(S[0:3, 0:3])))), dtype='int16')
 
-    shape = np.max(np.vstack([np.max(locs, axis=0) + 1, nii_template.shape[0:3]]), axis=0)
+    if bo.nifti_shape is None:
+        shape = np.max(np.vstack([np.max(locs, axis=0) + 1, nii_template.shape[0:3]]), axis=0)
+    else:
+        shape = bo.nifti_shape
+
     data = np.zeros(tuple(list(shape) + [Y.shape[0]]))
     counts = np.zeros(data.shape)
 
@@ -1553,7 +1557,11 @@ def _brain_to_nifti2(bo, nii_template): #FIXME: this is incredibly inefficient; 
     S = bo.affine
     locs = np.array(np.round(np.array(np.dot(R - S[:3, 3], np.linalg.inv(S[0:3, 0:3])))), dtype='int16')
 
-    shape = np.max(np.vstack([np.max(locs, axis=0) + 1, nii_template.shape[0:3]]), axis=0)
+    if bo.nifti_shape is None:
+        shape = np.max(np.vstack([np.max(locs, axis=0) + 1, nii_template.shape[0:3]]), axis=0)
+    else:
+        shape = bo.nifti_shape
+
     data = np.zeros(tuple(list(shape) + [Y.shape[0]]))
     counts = np.zeros(data.shape)
 
