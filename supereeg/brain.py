@@ -12,7 +12,7 @@ import deepdish as dd
 import matplotlib.pyplot as plt
 
 from .helpers import _kurt_vals, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, \
-    _plot_locs_hyp, _std, _gray, _nifti_to_brain, _brain_to_nifti, _brain_to_nifti2, _z_score
+    _plot_locs_hyp, _std, _gray, _nifti_to_brain, _brain_to_nifti, _brain_to_nifti2, _z_score, _std
 
 class Brain(object):
     """
@@ -112,7 +112,7 @@ class Brain(object):
     def __init__(self, data=None, locs=None, sessions=None, sample_rate=None,
                  meta=None, date_created=None, label=None, kurtosis=None,
                  kurtosis_threshold=10, minimum_voxel_size=3, maximum_voxel_size=20,
-                 filter='kurtosis'):
+                 filter='kurtosis', affine=None):
 
         from .load import load
         from .model import Model
@@ -130,7 +130,7 @@ class Brain(object):
         else:
             if isinstance(data, (Nifti, nib.nifti1.Nifti1Image)):
                 warnings.simplefilter('ignore')
-                data, locs, meta = _nifti_to_brain(data)
+                data, locs, meta, affine = _nifti_to_brain(data)
                 sample_rate = 1
 
             if isinstance(data, Model):
@@ -188,6 +188,11 @@ class Brain(object):
             if sample_rate is not None:
                 index, counts = np.unique(self.sessions, return_counts=True)
                 self.dur = np.true_divide(counts, np.array(sample_rate))
+
+            if affine is None:
+                self.affine = _std().affine
+            else:
+                self.affine = affine
 
             if meta:
                 self.meta = meta

@@ -1472,7 +1472,7 @@ def _nifti_to_brain(nifti, mask_file=None):
 
     R = np.array(np.dot(vox_coords, S[0:3, 0:3])) + S[:3, 3]
 
-    return Y, R, {'header': hdr, 'unscaled_timing':True}
+    return Y, R, {'header': hdr, 'unscaled_timing':True}, img.affine
 
 
 def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; could be done much faster using reshape and/or nilearn masking
@@ -1504,7 +1504,7 @@ def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; c
     R = bo.get_locs()
     Y = bo.data.as_matrix()
     Y = np.array(Y, ndmin=2)
-    S = nii_template.affine
+    S = bo.affine
     locs = np.array(np.round(np.array(np.dot(R - S[:3, 3], np.linalg.inv(S[0:3, 0:3])))), dtype='int16')
 
     shape = np.max(np.vstack([np.max(locs, axis=0) + 1, nii_template.shape[0:3]]), axis=0)
@@ -1519,7 +1519,7 @@ def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; c
         for i in range(R.shape[0]):
             data[locs[i, 0], locs[i, 1], locs[i, 2], :] = np.divide(data[locs[i, 0], locs[i, 1], locs[i, 2], :], counts[locs[i, 0], locs[i, 1], locs[i, 2], :])
 
-    return Nifti(data, affine=nii_template.affine)
+    return Nifti(data, affine=bo.affine)
 
 def _brain_to_nifti2(bo, nii_template): #FIXME: this is incredibly inefficient; could be done much faster using reshape and/or nilearn masking
 
@@ -1550,7 +1550,7 @@ def _brain_to_nifti2(bo, nii_template): #FIXME: this is incredibly inefficient; 
     R = bo.get_locs()
     Y = bo.data.as_matrix()
     Y = np.array(Y, ndmin=2)
-    S = nii_template.affine
+    S = bo.affine
     locs = np.array(np.round(np.array(np.dot(R - S[:3, 3], np.linalg.inv(S[0:3, 0:3])))), dtype='int16')
 
     shape = np.max(np.vstack([np.max(locs, axis=0) + 1, nii_template.shape[0:3]]), axis=0)
@@ -1565,7 +1565,7 @@ def _brain_to_nifti2(bo, nii_template): #FIXME: this is incredibly inefficient; 
         for i in range(R.shape[0]):
             data[locs[i, 0], locs[i, 1], locs[i, 2], :] = np.divide(data[locs[i, 0], locs[i, 1], locs[i, 2], :], counts[locs[i, 0], locs[i, 1], locs[i, 2], :])
 
-    return Nifti2(data, affine=nii_template.affine)
+    return Nifti2(data, affine=bo.affine)
 
 
 
