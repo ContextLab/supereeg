@@ -1505,7 +1505,7 @@ def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; c
     Y = bo.data.as_matrix()
     Y = np.array(Y, ndmin=2)
     S = nii_template.affine
-    locs = np.array(np.dot(R - S[:3, 3], np.linalg.inv(S[0:3, 0:3])), dtype='int')
+    locs = np.array(np.round(np.array(np.dot(R - S[:3, 3], np.linalg.inv(S[0:3, 0:3])))), dtype='int16')
 
     shape = np.max(np.vstack([np.max(locs, axis=0) + 1, nii_template.shape[0:3]]), axis=0)
     data = np.zeros(tuple(list(shape) + [Y.shape[0]]))
