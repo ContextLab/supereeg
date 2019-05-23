@@ -46,10 +46,10 @@ def helper(time_index, nifti=None, path=None, slice_index=range(-4,52,7), vmax=3
         nii_i = image.index_img(nifti, time_index[0])
         if loc == slice_index[len(slice_index) - 1]:
             display = ni_plt.plot_stat_map(nii_i, cut_coords=[loc], colorbar=True, symmetric_cbar=symmetric_cbar,
-                                           figure=fig, axes=ax[currax], vmax=vmax, alpha=alpha, **kwargs)
+                                           figure=fig, axes=ax[currax], vmax=vmax, alpha=alpha, threshold=0, **kwargs)
         else:
             display = ni_plt.plot_stat_map(nii_i, cut_coords=[loc], colorbar=False, symmetric_cbar=symmetric_cbar,
-                                           figure=fig, axes=ax[currax], vmax=vmax, alpha=alpha, **kwargs)
+                                           figure=fig, axes=ax[currax], vmax=vmax, alpha=alpha, threshold=0, **kwargs)
         displays.append(display)
     out = os.path.join(path, fname.split('.')[0] + str(time_index[0])+'.png')
     f = open(out, 'w+')
@@ -61,10 +61,10 @@ def helper(time_index, nifti=None, path=None, slice_index=range(-4,52,7), vmax=3
         for dindex, display in enumerate(displays):
             if dindex == len(displays) - 1:
                 display = ni_plt.plot_stat_map(nii_i, cut_coords=[loc], colorbar=True, symmetric_cbar=symmetric_cbar,
-                                               figure=fig, axes=ax[currax], vmax=vmax, alpha=alpha, **kwargs)
+                                               figure=fig, axes=ax[currax], vmax=vmax, threshold=0, alpha=alpha, **kwargs)
             else:
-                display.add_overlay(nii_i, colorbar=False, vmax=vmax, alpha=alpha)
-        out = os.path.join(path, str(fname) + str(i)) + '.png'
+                display.add_overlay(nii_i, colorbar=False, vmax=vmax, threshold=0, alpha=alpha)
+        out = os.path.join(path, fname.split('.')[0] + str(i)) + '.png'
         f = open(out, 'w+')
         f.close()
         plt.savefig(out, format='png')
@@ -120,7 +120,7 @@ if __name__ == "__main__":
     nworkers = mp.cpu_count()
     fname = sys.argv[1]
     try:
-        vmax = int(sys.argv[2])
+        vmax = float(sys.argv[2])
     except:
         vmax = 3.5
     bo = se.load(fname)
@@ -128,7 +128,7 @@ if __name__ == "__main__":
     timepoints = bo.data.shape[0]
     ranges = np.array_split(np.arange(timepoints), nworkers) #nworkers
     nii = bo.to_nii2()
-    path = 'C:/Users/tmunt/Documents/gif'# '/dartfs/rc/lab/D/DBIC/CDL/f003f64/gifs' # 'C:\\Users\\tmunt\\Documents\\gif'
+    path = '/dartfs/rc/lab/D/DBIC/CDL/f003f64/gifs' # 'C:/Users/tmunt/Documents/gif'
     # helpwrap = wrapper(helper, nifti=nii, path=path, slice_index=range(-50, 50, 4), vmax=vmax, symmetric_cbar=True, display_mode='y')
     pr = cProfile.Profile()
     pr.enable()
@@ -149,7 +149,7 @@ if __name__ == "__main__":
 
     vid_outfile = os.path.join(path, fname.split('.')[0] + '.avi')
 
-    img_fnames = glob.glob(os.path.join(path, fname + '*.png'))
+    img_fnames = glob.glob(os.path.join(path, fname.split('.')[0] + '*.png'))
     print(img_fnames)
     images = []
 
