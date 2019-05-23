@@ -1532,6 +1532,7 @@ def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; c
 
     return Nifti(data, affine=S)
 
+
 def _brain_to_nifti2(bo, nii_template): #FIXME: this is incredibly inefficient; could be done much faster using reshape and/or nilearn masking
 
     """
