@@ -133,8 +133,13 @@ class Brain(object):
                 self.nifti_shape = data.shape
                 data, locs, meta, affine = _nifti_to_brain(data)
                 sample_rate = 1
+                if affine is None:
+                    self.affine = data.affine
+                else:
+                    self.affine = affine
             else:
                 self.nifti_shape = None
+                self.affine = affine
 
             if isinstance(data, Model):
                 locs = data.locs
@@ -191,11 +196,6 @@ class Brain(object):
             if sample_rate is not None:
                 index, counts = np.unique(self.sessions, return_counts=True)
                 self.dur = np.true_divide(counts, np.array(sample_rate))
-
-            if affine is None:
-                self.affine = _std().affine
-            else:
-                self.affine = affine
 
             if meta:
                 self.meta = meta
