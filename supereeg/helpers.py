@@ -1523,7 +1523,8 @@ def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; c
         for i in range(R.shape[0]):
             data[locs[i, 0], locs[i, 1], locs[i, 2], :] = np.divide(data[locs[i, 0], locs[i, 1], locs[i, 2], :], counts[locs[i, 0], locs[i, 1], locs[i, 2], :])
 
-    data = data.reshape(-1, order='F').reshape(data.shape)
+    if bo.nifti_shape is not None:
+        data = data.reshape(-1, order='F').reshape(data.shape)
 
     return Nifti(data, affine=bo.affine)
 
@@ -1575,7 +1576,8 @@ def _brain_to_nifti2(bo, nii_template): #FIXME: this is incredibly inefficient; 
         for i in range(R.shape[0]):
             data[locs[i, 0], locs[i, 1], locs[i, 2], :] = np.divide(data[locs[i, 0], locs[i, 1], locs[i, 2], :], counts[locs[i, 0], locs[i, 1], locs[i, 2], :])
 
-    data = data.reshape(-1, order='F').reshape(data.shape)
+    if bo.nifti_shape is not None:
+        data = data.reshape(-1, order='F').reshape(data.shape)
 
     return Nifti2(data, affine=bo.affine)
 
