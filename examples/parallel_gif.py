@@ -30,7 +30,7 @@ def wrapper(func, **kwargs):
         return func(*args, **kwargs)
     return wrapped
 
-def helper(time_index, nifti=None, path=None, slice_index=range(-4,52,7), vmax=3.5, symmetric_cbar=False, alpha=0.5, **kwargs):
+def helper(time_index, nifti=None, path=None, slice_index=range(-4,52,7), vmax=3.5, symmetric_cbar=False, alpha=0.5, fname=None, **kwargs):
     # needs time_index, nifti, and path
 
     num_slice = len(slice_index)
@@ -51,7 +51,7 @@ def helper(time_index, nifti=None, path=None, slice_index=range(-4,52,7), vmax=3
             display = ni_plt.plot_stat_map(nii_i, cut_coords=[loc], colorbar=False, symmetric_cbar=symmetric_cbar,
                                            figure=fig, axes=ax[currax], vmax=vmax, alpha=alpha, **kwargs)
         displays.append(display)
-    out = os.path.join(path,str(fname) + str(time_index[0])+'.png')
+    out = os.path.join(path, fname.split('.')[0] + str(time_index[0])+'.png')
     f = open(out, 'w+')
     f.close()
     plt.savefig(out, format='png')
@@ -124,17 +124,18 @@ if __name__ == "__main__":
     except:
         vmax = 3.5
     bo = se.load(fname)
+    print(fname)
     timepoints = bo.data.shape[0]
     ranges = np.array_split(np.arange(timepoints), nworkers) #nworkers
     nii = bo.to_nii2()
-    path = '/dartfs/rc/lab/D/DBIC/CDL/f003f64/gifs' # 'C:\\Users\\tmunt\\Documents\\gif'
-    helpwrap = wrapper(helper, nifti=nii, path=path, slice_index=range(-50, 50, 4), vmax=vmax, symmetric_cbar=True, display_mode='y')
+    path = 'C:/Users/tmunt/Documents/gif'# '/dartfs/rc/lab/D/DBIC/CDL/f003f64/gifs' # 'C:\\Users\\tmunt\\Documents\\gif'
+    # helpwrap = wrapper(helper, nifti=nii, path=path, slice_index=range(-50, 50, 4), vmax=vmax, symmetric_cbar=True, display_mode='y')
     pr = cProfile.Profile()
     pr.enable()
     async_results = []
     # pool = mp.Pool()
     kw = {'nifti': nii, 'path': path, 'slice_index': range(-50, 50, 4), 'vmax': vmax, 'symmetric_cbar': True,
-              'display_mode': 'y'}
+              'display_mode': 'y', 'fname': fname}
 
     processes = []
     for range in ranges:
@@ -148,8 +149,8 @@ if __name__ == "__main__":
 
     vid_outfile = os.path.join(path, fname.split('.')[0] + '.avi')
 
-    image_fnames = glob.glob(os.path.join(path, fname + '*.png'))
-    print(image_fnames)
+    img_fnames = glob.glob(os.path.join(path, fname + '*.png'))
+    print(img_fnames)
     images = []
 
     # for im_fname in image_fnames:
@@ -158,7 +159,15 @@ if __name__ == "__main__":
     # images[0].save(gif_outfile, format='GIF', append_images=images[1:], save_all=True, duration=5, loop=0)
     pr.disable()
 
+    h, w, l = cv2.imread(img_fnames[0]).shape
+    size = (w, h)
+    for img_fname in img_fnames:
+        images.append(cv2.imread(img_fname))
+    out = cv2.VideoWriter(vid_outfile, cv2.VideoWriter_fourcc(*'DIVX'), 200, size)
 
+    for img in images:
+        out.write(img)
+    out.release()
 
     s = io.StringIO()
     # sortby = pstats.SortKey.CUMULATIVE
