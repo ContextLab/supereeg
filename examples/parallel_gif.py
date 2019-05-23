@@ -15,6 +15,7 @@ import sys
 import cProfile, pstats
 import multiprocessing as mp
 import dill
+import cv2
 
 def run_dill_encoded(payload):
     fun, args = dill.loads(payload)
@@ -125,7 +126,7 @@ if __name__ == "__main__":
     bo = se.load(fname)
     timepoints = bo.data.shape[0]
     ranges = np.array_split(np.arange(timepoints), nworkers) #nworkers
-    nii = bo.to_nii2(template='std', vox_size=6)
+    nii = bo.to_nii2()
     path = '/dartfs/rc/lab/D/DBIC/CDL/f003f64/gifs' # 'C:\\Users\\tmunt\\Documents\\gif'
     helpwrap = wrapper(helper, nifti=nii, path=path, slice_index=range(-50, 50, 4), vmax=vmax, symmetric_cbar=True, display_mode='y')
     pr = cProfile.Profile()
@@ -145,16 +146,20 @@ if __name__ == "__main__":
     for p in processes:
         p.join()
 
-    gif_outfile = os.path.join(path, fname.split('.')[0] + '.gif')
+    vid_outfile = os.path.join(path, fname.split('.')[0] + '.avi')
 
     image_fnames = glob.glob(os.path.join(path, fname + '*.png'))
+    print(image_fnames)
     images = []
 
-    for im_fname in image_fnames:
-        images.append(Image.open(im_fname))
-    # creates the gif from the frames
-    images[0].save(gif_outfile, format='GIF', append_images=images[1:], save_all=True, duration=200, loop=0)
+    # for im_fname in image_fnames:
+    #     images.append(Image.open(im_fname))
+    # # creates the gif from the frames
+    # images[0].save(gif_outfile, format='GIF', append_images=images[1:], save_all=True, duration=5, loop=0)
     pr.disable()
+
+
+
     s = io.StringIO()
     # sortby = pstats.SortKey.CUMULATIVE
     ps = pstats.Stats(pr, stream=s).sort_stats('cumulative')
