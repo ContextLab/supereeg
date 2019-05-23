@@ -1530,7 +1530,7 @@ def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; c
     if bo.nifti_shape is not None:
         data = data.reshape(-1, order='F').reshape(data.shape)
 
-    return Nifti(data, affine=bo.affine)
+    return Nifti(data, affine=S)
 
 def _brain_to_nifti2(bo, nii_template): #FIXME: this is incredibly inefficient; could be done much faster using reshape and/or nilearn masking
 
