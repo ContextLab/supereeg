@@ -1468,7 +1468,7 @@ def _nifti_to_brain(nifti, mask_file=None):
 
     Y = np.float64(mask.transform(nifti)).copy()
     vmask = np.nonzero(np.array(np.reshape(mask.mask_img_.dataobj, (1, np.prod(mask.mask_img_.shape)), order='C')))[1]
-    vox_coords = _fullfact(img.shape[0:3])[vmask, ::-1] - 1
+    vox_coords = _fullfact(img.shape[0:3])[vmask, :] - 1
 
     R = np.array(np.dot(vox_coords, S[0:3, 0:3])) + S[:3, 3]
 
