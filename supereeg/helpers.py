@@ -1508,7 +1508,7 @@ def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; c
         S = nii_template.affine
     else:
         S = bo.affine
-        raise Warning("The brain object has a custom affine, changing voxel size with vox_size will not work!")
+        warnings.warn("The brain object has a custom affine, changing voxel size with vox_size will not work!")
     locs = np.array(np.round(np.array(np.dot(R - S[:3, 3], np.linalg.inv(S[0:3, 0:3])))), dtype='int16')
 
     if bo.nifti_shape is None:
@@ -1562,7 +1562,11 @@ def _brain_to_nifti2(bo, nii_template): #FIXME: this is incredibly inefficient; 
     R = bo.get_locs()
     Y = bo.data.as_matrix()
     Y = np.array(Y, ndmin=2)
-    S = bo.affine
+    if bo.affine is None:
+        S = nii_template.affine
+    else:
+        S = bo.affine
+        warnings.warn("The brain object has a custom affine, changing voxel size with vox_size will not work!")
     locs = np.array(np.round(np.array(np.dot(R - S[:3, 3], np.linalg.inv(S[0:3, 0:3])))), dtype='int16')
 
     if bo.nifti_shape is None:
@@ -1584,7 +1588,7 @@ def _brain_to_nifti2(bo, nii_template): #FIXME: this is incredibly inefficient; 
     if bo.nifti_shape is not None:
         data = data.reshape(-1, order='F').reshape(data.shape)
 
-    return Nifti2(data, affine=bo.affine)
+    return Nifti2(data, affine=S)
 
 
 

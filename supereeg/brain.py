@@ -297,7 +297,7 @@ class Brain(object):
         if self.filter == 'kurtosis':
             x['kurtosis'] = x['kurtosis'][x['kurtosis'] <= x['kurtosis_threshold']]
 
-        for key in ['n_subs', 'n_elecs', 'n_sessions', 'dur', 'filter_inds']:
+        for key in ['n_subs', 'n_elecs', 'n_sessions', 'dur', 'filter_inds', 'nifti_shape']:
             if key in x.keys():
                 x.pop(key)
 
