@@ -19,6 +19,7 @@ import nibabel as nib
 import hypertools as hyp
 import shutil
 import warnings
+import skimage
 
 import io
 from PIL import Image
@@ -143,7 +144,8 @@ def _resample_nii(x, target_res, precision=5):
         assert np.ndim(x.get_data()) == 4, 'Data must be 3D or 4D'
         scale = np.append(scale, x.shape[3])
 
-    z = zoom(x.get_data(), scale)
+    z = skimage.transform.rescale(x.get_data(), scale, order=3, mode='constant', cval=0, anti_aliasing=True,
+                                   multichannel=False)
     try:
         z[z < 1e-5] = np.nan
     except:
@@ -1509,10 +1511,11 @@ def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; c
     else:
         S = bo.affine
         warnings.warn("The brain object has a custom affine, changing voxel size with vox_size will not work!")
-    locs = np.array(np.round(np.array(np.dot(R - S[:3, 3], np.linalg.inv(S[0:3, 0:3])))), dtype='int16')
 
+    locs = np.dot(R - S[:3, 3], np.linalg.inv(S[0:3, 0:3]))
+    round_locs = np.array(np.round(locs), dtype='int')
     if bo.nifti_shape is None:
-        shape = np.max(np.vstack([np.max(locs, axis=0) + 1, nii_template.shape[0:3]]), axis=0)
+        shape = np.max(np.vstack([np.max(round_locs, axis=0) + 1, nii_template.shape[0:3]]), axis=0)
     else:
         shape = bo.nifti_shape
 
@@ -1520,18 +1523,45 @@ def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; c
     counts = np.zeros(data.shape)
 
     for i in range(R.shape[0]):
-        data[locs[i, 0], locs[i, 1], locs[i, 2], :] += Y[:, i]
-        counts[locs[i, 0], locs[i, 1], locs[i, 2], :] += 1
+        unrlocs = locs[i]
+        rlocs = round_locs[i]
+        weight = _weights(unrlocs)
+        for x in range(3):
+            for y in range(3):
+                for z in range(3):
+                    antialiased = rlocs - np.array([x - 1, y - 1, z - 1])
+                    safe_aa = tuple(np.min(np.vstack((antialiased, np.array(data.shape[0:3]) - 1)), axis=0))
+                    data[safe_aa[0], safe_aa[1], safe_aa[2], :] += weight[x, y, z] * Y[:, i]
+                    counts[safe_aa[0], safe_aa[1], safe_aa[2], :] += weight[x, y, z]
 
     with np.errstate(invalid='ignore'):
         for i in range(R.shape[0]):
-            data[locs[i, 0], locs[i, 1], locs[i, 2], :] = np.divide(data[locs[i, 0], locs[i, 1], locs[i, 2], :], counts[locs[i, 0], locs[i, 1], locs[i, 2], :])
+            data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :] = np.divide(
+                data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :],
+                counts[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :])
 
     if bo.nifti_shape is not None:
         data = data.reshape(-1, order='F').reshape(data.shape)
 
     return Nifti(data, affine=S)
 
+def _weights(locs): # quite inefficient, could be vectorized to save a couple seconds
+    """
+    Calculates weights of nearby voxels for anti-aliasing
+    :param locs: array-like object of x, y, z, locations
+    :return: a 3x3x3 matrix of surrounding voxel weights, with 1,1,1 being the index of the locs voxel
+    """
+    weight = np.zeros(shape=(3,3,3))
+    for x in [np.floor(locs[0]), np.ceil(locs[0])]:
+        for y in [np.floor(locs[1]), np.ceil(locs[1])]:
+            for z in [np.floor(locs[2]), np.ceil(locs[2])]:
+                p_x = 1 - np.abs(x - locs[0])
+                p_y = 1 - np.abs(y - locs[1])
+                p_z = 1 - np.abs(z - locs[2])
+                percent = p_x * p_y * p_z
+                idx = np.array((1 - x + np.round(locs[0]), 1 - y + np.round(locs[1]), 1 - z + np.round(locs[2])), dtype='int')
+                weight[tuple(idx)] = percent
+    return weight
 
 def _brain_to_nifti2(bo, nii_template): #FIXME: this is incredibly inefficient; could be done much faster using reshape and/or nilearn masking
 
