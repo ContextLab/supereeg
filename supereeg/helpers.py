@@ -1597,10 +1597,11 @@ def _brain_to_nifti2(bo, nii_template): #FIXME: this is incredibly inefficient; 
     else:
         S = bo.affine
         warnings.warn("The brain object has a custom affine, changing voxel size with vox_size will not work!")
-    locs = np.array(np.round(np.array(np.dot(R - S[:3, 3], np.linalg.inv(S[0:3, 0:3])))), dtype='int16')
 
+    locs = np.dot(R - S[:3, 3], np.linalg.inv(S[0:3, 0:3]))
+    round_locs = np.array(np.round(locs), dtype='int')
     if bo.nifti_shape is None:
-        shape = np.max(np.vstack([np.max(locs, axis=0) + 1, nii_template.shape[0:3]]), axis=0)
+        shape = np.max(np.vstack([np.max(round_locs, axis=0) + 1, nii_template.shape[0:3]]), axis=0)
     else:
         shape = bo.nifti_shape
 
@@ -1608,18 +1609,27 @@ def _brain_to_nifti2(bo, nii_template): #FIXME: this is incredibly inefficient; 
     counts = np.zeros(data.shape)
 
     for i in range(R.shape[0]):
-        data[locs[i, 0], locs[i, 1], locs[i, 2], :] += Y[:, i]
-        counts[locs[i, 0], locs[i, 1], locs[i, 2], :] += 1
+        unrlocs = locs[i]
+        rlocs = round_locs[i]
+        weight = _weights(unrlocs)
+        for x in range(3):
+            for y in range(3):
+                for z in range(3):
+                    antialiased = rlocs - np.array([x - 1, y - 1, z - 1])
+                    safe_aa = tuple(np.min(np.vstack((antialiased, np.array(data.shape[0:3]) - 1)), axis=0))
+                    data[safe_aa[0], safe_aa[1], safe_aa[2], :] += weight[x, y, z] * Y[:, i]
+                    counts[safe_aa[0], safe_aa[1], safe_aa[2], :] += weight[x, y, z]
 
     with np.errstate(invalid='ignore'):
         for i in range(R.shape[0]):
-            data[locs[i, 0], locs[i, 1], locs[i, 2], :] = np.divide(data[locs[i, 0], locs[i, 1], locs[i, 2], :], counts[locs[i, 0], locs[i, 1], locs[i, 2], :])
+            data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :] = np.divide(
+                data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :],
+                counts[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :])
 
     if bo.nifti_shape is not None:
         data = data.reshape(-1, order='F').reshape(data.shape)
 
     return Nifti2(data, affine=S)
-
 
 
 
