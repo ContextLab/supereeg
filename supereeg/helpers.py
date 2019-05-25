@@ -148,7 +148,7 @@ def _resample_nii(x, target_res, precision=5):
     #                                multichannel=False)
 
     z = skimage.transform.downscale_local_mean(x.get_data(), tuple(np.array(np.reciprocal(scale), dtype='int')),
-                                           cval=float(0))
+                                          cval=float(0))
 
     try:
         z[z < 1e-5] = np.nan
