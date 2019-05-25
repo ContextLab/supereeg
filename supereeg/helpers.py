@@ -144,8 +144,12 @@ def _resample_nii(x, target_res, precision=5):
         assert np.ndim(x.get_data()) == 4, 'Data must be 3D or 4D'
         scale = np.append(scale, x.shape[3])
 
-    z = skimage.transform.rescale(x.get_data(), scale, order=3, mode='constant', cval=0, anti_aliasing=True,
-                                   multichannel=False)
+    # z = skimage.transform.rescale(x.get_data(), scale, order=3, mode='constant', cval=0, anti_aliasing=True,
+    #                                multichannel=False)
+
+    z = skimage.transform.downscale_local_mean(x.get_data(), tuple(np.array(np.reciprocal(scale), dtype='int')),
+                                           cval=float(0))
+
     try:
         z[z < 1e-5] = np.nan
     except:
