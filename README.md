@@ -26,6 +26,18 @@ To install the latest (bleeding edge) version directly from this repository use:
 
 `pip install --upgrade git+https://github.com/ContextLab/supereeg.git`
 
+<h3>Installing PyCUDA for GPU acceleration</h3>
+This is *highly* recommended if using SuperEEG for timeseries reconstruction, as it makes these computations significantly faster. However, using PyCUDA requires an NVIDIA GPU.
+
+<h4>Installing on Windows</h4>
+ 1. Install [CUDA](https://developer.nvidia.com/cuda-downloads)
+ 2. Install [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/)
+ 3. Add `C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\FIND YOUR VERSION #\bin\Hostx64\x64` or `C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\FIND YOUR VERSION #\bin\Hostx86\x86` to PATH, depending on your system architecture
+ 4. Get the PyCUDA [binary](https://www.lfd.uci.edu/~gohlke/pythonlibs/#pycuda)
+ 5. `pip install pycuda_whichever_binary.whl`
+
+<h4>Installing on Mac or Linux</h4>
+https://wiki.tiker.net/PyCuda/Installation/
 
 <h2>Requirements</h2>
 
@@ -48,9 +60,8 @@ Dependencies:
 + imageio
 + hypertools
 + scikit-image
++ pycuda (HIGHLY RECOMEMNDED for GPU acceleration)
 + pytest (for development)
-
-
 
 <h2>Citing</h2>
 
