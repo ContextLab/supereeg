@@ -19,13 +19,11 @@ import nibabel as nib
 import hypertools as hyp
 import shutil
 import warnings
-import pycuda.autoinit
+
 
 from nilearn import plotting as ni_plt
 from nilearn import image
 from nilearn.input_data import NiftiMasker
-from pycuda import gpuarray
-from pycuda.compiler import SourceModule
 from scipy.stats import kurtosis, zscore, pearsonr
 from scipy.spatial.distance import pdist
 from scipy.spatial.distance import cdist
@@ -362,6 +360,10 @@ def tal2mni(r):
 
 
 def _blur_corrmat_pycuda(Z, Zp, weights):
+
+    import pycuda.autoinit
+    from pycuda import gpuarray
+    from pycuda.compiler import SourceModule
 
     mod = SourceModule('''
       #include <math.h>
