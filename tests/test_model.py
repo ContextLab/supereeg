@@ -59,6 +59,16 @@ def test_model_predict():
     print(data[0].dur)
     assert isinstance(bo, se.Brain)
 
+def test_model_gpu_predict():
+    cpu_model = se.Model(data=data[0:2], locs=locs)
+    cpu_bo = cpu_model.predict(data[3], nearest_neighbor=False)
+    gpu_model = se.Model(data=data[0:2], locs=locs)
+    gpu_model.gpu = True
+    gpu_bo = gpu_model.predict(data[3], nearest_neighbor=False)
+    assert isinstance(cpu_bo, se.Brain)
+    assert isinstance(gpu_bo, se.Brain)
+    assert np.allclose(cpu_bo.get_data(), gpu_bo.get_data())
+
 def test_model_predict_nn():
     print(data[0].dur)
     model = se.Model(data=data[0:2], locs=locs)
