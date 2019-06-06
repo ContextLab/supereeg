@@ -62,12 +62,13 @@ def test_model_predict():
 def test_model_gpu_predict():
     cpu_model = se.Model(data=data[0:2], locs=locs)
     cpu_bo = cpu_model.predict(data[3], nearest_neighbor=False)
-    gpu_model = se.Model(data=data[0:2], locs=locs)
-    gpu_model.gpu = True
+    gpu_model = se.Model(data=data[0:2], locs=locs, gpu=True)
     gpu_bo = gpu_model.predict(data[3], nearest_neighbor=False)
+    assert np.allclose(gpu_model.numerator, cpu_model.numerator, equal_nan=True)
+    assert np.allclose(gpu_model.denominator, cpu_model.denominator, equal_nan=True)
     assert isinstance(cpu_bo, se.Brain)
     assert isinstance(gpu_bo, se.Brain)
-    assert np.allclose(cpu_bo.get_data(), gpu_bo.get_data())
+    assert np.allclose(cpu_bo.get_data(), gpu_bo.get_data(), rtol=0, atol=2e-5, equal_nan=True)
 
 def test_model_predict_nn():
     print(data[0].dur)

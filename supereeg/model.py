@@ -121,7 +121,7 @@ class Model(object):
                     locs, loc_inds = _unique(all_locs)
 
                     self.__init__(data=data[0], locs=locs, template=template, meta=self.meta, rbf_width=self.rbf_width,
-                                  n_subs=1)
+                                  n_subs=1, gpu=self.gpu)
 
                     for i in range(1, len(data)):
                         self.update(Model(data=data[i], locs=locs, template=template, meta=self.meta,
