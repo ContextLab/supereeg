@@ -478,7 +478,9 @@ def _blur_corrmat_pycuda(Z, Zp, weights):
              block=block, grid=grid)
 
     W  = np.zeros([n, n])
+    print('ree1')
     W[wtx, wty] = w_gpu.get()
+    print('ree2')
 
     K_pos = np.zeros([n, n])
     K_pos[wtx, wty] = kp_gpu.get()
