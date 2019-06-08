@@ -530,7 +530,7 @@ def _blur_corrmat(Z, Zp, weights, gpu):
         return _blur_corrmat_pycuda(Z, Zp, weights)
     triu_inds = np.triu_indices(Z.shape[0], k=1)
 
-    #need to do computations seperately for positive and negative values
+    #need to do computations separately for positive and negative values
     sign_Z_full = np.sign(Z)
     sign_Z = sign_Z_full[triu_inds]
     logZ_pos = np.log(np.multiply(sign_Z > 0, Z[triu_inds]))
@@ -992,7 +992,7 @@ def _near_neighbor(bo, mo, match_threshold='auto'): #TODO: should this be part o
 
         match_threshold =  0 :set nearest_neighbor = False and proceed (only exact matches will be used)
 
-        match_threshol = None use best match and don't check (even if far away)
+        match_threshold = None use best match and don't check (even if far away)
 
         match_threshold > 0 : include only nearest neighbor that are within given distance
 
@@ -1758,7 +1758,7 @@ def _brain_to_nifti2(bo, nii_template): #FIXME: this is incredibly inefficient; 
     temp_v_size = hdr.get_zooms()[0:3]
 
     R = bo.get_locs()
-    Y = bo.data.as_matrix()
+    Y = bo.data.values
     Y = np.array(Y, ndmin=2)
     if bo.affine is None:
         S = nii_template.affine
