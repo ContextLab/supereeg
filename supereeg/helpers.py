@@ -369,7 +369,14 @@ def tal2mni(r):
 
 def _blur_corrmat_pycuda(Z, Zp, weights):
 
-    import pycuda.autoinit
+    # import pycuda.autoinit
+    import pycuda.driver as cuda
+
+    cuda.init()
+    dvc = cuda.Device(0)
+    ctx_flags = cuda.ctx_flags()
+    ctx = dvc.make_context(flags=ctx_flags.SCHED_BLOCKING_SYNC)
+
     from pycuda import gpuarray
     from pycuda.compiler import SourceModule
 
@@ -478,9 +485,9 @@ def _blur_corrmat_pycuda(Z, Zp, weights):
              block=block, grid=grid)
 
     W  = np.zeros([n, n])
-    print('ree1')
-    W[wtx, wty] = w_gpu.get()
-    print('ree2')
+    # W_intermediate = np.zeros(w_gpu.shape)
+    # cuda.memcpy_dtoh(W_intermediate, w_gpu)
+    W[wtx, wty] = w_gpu.get()  # W_intermediate
 
     K_pos = np.zeros([n, n])
     K_pos[wtx, wty] = kp_gpu.get()
@@ -491,6 +498,8 @@ def _blur_corrmat_pycuda(Z, Zp, weights):
     K_neg = np.multiply(0+1j, K_neg)
     K_neg.real[np.isnan(K_neg)] = 0
     K = K_pos + K_neg
+
+    ctx.pop()
 
     return K + K.T, W + W.T
 
