@@ -124,6 +124,8 @@ if __name__ == "__main__":
     except:
         vmax = 3.5
     bo = se.load(fname)
+    bo_int = se.Brain(data=bo.data.values[:200, :], locs=bo.locs, sample_rate=bo.sample_rate)
+    bo = bo_int
     print(fname)
     timepoints = bo.data.shape[0]
     ranges = np.array_split(np.arange(timepoints), nworkers) #nworkers
