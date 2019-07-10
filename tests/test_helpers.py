@@ -229,7 +229,7 @@ def test_resample():
     assert samp_rate==[8,8]
 
 def test_nifti_to_brain():
-    b_d, b_l, b_h = _nifti_to_brain(_gray(20))
+    b_d, b_l, b_h, affine = _nifti_to_brain(_gray(20))
     assert isinstance(b_d, np.ndarray)
     assert isinstance(b_l, np.ndarray)
     assert isinstance(b_h, dict)
@@ -240,7 +240,7 @@ def test_brain_to_nifti():
 
 def test_bo_nii_bo():
     nii = _brain_to_nifti(bo, _gray(20))
-    b_d, b_l, b_h =_nifti_to_brain(nii)
+    b_d, b_l, b_h, affine =_nifti_to_brain(nii)
     assert np.allclose(bo.get_locs(), b_l)
 
 def test_nii_bo_nii():
