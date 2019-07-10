@@ -728,7 +728,7 @@ class Brain(object):
         """
 
         bo = {
-            'data': self.data.as_matrix(),
+            'data': self.data.values,
             'locs': self.locs,
             'sessions': self.sessions,
             'sample_rate': self.sample_rate,

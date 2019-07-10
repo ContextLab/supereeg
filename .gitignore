@@ -92,6 +92,11 @@ celerybeat-schedule
 venv/
 ENV/
 
+# vim
+*~
+*.swp
+*.swo
+
 # Spyder project settings
 .spyderproject
 
@@ -108,3 +113,4 @@ tests/debug_helpers.py
 tests/model_algebra.py
 /tests/model_algebra.py
 /tests/model_tests.py
+dbg.py

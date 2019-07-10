@@ -417,7 +417,7 @@ recovery of the true model.
             data = bo.data.iloc[:, sub_locs.index]
     
             # create synthetic patient (will compare remaining activations to predictions)
-            bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs)
+            bo_sample = se.Brain(data=data.values, locs=sub_locs)
     
             # reconstruct at 'unknown' locations
             bo_r = model.predict(bo_sample)
@@ -432,7 +432,7 @@ recovery of the true model.
             actual = bo[:, recon_inds[0]]
     
             # correlate reconstruction with actual data
-            corr_vals = _corr_column(actual.get_data().as_matrix(), recon.get_data().as_matrix())
+            corr_vals = _corr_column(actual.get_data().values, recon.get_data().values)
             #corr_vals_sample = np.random.choice(corr_vals, 5)
     
             d.append(

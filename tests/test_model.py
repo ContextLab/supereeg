@@ -59,6 +59,17 @@ def test_model_predict():
     print(data[0].dur)
     assert isinstance(bo, se.Brain)
 
+def test_model_gpu_predict():
+    cpu_model = se.Model(data=data[0:2], locs=locs)
+    cpu_bo = cpu_model.predict(data[3], nearest_neighbor=False)
+    gpu_model = se.Model(data=data[0:2], locs=locs, gpu=True)
+    gpu_bo = gpu_model.predict(data[3], nearest_neighbor=False)
+    assert np.allclose(gpu_model.numerator, cpu_model.numerator, equal_nan=True)
+    assert np.allclose(gpu_model.denominator, cpu_model.denominator, equal_nan=True)
+    assert isinstance(cpu_bo, se.Brain)
+    assert isinstance(gpu_bo, se.Brain)
+    assert np.allclose(cpu_bo.get_data(), gpu_bo.get_data(), rtol=0, atol=2e-5, equal_nan=True)
+
 def test_model_predict_nn():
     print(data[0].dur)
     model = se.Model(data=data[0:2], locs=locs)
@@ -190,3 +201,37 @@ def test_model_subtract():
         assert mo2_recon + mo3
     except AssertionError:
         assert True == True
+
+def test_cpu_vs_gpu_single_subject():
+    locs = np.random.randn(25, 3)
+    bo1 = se.simulate_bo(n_samples=512*30, locs=locs, sample_rate=512)
+    bo2 = se.simulate_bo(n_samples=512*30, locs=locs, sample_rate=512)
+
+    mo_cpu = se.Model([bo1, bo2])
+    mo_gpu = se.Model([bo1, bo2], gpu=True)
+    assert mo_cpu.locs.equals(mo_gpu.locs)
+    assert np.allclose(mo_cpu.get_model(), mo_gpu.get_model())
+
+    mo_cpu = se.Model(bo1) + se.Model(bo2)
+    mo_gpu = se.Model(bo1, gpu=True) + se.Model(bo2, gpu=True)
+    assert mo_cpu.locs.equals(mo_gpu.locs)
+    assert np.allclose(mo_cpu.get_model(), mo_gpu.get_model())
+
+def test_cpu_vs_gpu_mult_subject():
+    locs1 = np.random.randn(25, 3)
+    bo1a = se.simulate_bo(n_samples=512*30, locs=locs1, sample_rate=512)
+    bo1b = se.simulate_bo(n_samples=512*30, locs=locs1, sample_rate=512)
+
+    locs2 = np.random.randn(25, 3)
+    bo2a = se.simulate_bo(n_samples=512*30, locs=locs2, sample_rate=512)
+    bo2b = se.simulate_bo(n_samples=512*30, locs=locs2, sample_rate=512)
+
+    mo_cpu = se.Model([bo1a, bo1b, bo2a, bo2b])
+    mo_gpu = se.Model([bo1a, bo1b, bo2a, bo2b], gpu=True)
+    assert mo_cpu.locs.equals(mo_gpu.locs)
+    assert np.allclose(mo_cpu.get_model(), mo_gpu.get_model())
+
+    mo_cpu = se.Model([bo1a, bo1b]) + se.Model([bo2a, bo2b])
+    mo_gpu = se.Model([bo1a, bo1b], gpu=True) + se.Model([bo2a, bo2b], gpu=True)
+    assert mo_cpu.locs.equals(mo_gpu.locs)
+    assert np.allclose(mo_cpu.get_model(), mo_gpu.get_model())

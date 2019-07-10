@@ -367,7 +367,144 @@ def tal2mni(r):
     return np.round(inpoints[0:3, :].T, decimals=2)
 
 
-def _blur_corrmat(Z, weights):
+def _blur_corrmat_pycuda(Z, Zp, weights):
+
+    import pycuda.autoinit
+    import pycuda.driver as cuda
+
+    # cuda.init()
+    # dvc = cuda.Device(0)
+    # ctx_flags = cuda.ctx_flags()
+    # ctx = dvc.make_context(flags=ctx_flags.SCHED_BLOCKING_SYNC)
+
+    from pycuda import gpuarray
+    from pycuda.compiler import SourceModule
+
+    mod = SourceModule('''
+      #include <math.h>
+
+
+      __global__ void blur_gpu(float *w, float *kp, float *kn,
+                               float *weights, float *Zp, float *lzp,
+                               float *lzn, int *matches,
+                               int w_n_rows, int w_n_cols,
+                               int *wtx, int *wty, int n_wt,
+                               int *ktx, int *kty, int n_kt) {
+
+        int idx = blockDim.x * blockIdx.x + threadIdx.x;
+
+        if (idx < n_wt) {
+
+          float pos_inf = __int_as_float(0x7f800000);
+          float neg_inf = __int_as_float(0xff800000);
+
+          int x = wtx[idx];
+          int y = wty[idx];
+
+          if (matches[x*w_n_rows + y] == 1) {
+
+            float zval = Zp[x*w_n_rows + y];
+
+            if (zval > 0) {
+              kp[idx] = log(zval);
+              kn[idx] = neg_inf;
+            } else {
+              kp[idx] = neg_inf;;
+              kn[idx] = log(abs(zval));
+            }
+
+          } else {
+
+            float xy_wt;
+            float wmax  = neg_inf;
+            float kpmax = neg_inf;
+            float knmax = neg_inf;
+
+            for (int i=0; i < n_kt; i++) {
+              xy_wt = weights[x*w_n_cols + ktx[i]] + weights[y*w_n_cols + kty[i]];
+              wmax  = max(wmax,  xy_wt);
+              kpmax = max(kpmax, xy_wt + lzp[i]);
+              knmax = max(knmax, xy_wt + lzn[i]);
+            }
+
+            for (int i=0; i < n_kt; i++) {
+              xy_wt    = weights[x*w_n_cols + ktx[i]] + weights[y*w_n_cols + kty[i]];
+              w[idx]  += exp(xy_wt - wmax);
+              kp[idx] += exp(xy_wt + lzp[i] - kpmax);
+              kn[idx] += exp(xy_wt + lzn[i] - knmax);
+            }
+
+            w[idx]  = log(w[idx])  + wmax;
+            kp[idx] = log(kp[idx]) + kpmax;
+            kn[idx] = log(kn[idx]) + knmax;
+          }
+        }
+      }
+      ''')
+
+    blur_gpu = mod.get_function('blur_gpu')
+
+    n           = weights.shape[0]
+    wtx, wty    = np.triu_indices(n, k=1)
+    ktx, kty    = np.triu_indices(Z.shape[0], k=1)
+    triu_inds   = np.triu_indices(Z.shape[0], k=1)
+    sign_Z_full = np.sign(Z)
+    sign_Z      = sign_Z_full[triu_inds]
+    logZ_pos    = np.log(np.multiply(sign_Z > 0, Z[triu_inds]))
+    logZ_neg    = np.log(np.multiply(sign_Z < 0, np.abs(Z[triu_inds])))
+    wclose      = np.isclose(weights, 0).sum(axis=1)
+    matches     = np.triu(np.outer(wclose, wclose)).astype(bool)
+
+    n_wt        = np.int32(len(wtx))
+    n_kt        = np.int32(len(ktx))
+    w_n_rows    = np.int32(weights.shape[0])
+    w_n_cols    = np.int32(weights.shape[1])
+
+    w_gpu       = gpuarray.zeros(n_wt, np.float32)
+    kp_gpu      = gpuarray.zeros(n_wt, np.float32)
+    kn_gpu      = gpuarray.zeros(n_wt, np.float32)
+
+    weights_gpu = gpuarray.to_gpu(weights.astype(np.float32))
+    Zp_gpu      = gpuarray.to_gpu(Zp.astype(np.float32))
+    lzp_gpu     = gpuarray.to_gpu(logZ_pos.astype(np.float32))
+    lzn_gpu     = gpuarray.to_gpu(logZ_neg.astype(np.float32))
+    matches_gpu = gpuarray.to_gpu(matches.astype(np.int32))
+
+    wtx_gpu     = gpuarray.to_gpu(wtx.astype(np.int32))
+    wty_gpu     = gpuarray.to_gpu(wty.astype(np.int32))
+    ktx_gpu     = gpuarray.to_gpu(ktx.astype(np.int32))
+    kty_gpu     = gpuarray.to_gpu(kty.astype(np.int32))
+
+    block_len = np.int(min(n_wt, 1024))
+    block = (block_len, 1, 1)
+    num_blocks = np.int(np.ceil(n_wt / block_len))
+    grid = (num_blocks, 1, 1)
+    blur_gpu(w_gpu, kp_gpu, kn_gpu, weights_gpu, Zp_gpu,
+             lzp_gpu, lzn_gpu, matches_gpu, w_n_rows, w_n_cols,
+             wtx_gpu, wty_gpu, n_wt, ktx_gpu, kty_gpu, n_kt,
+             block=block, grid=grid)
+
+    W  = np.zeros([n, n])
+    # W_intermediate = np.zeros(w_gpu.shape)
+    # cuda.memcpy_dtoh(W_intermediate, w_gpu)
+    W[wtx, wty] = w_gpu.get()  # W_intermediate
+
+    K_pos = np.zeros([n, n])
+    K_pos[wtx, wty] = kp_gpu.get()
+
+    K_neg = np.zeros([n, n])
+    K_neg[wtx, wty] = kn_gpu.get()
+
+    K_neg = np.multiply(0+1j, K_neg)
+    K_neg.real[np.isnan(K_neg)] = 0
+    K = K_pos + K_neg
+
+    # ctx.pop()
+
+    return K + K.T, W + W.T
+
+
+def _blur_corrmat(Z, Zp, weights, gpu):
     """
     Gets full correlation matrix
 
@@ -376,12 +513,11 @@ def _blur_corrmat(Z, weights):
     Z : Numpy array
         Subject's Fisher z-transformed correlation matrix
 
+    Zp : Numpy array, Subject's correlation matrix zero padded to the full
+               electrode locations
+
     weights : Numpy array
         Weights matrix calculated using _log_rbf function matrix
-
-    mode : str
-        Specifies whether to compute over all elecs (fit mode) or just new elecs
-        (predict mode)
 
     Returns
     ----------
@@ -390,16 +526,12 @@ def _blur_corrmat(Z, weights):
     denominator : Numpy array
         Denominator for the expanded correlation matrix
     """
-    #import seaborn as sns
-    #import matplotlib.pyplot as plt
-
+    if gpu:
+        return _blur_corrmat_pycuda(Z, Zp, weights)
     triu_inds = np.triu_indices(Z.shape[0], k=1)
 
-    #need to do computations seperately for positive and negative values
+    #need to do computations separately for positive and negative values
     sign_Z_full = np.sign(Z)
-    #logZ_pos_full = np.log(np.multiply(sign_Z_full > 0, Z))
-    #logZ_neg_full = np.log(np.multiply(sign_Z_full < 0, np.abs(Z)))
-
     sign_Z = sign_Z_full[triu_inds]
     logZ_pos = np.log(np.multiply(sign_Z > 0, Z[triu_inds]))
     logZ_neg = np.log(np.multiply(sign_Z < 0, np.abs(Z[triu_inds])))
@@ -412,11 +544,11 @@ def _blur_corrmat(Z, weights):
     for x in range(n-1):
         xweights = weights[x, :]
         x_match = np.isclose(xweights, 0)
-        for y in range(x+1, n): #fill in upper triangle only
+        for y in range(x+1, n):
             yweights = weights[y, :]
             y_match = np.isclose(yweights, 0)
 
-            if np.any(x_match) and np.any(y_match): #the pair of locations we're filling in already exists in the given data
+            if np.any(x_match) and np.any(y_match):
                 x_ind = np.where(x_match)[0]
                 y_ind = np.where(y_match)[0]
                 Z_match_val = np.mean(Z[x_ind, y_ind])
@@ -428,13 +560,13 @@ def _blur_corrmat(Z, weights):
                     K_pos[x, y] = -np.inf
                     K_neg[x, y] = np.log(np.abs(Z_match_val))
                 continue
-
             next_weights = np.add.outer(xweights, yweights)
             next_weights = next_weights[triu_inds]
 
             W[x, y] = logsumexp(next_weights)
             K_pos[x, y] = logsumexp(logZ_pos + next_weights)
             K_neg[x, y] = logsumexp(logZ_neg + next_weights)
+
 
     #turn K_neg into complex numbers.  Where K_neg is infinite, this results in nans for the real number parts, so we'll
     #set any nans in K_neg.real to 0
@@ -444,6 +576,36 @@ def _blur_corrmat(Z, weights):
     K = K_pos + K_neg
 
     return K + K.T, W + W.T
+
+
+def _zero_pad_corrmat(Z, locs, _full_locs):
+    '''
+    Expand a subject's correlation matrix to the full electrode locations by
+    zero padding (currently) unknown correlations.  This function helps
+    vectorize _blurr_corrmat's model expansion.
+
+    Parameters
+    ----------
+    Z : Numpy array, Subject's Fisher z-transformed correlation matrix
+
+    locs : numpy array, Subject's electrode locations
+
+    full_locs : Pandas DataFrame, all Subject's electrode locations
+
+    Returns
+    -------
+    Z_padded : Numpy array, Subject's correlation matrix zero padded to the full
+               electrode locations
+    '''
+    full_locs = pd.DataFrame(_full_locs, columns=list('xyz'))
+    n = full_locs.shape[0]
+    Z_padded = np.zeros([n, n])
+    idxs = full_locs.reset_index().merge(locs.reset_index(), on=list('xyz'))
+    known_idxs = idxs['index_x'].values
+    locs_idxs = idxs['index_y'].values
+    Z_padded[np.ix_(known_idxs, known_idxs)] = Z[np.ix_(locs_idxs, locs_idxs)]
+    return Z_padded
+
 
 def _to_log_complex(X):
     """
@@ -538,13 +700,13 @@ def _timeseries_recon(bo, mo, chunk_size=25000, preprocess='zscore', recon_loc_i
         Compiled reconstructed timeseries
     """
     if preprocess==None:
-        data = bo.get_data().as_matrix()
+        data = bo.get_data().values
     elif preprocess=='zscore':
         if bo.data.shape[0]<3:
             warnings.warn('Not enough samples to zscore so it will be skipped.'
             ' Note that this will cause problems if your data are not already '
             'zscored.')
-            data = bo.get_data().as_matrix()
+            data = bo.get_data().values
         else:
             data = bo.get_zscore_data()
     else:
@@ -569,13 +731,15 @@ def _timeseries_recon(bo, mo, chunk_size=25000, preprocess='zscore', recon_loc_i
         model_locs_in_brain.extend([True]*mo.get_locs().shape[0])
 
         rbf_weights = _log_rbf(combined_locs, mo.get_locs())
+        
         from .model import _recover_model #deferred import to remove circular dependency
-        Z = _recover_model(*_blur_corrmat(Z, rbf_weights), z_transform=True)
+        Z = _recover_model(*_blur_corrmat(Z, rbf_weights, mo.gpu), z_transform=True)
+
 
     K = _z2r(Z)
 
-    known_inds, unknown_inds = known_unknown(mo.get_locs().as_matrix(), bo.get_locs().as_matrix(),
-                                                  bo.get_locs().as_matrix())
+    known_inds, unknown_inds = known_unknown(mo.get_locs().values, bo.get_locs().values,
+                                                  bo.get_locs().values)
     Kaa = K[known_inds, :][:, known_inds]
     Kaa_inv = np.linalg.pinv(Kaa)
 
@@ -828,7 +992,7 @@ def _near_neighbor(bo, mo, match_threshold='auto'): #TODO: should this be part o
 
         match_threshold =  0 :set nearest_neighbor = False and proceed (only exact matches will be used)
 
-        match_threshol = None use best match and don't check (even if far away)
+        match_threshold = None use best match and don't check (even if far away)
 
         match_threshold > 0 : include only nearest neighbor that are within given distance
 
@@ -916,7 +1080,7 @@ def _unique(X):
     dataframe = type(X) is pd.DataFrame
     if dataframe:
         columns = X.columns
-        X = X.as_matrix()
+        X = X.values
 
     assert type(X) is np.ndarray, 'must pass in a numpy ndarray or dataframe'
     uX, inds = np.unique(X, axis=0, return_index=True)
@@ -951,12 +1115,12 @@ def _union(X, Y): #TODO: add test for _union
     dataframeX = type(X) is pd.DataFrame
     if dataframeX:
         columnsX = X.columns
-        X = X.as_matrix()
+        X = X.values
 
     dataframeY = type(Y) is pd.DataFrame
     if dataframeY:
         columnsY = Y.columns
-        Y = Y.as_matrix()
+        Y = Y.values
 
     if dataframeX and dataframeY:
         assert np.all(columnsX == columnsY), 'Input dataframes have mismatched columns'
@@ -1508,7 +1672,7 @@ def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; c
     temp_v_size = hdr.get_zooms()[0:3]
 
     R = bo.get_locs()
-    Y = bo.data.as_matrix()
+    Y = bo.data.values
     Y = np.array(Y, ndmin=2)
     if bo.affine is None:
         S = nii_template.affine
@@ -1594,7 +1758,7 @@ def _brain_to_nifti2(bo, nii_template): #FIXME: this is incredibly inefficient; 
     temp_v_size = hdr.get_zooms()[0:3]
 
     R = bo.get_locs()
-    Y = bo.data.as_matrix()
+    Y = bo.data.values
     Y = np.array(Y, ndmin=2)
     if bo.affine is None:
         S = nii_template.affine

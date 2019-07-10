@@ -11,7 +11,7 @@ import deepdish as dd
 import matplotlib.pyplot as plt
 from .helpers import _get_corrmat, _r2z, _z2r, _log_rbf, _blur_corrmat, _plot_borderless,\
     _near_neighbor, _timeseries_recon, _count_overlapping, _plot_locs_connectome, \
-    _plot_locs_hyp, _gray, _nifti_to_brain,\
+    _plot_locs_hyp, _gray, _nifti_to_brain, _zero_pad_corrmat,\
     _unique, _union, _empty, _to_log_complex, _to_exp_real
 from .brain import Brain
 from .nifti import Nifti
@@ -37,6 +37,8 @@ class Model(object):
         MNI coordinate (x,y,z) by number of electrode df containing electrode locations
     template : filepath
         Path to a template nifti file used to set model locations
+    gpu : boolean
+        Build model using PyCUDA with GPU
     numerator : Numpy.ndarray
         (Optional) A locations x locations matrix comprising the sum of the log z-transformed
         correlation matrices over subjects.  If used, must also pass denominator,
@@ -78,7 +80,7 @@ class Model(object):
     model : supereeg.Model instance
         A model that can be used to infer timeseries from unknown locations
     """
-    def __init__(self, data=None, locs=None, template=None,
+    def __init__(self, data=None, locs=None, template=None, gpu=False,
                  numerator=None, denominator=None,
                  n_subs=None, meta=None, date_created=None, rbf_width=20, save=None):
         from .load import load
@@ -86,6 +88,7 @@ class Model(object):
         self.locs = None
         self.numerator = None
         self.denominator = None
+        self.gpu = gpu
         self.n_subs = 0
         self.meta = meta
         if self.meta is None:
@@ -105,24 +108,25 @@ class Model(object):
                 else:
                     if not (locs is None):
                         if type(locs) == pd.DataFrame:
-                            locs = locs.as_matrix()
+                            locs = locs.values
                         assert type(locs) == np.ndarray, 'Locations must be either a DataFrame or a numpy array'
                         assert locs.shape[1] == 3, 'Only 3d locations are supported'
                     all_locs = locs
                     for i in range(1, len(data)):
                         if type(data) in (Model, Brain, Nifti):
                             if all_locs is None:
-                                all_locs = data[i].get_locs().as_matrix()
+                                all_locs = data[i].get_locs().values
                             else:
-                                all_locs = np.vstack((all_locs, data[i].get_locs().as_matrix()))
+                                all_locs = np.vstack((all_locs, data[i].get_locs().values))
                     locs, loc_inds = _unique(all_locs)
 
                     self.__init__(data=data[0], locs=locs, template=template, meta=self.meta, rbf_width=self.rbf_width,
-                                  n_subs=1)
+                                  n_subs=1, gpu=self.gpu)
 
                     for i in range(1, len(data)):
                         self.update(Model(data=data[i], locs=locs, template=template, meta=self.meta,
-                                          rbf_width=self.rbf_width, n_subs=1))
+                                          rbf_width=self.rbf_width, n_subs=1,
+                                          gpu=self.gpu))
 
             if isinstance(data, six.string_types):
                 data = load(data)
@@ -133,6 +137,7 @@ class Model(object):
             if isinstance(data, Model):
                 self.date_created = data.date_created
                 self.denominator = data.denominator
+                self.gpu = gpu
                 self.locs = data.locs
                 self.meta = data.meta
                 self.n_subs = data.n_subs
@@ -142,7 +147,8 @@ class Model(object):
                 n_subs = self.n_subs
             elif isinstance(data, Brain):
                 corrmat = _get_corrmat(data)
-                self.__init__(data=corrmat, locs=data.get_locs(), n_subs=1)
+                self.__init__(data=corrmat, locs=data.get_locs(), n_subs=1,
+                        gpu=self.gpu)
             elif isinstance(data, np.ndarray):
                 assert not (locs is None), 'must specify model locations'
                 assert locs.shape[0] == data.shape[0], 'number of locations must match the size of the given correlation matrix'
@@ -178,13 +184,19 @@ class Model(object):
             assert type(template) == Nifti, 'template must be a Nifti object or a path to a Nifti object'
             bo = Brain(template)
             rbf_weights = _log_rbf(bo.get_locs(), self.locs, width=self.rbf_width)
-            self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
+            Z = self.get_model(z_transform=True)
+            Zp = _zero_pad_corrmat(Z, self.locs, locs)
+            self.numerator, self.denominator = _blur_corrmat(Z, Zp,
+                    rbf_weights, self.gpu)
             self.locs = bo.get_locs()
         elif not (locs is None): #blur correlation matrix out to locs
             if (isinstance(data, Brain) or isinstance(data, Model)): #self.locs may now conflict with locs
                 if not ((locs.shape[0] == self.locs.shape[0]) and np.allclose(locs, self.locs)):
                     rbf_weights = _log_rbf(locs, self.locs, width=self.rbf_width)
-                    self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
+                    Z = self.get_model(z_transform=True)
+                    Zp = _zero_pad_corrmat(Z, self.locs, locs)
+                    self.numerator, self.denominator = _blur_corrmat(Z, Zp,
+                            rbf_weights, self.gpu)
                     self.locs = locs
         elif self.locs is None:
             self.locs = locs
@@ -264,7 +276,10 @@ class Model(object):
             return
         else:
             rbf_weights = _log_rbf(new_locs, self.get_locs())
-            self.numerator, self.denominator = _blur_corrmat(self.get_model(z_transform=True), rbf_weights)
+            Z = self.get_model(z_transform=True)
+            Zp = _zero_pad_corrmat(Z, self.locs, new_locs)
+            self.numerator, self.denominator = _blur_corrmat(Z, Zp,
+                    rbf_weights, self.gpu)
             self.locs = new_locs
 
         self.locs, loc_inds = _unique(self.locs)
@@ -341,7 +356,7 @@ class Model(object):
             loc_labels[~_count_overlapping(bor.get_locs(), mo.get_locs())] = ['reconstructed']
             recon_loc = mo.locs
         else:
-            recon_loc = np.atleast_2d(mo.get_locs().iloc[~_count_overlapping(bor.get_locs(), mo.get_locs())].iloc[recon_loc_inds[0]].as_matrix())
+            recon_loc = np.atleast_2d(mo.get_locs().iloc[~_count_overlapping(bor.get_locs(), mo.get_locs())].iloc[recon_loc_inds[0]].values)
             loc_labels = np.array(['reconstructed'] * len(list(recon_loc_inds)))
 
         return Brain(data=activations, locs=recon_loc, sessions=bor.sessions, sample_rate=bor.sample_rate,
