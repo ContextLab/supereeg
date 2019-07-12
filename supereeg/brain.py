@@ -415,8 +415,9 @@ class Brain(object):
         title : str
             Title for plot
 
-        electrode : int
-            Location in MNI coordinate (x,y,z) by electrode df containing electrode locations
+        electrode : int or list of ints
+            Integer corresponding to index of location in bo.locs
+            in MNI coordinate (x,y,z) by electrode df containing electrode locations
         """
 
         # normalizes the samples x electrodes array containing the EEG data and
@@ -441,7 +442,7 @@ class Brain(object):
             Y = _normalize_Y(self.get_data())
 
             if electrode is not None:
-                Y = Y.columns[int(electrode)]
+                Y = Y.loc[:, electrode]
 
             # divide index by sample rate so that index corresponds to time
             if self.sample_rate:
@@ -463,7 +464,11 @@ class Brain(object):
             ax.set_facecolor('w')
             ax.set_xlabel("time")
             ax.set_ylabel("electrode")
-            ax.set_ylim([0, len(Y.columns) + 1])
+            try:
+                ax.set_ylim([1.5, Y.shape[1] + 1.5])
+            except IndexError:
+                ax.set_ylim([1.5, 2.5])
+
             if filepath:
                 plt.savefig(filename=filepath)
             else:
