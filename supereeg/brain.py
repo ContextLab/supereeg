@@ -443,6 +443,9 @@ class Brain(object):
 
             if electrode is not None:
                 Y = Y.loc[:, electrode]
+                if len(Y.shape) > 1:
+                    for i, column in enumerate(Y):
+                        Y[column] = Y[column] - int(column) + i
 
             # divide index by sample rate so that index corresponds to time
             if self.sample_rate:
@@ -459,15 +462,17 @@ class Brain(object):
                 time_max =  10
                 mask = (Y.index >= time_min) & (Y.index <= time_max)
                 Y= Y[mask]
-
-            ax = Y.plot(legend=False, title=title, color='k', lw=.6)
+            
+            if electrode:
+                if len(Y.shape) > 1:
+                    ax = Y.plot(title=title, lw=.6)
+                else:
+                    ax = Y.plot(title=title, lw=.6, color='k')
+            else:
+                ax = Y.plot(legend=False, title=title, color='k', lw=.6)
             ax.set_facecolor('w')
             ax.set_xlabel("time")
             ax.set_ylabel("electrode")
-            try:
-                ax.set_ylim([1.5, Y.shape[1] + 1.5])
-            except IndexError:
-                ax.set_ylim([1.5, 2.5])
 
             if filepath:
                 plt.savefig(filename=filepath)
