@@ -439,7 +439,7 @@ class Brain(object):
             else:
                 plt.show()
         else:
-            Y = _normalize_Y(self.get_data())
+            Y = _normalize_Y(self.data) # self.get_data()) this allows us to plot all the electrodes even the recon ones
 
             if electrode is not None:
                 Y = Y.loc[:, electrode]
