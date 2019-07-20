@@ -1757,7 +1757,7 @@ def _brain_to_nifti2(bo, nii_template): #FIXME: this is incredibly inefficient; 
     hdr = nii_template.get_header()
     temp_v_size = hdr.get_zooms()[0:3]
 
-    R = bo.get_locs()
+    R = bo.locs
     Y = bo.data.values
     Y = np.array(Y, ndmin=2)
     if bo.affine is None:

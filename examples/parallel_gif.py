@@ -124,13 +124,13 @@ if __name__ == "__main__":
     except:
         vmax = 3.5
     bo = se.load(fname)
-    bo_int = se.Brain(data=bo.data.values[:200, :], locs=bo.locs, sample_rate=bo.sample_rate)
-    bo = bo_int
+    seiz_start = 30 * bo.sample_rate[0]
+    seiz_end = bo.data.values.shape[0] - seiz_start
     print(fname)
     timepoints = bo.data.shape[0]
     ranges = np.array_split(np.arange(timepoints), nworkers) #nworkers
     nii = bo.to_nii2(template='std', vox_size=6)
-    path = '~/Downloads/gifs'# '/dartfs/rc/lab/D/DBIC/CDL/f003f64/gifs' # 'C:/Users/tmunt/Documents/gif'
+    path = '~/Downloads/gifs'   # '/dartfs/rc/lab/D/DBIC/CDL/f003f64/gifs' # 'C:/Users/tmunt/Documents/gif'
     # helpwrap = wrapper(helper, nifti=nii, path=path, slice_index=range(-50, 50, 4), vmax=vmax, symmetric_cbar=True, display_mode='y')
     pr = cProfile.Profile()
     pr.enable()
@@ -140,8 +140,8 @@ if __name__ == "__main__":
               'display_mode': 'y', 'fname': fname}
 
     processes = []
-    for range in ranges:
-        processes.append(mp.Process(target=helper, args=(range,), kwargs=kw))
+    for rng in ranges:
+        processes.append(mp.Process(target=helper, args=(rng,), kwargs=kw))
 
     for p in processes:
         p.start()
