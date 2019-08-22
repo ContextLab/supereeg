@@ -112,11 +112,11 @@ class Model(object):
                         assert type(locs) == np.ndarray, 'Locations must be either a DataFrame or a numpy array'
                         assert locs.shape[1] == 3, 'Only 3d locations are supported'
                     all_locs = locs
-                    # TODO FIX BELOW vstack recursively stacks (not good), also the indices are just straight up wrong
+                    
                     locs_list = []
                     for i in range(len(data)):
                         if type(data) in (Model, Brain, Nifti):
-                            locs_list.append(data[i].get_locs.values)
+                            locs_list.append(data[i].get_locs().values)
                             
                     if all_locs is None:
                         all_locs = np.vstack(locs_list)
