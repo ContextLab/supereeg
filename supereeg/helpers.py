@@ -887,7 +887,7 @@ def filter_subj(bo, measure='kurtosis', return_locs=False, threshold=10):
     if not meta is None:
         thresh_bool = kurt_vals > threshold
         if sum(~thresh_bool) < 2:
-            print(meta + ': not enough electrodes pass threshold')
+            print(str(meta) + ': not enough electrodes pass threshold')
 
         else:
             if return_locs:
