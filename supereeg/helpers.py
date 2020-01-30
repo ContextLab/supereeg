@@ -19,7 +19,7 @@ import nibabel as nib
 import hypertools as hyp
 import shutil
 import warnings
-import skimage
+from skimage import transform
 
 import io
 from PIL import Image
@@ -147,7 +147,7 @@ def _resample_nii(x, target_res, precision=5):
     # z = skimage.transform.rescale(x.get_data(), scale, order=3, mode='constant', cval=0, anti_aliasing=True,
     #                                multichannel=False)
 
-    z = skimage.transform.downscale_local_mean(x.get_data(), tuple(np.array(np.reciprocal(scale), dtype='int')),
+    z = transform.downscale_local_mean(x.get_data(), tuple(np.array(np.reciprocal(scale), dtype='int')),
                                           cval=float(0))
 
     try:
