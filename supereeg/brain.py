@@ -1,16 +1,16 @@
-from __future__ import division
-from __future__ import print_function
-import time
-import os
-import warnings
 import copy
-import six
-import numpy as np
-import pandas as pd
-import nibabel as nib
 import deepdish as dd
 import matplotlib.pyplot as plt
-
+import nibabel as nib
+import numbers
+import numpy as np
+import os
+import pandas as pd
+import six
+import time
+import warnings
+from __future__ import division
+from __future__ import print_function
 from .helpers import _kurt_vals, _normalize_Y, _vox_size, _resample, _plot_locs_connectome, \
     _plot_locs_hyp, _std, _gray, _nifti_to_brain, _brain_to_nifti, _z_score
 
@@ -148,7 +148,7 @@ class Brain(object):
             else:
                 self.locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
 
-            if isinstance(sessions, str) or isinstance(sessions, int):
+            if isinstance(sessions, str) or isinstance(sessions, numbers.Integral):
                 self.sessions = pd.Series([sessions for i in range(self.data.shape[0])])
 
             elif sessions is None:
@@ -342,9 +342,9 @@ class Brain(object):
             sample_inds = list(self.get_data().index)
         if loc_inds is None:
             loc_inds = list(self.get_locs().index)
-        if isinstance(sample_inds, int):
+        if isinstance(sample_inds, numbers.Integral):
             sample_inds = [sample_inds]
-        if isinstance(loc_inds, int):
+        if isinstance(loc_inds, numbers.Integral):
             loc_inds = [loc_inds]
 
         data = self.get_data().iloc[sample_inds, loc_inds].reset_index(drop=True)
