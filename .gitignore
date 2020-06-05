@@ -5,6 +5,7 @@ __pycache__/
 
 # C extensions
 *.so
+*.cu
 
 # Distribution / packaging
 supereeg/data/gray_mask_6mm_brain.mo
@@ -114,3 +115,4 @@ tests/model_algebra.py
 /tests/model_algebra.py
 /tests/model_tests.py
 dbg.py
+test.py

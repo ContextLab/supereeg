@@ -366,24 +366,13 @@ def tal2mni(r):
 
     return np.round(inpoints[0:3, :].T, decimals=2)
 
-
 def _blur_corrmat_pycuda(Z, Zp, weights):
-
     import pycuda.autoinit
     import pycuda.driver as cuda
-
-    # cuda.init()
-    # dvc = cuda.Device(0)
-    # ctx_flags = cuda.ctx_flags()
-    # ctx = dvc.make_context(flags=ctx_flags.SCHED_BLOCKING_SYNC)
-
     from pycuda import gpuarray
     from pycuda.compiler import SourceModule
 
     mod = SourceModule('''
-      #include <math.h>
-
-
       __global__ void blur_gpu(float *w, float *kp, float *kn,
                                float *weights, float *Zp, float *lzp,
                                float *lzn, int *matches,
@@ -485,9 +474,7 @@ def _blur_corrmat_pycuda(Z, Zp, weights):
              block=block, grid=grid)
 
     W  = np.zeros([n, n])
-    # W_intermediate = np.zeros(w_gpu.shape)
-    # cuda.memcpy_dtoh(W_intermediate, w_gpu)
-    W[wtx, wty] = w_gpu.get()  # W_intermediate
+    W[wtx, wty] = w_gpu.get()
 
     K_pos = np.zeros([n, n])
     K_pos[wtx, wty] = kp_gpu.get()
@@ -499,10 +486,173 @@ def _blur_corrmat_pycuda(Z, Zp, weights):
     K_neg.real[np.isnan(K_neg)] = 0
     K = K_pos + K_neg
 
-    # ctx.pop()
-
     return K + K.T, W + W.T
 
+def _blur_corrmat_cupy(Z, Zp, weights):
+    import cupy as cp
+    f = open("og_blur.cu")
+    blur = f.read()
+    f.close()
+    blur_gpu = cp.RawKernel(blur, "blur")
+
+    Z = cp.asarray(Z)
+    Zp = cp.asarray(Zp)
+    weights = cp.asarray(weights)
+    n           = weights.shape[0]
+    wtx, wty    = np.triu_indices(n, k=1)
+    ktx, kty    = np.triu_indices(Z.shape[0], k=1)
+    triu_inds   = np.triu_indices(Z.shape[0], k=1)
+    sign_Z_full = cp.sign(Z)
+    sign_Z      = sign_Z_full[triu_inds]
+    logZ_pos    = cp.log(cp.multiply(sign_Z > 0, Z[triu_inds]))
+    logZ_neg    = cp.log(cp.multiply(sign_Z < 0, cp.abs(Z[triu_inds])))
+    wclose      = cp.isclose(weights, 0).sum(axis=1)
+    matches     = cp.triu(np.outer(wclose, wclose)).astype(bool)
+
+    n_wt        = len(wtx)
+    n_kt        = len(ktx)
+    w_n_rows    = cp.int32(weights.shape[0])
+    w_n_cols    = cp.int32(weights.shape[1])
+
+    w_gpu       = cp.zeros(n_wt, np.float32)
+    kp_gpu      = cp.zeros(n_wt, np.float32)
+    kn_gpu      = cp.zeros(n_wt, np.float32)
+
+    weights_gpu = cp.asarray(weights.astype(np.float32))
+    Zp_gpu      = cp.asarray(Zp.astype(np.float32))
+    lzp_gpu     = cp.asarray(logZ_pos.astype(np.float32))
+    lzn_gpu     = cp.asarray(logZ_neg.astype(np.float32))
+    matches_gpu = cp.asarray(matches.astype(np.int32))
+
+    wtx_gpu     = cp.asarray(wtx.astype(np.int32))
+    wty_gpu     = cp.asarray(wty.astype(np.int32))
+    ktx_gpu     = cp.asarray(ktx.astype(np.int32))
+    kty_gpu     = cp.asarray(kty.astype(np.int32))
+
+    block_len = np.int(min(n_wt, 1024))
+    block = (block_len, 1, 1)
+    num_blocks = np.int(np.ceil(n_wt / block_len))
+    grid = (num_blocks, 1, 1)
+    blur_gpu(grid,block,(w_gpu, kp_gpu, kn_gpu, weights_gpu, Zp_gpu,
+             lzp_gpu, lzn_gpu, matches_gpu, w_n_rows, w_n_cols,
+             wtx_gpu, wty_gpu, n_wt, ktx_gpu, kty_gpu, n_kt))
+
+    W  = cp.zeros([n, n])
+    W[wtx, wty] = w_gpu 
+
+    K_pos = cp.zeros([n, n])
+    K_pos[wtx, wty] = kp_gpu 
+
+    K_neg = cp.zeros([n, n])
+    K_neg[wtx, wty] = kn_gpu 
+
+    K_neg = cp.multiply(0+1j, K_neg)
+    K_neg.real[cp.isnan(K_neg)] = 0
+    K = K_pos + K_neg
+
+    return cp.asnumpy(K + K.T), cp.asnumpy(W + W.T)
+
+def _blur_corrmat_cupy_streams(Z, Zp, weights, block_size=1024):
+    import cupy as cp
+    from .kernel import blur
+
+    blur = f"#define BLOCKSIZE {block_size}" + blur
+    bigReduce = cp.RawKernel(blur, "bigReduce")
+    outerTriagSum = cp.RawKernel(blur, "outerTriagSum")
+    logAndAdd = cp.RawKernel(blur, "logAndAdd")
+
+    Z = cp.asarray(Z)
+    Zp = cp.asarray(Zp)
+    weights = cp.asarray(weights)
+    n           = weights.shape[0]
+    wtx, wty    = np.triu_indices(n, k=1)
+    ktx, kty    = np.triu_indices(Z.shape[0], k=1)
+    triu_inds   = np.triu_indices(Z.shape[0], k=1)
+    sign_Z_full = cp.sign(Z)
+    sign_Z      = sign_Z_full[triu_inds]
+    logZ_pos    = cp.log(cp.multiply(sign_Z > 0, Z[triu_inds]))
+    logZ_neg    = cp.log(cp.multiply(sign_Z < 0, cp.abs(Z[triu_inds])))
+    wclose      = cp.isclose(weights, 0).sum(axis=1)
+    matches     = cp.triu(np.outer(wclose, wclose)).astype(bool).flatten()
+
+    n_wt        = len(wtx)
+    n_kt        = len(ktx)
+    w_n_rows    = cp.int32(weights.shape[0])
+    w_n_cols    = cp.int32(weights.shape[1])
+
+    w_gpu       = cp.zeros(n_wt, np.float32)
+    kp_gpu      = cp.zeros(n_wt, np.float32)
+    kn_gpu      = cp.zeros(n_wt, np.float32)
+
+    weights_gpu = cp.asarray(weights.astype(np.float32))
+    Zp_gpu      = cp.asarray(Zp.astype(np.float32))
+    lzp_gpu     = cp.asarray(logZ_pos.astype(np.float32))
+    lzn_gpu     = cp.asarray(logZ_neg.astype(np.float32))
+
+    ktx_gpu     = cp.asarray(ktx.astype(np.int32))
+    kty_gpu     = cp.asarray(kty.astype(np.int32))
+
+    streams = []
+
+    Zp = Zp.flatten()
+
+    def float32(x):
+        return np.float32(cp.asnumpy(x) + 0.)
+    
+    maxes = cp.zeros(n_wt).astype(np.float32)
+
+    for i in range(n_wt):
+        x = wtx[i]
+        y = wty[i]
+
+        if matches[x * w_n_rows + y]:
+            zval = Zp[x*w_n_rows + y]
+            if zval > 0:
+                kp_gpu[i] = float32(zval)
+                kn_gpu[i] = 0
+            else:
+                kp_gpu[i] = 0
+                kn_gpu[i] = float32(cp.abs(zval))
+        else:
+            num_blocks = np.int(np.ceil(n_kt / block_size))
+            block = (block_size, 1, 1)
+            grid = (num_blocks, 1, 1)
+            xwt = weights_gpu[x,:]
+            ywt = weights_gpu[y,:]
+            w_ptr = w_gpu[i]
+            kp_ptr = kp_gpu[i]
+            kn_ptr = kn_gpu[i]
+            stream = cp.cuda.stream.Stream()
+            streams.append(stream)
+            with stream:
+                nweights = cp.zeros(n_kt).astype(np.float32)
+                outerTriagSum(grid, block, (xwt, ywt, nweights, ktx_gpu, kty_gpu, n_kt))
+                m = float32(cp.max(nweights))
+                maxes[i] = m
+                bigReduce(grid, block, (lzp_gpu, lzn_gpu, nweights, n_kt, kp_ptr, kn_ptr, w_ptr, m))
+
+    for stream in streams:
+        stream.synchronize()
+
+    num_blocks = np.int(np.ceil(n_wt / block_size))
+    block = (block_size, 1, 1)
+    grid = (num_blocks, 1, 1)
+    logAndAdd(grid, block, (kp_gpu, kn_gpu, w_gpu, maxes, n_wt))
+
+    W  = cp.zeros([n, n]).astype(np.float32)
+    W[wtx, wty] = w_gpu 
+
+    K_pos = cp.zeros([n, n]).astype(np.float32)
+    K_pos[wtx, wty] = kp_gpu 
+
+    K_neg = cp.zeros([n, n]).astype(np.float32)
+    K_neg[wtx, wty] = kn_gpu 
+
+    K_neg = cp.multiply(0+1j, K_neg)
+    K_neg.real[cp.isnan(K_neg)] = 0
+    K = K_pos + K_neg
+
+    return cp.asnumpy(K + K.T), cp.asnumpy(W + W.T)
 
 def _blur_corrmat(Z, Zp, weights, gpu):
     """
@@ -527,7 +677,8 @@ def _blur_corrmat(Z, Zp, weights, gpu):
         Denominator for the expanded correlation matrix
     """
     if gpu:
-        return _blur_corrmat_pycuda(Z, Zp, weights)
+        return _blur_corrmat_cupy_streams(Z, Zp, weights)
+        
     triu_inds = np.triu_indices(Z.shape[0], k=1)
 
     #need to do computations separately for positive and negative values
