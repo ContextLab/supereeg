@@ -116,3 +116,7 @@ tests/model_algebra.py
 /tests/model_tests.py
 dbg.py
 test.py
+
+/*.ipynb
+/profiles
+stats.py

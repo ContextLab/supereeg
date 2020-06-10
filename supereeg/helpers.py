@@ -493,7 +493,7 @@ def _blur_corrmat_cupy(Z, Zp, weights):
     f = open("og_blur.cu")
     blur = f.read()
     f.close()
-    blur_gpu = cp.RawKernel(blur, "blur")
+    blur_gpu = cp.RawKernel(blur, "blur",options=('-rdc=true',))
 
     Z = cp.asarray(Z)
     Zp = cp.asarray(Zp)
@@ -518,8 +518,8 @@ def _blur_corrmat_cupy(Z, Zp, weights):
     kp_gpu      = cp.zeros(n_wt, np.float32)
     kn_gpu      = cp.zeros(n_wt, np.float32)
 
-    weights_gpu = cp.asarray(weights.astype(np.float32))
-    Zp_gpu      = cp.asarray(Zp.astype(np.float32))
+    weights_gpu = cp.asarray(weights.astype(np.float32))#.flatten()
+    Zp_gpu      = cp.asarray(Zp.astype(np.float32))#.flatten()
     lzp_gpu     = cp.asarray(logZ_pos.astype(np.float32))
     lzn_gpu     = cp.asarray(logZ_neg.astype(np.float32))
     matches_gpu = cp.asarray(matches.astype(np.int32))
@@ -529,22 +529,25 @@ def _blur_corrmat_cupy(Z, Zp, weights):
     ktx_gpu     = cp.asarray(ktx.astype(np.int32))
     kty_gpu     = cp.asarray(kty.astype(np.int32))
 
+    maxes = cp.full(n_wt, -100000, cp.int32)
+
     block_len = np.int(min(n_wt, 1024))
+    block_len = 512
     block = (block_len, 1, 1)
     num_blocks = np.int(np.ceil(n_wt / block_len))
     grid = (num_blocks, 1, 1)
     blur_gpu(grid,block,(w_gpu, kp_gpu, kn_gpu, weights_gpu, Zp_gpu,
              lzp_gpu, lzn_gpu, matches_gpu, w_n_rows, w_n_cols,
-             wtx_gpu, wty_gpu, n_wt, ktx_gpu, kty_gpu, n_kt))
+             wtx_gpu, wty_gpu, n_wt, ktx_gpu, kty_gpu, maxes, n_kt))
 
     W  = cp.zeros([n, n])
-    W[wtx, wty] = w_gpu 
+    W[wtx, wty] = w_gpu
 
     K_pos = cp.zeros([n, n])
-    K_pos[wtx, wty] = kp_gpu 
+    K_pos[wtx, wty] = kp_gpu
 
     K_neg = cp.zeros([n, n])
-    K_neg[wtx, wty] = kn_gpu 
+    K_neg[wtx, wty] = kn_gpu
 
     K_neg = cp.multiply(0+1j, K_neg)
     K_neg.real[cp.isnan(K_neg)] = 0
@@ -552,14 +555,13 @@ def _blur_corrmat_cupy(Z, Zp, weights):
 
     return cp.asnumpy(K + K.T), cp.asnumpy(W + W.T)
 
-def _blur_corrmat_cupy_streams(Z, Zp, weights, block_size=1024):
+def _blur_corrmat_cupy_gridstride(Z, Zp, weights, block_size=512):
     import cupy as cp
-    from .kernel import blur
-
-    blur = f"#define BLOCKSIZE {block_size}" + blur
-    bigReduce = cp.RawKernel(blur, "bigReduce")
-    outerTriagSum = cp.RawKernel(blur, "outerTriagSum")
-    logAndAdd = cp.RawKernel(blur, "logAndAdd")
+    f = open("gridstride.cu")
+    blur = f'#define BLOCKSIZE {block_size}' + f.read()
+    f.close()
+    blur_gpu = cp.RawKernel(blur, "blur")
+    get_maxes = cp.RawKernel(blur, "arrmax")
 
     Z = cp.asarray(Z)
     Zp = cp.asarray(Zp)
@@ -573,7 +575,7 @@ def _blur_corrmat_cupy_streams(Z, Zp, weights, block_size=1024):
     logZ_pos    = cp.log(cp.multiply(sign_Z > 0, Z[triu_inds]))
     logZ_neg    = cp.log(cp.multiply(sign_Z < 0, cp.abs(Z[triu_inds])))
     wclose      = cp.isclose(weights, 0).sum(axis=1)
-    matches     = cp.triu(np.outer(wclose, wclose)).astype(bool).flatten()
+    matches     = cp.triu(np.outer(wclose, wclose)).astype(bool)
 
     n_wt        = len(wtx)
     n_kt        = len(ktx)
@@ -584,69 +586,34 @@ def _blur_corrmat_cupy_streams(Z, Zp, weights, block_size=1024):
     kp_gpu      = cp.zeros(n_wt, np.float32)
     kn_gpu      = cp.zeros(n_wt, np.float32)
 
-    weights_gpu = cp.asarray(weights.astype(np.float32))
-    Zp_gpu      = cp.asarray(Zp.astype(np.float32))
+    weights_gpu = cp.asarray(weights.astype(np.float32))#.flatten()
+    Zp_gpu      = cp.asarray(Zp.astype(np.float32))#.flatten()
     lzp_gpu     = cp.asarray(logZ_pos.astype(np.float32))
     lzn_gpu     = cp.asarray(logZ_neg.astype(np.float32))
+    matches_gpu = cp.asarray(matches)
 
+    wtx_gpu     = cp.asarray(wtx.astype(np.int32))
+    wty_gpu     = cp.asarray(wty.astype(np.int32))
     ktx_gpu     = cp.asarray(ktx.astype(np.int32))
     kty_gpu     = cp.asarray(kty.astype(np.int32))
 
-    streams = []
+    maxes = cp.zeros(n_wt).astype(cp.float32)
 
-    Zp = Zp.flatten()
-
-    def float32(x):
-        return np.float32(cp.asnumpy(x) + 0.)
-    
-    maxes = cp.zeros(n_wt).astype(np.float32)
-
-    for i in range(n_wt):
-        x = wtx[i]
-        y = wty[i]
-
-        if matches[x * w_n_rows + y]:
-            zval = Zp[x*w_n_rows + y]
-            if zval > 0:
-                kp_gpu[i] = float32(zval)
-                kn_gpu[i] = 0
-            else:
-                kp_gpu[i] = 0
-                kn_gpu[i] = float32(cp.abs(zval))
-        else:
-            num_blocks = np.int(np.ceil(n_kt / block_size))
-            block = (block_size, 1, 1)
-            grid = (num_blocks, 1, 1)
-            xwt = weights_gpu[x,:]
-            ywt = weights_gpu[y,:]
-            w_ptr = w_gpu[i]
-            kp_ptr = kp_gpu[i]
-            kn_ptr = kn_gpu[i]
-            stream = cp.cuda.stream.Stream()
-            streams.append(stream)
-            with stream:
-                nweights = cp.zeros(n_kt).astype(np.float32)
-                outerTriagSum(grid, block, (xwt, ywt, nweights, ktx_gpu, kty_gpu, n_kt))
-                m = float32(cp.max(nweights))
-                maxes[i] = m
-                bigReduce(grid, block, (lzp_gpu, lzn_gpu, nweights, n_kt, kp_ptr, kn_ptr, w_ptr, m))
-
-    for stream in streams:
-        stream.synchronize()
-
-    num_blocks = np.int(np.ceil(n_wt / block_size))
     block = (block_size, 1, 1)
-    grid = (num_blocks, 1, 1)
-    logAndAdd(grid, block, (kp_gpu, kn_gpu, w_gpu, maxes, n_wt))
+    num_blocks = np.int(np.ceil(n_wt / block_size))
+    grid = (n_wt, 1, 1)
 
-    W  = cp.zeros([n, n]).astype(np.float32)
-    W[wtx, wty] = w_gpu 
+    get_maxes(grid, block, (weights_gpu, maxes, matches_gpu, wtx_gpu, wty_gpu, ktx_gpu, kty_gpu, w_n_rows, w_n_cols, n_kt))
+    blur_gpu(grid,block,(lzp_gpu, lzn_gpu, weights_gpu, Zp_gpu, wtx_gpu, wty_gpu, ktx_gpu, kty_gpu, kp_gpu, kn_gpu, w_gpu, maxes, w_n_rows, w_n_cols, n_kt))
 
-    K_pos = cp.zeros([n, n]).astype(np.float32)
-    K_pos[wtx, wty] = kp_gpu 
+    W  = cp.zeros([n, n])
+    W[wtx, wty] = w_gpu
 
-    K_neg = cp.zeros([n, n]).astype(np.float32)
-    K_neg[wtx, wty] = kn_gpu 
+    K_pos = cp.zeros([n, n])
+    K_pos[wtx, wty] = kp_gpu
+
+    K_neg = cp.zeros([n, n])
+    K_neg[wtx, wty] = kn_gpu
 
     K_neg = cp.multiply(0+1j, K_neg)
     K_neg.real[cp.isnan(K_neg)] = 0
@@ -677,8 +644,8 @@ def _blur_corrmat(Z, Zp, weights, gpu):
         Denominator for the expanded correlation matrix
     """
     if gpu:
-        return _blur_corrmat_cupy_streams(Z, Zp, weights)
-        
+        return _blur_corrmat_cupy_gridstride(Z, Zp, weights)
+
     triu_inds = np.triu_indices(Z.shape[0], k=1)
 
     #need to do computations separately for positive and negative values
@@ -882,7 +849,7 @@ def _timeseries_recon(bo, mo, chunk_size=25000, preprocess='zscore', recon_loc_i
         model_locs_in_brain.extend([True]*mo.get_locs().shape[0])
 
         rbf_weights = _log_rbf(combined_locs, mo.get_locs())
-        
+
         from .model import _recover_model #deferred import to remove circular dependency
         Z = _recover_model(*_blur_corrmat(Z, rbf_weights, mo.gpu), z_transform=True)
 

@@ -395,7 +395,7 @@ class Model(object):
 
         assert m1.meta['stable']==True, 'solution unstable'
 
-        m2 = Model(data)
+        m2 = Model(data, gpu=self.gpu)
         locs = _union(m1.get_locs(), m2.get_locs())
 
         m1.set_locs(locs)
