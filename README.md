@@ -27,21 +27,10 @@ To install the latest (bleeding edge) version directly from this repository use:
 
 `pip install --upgrade git+https://github.com/ContextLab/supereeg.git`
 
-<h3>Installing PyCUDA for GPU acceleration</h3>
+<h3>GPU acceleration</h3>
 
-This is *highly* recommended if using SuperEEG for timeseries reconstruction, as it makes these computations significantly faster. However, using PyCUDA requires an NVIDIA GPU.
-
-<h4>Installing on Windows</h4>
-
- 1. Install [CUDA](https://developer.nvidia.com/cuda-downloads)
- 2. Install [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/)
- 3. Add `C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\FIND YOUR VERSION #\bin\Hostx64\x64` or `C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\FIND YOUR VERSION #\bin\Hostx86\x86` to PATH, depending on your system architecture
- 4. Get the PyCUDA [binary](https://www.lfd.uci.edu/~gohlke/pythonlibs/#pycuda)
- 5. `pip install pycuda_whichever_binary.whl`
-
-<h4>Installing on Mac or Linux</h4>
-
-https://wiki.tiker.net/PyCuda/Installation/
+This is *highly* recommended if you are building your own models. Only NVIDIA GPUs are supported.
+To enable GPU acceleration for building models, pass `gpu=True` to `se.Model`, and install [CuPy](https://docs-cupy.chainer.org/en/stable/install.html). 
 
 <h3>One time setup</h3>
 
@@ -93,29 +82,30 @@ Dependencies:
 
 <h2>Citing</h2>
 
-We wrote a paper about supereeg, which you can read [here](http://biorxiv.org/content/early/2017/03/27/121020).  The paper provides full details about the approach along with some performance tests an a large ECoG dataset.  If you use this toolbox or wish to cite us, please use the following citation:
+We wrote a paper about supereeg, which you can read [here](https://doi.org/10.1093/cercor/bhaa115).  The paper provides full details about the approach along with some performance tests an a large ECoG dataset.  If you use this toolbox or wish to cite us, please use the following citation:
 
-`Owen LLW and Manning JR (2017) Towards Human Super EEG.  bioRxiv: 121020`
+`Lucy L W Owen, Tudor A Muntianu, Andrew C Heusser, Patrick M Daly, Katherine W Scangos, Jeremy R Manning, A Gaussian Process Model of Human Electrocorticographic Data, Cerebral Cortex, , bhaa115, https://doi.org/10.1093/cercor/bhaa115`
 
 Here is a bibtex formatted reference:
 
 ```
-@article {Owen121020,
-	author = {Owen, Lucy L. W. and Manning, Jeremy R.},
-	title = {Towards Human Super EEG},
-	year = {2017},
-	doi = {10.1101/121020},
-	publisher = {Cold Spring Harbor Labs Journals}
-	URL = {http://biorxiv.org/content/early/2017/03/27/121020},
-	eprint = {http://biorxiv.org/content/early/2017/03/27/121020.full.pdf},
-	journal = {bioRxiv}
+@article{10.1093/cercor/bhaa115,
+    author = {Owen, Lucy L W and Muntianu, Tudor A and Heusser, Andrew C and Daly, Patrick M and Scangos, Katherine W and Manning, Jeremy R},
+    title = "{A Gaussian Process Model of Human Electrocorticographic Data}",
+    journal = {Cerebral Cortex},
+    year = {2020},
+    month = {06},
+    issn = {1047-3211},
+    doi = {10.1093/cercor/bhaa115},
+    url = {https://doi.org/10.1093/cercor/bhaa115},
+    note = {bhaa115},
+    eprint = {https://academic.oup.com/cercor/advance-article-pdf/doi/10.1093/cercor/bhaa115/33344231/bhaa115.pdf},
 }
-
 ```
 
 <h2>Contributing</h2>
 
-Thanks for considering adding to our toolbox!  Some text below hoas been borrowed from the [Matplotlib contributing guide](http://matplotlib.org/devdocs/devel/contributing.html).
+Thanks for considering adding to our toolbox!  Some text below has been borrowed from the [Matplotlib contributing guide](http://matplotlib.org/devdocs/devel/contributing.html).
 
 <h3>Submitting a bug report</h3>
 
