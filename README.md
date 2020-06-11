@@ -77,7 +77,7 @@ Dependencies:
 + imageio
 + hypertools
 + scikit-image
-+ pycuda (HIGHLY RECOMEMNDED for GPU acceleration)
++ cupy (HIGHLY RECOMMENDED for GPU acceleration)
 + pytest (for development)
 
 <h2>Citing</h2>
