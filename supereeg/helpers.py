@@ -573,7 +573,9 @@ def _blur_corrmat(Z, Zp, weights, gpu):
         Denominator for the expanded correlation matrix
     """
     if gpu:
-        return _blur_corrmat_cupy(Z, Zp, weights)
+        return _blur_corrmat_cpu(Z, Zp, weights)
+    # else:
+    #     return _blur_corrmat_cpu(Z, Zp, weights)
 
     triu_inds = np.triu_indices(Z.shape[0], k=1)
 
@@ -624,6 +626,81 @@ def _blur_corrmat(Z, Zp, weights, gpu):
 
     return K + K.T, W + W.T
 
+def _blur_corrmat_cpu(Z, Zp, weights):
+    """
+    Gets full correlation matrix
+
+    Parameters
+    ----------
+    Z : Numpy array
+        Subject's Fisher z-transformed correlation matrix
+
+    Zp : Numpy array, Subject's correlation matrix zero padded to the full
+               electrode locations
+
+    weights : Numpy array
+        Weights matrix calculated using _log_rbf function matrix
+
+    Returns
+    ----------
+    numerator : Numpy array
+        Numerator for the expanded correlation matrix
+    denominator : Numpy array
+        Denominator for the expanded correlation matrix
+    """
+    triu_inds = np.triu_indices(Z.shape[0], k=1)
+
+    #need to do computations separately for positive and negative values
+    sign_Z_full = np.sign(Z)
+    sign_Z = sign_Z_full[triu_inds]
+    logZ_pos = np.log(np.multiply(sign_Z > 0, Z[triu_inds]))
+    logZ_neg = np.log(np.multiply(sign_Z < 0, np.abs(Z[triu_inds])))
+
+    n = weights.shape[0]
+    wtx, wty = np.triu_indices(n, k=1)
+    ktx, kty = np.triu_indices(Z.shape[0], k=1)
+    n_kt = len(ktx)
+
+    K_pos = np.zeros([n, n])
+    K_neg = np.zeros([n, n])
+    W = np.zeros([n, n])
+
+    wclose = np.isclose(weights, 0).sum(axis=1)
+    matches = np.triu(np.outer(wclose, wclose)).astype(bool)
+
+    for i in range(len(wtx)):
+        x = wtx[i]
+        y = wty[i]
+        xweights = weights[x, :]
+        yweights = weights[y, :]
+
+        if matches[x,y]:
+            Z_match_val = Zp[x, y]
+            W[x, y] = 0.
+            if Z_match_val > 0:
+                K_pos[x, y] = np.log(Z_match_val)
+                K_neg[x, y] = -np.inf
+            else:
+                K_pos[x, y] = -np.inf
+                K_neg[x, y] = np.log(np.abs(Z_match_val))
+            continue
+
+        next_weights = xweights[ktx] + yweights[kty]
+        m = np.max(next_weights)
+        if not np.isfinite(m): m = 0
+        W[x, y] = np.log(np.sum(np.exp(next_weights - m))) + m
+        K_pos[x, y] = np.log(np.sum(np.exp(logZ_pos + next_weights - m))) + m
+        K_neg[x, y] = np.log(np.sum(np.exp(logZ_neg + next_weights - m))) + m
+
+
+    #turn K_neg into complex numbers.  Where K_neg is infinite, this results in nans for the real number parts, so we'll
+    #set any nans in K_neg.real to 0
+    #TODO: the next lines are redundant with code in _to_log_complex; consolidate
+    K_neg = np.multiply(0+1j, K_neg)
+    K_neg.real[np.isnan(K_neg)] = 0
+    K = K_pos + K_neg
+
+    return K + K.T, W + W.T
 
 def _zero_pad_corrmat(Z, locs, _full_locs):
     '''
