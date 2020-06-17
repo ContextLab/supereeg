@@ -387,7 +387,8 @@ def _blur_corrmat_cupy(Z, Zp, weights, block_size=1024):
     lzp = cp.log(cp.multiply(sign_Z > 0, Z[triu_inds]))
     lzn = cp.log(cp.multiply(sign_Z < 0, cp.abs(Z[triu_inds])))
     wclose = cp.isclose(weights, 0).sum(axis=1)
-    matches = cp.triu(np.outer(wclose, wclose)).astype(bool)
+    wclose_h = cp.asnumpy(wclose)
+    matches = cp.triu(np.outer(wclose_h, wclose_h)).astype(bool)
 
     n_wt = len(wtx)
     n_kt = len(ktx)
@@ -474,9 +475,7 @@ def _blur_corrmat(Z, Zp, weights, gpu):
     wclose = np.isclose(weights, 0).sum(axis=1)
     matches = np.triu(np.outer(wclose, wclose)).astype(bool)
 
-    for i in range(len(wtx)):
-        x = wtx[i]
-        y = wty[i]
+    for x, y in zip(wtx, wty):
         xweights = weights[x, :]
         yweights = weights[y, :]
 
