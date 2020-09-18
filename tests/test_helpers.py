@@ -39,7 +39,7 @@ bo_full = se.simulate_bo(n_samples=10, sessions=2, sample_rate=10, locs=locs)
 # create brain object from subset of locations
 sub_locs = bo_full.locs.iloc[6:]
 sub_data = bo_full.data.iloc[:, sub_locs.index]
-bo = se.Brain(data=sub_data.as_matrix(), sessions=bo_full.sessions, locs=sub_locs, sample_rate=10,
+bo = se.Brain(data=sub_data.values, sessions=bo_full.sessions, locs=sub_locs, sample_rate=10,
               meta={'brain object locs sampled': 2})
 # simulate correlation matrix
 data = [se.simulate_model_bos(n_samples=10, locs=locs, sample_locs=n_elecs) for x in range(n_subs)]
@@ -157,7 +157,7 @@ def test_reconstruct():
 
     # actual_test: the true data
     # recon_test: the reconstructed data (using Model.predict)
-    corr_vals = _corr_column(actual_test.as_matrix(), recon_test.data.as_matrix())
+    corr_vals = _corr_column(actual_test.values, recon_test.data.values)
     assert np.all(corr_vals[~np.isnan(corr_vals)] <= 1) and np.all(corr_vals[~np.isnan(corr_vals)] >= -1)
 
 def test_filter_elecs():
@@ -229,7 +229,7 @@ def test_resample():
     assert samp_rate==[8,8]
 
 def test_nifti_to_brain():
-    b_d, b_l, b_h = _nifti_to_brain(_gray(20))
+    b_d, b_l, b_h, affine = _nifti_to_brain(_gray(20))
     assert isinstance(b_d, np.ndarray)
     assert isinstance(b_l, np.ndarray)
     assert isinstance(b_h, dict)
@@ -240,7 +240,7 @@ def test_brain_to_nifti():
 
 def test_bo_nii_bo():
     nii = _brain_to_nifti(bo, _gray(20))
-    b_d, b_l, b_h =_nifti_to_brain(nii)
+    b_d, b_l, b_h, affine =_nifti_to_brain(nii)
     assert np.allclose(bo.get_locs(), b_l)
 
 def test_nii_bo_nii():

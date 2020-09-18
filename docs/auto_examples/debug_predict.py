@@ -168,16 +168,16 @@ from scipy.stats import zscore
 #
 #
 #     """
-#     file_inds = np.unique(np.atleast_2d(bo.sessions.as_matrix()))
+#     file_inds = np.unique(np.atleast_2d(bo.sessions.values))
 #     Kaa = np.float32(ave_data[known_inds, :][:, known_inds])
 #     Kaa_inv = np.linalg.pinv(Kaa)
 #     Kba = np.float32(ave_data[unknown_inds, :][:, known_inds])
 #     results = []
 #     for i in file_inds:
-#         if np.shape(np.atleast_2d(bo.sessions.as_matrix()))[1] == 1:
-#             fname_labels = np.atleast_2d(bo.sessions.as_matrix()).T
+#         if np.shape(np.atleast_2d(bo.sessions.values))[1] == 1:
+#             fname_labels = np.atleast_2d(bo.sessions.values).T
 #         else:
-#             fname_labels = np.atleast_2d(bo.sessions.as_matrix())
+#             fname_labels = np.atleast_2d(bo.sessions.values)
 #         next_inds = np.where(fname_labels == i)[1]
 #         ### this code should incorporate the average voltage of the known (subject) electrodes and the average for the unknown (the other subjects)
 #         block_results = []
@@ -187,8 +187,8 @@ from scipy.stats import zscore
 #
 #             next[:, unknown_inds] = np.squeeze(np.dot(np.dot(Kba, Kaa_inv),
 #                                                zscore(np.float32(
-#                                                    bo.get_data().as_matrix()[filter(lambda v: v is not None, each), :])).T).T)
-#             next[:, known_inds] = np.squeeze(zscore(np.float32(bo.get_data().as_matrix()[filter(lambda v: v is not None, each), :])))
+#                                                    bo.get_data().values[filter(lambda v: v is not None, each), :])).T).T)
+#             next[:, known_inds] = np.squeeze(zscore(np.float32(bo.get_data().values[filter(lambda v: v is not None, each), :])))
 #             if block_results==[]:
 #                 block_results = next
 #             else:
@@ -221,9 +221,9 @@ from scipy.stats import zscore
 #
 # Model = se.Model(data=bo, locs=locs)
 #
-# R = Model.get_locs().as_matrix()
+# R = Model.get_locs().values
 #
-# R_K_subj = bo_sample.get_locs().as_matrix()
+# R_K_subj = bo_sample.get_locs().values
 #
 # known_inds, unknown_inds = known_unknown(R, R_K_subj, R_K_subj)
 #
@@ -231,10 +231,10 @@ from scipy.stats import zscore
 #
 # recon_data = time_by_file_index_bo(bo_sample, Model.get_model(z_transform=False), known_inds, unknown_inds)
 #
-# bo_r = se.Brain(data=recon_data, locs = R, sample_rate=bo.sample_rate, sessions=bo.sessions.as_matrix())
+# bo_r = se.Brain(data=recon_data, locs = R, sample_rate=bo.sample_rate, sessions=bo.sessions.values)
 #
 #
-# corrs_1 = _corr_column(bo.get_data().as_matrix(), bo_r.get_data().as_matrix())
+# corrs_1 = _corr_column(bo.get_data().values, bo_r.get_data().values)
 #
 # print('correlations with timeseries recon  = ' + str(corrs_1[unknown_inds].mean()))
 #
@@ -243,7 +243,7 @@ from scipy.stats import zscore
 #
 # recon_labels = np.where(np.array(bo_s.label) != 'observed')
 #
-# corrs = _corr_column(bo.get_data().as_matrix(), bo_s.get_data().as_matrix())
+# corrs = _corr_column(bo.get_data().values, bo_s.get_data().values)
 #
 # print('correlations with predict function = ' + str(corrs[recon_labels].mean()))
 #
@@ -281,7 +281,7 @@ bo = se.simulate_bo(n_samples=1000, sample_rate=100, locs=locs, noise=noise, ran
 data = bo.data.iloc[:, sub_locs.index]
 
 # put data and locations together in new sample brain object
-bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=100)
+bo_sample = se.Brain(data=data.values, locs=sub_locs, sample_rate=100)
 
 # predict activity at all unknown locations
 recon = model.predict(bo_sample, nearest_neighbor=False)
@@ -292,7 +292,7 @@ recon_labels = np.where(np.array(recon.label) != 'observed')
 # actual = bo.data.iloc[:, unknown_ind]
 actual_data = bo.get_zscore_data()[:, recon_labels[0]]
 
-recon_data = recon[:, recon_labels[0]].get_data().as_matrix()
+recon_data = recon[:, recon_labels[0]].get_data().values
 corr_vals = _corr_column(actual_data, recon_data)
 
 print('case 1 (null set) correlation = ' +str(corr_vals.mean()))
@@ -331,7 +331,7 @@ bo = se.simulate_bo(n_samples=1000, sample_rate=100, locs=mo_locs, noise=noise, 
 data = bo.data.iloc[:, sub_locs.index]
 
 # put data and locations together in new sample brain object
-bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=100)
+bo_sample = se.Brain(data=data.values, locs=sub_locs, sample_rate=100)
 
 # predict activity at all unknown locations
 recon = model.predict(bo_sample, nearest_neighbor=False)
@@ -342,7 +342,7 @@ recon_labels = np.where(np.array(recon.label) != 'observed')
 # actual = bo.data.iloc[:, unknown_ind]
 actual_data = bo.get_zscore_data()[:, recon_labels[0]]
 
-recon_data = recon[:, recon_labels[0]].get_data().as_matrix()
+recon_data = recon[:, recon_labels[0]].get_data().values
 corr_vals = _corr_column(actual_data, recon_data)
 
 print('case 2 (subset of model) correlation = ' +str(corr_vals.mean()))
@@ -384,7 +384,7 @@ bo = se.simulate_bo(n_samples=1000, sample_rate=100, locs=locs, noise=noise, ran
 data = bo.data.iloc[:, sub_locs.index]
 
 # put data and locations together in new sample brain object
-bo_sample = se.Brain(data=data.as_matrix(), locs=sub_locs, sample_rate=100)
+bo_sample = se.Brain(data=data.values, locs=sub_locs, sample_rate=100)
 
 # predict activity at all unknown locations
 recon = model.predict(bo_sample, nearest_neighbor=False)
@@ -395,7 +395,7 @@ recon_labels = np.where(np.array(recon.label) != 'observed')
 # actual = bo.data.iloc[:, unknown_ind]
 actual_data = bo.get_zscore_data()[:, recon_labels[0]]
 
-recon_data = recon[:, recon_labels[0]].get_data().as_matrix()
+recon_data = recon[:, recon_labels[0]].get_data().values
 corr_vals = _corr_column(actual_data, recon_data)
 
 print('case 3 (some overlap of model) correlation = ' +str(corr_vals.mean()))
@@ -432,7 +432,7 @@ bo = se.simulate_bo(n_samples=1000, sample_rate=100, locs=locs, noise=noise, ran
 data = bo.data.iloc[:, bo_locs.index]
 
 # put data and locations together in new sample brain object
-bo_sample = se.Brain(data=data.as_matrix(), locs=bo_locs, sample_rate=100)
+bo_sample = se.Brain(data=data.values, locs=bo_locs, sample_rate=100)
 
 # predict activity at all unknown locations
 recon = model.predict(bo_sample, nearest_neighbor=False)
@@ -444,7 +444,7 @@ recon_labels = np.where(np.array(recon.label) != 'observed')
 # actual = bo.data.iloc[:, unknown_ind]
 actual_data = bo_sample.get_zscore_data()
 
-recon_data = recon.get_data().as_matrix()
+recon_data = recon.get_data().values
 corr_vals = _corr_column(actual_data, recon_data)
 
 print('case 4 (model subset of brain locs) correlation = ' +str(corr_vals.mean()))

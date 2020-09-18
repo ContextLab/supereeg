@@ -21,7 +21,7 @@ import supereeg as se
 bo = se.load('example_data')
 
 # load example model
-model = se.load('example_model')
+model = se.load('pyFR_k10r20_6mm')
 
 # the default will replace the electrode location with the nearest voxel and reconstruct at all other locations
 reconstructed_bo = model.predict(bo)
@@ -30,7 +30,9 @@ reconstructed_bo = model.predict(bo)
 reconstructed_bo.info()
 
 # convert to nifti
-reconstructed_nifti = reconstructed_bo.to_nii(template='gray', vox_size=20)
+reconstructed_nifti = reconstructed_bo.to_nii(template='gray', vox_size=6)
+before_nifti = bo.to_nii(template='gray', vox_size=6)
 
 # make gif, default time window is 0 to 10, but you can specifiy by setting a range with index
-# reconstructed_nifti.make_gif('/your/path/to/gif/', index=np.arange(100), name='sample_gif')
+reconstructed_nifti.make_gif('/home/tudor/gifs/', index=range(100), name='after')
+before_nifti.make_gif('/home/tudor/gifs/', index=range(100), name='before')
