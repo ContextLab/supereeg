@@ -3,6 +3,7 @@ import os
 import warnings
 import requests
 import numpy as np
+import pandas as pd
 import deepdish as dd
 from datetime import datetime
 from .brain import Brain
@@ -15,16 +16,18 @@ BASE_URL = 'https://docs.google.com/uc?export=download'
 homedir = os.path.expanduser('~')
 datadir = os.path.join(homedir, 'supereeg_data')
 
+
 datadict = { #TODO: do the data types need to be specified or could they be inferred from the downloaded objects?
-    'example_data' : ['1kijSKt-QLEZ1O3J5Pk-8aByn33bPCAFl', 'bo'],
-    'example_model' : ['1l4s7mE0KbPMmIcIA9JQzSZHCA8LWFq1I', 'mo'],
-    'example_nifti' : ['17VeBTruexTERwBjq1UvU6BbBRt0jkBzi', 'nii'],
-    'example_filter' : ['1eHcYg1idIK8y2LMLK_tqSxB7jI_l7OsL', 'bo'],
-    'std' : ['1P-WcEBVYnoMQAYhvSCf1BBMIDMe9VZIM', 'nii'],
-    'gray' : ['1a8wptBaMIFEl4j8TFhlTQVUAbyC0sN4p', 'nii'],
-    'pyFR_k10r20_20mm' : ['1l4s7mE0KbPMmIcIA9JQzSZHCA8LWFq1I', 'mo'],
-    'pyFR_k10r20_6mm' : ['1yH47fldoeuK0AQtOhMM-P2P0Dv_zH5G6', 'mo']
+    'example_data': ['1kijSKt-QLEZ1O3J5Pk-8aByn33bPCAFl', 'bo'],
+    'example_model': ['1l4s7mE0KbPMmIcIA9JQzSZHCA8LWFq1I', 'mo'],
+    'example_nifti': ['17VeBTruexTERwBjq1UvU6BbBRt0jkBzi', 'nii'],
+    'example_filter': ['1eHcYg1idIK8y2LMLK_tqSxB7jI_l7OsL', 'bo'],
+    'std': ['1P-WcEBVYnoMQAYhvSCf1BBMIDMe9VZIM', 'nii'],
+    'gray': ['1a8wptBaMIFEl4j8TFhlTQVUAbyC0sN4p', 'nii'],
+    'pyFR_k10r20_20mm': ['1l4s7mE0KbPMmIcIA9JQzSZHCA8LWFq1I', 'mo'],
+    'pyFR_k10r20_6mm': ['1yH47fldoeuK0AQtOhMM-P2P0Dv_zH5G6', 'mo']
 }
+
 
 def load(fname, vox_size=None, return_type=None, sample_inds=None,
          loc_inds=None, field=None):
@@ -98,7 +101,7 @@ def load(fname, vox_size=None, return_type=None, sample_inds=None,
         Data to be returned
 
     """
-    if field != None and (sample_inds!=None or loc_inds!=None):
+    if field is not None and (sample_inds is not None or loc_inds is not None):
         raise ValueError("Using both field and slicing currently not supported.")
 
     if fname in datadict.keys():
@@ -109,6 +112,7 @@ def load(fname, vox_size=None, return_type=None, sample_inds=None,
         return _convert(data, return_type, vox_size)
     else:
         return data
+
 
 def _convert(data, return_type, vox_size):
     """ Converts between bo, mo and nifti """
@@ -139,6 +143,9 @@ def _convert(data, return_type, vox_size):
 
 def _load_example(fname, fileid, sample_inds, loc_inds, field):
     """ Loads in dataset given a google file id """
+    # workaround for https://github.com/uchicago-cs/deepdish/issues/36
+    pd.io.pytables._tables()
+
     fullpath = os.path.join(homedir, 'supereeg_data', fname + '.' + fileid[1])
     if not os.path.exists(datadir):
         os.makedirs(datadir)
@@ -162,6 +169,7 @@ def _load_example(fname, fileid, sample_inds, loc_inds, field):
                                  ' /Users/homedir/supereeg_data.') #FIXME: use generic home directory reference rather than platform-specific path
     return data
 
+
 def _load_stream(fileid):
     """ Retrieve data from google drive """
     def _get_confirm_token(response):
@@ -178,11 +186,13 @@ def _load_stream(fileid):
         response = session.get(BASE_URL, params = params, stream = True)
     return response
 
+
 def _download(fname, data, ext):
     """ Download data to cache """
     fullpath = os.path.join(homedir, 'supereeg_data', fname)
     with open(fullpath + '.' + ext, 'wb') as f:
         f.write(data.content)
+
 
 def _load_from_path(fpath, sample_inds=None, loc_inds=None, field=None):
     """ Load a file from a local path """
@@ -207,16 +217,17 @@ def _load_from_path(fpath, sample_inds=None, loc_inds=None, field=None):
     else:
         raise ValueError("Filetype not recognized. Must be .bo, .mo or .nii.")
 
+
 def _load_from_cache(fname, ftype, sample_inds=None, loc_inds=None, field=None):
     """ Load a file from local data cache """
     fullpath = os.path.join(homedir, 'supereeg_data', fname + '.' + ftype)
-    if field != None:
+    if field is not None:
         if ftype in ['bo', 'mo']:
             return _load_field(fullpath, field)
         else:
             raise ValueError("Can only load field from Brain or Model object.")
     elif ftype is 'bo':
-        if sample_inds!=None or loc_inds!=None:
+        if sample_inds is not None or loc_inds is not None:
             return Brain(**_load_slice(fullpath, sample_inds, loc_inds))
         else:
             return Brain(**dd.io.load(fullpath))
@@ -237,9 +248,11 @@ def _load_from_cache(fname, ftype, sample_inds=None, loc_inds=None, field=None):
     elif ftype is 'locs':
         return Location(fullpath)
 
+
 def _load_field(fname, field):
     """ Loads a particular field of a file """
     return dd.io.load(fname, group='/' + field) #FIXME: use os.path.join rather than using slashes
+
 
 def _load_slice(fname, sample_inds=None, loc_inds=None):
     """
