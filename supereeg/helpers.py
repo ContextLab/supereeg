@@ -19,10 +19,13 @@ import nibabel as nib
 import hypertools as hyp
 import shutil
 import warnings
+from skimage import transform
 
+import io
+from PIL import Image
 
 from nilearn import plotting as ni_plt
-from nilearn import image
+from nilearn import image, datasets
 from nilearn.input_data import NiftiMasker
 from scipy.stats import kurtosis, zscore, pearsonr
 from scipy.spatial.distance import pdist
@@ -141,7 +144,12 @@ def _resample_nii(x, target_res, precision=5):
         assert np.ndim(x.get_data()) == 4, 'Data must be 3D or 4D'
         scale = np.append(scale, x.shape[3])
 
-    z = zoom(x.get_data(), scale)
+    # z = skimage.transform.rescale(x.get_data(), scale, order=3, mode='constant', cval=0, anti_aliasing=True,
+    #                                multichannel=False)
+
+    z = transform.downscale_local_mean(x.get_data(), tuple(np.array(np.reciprocal(scale), dtype='int')),
+                                          cval=float(0))
+
     try:
         z[z < 1e-5] = np.nan
     except:
@@ -358,8 +366,71 @@ def tal2mni(r):
 
     return np.round(inpoints[0:3, :].T, decimals=2)
 
+def _blur_corrmat_cupy(Z, Zp, weights, block_size=1024):
+    import cupy as cp
+    from .kernel import blur
 
-def _blur_corrmat(Z, weights):
+    blur = f'#define BLOCKSIZE {block_size}' + blur
+    blur_gpu = cp.RawKernel(blur, 'blur')
+    get_maxes = cp.RawKernel(blur, 'arrmax')
+    integrated = cp.RawKernel(blur, 'integrated')
+
+    Z = cp.asarray(Z, cp.float32)
+    Zp = cp.asarray(Zp, cp.float32)
+    weights = cp.asarray(weights, cp.float32)
+    n = weights.shape[0]
+    wtx, wty = np.triu_indices(n, k=1)
+    ktx, kty = np.triu_indices(Z.shape[0], k=1)
+    triu_inds = np.triu_indices(Z.shape[0], k=1)
+    sign_Z_full = cp.sign(Z)
+    sign_Z = sign_Z_full[triu_inds]
+    lzp = cp.log(cp.multiply(sign_Z > 0, Z[triu_inds]))
+    lzn = cp.log(cp.multiply(sign_Z < 0, cp.abs(Z[triu_inds])))
+    wclose = cp.isclose(weights, 0).sum(axis=1)
+    wclose_h = cp.asnumpy(wclose)
+    matches = cp.triu(np.outer(wclose_h, wclose_h)).astype(bool)
+
+    n_wt = len(wtx)
+    n_kt = len(ktx)
+    w_n_rows = cp.int32(weights.shape[0])
+    w_n_cols = cp.int32(weights.shape[1])
+
+    w_gpu = cp.zeros(n_wt, np.float32)
+    kp_gpu = cp.zeros(n_wt, np.float32)
+    kn_gpu = cp.zeros(n_wt, np.float32)
+
+    wtx_gpu = cp.asarray(wtx, cp.int32)
+    wty_gpu = cp.asarray(wty, cp.int32)
+    ktx_gpu = cp.asarray(ktx, cp.int32)
+    kty_gpu = cp.asarray(kty, cp.int32)
+
+    maxes = cp.zeros(n_wt).astype(cp.float32)
+
+    block = (block_size, 1, 1)
+    num_blocks = np.int(np.ceil(n_wt / block_size))
+    grid = (n_wt, 1, 1)
+
+    get_maxes(grid, block, (weights, maxes, matches, wtx_gpu, wty_gpu, ktx_gpu, kty_gpu, w_n_rows, w_n_cols, n_kt))
+    blur_gpu(grid,block,(lzp, lzn, weights, Zp, wtx_gpu, wty_gpu, ktx_gpu, kty_gpu, kp_gpu, kn_gpu, w_gpu, maxes, w_n_rows, w_n_cols, n_kt))
+    # integrated(grid,block,(lzp,lzn,weights,Zp,wtx_gpu,wty_gpu,ktx_gpu,kty_gpu,kp_gpu,kn_gpu,w_gpu,matches,w_n_rows,w_n_cols,n_kt))
+
+    W  = cp.zeros([n, n])
+    W[wtx, wty] = w_gpu
+
+    K_pos = cp.zeros([n, n])
+    K_pos[wtx, wty] = kp_gpu
+
+    K_neg = cp.zeros([n, n])
+    K_neg[wtx, wty] = kn_gpu
+
+    K_neg = cp.multiply(0+1j, K_neg)
+    K_neg.real[cp.isnan(K_neg)] = 0
+    K = K_pos + K_neg
+
+    return cp.asnumpy(K + K.T), cp.asnumpy(W + W.T)
+
+
+def _blur_corrmat(Z, Zp, weights, gpu):
     """
     Gets full correlation matrix
 
@@ -368,12 +439,11 @@ def _blur_corrmat(Z, weights):
     Z : Numpy array
         Subject's Fisher z-transformed correlation matrix
 
+    Zp : Numpy array, Subject's correlation matrix zero padded to the full
+               electrode locations
+
     weights : Numpy array
         Weights matrix calculated using _log_rbf function matrix
-
-    mode : str
-        Specifies whether to compute over all elecs (fit mode) or just new elecs
-        (predict mode)
 
     Returns
     ----------
@@ -382,51 +452,51 @@ def _blur_corrmat(Z, weights):
     denominator : Numpy array
         Denominator for the expanded correlation matrix
     """
-    #import seaborn as sns
-    #import matplotlib.pyplot as plt
+    if gpu:
+        return _blur_corrmat_cupy(Z, Zp, weights)
 
     triu_inds = np.triu_indices(Z.shape[0], k=1)
 
-    #need to do computations seperately for positive and negative values
+    #need to do computations separately for positive and negative values
     sign_Z_full = np.sign(Z)
-    #logZ_pos_full = np.log(np.multiply(sign_Z_full > 0, Z))
-    #logZ_neg_full = np.log(np.multiply(sign_Z_full < 0, np.abs(Z)))
-
     sign_Z = sign_Z_full[triu_inds]
     logZ_pos = np.log(np.multiply(sign_Z > 0, Z[triu_inds]))
     logZ_neg = np.log(np.multiply(sign_Z < 0, np.abs(Z[triu_inds])))
 
     n = weights.shape[0]
+    wtx, wty = np.triu_indices(n, k=1)
+    ktx, kty = np.triu_indices(Z.shape[0], k=1)
+    n_kt = len(ktx)
+
     K_pos = np.zeros([n, n])
     K_neg = np.zeros([n, n])
     W = np.zeros([n, n])
 
-    for x in range(n-1):
+    wclose = np.isclose(weights, 0).sum(axis=1)
+    matches = np.triu(np.outer(wclose, wclose)).astype(bool)
+
+    for x, y in zip(wtx, wty):
         xweights = weights[x, :]
-        x_match = np.isclose(xweights, 0)
-        for y in range(x+1, n): #fill in upper triangle only
-            yweights = weights[y, :]
-            y_match = np.isclose(yweights, 0)
+        yweights = weights[y, :]
 
-            if np.any(x_match) and np.any(y_match): #the pair of locations we're filling in already exists in the given data
-                x_ind = np.where(x_match)[0]
-                y_ind = np.where(y_match)[0]
-                Z_match_val = np.mean(Z[x_ind, y_ind])
-                W[x, y] = 0.
-                if Z_match_val > 0:
-                    K_pos[x, y] = np.log(Z_match_val)
-                    K_neg[x, y] = -np.inf
-                else:
-                    K_pos[x, y] = -np.inf
-                    K_neg[x, y] = np.log(np.abs(Z_match_val))
-                continue
+        if matches[x,y]:
+            Z_match_val = Zp[x, y]
+            W[x, y] = 0.
+            if Z_match_val > 0:
+                K_pos[x, y] = np.log(Z_match_val)
+                K_neg[x, y] = -np.inf
+            else:
+                K_pos[x, y] = -np.inf
+                K_neg[x, y] = np.log(np.abs(Z_match_val))
+            continue
 
-            next_weights = np.add.outer(xweights, yweights)
-            next_weights = next_weights[triu_inds]
+        next_weights = xweights[ktx] + yweights[kty]
+        m = np.max(next_weights)
+        if not np.isfinite(m): m = 0
+        W[x, y] = np.log(np.sum(np.exp(next_weights - m))) + m
+        K_pos[x, y] = np.log(np.sum(np.exp(logZ_pos + next_weights - m))) + m
+        K_neg[x, y] = np.log(np.sum(np.exp(logZ_neg + next_weights - m))) + m
 
-            W[x, y] = logsumexp(next_weights)
-            K_pos[x, y] = logsumexp(logZ_pos + next_weights)
-            K_neg[x, y] = logsumexp(logZ_neg + next_weights)
 
     #turn K_neg into complex numbers.  Where K_neg is infinite, this results in nans for the real number parts, so we'll
     #set any nans in K_neg.real to 0
@@ -436,6 +506,35 @@ def _blur_corrmat(Z, weights):
     K = K_pos + K_neg
 
     return K + K.T, W + W.T
+
+def _zero_pad_corrmat(Z, locs, _full_locs):
+    '''
+    Expand a subject's correlation matrix to the full electrode locations by
+    zero padding (currently) unknown correlations.  This function helps
+    vectorize _blurr_corrmat's model expansion.
+
+    Parameters
+    ----------
+    Z : Numpy array, Subject's Fisher z-transformed correlation matrix
+
+    locs : numpy array, Subject's electrode locations
+
+    full_locs : Pandas DataFrame, all Subject's electrode locations
+
+    Returns
+    -------
+    Z_padded : Numpy array, Subject's correlation matrix zero padded to the full
+               electrode locations
+    '''
+    full_locs = pd.DataFrame(_full_locs, columns=list('xyz'))
+    n = full_locs.shape[0]
+    Z_padded = np.zeros([n, n])
+    idxs = full_locs.reset_index().merge(locs.reset_index(), on=list('xyz'))
+    known_idxs = idxs['index_x'].values
+    locs_idxs = idxs['index_y'].values
+    Z_padded[np.ix_(known_idxs, known_idxs)] = Z[np.ix_(locs_idxs, locs_idxs)]
+    return Z_padded
+
 
 def _to_log_complex(X):
     """
@@ -507,7 +606,7 @@ def _fill_upper_triangle(M, value):
     return upper_tri
 
 
-def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore', recon_loc_inds=None):
+def _timeseries_recon(bo, mo, chunk_size=25000, preprocess='zscore', recon_loc_inds=None):
     """
     Reconstruction done by chunking by session
         Parameters
@@ -530,13 +629,13 @@ def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore', recon_loc_in
         Compiled reconstructed timeseries
     """
     if preprocess==None:
-        data = bo.get_data().as_matrix()
+        data = bo.get_data().values
     elif preprocess=='zscore':
         if bo.data.shape[0]<3:
             warnings.warn('Not enough samples to zscore so it will be skipped.'
             ' Note that this will cause problems if your data are not already '
             'zscored.')
-            data = bo.get_data().as_matrix()
+            data = bo.get_data().values
         else:
             data = bo.get_zscore_data()
     else:
@@ -561,12 +660,15 @@ def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore', recon_loc_in
         model_locs_in_brain.extend([True]*mo.get_locs().shape[0])
 
         rbf_weights = _log_rbf(combined_locs, mo.get_locs())
-        Z = _blur_corrmat(Z, rbf_weights)
+
+        from .model import _recover_model #deferred import to remove circular dependency
+        Z = _recover_model(*_blur_corrmat(Z, rbf_weights, mo.gpu), z_transform=True)
+
 
     K = _z2r(Z)
 
-    known_inds, unknown_inds = known_unknown(mo.get_locs().as_matrix(), bo.get_locs().as_matrix(),
-                                                  bo.get_locs().as_matrix())
+    known_inds, unknown_inds = known_unknown(mo.get_locs().values, bo.get_locs().values,
+                                                  bo.get_locs().values)
     Kaa = K[known_inds, :][:, known_inds]
     Kaa_inv = np.linalg.pinv(Kaa)
 
@@ -584,9 +686,10 @@ def _timeseries_recon(bo, mo, chunk_size=1000, preprocess='zscore', recon_loc_in
         combined_data = np.zeros((data.shape[0], len(recon_loc_inds)), dtype=data.dtype)
 
         for x in filter_chunks:
-
-            combined_data[x,range(len(recon_loc_inds))] = _reconstruct_activity(data[x, :], Kba, Kaa_inv, recon_loc_inds=recon_loc_inds)
-
+            try:
+                combined_data[x,range(len(recon_loc_inds))] = _reconstruct_activity(data[x, :], Kba, Kaa_inv, recon_loc_inds=recon_loc_inds)
+            except:
+                print('issue with chunksize: ' + str(x))
     else:
         combined_data = np.zeros((data.shape[0], K.shape[0]), dtype=data.dtype)
         combined_data[:, unknown_inds] = np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv),
@@ -713,7 +816,7 @@ def filter_subj(bo, measure='kurtosis', return_locs=False, threshold=10):
     if not meta is None:
         thresh_bool = kurt_vals > threshold
         if sum(~thresh_bool) < 2:
-            print(meta + ': not enough electrodes pass threshold')
+            print(str(meta) + ': not enough electrodes pass threshold')
 
         else:
             if return_locs:
@@ -818,7 +921,7 @@ def _near_neighbor(bo, mo, match_threshold='auto'): #TODO: should this be part o
 
         match_threshold =  0 :set nearest_neighbor = False and proceed (only exact matches will be used)
 
-        match_threshol = None use best match and don't check (even if far away)
+        match_threshold = None use best match and don't check (even if far away)
 
         match_threshold > 0 : include only nearest neighbor that are within given distance
 
@@ -906,7 +1009,7 @@ def _unique(X):
     dataframe = type(X) is pd.DataFrame
     if dataframe:
         columns = X.columns
-        X = X.as_matrix()
+        X = X.values
 
     assert type(X) is np.ndarray, 'must pass in a numpy ndarray or dataframe'
     uX, inds = np.unique(X, axis=0, return_index=True)
@@ -941,12 +1044,12 @@ def _union(X, Y): #TODO: add test for _union
     dataframeX = type(X) is pd.DataFrame
     if dataframeX:
         columnsX = X.columns
-        X = X.as_matrix()
+        X = X.values
 
     dataframeY = type(Y) is pd.DataFrame
     if dataframeY:
         columnsY = Y.columns
-        Y = Y.as_matrix()
+        Y = Y.values
 
     if dataframeX and dataframeY:
         assert np.all(columnsX == columnsY), 'Input dataframes have mismatched columns'
@@ -1138,6 +1241,123 @@ def make_gif_pngs(nifti, gif_path, index=range(100, 200), name=None, **kwargs):
     else:
         gif_outfile = os.path.join(gif_path, str(name) + '.gif')
     imageio.mimsave(gif_outfile, images)
+
+
+def make_sliced_gif_pngs(nifti, gif_path, time_index=range(100, 200), slice_index=range(-4,52,7), name=None, vmax=2, duration=1000, symmetric_cbar=True, **kwargs):
+    """
+    Plots series of nifti timepoints as nilearn plot_anat_brain in .png format
+
+    :param nifti: Nifti object to be plotted
+    :param gif_path: Directory to save .png files
+    :param time_index: Time indices to be plotted
+    :param slice_index: Coordinates to be plotted
+    :param name: Name of output gif
+    :param vmax: scale of colorbar (IMPORTANT! change if scale changes are necessary)
+    :param kwargs: Other args to be passed to nilearn's plot_anat_brain
+    :return:
+    """
+
+    # get Haxby mask
+    # mask = datasets.fetch_haxby().mask
+
+    for i in time_index:
+        os.mkdir(os.path.join(gif_path, str(i)))
+        for loc in slice_index:
+            nii_i = image.index_img(nifti, i)
+            outfile = os.path.join(gif_path, str(i), str(loc).zfill(3) + '.png')
+            open(outfile, 'a').close()
+            if loc == slice_index[len(slice_index) - 1]:
+                display = ni_plt.plot_stat_map(nii_i, cut_coords=[loc], colorbar=True, symmetric_cbar=symmetric_cbar, vmax=vmax, **kwargs)
+            else:
+                display = ni_plt.plot_stat_map(nii_i, cut_coords=[loc], colorbar=False, symmetric_cbar=symmetric_cbar, vmax=vmax, **kwargs)
+            # display.add_contours(mask, levels=[.5], filled=True, colors='y')
+            plt.savefig(outfile)
+            plt.close()
+
+    images = []
+    num_slice = len(slice_index)
+    num_row = np.floor(np.sqrt(num_slice))
+    num_col = np.ceil(num_slice / num_row)
+    (width, height) = Image.open(os.path.join(gif_path, str(time_index[0]), str(slice_index[0]).zfill(3) + '.png')).size
+
+    # builds an frame of all cuts for each time point, adds it to images
+    for i in time_index:
+        curr_col = 0
+        curr_row = 0
+        img = Image.new('RGB', (int(width * num_col), int(height*num_row)))
+        for file in os.listdir(os.path.join(gif_path, str(i))):
+            if file.endswith(".png"):
+                img.paste(im=Image.open(os.path.join(gif_path, str(i), file)), box=(int(curr_col * width), int(curr_row * height)))
+                curr_row += np.floor(curr_col / (num_col - 1))
+                curr_col = (curr_col + 1) % num_col
+        images.append(img)
+
+    if name is None:
+        gif_outfile = os.path.join(gif_path, 'gif_' + str(min(time_index)) + '_' + str(max(time_index)) + '.gif')
+    else:
+        gif_outfile = os.path.join(gif_path, str(name) + '.gif')
+
+    # creates the gif from the frames
+    images[0].save(gif_outfile, format='GIF', append_images=images[1:], save_all=True, duration=duration, loop=0)
+
+def make_slices(nifti, gif_path, time_index=range(100, 200), slice_index=range(-4,52,7), name=None, vmax=2, duration=1000, symmetric_cbar=True, **kwargs):
+    """
+    Plots series of nifti timepoints as nilearn plot_anat_brain in .png format
+
+    :param nifti: Nifti object to be plotted
+    :param gif_path: Directory to save .png files
+    :param time_index: Time indices to be plotted
+    :param slice_index: Coordinates to be plotted
+    :param name: Name of output gif
+    :param vmax: scale of colorbar (IMPORTANT! change if scale changes are necessary)
+    :param kwargs: Other args to be passed to nilearn's plot_anat_brain
+    :return:
+    """
+
+    # get Haxby mask
+    # mask = datasets.fetch_haxby().mask
+    images = []
+    num_slice = len(slice_index)
+    nrow = np.floor(np.sqrt(num_slice))
+    ncol = np.ceil(num_slice / nrow)
+
+    for i in time_index:
+        temp_img = []
+        for loc in slice_index:
+            nii_i = image.index_img(nifti, i)
+            if loc == slice_index[len(slice_index) - 1]:
+                display = ni_plt.plot_stat_map(nii_i, cut_coords=[loc], colorbar=True, symmetric_cbar=symmetric_cbar, vmax=vmax, **kwargs)
+            else:
+                display = ni_plt.plot_stat_map(nii_i, cut_coords=[loc], colorbar=False, symmetric_cbar=symmetric_cbar, vmax=vmax, **kwargs)
+            # display.add_contours(mask, levels=[.5], filled=True, colors='y')
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png')
+            buf.seek(0)
+            temp_img.append(buf)
+            plt.close()
+            #buf.close()
+        first = Image.open(temp_img[0])
+        width, height = first.size
+        last = Image.open(temp_img[len(temp_img) - 1])
+        lw, lh = last.size
+        frame = Image.new('RGB', (int((ncol - 1) * width + lw), int(nrow * height)))
+        crow = 0
+        ccol = 0
+        print(i)
+        for buf in temp_img:
+            buf.seek(0)
+            frame.paste(im=Image.open(buf), box=(int(ccol * width), int(crow * height)))
+            crow += int(np.floor(ccol / (ncol - 1)))
+            ccol = (ccol + 1) % ncol
+        images.append(frame)
+
+    if name is None:
+        gif_outfile = os.path.join(gif_path, 'gif_' + str(min(time_index)) + '_' + str(max(time_index)) + '.gif')
+    else:
+        gif_outfile = os.path.join(gif_path, str(name) + '.gif')
+
+    # creates the gif from the frames
+    images[0].save(gif_outfile, format='GIF', append_images=images[1:], save_all=True, duration=duration, loop=0)
 
 
 def _data_and_samplerate_by_file_index(bo, xform, **kwargs):
@@ -1347,11 +1567,11 @@ def _nifti_to_brain(nifti, mask_file=None):
 
     Y = np.float64(mask.transform(nifti)).copy()
     vmask = np.nonzero(np.array(np.reshape(mask.mask_img_.dataobj, (1, np.prod(mask.mask_img_.shape)), order='C')))[1]
-    vox_coords = _fullfact(img.shape[0:3])[vmask, ::-1] - 1
+    vox_coords = _fullfact(img.shape[0:3])[vmask, :] - 1
 
     R = np.array(np.dot(vox_coords, S[0:3, 0:3])) + S[:3, 3]
 
-    return Y, R, {'header': hdr, 'unscaled_timing':True}
+    return Y, R, {'header': hdr, 'unscaled_timing':True}, img.affine
 
 
 def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; could be done much faster using reshape and/or nilearn masking
@@ -1381,25 +1601,132 @@ def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; c
     temp_v_size = hdr.get_zooms()[0:3]
 
     R = bo.get_locs()
-    Y = bo.data.as_matrix()
+    Y = bo.data.values
     Y = np.array(Y, ndmin=2)
-    S = nii_template.affine
-    locs = np.array(np.dot(R - S[:3, 3], np.linalg.inv(S[0:3, 0:3])), dtype='int')
+    if bo.affine is None:
+        S = nii_template.affine
+    else:
+        S = bo.affine
+        warnings.warn("The brain object has a custom affine, changing voxel size with vox_size will not work!")
 
-    shape = np.max(np.vstack([np.max(locs, axis=0) + 1, nii_template.shape[0:3]]), axis=0)
+    locs = np.dot(R - S[:3, 3], np.linalg.inv(S[0:3, 0:3]))
+    round_locs = np.array(np.round(locs), dtype='int')
+    if bo.nifti_shape is None:
+        shape = np.max(np.vstack([np.max(round_locs, axis=0) + 1, nii_template.shape[0:3]]), axis=0)
+    else:
+        shape = bo.nifti_shape
+
     data = np.zeros(tuple(list(shape) + [Y.shape[0]]))
     counts = np.zeros(data.shape)
 
     for i in range(R.shape[0]):
-        data[locs[i, 0], locs[i, 1], locs[i, 2], :] += Y[:, i]
-        counts[locs[i, 0], locs[i, 1], locs[i, 2], :] += 1
+        unrlocs = locs[i]
+        rlocs = round_locs[i]
+        weight = _weights(unrlocs)
+        for x in range(3):
+            for y in range(3):
+                for z in range(3):
+                    antialiased = rlocs - np.array([x - 1, y - 1, z - 1])
+                    safe_aa = tuple(np.min(np.vstack((antialiased, np.array(data.shape[0:3]) - 1)), axis=0))
+                    data[safe_aa[0], safe_aa[1], safe_aa[2], :] += weight[x, y, z] * Y[:, i]
+                    counts[safe_aa[0], safe_aa[1], safe_aa[2], :] += weight[x, y, z]
 
     with np.errstate(invalid='ignore'):
         for i in range(R.shape[0]):
-            data[locs[i, 0], locs[i, 1], locs[i, 2], :] = np.divide(data[locs[i, 0], locs[i, 1], locs[i, 2], :], counts[locs[i, 0], locs[i, 1], locs[i, 2], :])
+            data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :] = np.divide(
+                data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :],
+                counts[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :])
 
-    return Nifti(data, affine=nii_template.affine)
+    if bo.nifti_shape is not None:
+        data = data.reshape(-1, order='F').reshape(data.shape)
 
+    return Nifti(data, affine=S)
+
+def _weights(locs): # quite inefficient, could be vectorized to save a couple seconds
+    """
+    Calculates weights of nearby voxels for anti-aliasing
+    :param locs: array-like object of x, y, z, locations
+    :return: a 3x3x3 matrix of surrounding voxel weights, with 1,1,1 being the index of the locs voxel
+    """
+    weight = np.zeros(shape=(3,3,3))
+    for x in [np.floor(locs[0]), np.ceil(locs[0])]:
+        for y in [np.floor(locs[1]), np.ceil(locs[1])]:
+            for z in [np.floor(locs[2]), np.ceil(locs[2])]:
+                p_x = 1 - np.abs(x - locs[0])
+                p_y = 1 - np.abs(y - locs[1])
+                p_z = 1 - np.abs(z - locs[2])
+                percent = p_x * p_y * p_z
+                idx = np.array((1 - x + np.round(locs[0]), 1 - y + np.round(locs[1]), 1 - z + np.round(locs[2])), dtype='int')
+                weight[tuple(idx)] = percent
+    return weight
+
+def _brain_to_nifti2(bo, nii_template): #FIXME: this is incredibly inefficient; could be done much faster using reshape and/or nilearn masking
+
+    """
+    Takes or loads nifti file and converts to brain object
+
+    Parameters
+    ----------
+    bo : brain object
+
+    template : str, Nifti1Image, or None
+
+        Template is a nifti file with the desired resolution to save the brain object activity
+
+
+    Returns
+    ----------
+    results: nibabel.Nifti12mage
+        A nibabel nifti image
+
+
+    """
+    from .nifti import Nifti2
+
+    hdr = nii_template.get_header()
+    temp_v_size = hdr.get_zooms()[0:3]
+
+    R = bo.locs
+    Y = bo.data.values
+    Y = np.array(Y, ndmin=2)
+    if bo.affine is None:
+        S = nii_template.affine
+    else:
+        S = bo.affine
+        warnings.warn("The brain object has a custom affine, changing voxel size with vox_size will not work!")
+
+    locs = np.dot(R - S[:3, 3], np.linalg.inv(S[0:3, 0:3]))
+    round_locs = np.array(np.round(locs), dtype='int')
+    if bo.nifti_shape is None:
+        shape = np.max(np.vstack([np.max(round_locs, axis=0) + 1, nii_template.shape[0:3]]), axis=0)
+    else:
+        shape = bo.nifti_shape
+
+    data = np.zeros(tuple(list(shape) + [Y.shape[0]]))
+    counts = np.zeros(data.shape)
+
+    for i in range(R.shape[0]):
+        unrlocs = locs[i]
+        rlocs = round_locs[i]
+        weight = _weights(unrlocs)
+        for x in range(3):
+            for y in range(3):
+                for z in range(3):
+                    antialiased = rlocs - np.array([x - 1, y - 1, z - 1])
+                    safe_aa = tuple(np.min(np.vstack((antialiased, np.array(data.shape[0:3]) - 1)), axis=0))
+                    data[safe_aa[0], safe_aa[1], safe_aa[2], :] += weight[x, y, z] * Y[:, i]
+                    counts[safe_aa[0], safe_aa[1], safe_aa[2], :] += weight[x, y, z]
+
+    with np.errstate(invalid='ignore'):
+        for i in range(R.shape[0]):
+            data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :] = np.divide(
+                data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :],
+                counts[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :])
+
+    if bo.nifti_shape is not None:
+        data = data.reshape(-1, order='F').reshape(data.shape)
+
+    return Nifti2(data, affine=S)
 
 
 

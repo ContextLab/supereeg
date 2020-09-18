@@ -1,14 +1,15 @@
 deepdish
 scikit-learn>=0.18.1
-pandas>=0.21.1
+pandas==0.23.4
 seaborn>=0.7.1
 matplotlib>=2.2.0
 scipy>=0.17.1
 numpy>=1.10.4
-nilearn==0.4.1
+nilearn>=0.4.1
 nibabel
 joblib
 imageio
 future
 hypertools
 six
+scikit-image

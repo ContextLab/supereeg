@@ -13,7 +13,8 @@ Toolbox documentation, including a full API specification, tutorials, and galler
 <h2>Installation</h2>
 
 <h3>Recommended way of installing the toolbox</h3>
-You may install the latest stable version of our toolbox using [pip](https://pypi.python.org/pypi/pip):
+
+You may install the latest stable version of our toolbox using [pip](https://pypi.org/project/pip/):
 
 `pip install supereeg`
 
@@ -26,10 +27,38 @@ To install the latest (bleeding edge) version directly from this repository use:
 
 `pip install --upgrade git+https://github.com/ContextLab/supereeg.git`
 
+<h3>GPU acceleration</h3>
+
+This is *highly* recommended if you are building your own models. Only NVIDIA GPUs are supported.
+To enable GPU acceleration for building models, pass `gpu=True` to `se.Model`, and install [CuPy](https://docs-cupy.chainer.org/en/stable/install.html). 
+
+<h3>One time setup</h3>
+
+1. Install Docker on your computer using the appropriate guide below:
+    - [OSX](https://docs.docker.com/docker-for-mac/install/#download-docker-for-mac)
+    - [Windows](https://docs.docker.com/docker-for-windows/install/)
+    - [Ubuntu](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/)
+    - [Debian](https://docs.docker.com/engine/installation/linux/docker-ce/debian/)
+2. Launch Docker and adjust the preferences to allocate sufficient resources (e.g. > 4GB RAM)
+3. Build the docker image by opening a terminal in the desired folder and enter `docker pull contextualdynamicslab/supereeg`  
+4. Use the image to create a new container for the workshop
+    - The command below will create a new container that will map your computer's `Desktop` to `/mnt` within the container, so that location is shared between your host OS and the container. Feel free to change `Desktop` to whatever folder you prefer to share instead, but make sure to provide the full path. The command will also share port `8888` with your host computer so any jupyter notebooks launched from *within* the container will be accessible at `localhost:8888` in your web browser (or `192.168.99.100:8888` if using Docker Toolbox)
+    - `docker run -it -p 8888:8888 --name supereeg -v ~/Desktop:/mnt contextualdynamicslab/supereeg `
+    - You should now see the `root@` prefix in your terminal, if so you've successfully created a container and are running a shell from *inside*!
+5. To launch Jupyter: `jupyter notebook --no-browser --ip=0.0.0.0 --allow-root`
+6. (Optional) Connect Docker to [PyCharm](https://www.jetbrains.com/help/pycharm/using-docker-as-a-remote-interpreter.html) or another IDE
+
+
+<h3>Using the container after setup</h3>
+
+1. You can always fire up the container by typing the following into a terminal
+    - `docker start supereeg && docker attach supereeg`
+    - When you see the `root@` prefix, letting you know you're inside the container
+2. Close a running container with `ctrl + d` from the same terminal you used to launch the container, or `docker stop supereeg` from any other terminal
 
 <h2>Requirements</h2>
 
-The toolbox is currently supported on Mac and Linux.  It has not been tested on Windows (and we expect key functionality not to work properly on Windows systems).
+The toolbox is currently supported on Mac and Linux.  It has not been tested on Windows (and we expect key functionality not to work properly on Windows systems). If using Windows, consider using Windows Subsystem for Linux or a Docker container.
 
 Dependencies:
 + python 2.7, 3.5+
@@ -48,35 +77,35 @@ Dependencies:
 + imageio
 + hypertools
 + scikit-image
++ cupy (HIGHLY RECOMMENDED for GPU acceleration)
 + pytest (for development)
-
-
 
 <h2>Citing</h2>
 
-We wrote a paper about supereeg, which you can read [here](http://biorxiv.org/content/early/2017/03/27/121020).  The paper provides full details about the approach along with some performance tests an a large ECoG dataset.  If you use this toolbox or wish to cite us, please use the following citation:
+We wrote a paper about supereeg, which you can read [here](https://doi.org/10.1093/cercor/bhaa115).  The paper provides full details about the approach along with some performance tests an a large ECoG dataset.  If you use this toolbox or wish to cite us, please use the following citation:
 
-`Owen LLW and Manning JR (2017) Towards Human Super EEG.  bioRxiv: 121020`
+`Lucy L W Owen, Tudor A Muntianu, Andrew C Heusser, Patrick M Daly, Katherine W Scangos, Jeremy R Manning, A Gaussian Process Model of Human Electrocorticographic Data, Cerebral Cortex, , bhaa115, https://doi.org/10.1093/cercor/bhaa115`
 
 Here is a bibtex formatted reference:
 
 ```
-@article {Owen121020,
-	author = {Owen, Lucy L. W. and Manning, Jeremy R.},
-	title = {Towards Human Super EEG},
-	year = {2017},
-	doi = {10.1101/121020},
-	publisher = {Cold Spring Harbor Labs Journals}
-	URL = {http://biorxiv.org/content/early/2017/03/27/121020},
-	eprint = {http://biorxiv.org/content/early/2017/03/27/121020.full.pdf},
-	journal = {bioRxiv}
+@article{10.1093/cercor/bhaa115,
+    author = {Owen, Lucy L W and Muntianu, Tudor A and Heusser, Andrew C and Daly, Patrick M and Scangos, Katherine W and Manning, Jeremy R},
+    title = "{A Gaussian Process Model of Human Electrocorticographic Data}",
+    journal = {Cerebral Cortex},
+    year = {2020},
+    month = {06},
+    issn = {1047-3211},
+    doi = {10.1093/cercor/bhaa115},
+    url = {https://doi.org/10.1093/cercor/bhaa115},
+    note = {bhaa115},
+    eprint = {https://academic.oup.com/cercor/advance-article-pdf/doi/10.1093/cercor/bhaa115/33344231/bhaa115.pdf},
 }
-
 ```
 
 <h2>Contributing</h2>
 
-Thanks for considering adding to our toolbox!  Some text below hoas been borrowed from the [Matplotlib contributing guide](http://matplotlib.org/devdocs/devel/contributing.html).
+Thanks for considering adding to our toolbox!  Some text below has been borrowed from the [Matplotlib contributing guide](http://matplotlib.org/devdocs/devel/contributing.html).
 
 <h3>Submitting a bug report</h3>
 

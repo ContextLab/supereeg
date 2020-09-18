@@ -8,7 +8,7 @@ LICENSE = 'MIT'
 
 setup(
     name='supereeg',
-    version='0.2.1',
+    version='0.2.2',
     description=DESCRIPTION,
     long_description=' ',
     author='Contextual Dynamics Laboratory',
@@ -18,7 +18,7 @@ setup(
     install_requires=[
         'deepdish',
         'scikit-learn>=0.18.1',
-        'pandas>=0.21.1',
+        'pandas==0.23.4',
         'seaborn>=0.7.1',
         'matplotlib>=2.2.0',
         'scipy>=0.17.1',
