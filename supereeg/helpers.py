@@ -1423,7 +1423,7 @@ def _resample(bo, resample_rate=64):
     def _resamp(data, session, sample_rate, resample_rate):
 
         # number of samples for resample
-        n_samples = np.round(np.shape(data)[0] * resample_rate / sample_rate)
+        n_samples = np.round(np.shape(data)[0] * resample_rate / sample_rate).astype(int)
 
         # index for those samples
         resample_index = np.round(np.linspace(data.index.min(), data.index.max(), n_samples))
