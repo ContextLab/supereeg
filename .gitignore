@@ -5,6 +5,7 @@ __pycache__/
 
 # C extensions
 *.so
+*.cu
 
 # Distribution / packaging
 supereeg/data/gray_mask_6mm_brain.mo
@@ -23,10 +24,16 @@ lib64/
 parts/
 sdist/
 var/
+/Lib
+/Scripts
+/pyvenv.cfg
 *.egg-info/
 .installed.cfg
 *.egg
-
+.vscode
+/hht
+/PyEMD
+*.bo
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
@@ -86,6 +93,11 @@ celerybeat-schedule
 venv/
 ENV/
 
+# vim
+*~
+*.swp
+*.swo
+
 # Spyder project settings
 .spyderproject
 
@@ -102,3 +114,9 @@ tests/debug_helpers.py
 tests/model_algebra.py
 /tests/model_algebra.py
 /tests/model_tests.py
+dbg.py
+test.py
+
+/*.ipynb
+/profiles
+stats.py

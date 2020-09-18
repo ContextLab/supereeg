@@ -48,13 +48,13 @@ def test_samplerate_array():
     assert (bo.sample_rate is None) or (type(bo.sample_rate) is list)
 
 def test_bo_getdata_nparray():
-    assert isinstance(bo.get_data().as_matrix(), np.ndarray)
+    assert isinstance(bo.get_data().values, np.ndarray)
 
 def test_bo_zscoredata_nparray():
     assert isinstance(bo.get_zscore_data(), np.ndarray)
 
 def test_bo_get_locs_nparray():
-    assert isinstance(bo.get_locs().as_matrix(), np.ndarray)
+    assert isinstance(bo.get_locs().values, np.ndarray)
 
 def test_bo_get_slice():
     bo_d = bo.get_slice(sample_inds=[1, 2], loc_inds=[1])
