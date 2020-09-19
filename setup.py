@@ -18,7 +18,7 @@ setup(
     install_requires=[
         'deepdish',
         'scikit-learn>=0.18.1',
-        'pandas==0.23.4',
+        'pandas>=0.23.4',
         'seaborn>=0.7.1',
         'matplotlib>=2.2.0',
         'scipy>=0.17.1',
@@ -29,7 +29,8 @@ setup(
         'imageio',
         'future',
         'hypertools',
-        'six'
+        'six',
+        'scikit-image'
     ],
     packages=find_packages(exclude=('tests', 'docs')),
 )

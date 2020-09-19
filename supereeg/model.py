@@ -123,9 +123,9 @@ class Model(object):
                     for i in range(1, len(data)):
                         if type(data) in (Model, Brain, Nifti):
                             if all_locs is None:
-                                all_locs = data[i].get_locs().as_matrix()
+                                all_locs = data[i].get_locs().values
                             else:
-                                all_locs = np.vstack((all_locs, data[i].get_locs().as_matrix()))
+                                all_locs = np.vstack((all_locs, data[i].get_locs().values))
                     locs, loc_inds = _unique(all_locs)
                         
 
