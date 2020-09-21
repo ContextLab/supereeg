@@ -25,7 +25,7 @@ install:
 - conda update -q conda
 - conda info -a
 - conda create -q -n testenv python=$TRAVIS_PYTHON_VERSION pip pytest numpy pandas
-  scipy matplotlib seaborn scikit-learn numba
+  scipy matplotlib seaborn scikit-learn numba scikit-image
 - source activate testenv
 - conda install pytables
 - pip install Cython --install-option="--no-cython-compile"

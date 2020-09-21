@@ -370,7 +370,7 @@ def _blur_corrmat_cupy(Z, Zp, weights, block_size=1024):
     import cupy as cp
     from .kernel import blur
 
-    blur = f'#define BLOCKSIZE {block_size}' + blur
+    blur = '#define BLOCKSIZE {0}'.format(block_size) + blur
     blur_gpu = cp.RawKernel(blur, 'blur')
     get_maxes = cp.RawKernel(blur, 'arrmax')
     integrated = cp.RawKernel(blur, 'integrated')
@@ -1650,7 +1650,7 @@ def _brain_to_nifti(bo, nii_template, antialiasing=False): #FIXME: this is incre
 
     if bo.nifti_shape is not None:
         data = data.reshape(-1, order='F').reshape(data.shape)
- 
+
     nii = Nifti(data, affine=S)
     nii.header['descrip'] = 'from .bo'
     return nii

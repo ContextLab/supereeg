@@ -60,6 +60,7 @@ def test_model_predict():
     assert isinstance(bo, se.Brain)
 
 def test_model_gpu_predict():
+    cupy = pytest.importorskip("cupy")
     cpu_model = se.Model(data=data[0:2], locs=locs)
     cpu_bo = cpu_model.predict(data[3], nearest_neighbor=False)
     gpu_model = se.Model(data=data[0:2], locs=locs, gpu=True)
