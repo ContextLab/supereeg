@@ -203,6 +203,7 @@ def test_model_subtract():
         assert True == True
 
 def test_cpu_vs_gpu_single_subject():
+    cupy = pytest.importorskip("cupy")
     locs = np.random.randn(25, 3)
     bo1 = se.simulate_bo(n_samples=512*30, locs=locs, sample_rate=512)
     bo2 = se.simulate_bo(n_samples=512*30, locs=locs, sample_rate=512)
@@ -218,6 +219,7 @@ def test_cpu_vs_gpu_single_subject():
     assert np.allclose(mo_cpu.get_model(), mo_gpu.get_model())
 
 def test_cpu_vs_gpu_mult_subject():
+    cupy = pytest.importorskip("cupy")
     locs1 = np.random.randn(25, 3)
     bo1a = se.simulate_bo(n_samples=512*30, locs=locs1, sample_rate=512)
     bo1b = se.simulate_bo(n_samples=512*30, locs=locs1, sample_rate=512)

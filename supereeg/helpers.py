@@ -1566,15 +1566,17 @@ def _nifti_to_brain(nifti, mask_file=None):
     S = img.get_sform()
 
     Y = np.float64(mask.transform(nifti)).copy()
-    vmask = np.nonzero(np.array(np.reshape(mask.mask_img_.dataobj, (1, np.prod(mask.mask_img_.shape)), order='C')))[1]
+    vmask = np.nonzero(mask.mask_img_.dataobj.flatten())[0]
+
     vox_coords = _fullfact(img.shape[0:3])[vmask, :] - 1
+    if 'from .bo' in str(hdr['descrip']):
+        vox_coords = vox_coords[:,::-1]
 
     R = np.array(np.dot(vox_coords, S[0:3, 0:3])) + S[:3, 3]
 
     return Y, R, {'header': hdr, 'unscaled_timing':True}, img.affine
 
-
-def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; could be done much faster using reshape and/or nilearn masking
+def _brain_to_nifti(bo, nii_template, antialiasing=False): #FIXME: this is incredibly inefficient; could be done much faster using reshape and/or nilearn masking
 
     """
     Takes or loads nifti file and converts to brain object
@@ -1600,7 +1602,7 @@ def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; c
     hdr = nii_template.get_header()
     temp_v_size = hdr.get_zooms()[0:3]
 
-    R = bo.get_locs()
+    R = bo.locs # get_locs()
     Y = bo.data.values
     Y = np.array(Y, ndmin=2)
     if bo.affine is None:
@@ -1619,28 +1621,39 @@ def _brain_to_nifti(bo, nii_template): #FIXME: this is incredibly inefficient; c
     data = np.zeros(tuple(list(shape) + [Y.shape[0]]))
     counts = np.zeros(data.shape)
 
-    for i in range(R.shape[0]):
-        unrlocs = locs[i]
-        rlocs = round_locs[i]
-        weight = _weights(unrlocs)
-        for x in range(3):
-            for y in range(3):
-                for z in range(3):
-                    antialiased = rlocs - np.array([x - 1, y - 1, z - 1])
-                    safe_aa = tuple(np.min(np.vstack((antialiased, np.array(data.shape[0:3]) - 1)), axis=0))
-                    data[safe_aa[0], safe_aa[1], safe_aa[2], :] += weight[x, y, z] * Y[:, i]
-                    counts[safe_aa[0], safe_aa[1], safe_aa[2], :] += weight[x, y, z]
-
-    with np.errstate(invalid='ignore'):
+    if antialiasing is True:
         for i in range(R.shape[0]):
-            data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :] = np.divide(
-                data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :],
-                counts[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :])
+            unrlocs = locs[i]
+            rlocs = round_locs[i]
+            weight = _weights(unrlocs)
+            for x in range(3):
+                for y in range(3):
+                    for z in range(3):
+                        antialiased = rlocs - np.array([x - 1, y - 1, z - 1])
+                        safe_aa = tuple(np.min(np.vstack((antialiased, np.array(data.shape[0:3]) - 1)), axis=0))
+                        data[safe_aa[0], safe_aa[1], safe_aa[2], :] += weight[x, y, z] * Y[:, i]
+                        counts[safe_aa[0], safe_aa[1], safe_aa[2], :] += weight[x, y, z]
+
+        with np.errstate(invalid='ignore'):
+            for i in range(R.shape[0]):
+                data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :] = np.divide(
+                    data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :],
+                    counts[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :])
+    else:
+        for i in range(R.shape[0]):
+            data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :] += Y[:, i]
+            counts[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :] += 1
+
+        with np.errstate(invalid='ignore'):
+            for i in range(R.shape[0]):
+                data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :] = np.divide(data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :], counts[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :])
 
     if bo.nifti_shape is not None:
         data = data.reshape(-1, order='F').reshape(data.shape)
-
-    return Nifti(data, affine=S)
+ 
+    nii = Nifti(data, affine=S)
+    nii.header['descrip'] = 'from .bo'
+    return nii
 
 def _weights(locs): # quite inefficient, could be vectorized to save a couple seconds
     """
