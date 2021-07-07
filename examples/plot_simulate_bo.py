@@ -47,7 +47,7 @@ bo_s = r_model.predict(bo_sample, nearest_neighbor=False)
 recon_labels = np.where(np.array(bo_s.label) != 'observed')
 
 # find correlations between predicted and actual data
-corrs = _corr_column(bo.get_data().as_matrix(), bo_s.get_data().as_matrix())
+corrs = _corr_column(bo.get_data().values, bo_s.get_data().values)
 
 # index reconstructed correlations
 corrs[recon_labels].mean()
