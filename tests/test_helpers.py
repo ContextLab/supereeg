@@ -240,11 +240,11 @@ def test_brain_to_nifti():
 
 def test_bo_nii_bo():
     nii = _brain_to_nifti(bo, _gray(20))
+    print(type(str(nii.header['descrip'])))
     b_d, b_l, b_h, affine =_nifti_to_brain(nii)
     assert np.allclose(bo.get_locs(), b_l)
 
 def test_nii_bo_nii():
-
     bo_nii = se.Brain(_gray(20))
     nii = _brain_to_nifti(bo_nii, _gray(20))
     nii_0 = _gray(20).get_data().flatten()

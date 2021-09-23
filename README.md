@@ -30,7 +30,7 @@ To install the latest (bleeding edge) version directly from this repository use:
 <h3>GPU acceleration</h3>
 
 This is *highly* recommended if you are building your own models. Only NVIDIA GPUs are supported.
-To enable GPU acceleration for building models, pass `gpu=True` to `se.Model`, and install [CuPy](https://docs-cupy.chainer.org/en/stable/install.html). 
+To enable GPU acceleration for building models, pass `gpu=True` to `se.Model`, and install [CuPy](https://docs-cupy.chainer.org/en/stable/install.html).
 
 <h3>One time setup</h3>
 
@@ -40,7 +40,7 @@ To enable GPU acceleration for building models, pass `gpu=True` to `se.Model`, a
     - [Ubuntu](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/)
     - [Debian](https://docs.docker.com/engine/installation/linux/docker-ce/debian/)
 2. Launch Docker and adjust the preferences to allocate sufficient resources (e.g. > 4GB RAM)
-3. Build the docker image by opening a terminal in the desired folder and enter `docker pull contextualdynamicslab/supereeg`  
+3. Build the docker image by opening a terminal in the desired folder and enter `docker pull contextualdynamicslab/supereeg`
 4. Use the image to create a new container for the workshop
     - The command below will create a new container that will map your computer's `Desktop` to `/mnt` within the container, so that location is shared between your host OS and the container. Feel free to change `Desktop` to whatever folder you prefer to share instead, but make sure to provide the full path. The command will also share port `8888` with your host computer so any jupyter notebooks launched from *within* the container will be accessible at `localhost:8888` in your web browser (or `192.168.99.100:8888` if using Docker Toolbox)
     - `docker run -it -p 8888:8888 --name supereeg -v ~/Desktop:/mnt contextualdynamicslab/supereeg `
@@ -61,7 +61,7 @@ To enable GPU acceleration for building models, pass `gpu=True` to `se.Model`, a
 The toolbox is currently supported on Mac and Linux.  It has not been tested on Windows (and we expect key functionality not to work properly on Windows systems). If using Windows, consider using Windows Subsystem for Linux or a Docker container.
 
 Dependencies:
-+ python 2.7, 3.5+
++ python 3.5+
 + pandas>=0.21.1
 + seaborn>=0.7.1
 + matplotlib==2.1.0
@@ -132,10 +132,6 @@ The preferred way to contribute to supereeg is to fork the main repository on Gi
 
 <h2>Testing</h2>
 
-<!-- [![Build Status](https://travis-ci.com/ContextLab/quail.svg?token=hxjzzuVkr2GZrDkPGN5n&branch=master) -->
+[![Build Status](https://travis-ci.org/ContextLab/supereeg.svg?branch=master)](https://travis-ci.org/ContextLab/supereeg)
 
-To test supereeg, install pytest (`pip install pytest`) and run `pytest` in the supereeg folder
-
-<!-- <h2>Examples</h2> -->
-
-<!-- See [here](http://cdl-quail.readthedocs.io/en/latest/auto_examples/index.html) for more examples. -->
+To test supereeg, install pytest (`pip install pytest`) and run `pytest` in the supereeg folder.
