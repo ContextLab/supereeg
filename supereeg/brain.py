@@ -359,8 +359,8 @@ class Brain(object):
         sessions = self.sessions.iloc[sample_inds]
         kurtosis = self.kurtosis[self.get_locs().index[loc_inds]]
         if self.sample_rate:
-            sample_rate = [self.sample_rate[int(s-1)] for s in
-                           sessions.unique()]
+            sample_rate = [self.sample_rate[int(e - 1)] for e, s in
+                           enumerate(sessions.unique())]
         else:
             sample_rate = self.sample_rate
         meta = copy.copy(self.meta)

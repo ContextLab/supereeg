@@ -1568,7 +1568,7 @@ def _nifti_to_brain(nifti, mask_file=None):
     Y = np.float64(mask.transform(nifti)).copy()
     vmask = np.nonzero(mask.mask_img_.dataobj.flatten())[0]
 
-    vox_coords = _fullfact(img.shape[0:3])[vmask, :] - 1
+    vox_coords = _fullfact(img.shape[0:3])[vmask, ::-1] - 1
     if 'from .bo' in str(hdr['descrip']):
         vox_coords = vox_coords[:,::-1]
 
