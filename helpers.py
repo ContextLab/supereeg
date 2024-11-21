@@ -89,7 +89,7 @@ def _gray(res=None):
 
     gray_img = load('gray')
     threshold = 100
-    gray_data = gray_img.get_data()
+    gray_data = gray_img.get_fdata()
     gray_data[np.isnan(gray_data) | (gray_data < threshold)] = 0
 
     if np.iterable(res) or np.isscalar(res):
@@ -123,8 +123,8 @@ def _resample_nii(x, target_res, precision=5):
 
     from .nifti import Nifti
 
-    if np.any(np.isnan(x.get_data())):
-        img = x.get_data()
+    if np.any(np.isnan(x.get_fdata())):
+        img = x.get_fdata()
         img[np.isnan(img)] = 0.0
         x = nib.nifti1.Nifti1Image(img, x.affine)
 
@@ -140,14 +140,14 @@ def _resample_nii(x, target_res, precision=5):
     target_affine[0:3, 3] -= np.squeeze(np.multiply(np.divide(target_res, 2.0), np.sign(target_affine[0:3, 3])))
     target_affine[0:3, 3] += np.squeeze(np.sign(target_affine[0:3, 3]))
 
-    if len(scale) < np.ndim(x.get_data()):
-        assert np.ndim(x.get_data()) == 4, 'Data must be 3D or 4D'
+    if len(scale) < np.ndim(x.get_fdata()):
+        assert np.ndim(x.get_fdata()) == 4, 'Data must be 3D or 4D'
         scale = np.append(scale, x.shape[3])
 
     # z = skimage.transform.rescale(x.get_data(), scale, order=3, mode='constant', cval=0, anti_aliasing=True,
     #                                multichannel=False)
 
-    z = transform.downscale_local_mean(x.get_data(), tuple(np.array(np.reciprocal(scale), dtype='int')),
+    z = transform.downscale_local_mean(x.get_fdata(), tuple(np.array(np.reciprocal(scale), dtype='int')),
                                           cval=float(0))
 
     try:
@@ -230,7 +230,7 @@ def _get_corrmat(bo):
         return p + n
 
     def zcorr_xform(bo):
-        return np.multiply(bo.dur, _r2z(1 - squareform(pdist(bo.get_data().T, 'correlation'))))
+        return np.multiply(bo.dur, _r2z(1 - squareform(pdist(bo.data.T, 'correlation'))))
 
     summed_zcorrs = _apply_by_file_index(bo, zcorr_xform, aggregate)
 
@@ -254,7 +254,7 @@ def _z_score(bo):
 
     """
     def z_score_xform(bo):
-        return zscore(bo.get_data())
+        return zscore(bo.get_fdata())
 
     def vstack_aggregrate(x1, x2):
         return np.vstack((x1, x2))
@@ -629,13 +629,13 @@ def _timeseries_recon(bo, mo, chunk_size=25000, preprocess='zscore', recon_loc_i
         Compiled reconstructed timeseries
     """
     if preprocess==None:
-        data = bo.get_data().values
+        data = bo.get_fdata().values
     elif preprocess=='zscore':
         if bo.data.shape[0]<3:
             warnings.warn('Not enough samples to zscore so it will be skipped.'
             ' Note that this will cause problems if your data are not already '
             'zscored.')
-            data = bo.get_data().values
+            data = bo.get_fdata().values
         else:
             data = bo.get_zscore_data()
     else:
