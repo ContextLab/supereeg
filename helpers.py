@@ -181,7 +181,7 @@ def _apply_by_file_index(bo, xform, aggregator):
 
     for idx, session in enumerate(bo.sessions.unique()):
         session_xform = xform(bo.get_slice(sample_inds=np.where(bo.sessions == session)[0], inplace=False))
-        if idx is 0:
+        if idx <= 0:
             results = session_xform
         else:
             results = aggregator(results, session_xform)
@@ -254,8 +254,8 @@ def _z_score(bo):
 
     """
     def z_score_xform(bo):
-        return zscore(bo.get_fdata())
-
+        return zscore(bo.get_data().values)
+    
     def vstack_aggregrate(x1, x2):
         return np.vstack((x1, x2))
 
