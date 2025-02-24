@@ -254,7 +254,7 @@ class Brain(object):
         if self.filter == 'kurtosis':
             self.filter_inds = self.kurtosis <= self.kurtosis_threshold
         else:
-            self.filter_inds = np.ones((1, self.locs.shape[0]), dtype=np.bool)[0] #TODO: check this
+            self.filter_inds = np.ones((1, self.locs.shape[0]), dtype=np.bool_)[0] #TODO: check this
 
     def update_info(self):
         self.n_elecs = self.data.shape[1] # needs to be calculated by sessions
@@ -581,10 +581,10 @@ class Brain(object):
             if os.path.exists(template):
                 img = nib.load(template)
 
-            elif template is 'gray':
+            elif template == 'gray':
                 img = _gray(v_size)
 
-            elif template is 'std':
+            elif template == 'std':
                 img = _std(v_size)
 
             else:
@@ -684,10 +684,10 @@ class Brain(object):
             if os.path.exists(template):
                 img = nib.load(template)
 
-            elif template is 'gray':
+            elif template == 'gray':
                 img = _gray(v_size)
 
-            elif template is 'std':
+            elif template == 'std':
                 img = _std(v_size)
 
             else:
